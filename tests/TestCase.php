@@ -14,7 +14,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn(string $modelName) => 'BagistoPlus\\Visual\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
+            fn (string $modelName) => 'BagistoPlus\\Visual\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
     }
 
@@ -30,15 +30,15 @@ class TestCase extends Orchestra
         tap($app['config'], function (Repository $config) {
             $config->set('database.default', 'testbench');
             $config->set('database.connections.testbench', [
-                'driver'   => 'sqlite',
+                'driver' => 'sqlite',
                 'database' => ':memory:',
-                'prefix'   => '',
+                'prefix' => '',
             ]);
         });
     }
 
     public static function applicationBasePath()
     {
-        return dirname(__DIR__) . '/vendor/bagisto/bagisto';
+        return dirname(__DIR__).'/vendor/bagisto/bagisto';
     }
 }
