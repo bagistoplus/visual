@@ -9,18 +9,18 @@ it('should be abstract', function () {
 });
 it('should retrieve package base path', function () {
     $serviceProvider = new FakeThemeServiceProvider($this->app);
-    $packageDir = dirname(__DIR__).'/Fixtures/FakeTheme';
-    expect($serviceProvider->getBasePath())->toBe($packageDir);
+    $packageDir = dirname(__DIR__) . '/Fixtures/FakeTheme';
+    expect(realpath($serviceProvider->getBasePath()))->toBe(realpath($packageDir));
 
     $serviceProvider = new FakeTheme2ServiceProvider($this->app);
-    $packageDir = dirname(__DIR__).'/Fixtures/FakeTheme2';
-    expect($serviceProvider->getBasePath())->toBe($packageDir);
+    $packageDir = dirname(__DIR__) . '/Fixtures/FakeTheme2';
+    expect(realpath($serviceProvider->getBasePath()))->toBe(realpath($packageDir));
 });
 
 it('should retrieve theme config file path', function () {
     $serviceProvider = new FakeThemeServiceProvider($this->app);
-    $configPath = dirname(__DIR__).'/Fixtures/FakeTheme/config/theme.php';
-    expect($serviceProvider->getThemeConfigPath())->toBe($configPath);
+    $configPath = dirname(__DIR__) . '/Fixtures/FakeTheme/config/theme.php';
+    expect(realpath($serviceProvider->getThemeConfigPath()))->toBe(realpath($configPath));
 });
 
 it('should load theme config into `themes.shop`', function () {

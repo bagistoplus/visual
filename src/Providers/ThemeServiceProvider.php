@@ -53,7 +53,7 @@ abstract class ThemeServiceProvider extends ServiceProvider
         $dir = dirname($reflector->getFileName());
 
         // Traverse upwards until we find composer.json
-        while (! file_exists($dir.'/composer.json')) {
+        while (! file_exists($dir . '/composer.json')) {
             // Move one level up
             $dir = dirname($dir);
 
@@ -69,7 +69,7 @@ abstract class ThemeServiceProvider extends ServiceProvider
 
     public function getThemeConfigPath(): string
     {
-        return $this->getBasePath().'/config/theme.php';
+        return $this->getBasePath() . '/config/theme.php';
     }
 
     /**
