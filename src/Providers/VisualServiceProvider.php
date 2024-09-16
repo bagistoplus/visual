@@ -1,6 +1,6 @@
 <?php
 
-namespace BagistoPlus\Visual;
+namespace BagistoPlus\Visual\Providers;
 
 use BagistoPlus\Visual\Theme\Themes;
 use Illuminate\Support\ServiceProvider;

@@ -23,7 +23,7 @@ class Themes extends BagistoThemes
         }
 
         foreach ($themes as $code => $data) {
-            $this->themes[] = $this->createTheme(array_merge(['code' => $code, $data]));
+            $this->themes[] = $this->createTheme(array_merge(['code' => $code], $data));
 
             if (! empty($data['parent'])) {
                 $parentThemes[$code] = $data['parent'];

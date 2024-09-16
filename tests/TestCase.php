@@ -2,7 +2,8 @@
 
 namespace BagistoPlus\Visual\Tests;
 
-use BagistoPlus\Visual\VisualServiceProvider;
+use BagistoPlus\Visual\Providers\VisualServiceProvider;
+use BagistoPlus\Visual\Tests\Fixtures\FakeTheme\FakeThemeServiceProvider;
 use Illuminate\Config\Repository;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
@@ -22,6 +23,7 @@ class TestCase extends Orchestra
     {
         return [
             VisualServiceProvider::class,
+            FakeThemeServiceProvider::class,
         ];
     }
 
