@@ -11,4 +11,5 @@ parameters:
     checkOctaneCompatibility: true
     checkModelProperties: true
     stubFiles:
-        - stubs/Bagisto/Themes.stub
+        - stubs/Webkul/Theme/Theme.stub
+        - stubs/Webkul/Theme/Themes.stub
