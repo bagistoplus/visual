@@ -50,7 +50,8 @@ class Themes extends BagistoThemes
             $data['name'] ?? $data['code'],
             $data['assets_path'] ?? $data['code'],
             $data['views_path'] ?? $data['code'],
-            $data['vite'] ?? []
+            $data['vite'] ?? [],
+            $data['visual_theme'] ?? false
         );
     }
 }
