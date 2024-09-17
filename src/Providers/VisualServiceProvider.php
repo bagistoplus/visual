@@ -2,13 +2,11 @@
 
 namespace BagistoPlus\Visual\Providers;
 
-use BagistoPlus\Visual\Theme\Themes;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\AggregateServiceProvider;
 
-class VisualServiceProvider extends ServiceProvider
+class VisualServiceProvider extends AggregateServiceProvider
 {
-    public function register()
-    {
-        $this->app->singleton('themes', fn () => new Themes);
-    }
+    protected $providers = [
+        CoreServiceProvider::class,
+    ];
 }

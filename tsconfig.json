@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "strict": true,
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": false,
+    "jsx": "preserve"
+  },
+  "vueCompilerOptions": {
+    "target": 2
+  },
+  "include": ["resources/ts/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}

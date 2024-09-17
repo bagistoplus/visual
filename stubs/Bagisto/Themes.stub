@@ -1,0 +1,13 @@
+<?php
+
+namespace Webkul\Theme;
+
+class Themes
+{
+    /**
+     * Contains current activated theme.
+     *
+     * @var \Webkul\Theme\Theme
+     */
+    protected $activeTheme;
+}

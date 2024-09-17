@@ -54,4 +54,21 @@ class Themes extends BagistoThemes
             $data['visual_theme'] ?? false
         );
     }
+
+    /**
+     * Enable theme
+     *
+     * @param  string  $themeName
+     * @return \Webkul\Theme\Theme
+     */
+    public function set($themeName)
+    {
+        $theme = parent::set($themeName);
+
+        if ($this->activeTheme instanceof Theme && $this->activeTheme->isVisualTheme()) {
+            app('view')->prependNamespace('shop', __DIR__.'/../../resources/views/theme');
+        }
+
+        return $theme;
+    }
 }
