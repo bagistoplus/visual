@@ -35,11 +35,11 @@ it('throws an exception if schema path is invalid', function () {
     $schemaProp->setAccessible(true);
 
     $schemaProp->setValue('');
-    expect(fn() => SectionTraitTest::getSchema())
+    expect(fn () => SectionTraitTest::getSchema())
         ->toThrow(Exception::class, 'Invalid schema file path');
 
     $schemaProp->setValue('/path/that/doesnt/exists');
-    expect(fn() => SectionTraitTest::getSchema())
+    expect(fn () => SectionTraitTest::getSchema())
         ->toThrow(Exception::class, 'Invalid schema file path');
 });
 
