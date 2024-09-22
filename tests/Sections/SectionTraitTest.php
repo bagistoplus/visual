@@ -35,22 +35,23 @@ it('throws an exception if schema path is invalid', function () {
     $schemaProp->setAccessible(true);
 
     $schemaProp->setValue('');
-    expect(fn () => SectionTraitTest::getSchema())
+    expect(fn() => SectionTraitTest::getSchema())
         ->toThrow(Exception::class, 'Invalid schema file path');
 
     $schemaProp->setValue('/path/that/doesnt/exists');
-    expect(fn () => SectionTraitTest::getSchema())
+    expect(fn() => SectionTraitTest::getSchema())
         ->toThrow(Exception::class, 'Invalid schema file path');
 });
 
 it('returns the schema array when a valid schema path is provided', function () {
+    $schemaPath = tempnam(sys_get_temp_dir(), 'schema.json');
     $reflection = new ReflectionClass(SectionTraitTest::class);
     $schemaProp = $reflection->getProperty('schema');
     $schemaProp->setAccessible(true);
-    $schemaProp->setValue('/tmp/schema.json');
+    $schemaProp->setValue($schemaPath);
 
     $schema = ['key' => 'value'];
-    file_put_contents('/tmp/schema.json', json_encode($schema));
+    file_put_contents($schemaPath, json_encode($schema));
 
     expect(SectionTraitTest::getSchema())->toBe($schema);
 });
