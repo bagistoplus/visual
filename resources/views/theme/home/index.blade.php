@@ -2,4 +2,6 @@
 
 @section('body')
   Hello bagistoplus visual
+
+  <visual:section name="visual-announcement-bar" />
 @endsection

@@ -2,7 +2,9 @@
 
 namespace BagistoPlus\Visual\Providers;
 
-use BagistoPlus\Visual\Theme\Themes;
+use BagistoPlus\Visual\Facades\Visual;
+use BagistoPlus\Visual\Sections\AnnouncementBar;
+use BagistoPlus\Visual\Sections\SectionRepository;
 use Illuminate\Support\ServiceProvider;
 
 class CoreServiceProvider extends ServiceProvider
@@ -11,8 +13,14 @@ class CoreServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
 
+        Visual::registerSection(AnnouncementBar::class, 'visual');
+
         $this->publishAssets();
-        $this->app->singleton('themes', fn () => new Themes);
+    }
+
+    public function register()
+    {
+        $this->app->singleton(SectionRepository::class, fn () => new SectionRepository);
     }
 
     protected function publishAssets()

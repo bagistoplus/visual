@@ -10,6 +10,7 @@ parameters:
     tmpDir: build/phpstan
     checkOctaneCompatibility: true
     checkModelProperties: true
+    treatPhpDocTypesAsCertain: false
     stubFiles:
         - stubs/Webkul/Theme/Theme.stub
         - stubs/Webkul/Theme/Themes.stub

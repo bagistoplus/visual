@@ -8,5 +8,6 @@ class VisualServiceProvider extends AggregateServiceProvider
 {
     protected $providers = [
         CoreServiceProvider::class,
+        ViewServiceProvider::class,
     ];
 }

@@ -1,0 +1,36 @@
+{
+  "name": "Announcement Bar",
+  "description": "",
+  "settings": [
+    {
+      "id": "show_announcement",
+      "type": "checkbox",
+      "label": "Show announcement",
+      "info": "Show announcement bar when enabled"
+    },
+    {
+      "id": "announcement",
+      "type": "text",
+      "label": "Announcement text"
+    },
+    {
+      "id": "position",
+      "type": "select",
+      "label": "Announcement position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right ="
+        }
+      ]
+    }
+  ]
+}
