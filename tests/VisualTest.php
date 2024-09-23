@@ -1,6 +1,5 @@
 <?php
 
-use BagistoPlus\Visual\Sections\Section;
 use BagistoPlus\Visual\Visual;
 use Illuminate\Support\Facades\Blade;
 

@@ -1,0 +1,10 @@
+sections:
+  announcement-bar:
+    type: visual-announcement-bar
+    settings:
+  announcement-bar-2:
+    type: visual-announcement-bar
+    settings:
+
+# order:
+#   - announcement-bar

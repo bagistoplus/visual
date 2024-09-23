@@ -98,7 +98,7 @@ final class Section implements JsonSerializable
     public function renderToBlade(?string $id = null): string
     {
         if (! $id) {
-            $id = Str::random(10);
+            $id = Str::random(16);
         }
 
         $viewData = "collect(get_defined_vars()['__data'] ?: [])->except(['__env', 'app'])->all()";
