@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\View;
 
 use BagistoPlus\Visual\Facades\Sections;
+use Illuminate\Support\Str;
 use Illuminate\View\Compilers\ComponentTagCompiler;
 
 class VisualTagsCompiler extends ComponentTagCompiler
@@ -23,10 +24,11 @@ class VisualTagsCompiler extends ComponentTagCompiler
     public function compileSelftClosingVisualTag($value)
     {
         $pattern = '(<\s*visual:section\s*name=("|\')(?<name>[^\'"]+)("|\')\s*\/>)';
+        $viewInfos = BladeDirectives::viewInfo();
 
         return preg_replace_callback(
             $pattern,
-            function (array $matches) {
+            function (array $matches) use ($viewInfos) {
                 $sectionName = $matches['name'];
                 if (! Sections::has($sectionName)) {
                     throw new \Exception(sprintf(
@@ -36,7 +38,17 @@ class VisualTagsCompiler extends ComponentTagCompiler
                 }
 
                 $section = Sections::get($sectionName);
-                $template = $section->renderToBlade($section->slug);
+                $sectionId = Str::random(16);
+                $template = $section->renderToBlade($sectionId);
+                $template = <<<PHP
+                <?php
+                Visual::collectSectionData("$sectionId");
+                if (ThemeEditor::inDesignMode()) {
+                    ThemeEditor::collectRenderedSection('{$section->slug}', '{$viewInfos['type']}', '{$viewInfos['view']}', '$sectionId');
+                }
+                ?>
+                {$template}
+                PHP;
 
                 return parent::compile($template);
             },

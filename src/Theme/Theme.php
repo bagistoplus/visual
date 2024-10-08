@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Theme;
 
+use BagistoPlus\Visual\Facades\Visual;
 use Webkul\Theme\Theme as BagistoTheme;
 
 class Theme extends BagistoTheme
@@ -24,5 +25,17 @@ class Theme extends BagistoTheme
     public function isVisualTheme(): bool
     {
         return $this->isVisualTheme;
+    }
+
+    /**
+     * Return all the possible view paths.
+     */
+    public function getViewPaths(): array
+    {
+        $paths = parent::getViewPaths();
+
+        $visualPaths = Visual::getVisualThemePaths($this->code);
+
+        return array_merge($visualPaths, $paths);
     }
 }

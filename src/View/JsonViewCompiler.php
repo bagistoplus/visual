@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\View;
 
 use BagistoPlus\Visual\Facades\Sections;
+use BagistoPlus\Visual\Sections\Section;
 use Exception;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\View\Compilers\BladeCompiler;
@@ -44,6 +45,7 @@ class JsonViewCompiler extends Compiler implements CompilerInterface
         $bladeTemplate = $this->compileToBlade($path);
 
         $compiled = $this->blade->compileString($bladeTemplate);
+        $compiled = $this->addThemeEditorScript($compiled);
         $compiled = $this->appendFilePath($compiled, $path);
 
         $this->ensureCompiledDirectoryExists(
@@ -66,6 +68,7 @@ class JsonViewCompiler extends Compiler implements CompilerInterface
         return collect($order)->map(function ($sectionId) use ($jsonView, $path) {
             $sectionData = $jsonView['sections'][$sectionId];
 
+            /** @var Section */
             $section = Sections::get($sectionData['type']);
 
             if (! $section) {
@@ -76,8 +79,16 @@ class JsonViewCompiler extends Compiler implements CompilerInterface
                 ));
             }
 
+            [$templateName] = explode('.', basename($path));
+
             return <<<PHP
-            {$section->renderToBlade()}
+            <?php
+            Visual::collectSectionData('$sectionId', '$path');
+            if(ThemeEditor::inDesignMode()) {
+                ThemeEditor::collectRenderedSection('{$section->slug}', 'templates', '$templateName', '$sectionId');
+            }
+            ?>
+            {$section->renderToBlade($sectionId)}
             PHP;
         })->join("\n");
     }
@@ -91,6 +102,19 @@ class JsonViewCompiler extends Compiler implements CompilerInterface
         }
 
         return Yaml::parse($this->files->get($path));
+    }
+
+    protected function addThemeEditorScript(string $content)
+    {
+        return <<<PHP
+        <?php if (ThemeEditor::inDesignMode()) {
+            ThemeEditor::startRenderingContent();
+        } ?>
+        {$content}
+        <?php if (ThemeEditor::inDesignMode()) {
+            ThemeEditor::stopRenderingContent();
+        } ?>
+        PHP;
     }
 
     /**

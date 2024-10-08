@@ -28,6 +28,8 @@ it('compiles json template correctly', function () {
         ->with('header')
         ->andReturn(new class
         {
+            public $slug = 'header';
+
             public function renderToBlade()
             {
                 return '<div>Header</div>';
@@ -38,6 +40,8 @@ it('compiles json template correctly', function () {
         ->with('footer')
         ->andReturn(new class
         {
+            public $slug = 'header';
+
             public function renderToBlade()
             {
                 return '<div>Footer</div>';

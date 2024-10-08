@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Sections;
 
+use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Sections\Concerns\SectionTrait;
 use Illuminate\View\Component;
 
@@ -18,6 +19,7 @@ abstract class BladeSection extends Component implements SectionInterface
         return array_merge(
             $this->extractPublicProperties(),
             $this->extractPublicMethods(),
+            $this->getVisualSectionData(),
             $this->viewData
         );
     }
@@ -34,5 +36,12 @@ abstract class BladeSection extends Component implements SectionInterface
             'getSchemaPath',
             'getSchema',
         ]);
+    }
+
+    protected function getVisualSectionData()
+    {
+        return [
+            'section' => Visual::themeDataCollector()->getSectionData($this->visualId),
+        ];
     }
 }

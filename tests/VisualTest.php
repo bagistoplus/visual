@@ -11,6 +11,6 @@ it('registers a section and adds it to the Sections facade', function () {
         ->with('TestSection', 'prefix-test-section', 'visual-section');
 
     // Instantiate Visual class and register the section
-    $visual = new Visual;
+    $visual = app()->make(Visual::class);
     $visual->registerSection(TestSection::class, 'prefix');
 });

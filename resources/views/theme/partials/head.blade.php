@@ -13,8 +13,8 @@
 
 {{-- blade-formatter-disable --}}
 {{
-    Vite::useHotFile('vendor/bagistoplus/visual/hot')
-      ->useBuildDirectory('vendor/bagistoplus/visual/build')
+    Vite::useHotFile('vendor/bagistoplus/visual/shop.hot')
+      ->useBuildDirectory('vendor/bagistoplus/visual/shop')
       ->withEntryPoints(['resources/css/shop.css', 'resources/ts/shop/index.ts'])
 }}
 {{-- blade-formatter-enable --}}

@@ -7,7 +7,7 @@
 @endphp
 
 @if (true)
-  <div class="bg-primary text-on-primary {{ $positionValues['center'] }} px-4 py-1">
-    Announcement
+  <div class="bg-primary text-on-primary {{ $positionValues['center'] }} mb-4 bg-purple-500 px-4 py-1 text-white">
+    {{ $section['id'] }}
   </div>
 @endif

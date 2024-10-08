@@ -3,8 +3,10 @@
 namespace BagistoPlus\Visual\Providers;
 
 use BagistoPlus\Visual\Theme\Themes;
+use BagistoPlus\Visual\View\BladeDirectives;
 use BagistoPlus\Visual\View\JsonViewCompiler;
 use BagistoPlus\Visual\View\VisualTagsCompiler;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Engines\CompilerEngine;
 
@@ -19,6 +21,7 @@ class ViewServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerVisualTagsCompiler();
+        $this->registerBladeDirectives();
         $this->registerViewExtensions();
         $this->app->singleton('themes', fn () => new Themes);
     }
@@ -60,5 +63,12 @@ class ViewServiceProvider extends ServiceProvider
         foreach (JsonViewCompiler::EXTENSIONS as $extension) {
             $this->app['view']->addExtension($extension, 'jsonview');
         }
+    }
+
+    protected function registerBladeDirectives()
+    {
+        Blade::directive('visual_layout_content', [BladeDirectives::class, 'visualLayoutContent']);
+        Blade::directive('visual_content', [BladeDirectives::class, 'visualContent']);
+        Blade::directive('end_visual_content', [BladeDirectives::class, 'endVisualContent']);
     }
 }

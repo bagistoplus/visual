@@ -11,3 +11,4 @@ vendor
 node_modules
 public/hot
 !public/build
+!public/editor

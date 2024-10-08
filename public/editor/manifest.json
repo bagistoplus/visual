@@ -1,0 +1,59 @@
+{
+  "resources/ts/editor/index.ts": {
+    "file": "assets/index-BoPp3cak.js",
+    "name": "index",
+    "src": "resources/ts/editor/index.ts",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/ts/editor/views/index.vue",
+      "resources/ts/editor/views/[section].vue",
+      "resources/ts/editor/views/[section].[block].vue",
+      "resources/ts/editor/views/settings.vue"
+    ],
+    "css": [
+      "assets/index-B-D6MYoz.css"
+    ]
+  },
+  "resources/ts/editor/injected.ts": {
+    "file": "assets/injected-Bm5OeT9E.js",
+    "name": "injected",
+    "src": "resources/ts/editor/injected.ts",
+    "isEntry": true
+  },
+  "resources/ts/editor/views/[section].[block].vue": {
+    "file": "assets/_section_._block_-BPw4XhfW.js",
+    "name": "_section_._block_",
+    "src": "resources/ts/editor/views/[section].[block].vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/ts/editor/index.ts"
+    ]
+  },
+  "resources/ts/editor/views/[section].vue": {
+    "file": "assets/_section_-CIIx08Js.js",
+    "name": "_section_",
+    "src": "resources/ts/editor/views/[section].vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/ts/editor/index.ts"
+    ]
+  },
+  "resources/ts/editor/views/index.vue": {
+    "file": "assets/index-DeSdtjO2.js",
+    "name": "index",
+    "src": "resources/ts/editor/views/index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/ts/editor/index.ts"
+    ]
+  },
+  "resources/ts/editor/views/settings.vue": {
+    "file": "assets/settings-BhXM0s_j.js",
+    "name": "settings",
+    "src": "resources/ts/editor/views/settings.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/ts/editor/index.ts"
+    ]
+  }
+}

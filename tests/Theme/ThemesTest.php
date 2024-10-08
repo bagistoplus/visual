@@ -1,5 +1,6 @@
 <?php
 
+use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Theme\Themes;
 use Illuminate\Support\Facades\View;
 
@@ -18,6 +19,9 @@ it('should load themes as instance of \\BagistoPlus\\Visual\\Theme\\Theme', func
 });
 
 it('should prepend default views path to shop namespace when active theme is visual theme', function () {
+    Visual::shouldReceive('getVisualThemePaths')
+        ->andReturn([]);
+
     app('themes')->set('fake-theme');
 
     $defaultViewsPath = __DIR__.'/../../resources/views/theme';

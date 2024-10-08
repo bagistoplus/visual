@@ -12,11 +12,18 @@
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": false,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "allowJs": true,
+    "types": [
+      "vite/client",
+      "unplugin-vue-macros/macros-global",
+      "unplugin-vue-router/client",
+      "@types/sortablejs"
+    ],
   },
   "vueCompilerOptions": {
-    "target": 2
+    "target": 3
   },
   "include": ["resources/ts/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts"]
+  "exclude": ["node_modules", "**/*.spec.ts", "public"]
 }

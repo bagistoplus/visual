@@ -1,0 +1,161 @@
+import morphdom from "morphdom";
+import type { ThemeData } from "./types";
+
+window.addEventListener('DOMContentLoaded', function() {
+  const editor = new ThemeEditor();
+  editor.init();
+});
+
+class ThemeEditor {
+  sectionOverlay!: HTMLDivElement;
+  sectionLabel!: HTMLElement;
+  activeSectionId: string | null = null;
+  sectionsOrder: string[] = [];
+
+  init() {
+    this.sectionOverlay = document.querySelector('#section-overlay') as HTMLDivElement;
+    this.sectionLabel = document.querySelector('#label') as HTMLElement;
+
+    window.addEventListener('message', ({ data }) => {
+      this.handleMessage(data);
+    });
+
+    document.querySelectorAll('.visual-section').forEach(section => {
+      section.addEventListener('mouseover', this.onSectionHover.bind(this, section as HTMLElement));
+
+      section.addEventListener("mouseleave", ((event: Event) => {
+        if ((event as any).toElement) {
+          const isSectionOverlayChild = !!(event as any).toElement.closest('#section-overlay');
+          if (isSectionOverlayChild) {
+            return;
+          }
+        }
+
+        this.onSectionBlur.call(this, section as HTMLElement);
+      }) as EventListener);
+    });
+
+    this.sectionOverlay
+      .querySelector('#move-up')
+      ?.addEventListener('click', this.moveActiveSectionUp.bind(this));
+
+    this.sectionOverlay
+      .querySelector('#move-down')
+      ?.addEventListener('click', this.moveActiveSectionDown.bind(this));
+
+    this.sectionOverlay
+      .querySelector('#edit')
+      ?.addEventListener('click', this.editActiveSection.bind(this));
+
+    this.sectionOverlay
+      .querySelector('#disable')
+      ?.addEventListener('click', this.disableActiveSection.bind(this));
+
+    this.sectionOverlay
+      .querySelector('#remove')
+      ?.addEventListener('click', this.removeActiveSection.bind(this));
+
+    this.postMessage('initialize', {
+      themeData: window.themeData,
+      availableSections: window.availableSections
+    })
+
+    this.sectionsOrder = window.themeData.sectionsOrder;
+  }
+
+  highlightSection(section: HTMLElement) {
+    this.activeSectionId = section.dataset.sectionId as string;
+
+    this.sectionOverlay.style.display = 'block';
+    this.sectionOverlay.style.width = section.offsetWidth + "px";
+    this.sectionOverlay.style.height = section.offsetHeight + "px";
+    this.sectionOverlay.style.left = section.offsetLeft + "px";
+    this.sectionOverlay.style.top = section.offsetTop + "px";
+
+    const sectionType = section.dataset.sectionType as string;
+    this.sectionLabel.textContent = window.availableSections[sectionType].name;
+
+    (this.sectionOverlay.querySelector('#move-up') as HTMLButtonElement).style.display = 'none';
+    (this.sectionOverlay.querySelector('#move-down') as HTMLButtonElement).style.display = 'none';
+
+    const position = this.sectionsOrder.indexOf(this.activeSectionId);
+    if (position > 0) {
+      (this.sectionOverlay.querySelector('#move-up') as HTMLButtonElement).style.display = 'inline';
+    }
+
+    if (position < this.sectionsOrder.length - 1) {
+      (this.sectionOverlay.querySelector('#move-down') as HTMLButtonElement).style.display = 'inline';
+    }
+  }
+
+  clearActiveSection() {
+    this.activeSectionId = null;
+    this.sectionOverlay.style.display = "none";
+  }
+
+  onSectionHover(section: HTMLElement) {
+    if (this.activeSectionId === section.dataset.sectionId) {
+      return;
+    }
+
+    this.highlightSection(section);
+  }
+
+  onSectionBlur(section: HTMLElement) {
+    if (this.activeSectionId === section.dataset.sectionId) {
+      this.clearActiveSection();
+    }
+  }
+
+  moveActiveSectionUp() {
+    this.postMessage('moveSectionUp', this.activeSectionId);
+  }
+
+  moveActiveSectionDown() {
+    this.postMessage('moveSectionDown', this.activeSectionId);
+  }
+
+  editActiveSection() {
+    this.postMessage('editSection', this.activeSectionId);
+  }
+
+  disableActiveSection() {
+    this.postMessage('toggleSection', this.activeSectionId);
+  }
+
+  removeActiveSection() {
+    this.postMessage('removeSection', this.activeSectionId);
+  }
+
+  refreshPreviewer(html: string) {
+    const htmlDocument = new DOMParser().parseFromString(html, "text/html");
+
+    morphdom(
+      document.querySelector("html") as HTMLElement,
+      htmlDocument.querySelector("html") as HTMLElement
+    );
+  }
+
+  postMessage(type: string, data: any) {
+    window.parent.postMessage({ type, data }, window.origin);
+  }
+
+  handleMessage({type, data}: {type: string, data: unknown}) {
+    switch(type) {
+      case 'highlightSection':
+        const section = document.querySelector(`[data-section-id="${data}"]`) as HTMLElement;
+        this.highlightSection(section);
+        section.scrollIntoView({ behavior: 'smooth' });
+      break;
+      case 'clearActiveSection':
+        this.clearActiveSection();
+        break;
+      case 'sectionsOrder':
+        this.sectionsOrder = data as string [];
+        break;
+      case 'refresh':
+        this.refreshPreviewer(data as string);
+        break;
+    }
+  }
+}

@@ -2,7 +2,6 @@
 
 namespace BagistoPlus\Visual\Sections;
 
-use Illuminate\Support\Str;
 use JsonSerializable;
 
 final class Section implements JsonSerializable
@@ -95,12 +94,8 @@ final class Section implements JsonSerializable
     /**
      * Generate the section blade template
      */
-    public function renderToBlade(?string $id = null): string
+    public function renderToBlade(string $id): string
     {
-        if (! $id) {
-            $id = Str::random(16);
-        }
-
         $viewData = "collect(get_defined_vars()['__data'] ?: [])->except(['__env', 'app'])->all()";
 
         if ($this->isLivewire) {

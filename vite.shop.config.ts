@@ -4,7 +4,9 @@ import tailwindcss from 'tailwindcss'
 
 export default defineConfig({
   plugins: [laravel({
-    input: ['resources/css/shop.css', 'resources/ts/shop/index.ts']
+    input: ['resources/css/shop.css', 'resources/ts/shop/index.ts'],
+    buildDirectory: 'shop',
+    hotFile: 'public/shop.hot'
   })],
   css: {
     postcss: {
