@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { useStore } from '../store';
 
+const emit = defineEmits<{
+  (e: 'exit'): void;
+}>();
+
 const store = useStore();
 const value = ref('desktop');
 const viewModes = ref([
@@ -13,7 +17,7 @@ const viewModes = ref([
 <template>
   <div class="flex">
     <div class="w-[20.98rem] h-full items-center flex-none flex">
-      <button class="hover:bg-gray-100 px-[0.85rem] focus:outline-none h-full" @click="$emit('exit')">
+      <button class="hover:bg-gray-100 px-[0.85rem] focus:outline-none h-full" @click="emit('exit')">
         <ArrowLeftEndOnRectangleIcon class="w-5"/>
       </button>
 

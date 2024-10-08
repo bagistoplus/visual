@@ -9,6 +9,7 @@ phpstan.neon
 testbench.yaml
 vendor
 node_modules
-public/hot
-!public/build
-!public/editor
+public/shop.hot
+public/editor.hot
+public/admin.hot
+!public/

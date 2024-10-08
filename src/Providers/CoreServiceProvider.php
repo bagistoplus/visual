@@ -7,6 +7,7 @@ use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
 use BagistoPlus\Visual\Sections\AnnouncementBar;
 use BagistoPlus\Visual\Sections\SectionRepository;
 use BagistoPlus\Visual\ThemeDataCollector;
+use BagistoPlus\Visual\ThemeEditor;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 
@@ -15,6 +16,7 @@ class CoreServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
+        $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'visual');
 
         Visual::registerSection(AnnouncementBar::class, 'visual');
 
@@ -30,7 +32,7 @@ class CoreServiceProvider extends ServiceProvider
         $this->registerConfigs();
 
         $this->app->singleton(SectionRepository::class, fn () => new SectionRepository);
-
+        $this->app->singleton(ThemeEditor::class, fn () => new ThemeEditor);
         $this->app->singleton(ThemeDataCollector::class, fn () => new ThemeDataCollector($this->app->get('files')));
     }
 

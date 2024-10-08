@@ -1,13 +1,13 @@
 {
-  "resources/css/shop.css": {
+  "resources/assets/shop/css/shop.css": {
     "file": "assets/shop-CMh7sJDe.css",
-    "src": "resources/css/shop.css",
+    "src": "resources/assets/shop/css/shop.css",
     "isEntry": true
   },
-  "resources/ts/shop/index.ts": {
+  "resources/assets/shop/ts/index.ts": {
     "file": "assets/index-l0sNRNKZ.js",
     "name": "index",
-    "src": "resources/ts/shop/index.ts",
+    "src": "resources/assets/shop/ts/index.ts",
     "isEntry": true
   }
 }

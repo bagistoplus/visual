@@ -28,7 +28,7 @@
     {{
       Vite::useHotFile('vendor/bagistoplus/visual/editor.hot')
         ->useBuildDirectory('vendor/bagistoplus/visual/editor')
-        ->withEntryPoints(['resources/ts/editor/index.ts'])
+        ->withEntryPoints(['resources/assets/editor/index.ts'])
     }}
     {{-- blade-formatter-enable --}}
   </head>

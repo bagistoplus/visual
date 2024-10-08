@@ -13,12 +13,15 @@ import {PrimeVueResolver} from '@primevue/auto-import-resolver';
 export default defineConfig({
   resolve: {
     alias: {
-      '~/': `${path.resolve(__dirname, 'resources/ts/editor')}/`,
+      '~/': `${path.resolve(__dirname, 'resources/assets/editor')}/`,
     },
   },
   plugins: [
     laravel({
-      input: ['resources/ts/editor/index.ts', 'resources/ts/editor/injected.ts'],
+      input: [
+        'resources/assets/editor/index.ts',
+        'resources/assets/editor/injected.ts'
+      ],
       buildDirectory: 'editor',
       hotFile: 'public/editor.hot'
     }),
@@ -38,10 +41,10 @@ export default defineConfig({
 
     // https://github.com/posva/unplugin-vue-router
     VueRouter({
-      dts: 'resources/ts/editor/typed-routes.d.ts',
+      dts: 'resources/assets/editor/typed-routes.d.ts',
       routesFolder: [
         {
-          src: 'resources/ts/editor/views'
+          src: 'resources/assets/editor/views'
         }
       ]
     }),
@@ -57,9 +60,9 @@ export default defineConfig({
           'vue-router/auto': ['useLink'],
         },
       ],
-      dts: './resources/ts/editor/auto-imports.d.ts',
+      dts: './resources/assets/editor/auto-imports.d.ts',
       dirs: [
-        './resources/ts/editor/composables',
+        './resources/assets/editor/composables',
       ],
       vueTemplate: true,
       viteOptimizeDeps: true,
@@ -67,8 +70,8 @@ export default defineConfig({
 
     // https://github.com/antfu/vite-plugin-components
     Components({
-      dts: './resources/ts/editor/components.d.ts',
-      dirs: ['resources/ts/editor/components'],
+      dts: './resources/assets/editor/components.d.ts',
+      dirs: ['resources/assets/editor/components'],
       resolvers: [
         PrimeVueResolver(),
         (componentName) => {

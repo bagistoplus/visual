@@ -5,7 +5,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import { routes } from 'vue-router/auto-routes';
 
 import Aura from './presets/aura'
-import App from './App.vue';
+import App from '../../assets/editor/App.vue';
 import './index.css';
 
 const app = createApp(App);

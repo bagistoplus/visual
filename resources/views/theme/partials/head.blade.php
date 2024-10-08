@@ -15,7 +15,10 @@
 {{
     Vite::useHotFile('vendor/bagistoplus/visual/shop.hot')
       ->useBuildDirectory('vendor/bagistoplus/visual/shop')
-      ->withEntryPoints(['resources/css/shop.css', 'resources/ts/shop/index.ts'])
+      ->withEntryPoints([
+        'resources/assets/shop/css/shop.css',
+        'resources/assets/shop/ts/index.ts'
+      ])
 }}
 {{-- blade-formatter-enable --}}
 

@@ -7,19 +7,35 @@ use Webkul\Theme\Theme as BagistoTheme;
 
 class Theme extends BagistoTheme
 {
-    protected $isVisualTheme = false;
+    public static function make(array $attributes): self
+    {
+        return new self(
+            code: $attributes['code'],
+            name: $attributes['name'],
+            assetsPath: $attributes['assets_path'] ?? $attributes['code'],
+            viewsPath: $attributes['view_path'] ?? $attributes['code'],
+            vite: $attributes['vite'] ?? [],
+            version: $attributes['version'] ?? '1.0.0',
+            author: $attributes['author'] ?? '',
+            previewImage: $attributes['preview_image'] ?? '',
+            documentationUrl: $attributes['documentation_url'] ?? '',
+            isVisualTheme: $attributes['visual_theme'] ?? false
+        );
+    }
 
     public function __construct(
-        string $code,
-        string $name,
-        ?string $assetsPath = null,
-        ?string $viewsPath = null,
-        array $vite = [],
-        bool $isVisualTheme = false
+        public $code,
+        public $name,
+        public $assetsPath = null,
+        public $viewsPath = null,
+        public $vite = [],
+        public ?string $version = '0.0.0',
+        public ?string $author = '',
+        public ?string $previewImage = '',
+        public ?string $documentationUrl = '',
+        public bool $isVisualTheme = false
     ) {
         parent::__construct($code, $name, $assetsPath, $viewsPath, $vite);
-
-        $this->isVisualTheme = $isVisualTheme;
     }
 
     public function isVisualTheme(): bool

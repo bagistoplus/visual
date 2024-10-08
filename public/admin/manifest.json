@@ -1,0 +1,21 @@
+{
+  "resources/assets/admin/css/admin.css": {
+    "file": "assets/admin-Cv0XSi1v.css",
+    "src": "resources/assets/admin/css/admin.css",
+    "isEntry": true
+  },
+  "resources/assets/admin/images/default_theme_preview.png": {
+    "file": "assets/default_theme_preview-BkZ1bWrW.png",
+    "src": "resources/assets/admin/images/default_theme_preview.png"
+  },
+  "resources/assets/admin/images/visual_logo.svg": {
+    "file": "assets/visual_logo-CiYMGLDX.svg",
+    "src": "resources/assets/admin/images/visual_logo.svg"
+  },
+  "resources/assets/admin/ts/index.ts": {
+    "file": "assets/index-l0sNRNKZ.js",
+    "name": "index",
+    "src": "resources/assets/admin/ts/index.ts",
+    "isEntry": true
+  }
+}

@@ -1,11 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: 'none',
   content: [
-    './resources/assets/editor/**/*.{ts,vue,js}'
+    './resources/views/admin/**/*',
   ],
+
+  darkMode: 'class',
+
   theme: {
     extend: {},
   },
-  plugins: [require('tailwindcss-primeui')]
+  plugins: [],
 }

@@ -24,6 +24,10 @@
   "vueCompilerOptions": {
     "target": 3
   },
-  "include": ["resources/ts/**/*"],
+  "include": [
+    "resources/assets/editor/**/*",
+    "resources/assets/shop/ts/**/*",
+    "resources/assets/admin/ts/**/*"
+  ],
   "exclude": ["node_modules", "**/*.spec.ts", "public"]
 }

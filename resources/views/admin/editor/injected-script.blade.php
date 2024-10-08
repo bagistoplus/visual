@@ -71,7 +71,7 @@
   {{
     Vite::useHotFile('vendor/bagistoplus/visual/editor.hot')
       ->useBuildDirectory('vendor/bagistoplus/visual/editor')
-      ->withEntryPoints(['resources/ts/editor/injected.ts'])
+      ->withEntryPoints(['resources/assets/editor/injected.ts'])
   }}
 {{-- blade-formatter-enable --}}
 @endif

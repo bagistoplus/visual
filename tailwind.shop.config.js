@@ -2,7 +2,7 @@
 export default {
   content: [
     './resources/views/theme/**/*',
-    './resources/ts/shop/**/*'
+    './resources/assets/shop/ts/**/*'
   ],
   theme: {
     extend: {},

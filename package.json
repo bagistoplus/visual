@@ -4,7 +4,9 @@
     "dev:shop": "vite --config vite.shop.config.ts",
     "build:shop": "vite build --config vite.shop.config.ts",
     "dev:editor": "vite --config vite.editor.config.ts",
-    "build:editor": "vite build --config vite.editor.config.ts"
+    "build:editor": "vite build --config vite.editor.config.ts",
+    "dev:admin": "vite --config vite.admin.config.ts",
+    "build:admin": "vite build --config vite.admin.config.ts"
   },
   "devDependencies": {
     "@heroicons/vue": "^2.1.5",

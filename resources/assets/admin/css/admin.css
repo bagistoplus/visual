@@ -1,0 +1,9 @@
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+.bagisto-visual-icon {
+    width: 24px;
+    height: 24px;
+    background-color: currentColor;
+    mask-image: url('../images/visual_logo.svg');
+}

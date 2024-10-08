@@ -18,6 +18,7 @@ class ThemeEditorController extends Controller
             'channels' => $this->getChannels(),
             'defaultChannel' => app('core')->getDefaultChannelCode(),
             'routes' => [
+                'themesIndex' => route('visual.admin.themes.index'),
                 'persistTheme' => route('visual.admin.editor.api.persist'),
             ],
         ]);

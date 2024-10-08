@@ -30,11 +30,15 @@ window.addEventListener('message', (event) => {
 onMounted(() => {
   store.setPreviewIframe(previewIframe.value as HTMLIFrameElement);
 });
+
+function onExit() {
+  window.location.href = window.ThemeEditor.routes.themesIndex;
+}
 </script>
 
 <template>
   <div class="h-screen w-full flex flex-col">
-    <Header class="h-14 border-b flex-none"/>
+    <Header class="h-14 border-b flex-none" @exit="onExit"/>
     <div class="flex-1 bg-gray-100 flex overflow-y-hidden">
       <div class="w-12 flex-none border-r bg-white">
         <ActionBar/>

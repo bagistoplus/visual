@@ -6,7 +6,8 @@ export interface WindowThemeEditor {
   channels: Channel[];
   defaultChannel: string;
   routes: {
-    persistTheme: string
+    persistTheme: string;
+    themesIndex: string
   }
 }
 

@@ -5,17 +5,17 @@ import tailwindcss from 'tailwindcss'
 export default defineConfig({
   plugins: [laravel({
     input: [
-      'resources/assets/shop/css/shop.css',
-      'resources/assets/shop/ts/index.ts'
+      'resources/assets/admin/css/admin.css',
+      'resources/assets/admin/ts/index.ts'
     ],
-    buildDirectory: 'shop',
-    hotFile: 'public/shop.hot'
+    buildDirectory: 'admin',
+    hotFile: 'public/admin.hot'
   })],
   css: {
     postcss: {
       plugins: [
         tailwindcss({
-          config: './tailwind.shop.config.js'
+        config: './tailwind.admin.config.js'
         })
       ]
     }

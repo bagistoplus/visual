@@ -23,7 +23,7 @@ class Themes extends BagistoThemes
         }
 
         foreach ($themes as $code => $data) {
-            $this->themes[] = $this->createTheme(array_merge(['code' => $code], $data));
+            $this->themes[] = Theme::make(array_merge(['code' => $code], $data));
 
             if (! empty($data['parent'])) {
                 $parentThemes[$code] = $data['parent'];
@@ -36,23 +36,11 @@ class Themes extends BagistoThemes
             if ($this->exists($parentCode)) {
                 $parent = $this->find($parentCode);
             } else {
-                $parent = $this->createTheme(['code' => $parentCode]);
+                $parent = Theme::make(['code' => $parentCode]);
             }
 
             $child->setParent($parent);
         }
-    }
-
-    public function createTheme(array $data)
-    {
-        return new Theme(
-            $data['code'],
-            $data['name'] ?? $data['code'],
-            $data['assets_path'] ?? $data['code'],
-            $data['views_path'] ?? $data['code'],
-            $data['vite'] ?? [],
-            $data['visual_theme'] ?? false
-        );
     }
 
     /**
