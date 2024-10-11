@@ -29,8 +29,10 @@ function open() {
         <button @click.stop="emit('remove')" class="flex-none invisible group-hover:visible py-[1px] px-[2px] rounded-md hover:bg-zinc-200">
           <TrashIcon class="inline w-4"/>
         </button>
-        <button @click.stop="emit('toggle')" class="flex-none invisible group-hover:visible py-[1px] px-[2px] rounded-md hover:bg-zinc-200 ml-1">
-          <EyeIcon class="inline w-4"/>
+
+        <button @click.stop="emit('toggle')" class="flex-none cursor-pointer invisible group-hover:visible py-[1px] px-[2px] rounded-md hover:bg-zinc-200 ml-1">
+          <EyeIcon v-if="!section.disabled" class="inline w-4"/>
+          <EyeSlashIcon v-else class="inline w-4"/>
         </button>
       </div>
     </div>

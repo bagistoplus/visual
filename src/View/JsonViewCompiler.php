@@ -88,7 +88,9 @@ class JsonViewCompiler extends Compiler implements CompilerInterface
                 ThemeEditor::collectRenderedSection('{$section->slug}', 'templates', '$templateName', '$sectionId');
             }
             ?>
+            <?php if(Visual::isSectionEnabled('$sectionId')): ?>
             {$section->renderToBlade($sectionId)}
+            <?php endif; ?>
             PHP;
         })->join("\n");
     }

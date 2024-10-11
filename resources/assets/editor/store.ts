@@ -107,7 +107,7 @@ export const useStore = defineStore('main', () => {
 
   function deactivateSection(sectionId: string) {
     activeSectionId.value = null;
-    notifyPreviewIframe('clearActiveSection', sectionId);
+      notifyPreviewIframe('clearActiveSection', sectionId);
   }
 
   function setContentSectionsOrder(order: string[]) {
@@ -184,6 +184,7 @@ export const useStore = defineStore('main', () => {
     sectionData.blocks[id] = {
       id,
       type: block.type,
+      name: block.name,
       disabled: false,
       settings
     }

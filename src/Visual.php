@@ -31,6 +31,11 @@ class Visual
         Blade::component($componentClass, $section->slug, 'visual-section');
     }
 
+    public function isSectionEnabled($sectionId): bool
+    {
+        return ! $this->themeDataCollector->getSectionData($sectionId)->disabled;
+    }
+
     public function getVisualThemePaths(string $theme): array
     {
         $mode = ThemeEditor::inDesignMode() ? 'editor' : 'live';

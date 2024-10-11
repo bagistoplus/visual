@@ -68,6 +68,7 @@ declare module 'vue' {
     ChevronUpIcon: typeof import('@heroicons/vue/24/outline')['ChevronUpIcon']
     Cog6ToothIcon: typeof import('@heroicons/vue/24/outline')['Cog6ToothIcon']
     EyeIcon: typeof import('@heroicons/vue/24/outline')['EyeIcon']
+    EyeSlashIcon: typeof import('@heroicons/vue/24/outline')['EyeSlashIcon']
     GlobeAsiaAustraliaIcon: typeof import('@heroicons/vue/24/outline')['GlobeAsiaAustraliaIcon']
     Header: typeof import('./components/Header.vue')['default']
     HomeIcon: typeof import('@heroicons/vue/24/outline')['HomeIcon']

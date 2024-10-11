@@ -59,6 +59,13 @@ function addBlock(type: string) {
   const block = section.value!.blocks.find(b => b.type === type) as Block
   store.addBlockToSection(sectionData.value.id, block);
 }
+
+function onBlocksReorder(order: string[]) {
+  store.updateThemeDataValue(
+    `sectionsData.${sectionData.value.id}.blocksOrder`,
+    order
+  )
+}
 </script>
 
 <template>
@@ -83,7 +90,12 @@ function addBlock(type: string) {
             <ArkAccordionItemIndicator><ChevronDownIcon /></ArkAccordionItemIndicator>
           </ArkAccordionItemTrigger>
           <ArkAccordionItemContent>
-            <BlocksGroup :blocks="blocksData" :order="sectionData.blocksOrder" class="-mt-2 mb-2"/>
+            <BlocksGroup
+              class="-mt-2 mb-2"
+              :blocks="blocksData"
+              :order="sectionData.blocksOrder"
+              @reorder="onBlocksReorder"
+            />
 
             <Menu.Root v-if="availableBlocks.length > 0" @select="(details: SelectionDetails) => addBlock(details.value)">
               <Menu.Trigger class="w-full text-sm rounded-lg cursor-pointer outline-0 inline-flex items-center gap-2 px-2 py-1 hover:bg-gray-200 focus:ring-1 focus:ring-gray-700">

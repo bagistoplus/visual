@@ -21,6 +21,7 @@ onMounted(() => {
   new Sortable(sortable.value, {
     animation: 150,
     ghostClass: 'sortable-ghost',
+
     onEnd({ newIndex, oldIndex }: { newIndex: number; oldIndex: number }) {
       const order = [...props.order];
       const moved = order.splice(oldIndex, 1)[0];
@@ -30,7 +31,6 @@ onMounted(() => {
     },
   });
 });
-function test() {alert('ok');}
 </script>
 
 <template>

@@ -18,6 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit =defineEmits<{
   (e: 'reorder', order: string[]): void;
   (e: 'addSection', event: any): void;
+  (e: 'toggleSection', id: string): void;
   (e: 'activateSection', id: string): void;
   (e: 'deactivateSection', id: string): void;
 }>();
@@ -48,6 +49,7 @@ function test() {alert('ok');}
         <Section
           v-for="section in sections"
           :section="section"
+          @toggle="emit('toggleSection', section.id)"
           @activate="emit('activateSection', section.id)"
           @deactivate="emit('deactivateSection', section.id)"
         />

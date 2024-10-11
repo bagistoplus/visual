@@ -144,8 +144,10 @@ class ThemeEditor {
     switch(type) {
       case 'highlightSection':
         const section = document.querySelector(`[data-section-id="${data}"]`) as HTMLElement;
-        this.highlightSection(section);
-        section.scrollIntoView({ behavior: 'smooth' });
+        if (section) {
+          this.highlightSection(section);
+          section.scrollIntoView({ behavior: 'smooth' });
+        }
       break;
       case 'clearActiveSection':
         this.clearActiveSection();

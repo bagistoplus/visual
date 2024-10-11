@@ -42,12 +42,14 @@ class VisualTagsCompiler extends ComponentTagCompiler
                 $template = $section->renderToBlade($sectionId);
                 $template = <<<PHP
                 <?php
-                Visual::collectSectionData("$sectionId");
+                Visual::collectSectionData('$sectionId');
                 if (ThemeEditor::inDesignMode()) {
                     ThemeEditor::collectRenderedSection('{$section->slug}', '{$viewInfos['type']}', '{$viewInfos['view']}', '$sectionId');
                 }
                 ?>
+                <?php if (Visual::isSectionEnabled('$sectionId')): ?>
                 {$template}
+                <? endif; ?>
                 PHP;
 
                 return parent::compile($template);

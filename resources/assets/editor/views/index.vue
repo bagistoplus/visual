@@ -13,6 +13,10 @@ function onContentSectionsReorder(order: string[]) {
   store.setContentSectionsOrder(order);
 }
 
+function onToggleSection(sectionId: string) {
+  store.toggleSection(sectionId);
+}
+
 function onActivateSection(sectionId: string) {
   store.activateSection(sectionId);
 }
@@ -32,7 +36,7 @@ function onDeactivateSection(sectionId: string) {
         static
         title="Layout Header Sections"
         :sections="store.beforeContentSections"
-        @addSection="togglePopover"
+        @toggleSection="onToggleSection"
         @activateSection="onActivateSection"
         @deactivateSection="onDeactivateSection"
       />
@@ -44,11 +48,19 @@ function onDeactivateSection(sectionId: string) {
         :sections="store.contentSections"
         @reorder="onContentSectionsReorder"
         @addSection="togglePopover"
+        @toggleSection="onToggleSection"
         @activateSection="onActivateSection"
         @deactivateSection="onDeactivateSection"
       />
       <hr>
-      <SectionsGroup static title="Layout Footer Sections" :sections="[]" @addSection="togglePopover"/>
+      <SectionsGroup
+        static
+        title="Layout Footer Sections"
+        :sections="[]"
+        @toggleSection="onToggleSection"
+        @activateSection="onActivateSection"
+        @deactivateSection="onDeactivateSection"
+      />
     </div>
 
     <Popover.Root v-model:open="popoverOpen" :positioning="{
