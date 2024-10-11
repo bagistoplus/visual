@@ -8,9 +8,10 @@ const emit = defineEmits<{
   (e: 'toggle'): void;
   (e: 'remove'): void;
 }>();
-const props = defineProps<{
-  section: SectionData
-}>();
+const props = withDefaults(defineProps<{
+  section: SectionData,
+  static: boolean
+}>(), { static: false });
 
 function open() {
   router.push(props.section.id)
@@ -26,7 +27,8 @@ function open() {
 
       <div @click="open" class="group mx-2 py-2 pr-1 text-sm flex-1 flex items-center max-w-full">
         <div class="w-0 flex-1 truncate ">{{ props.section.name }}</div>
-        <button @click.stop="emit('remove')" class="flex-none invisible group-hover:visible py-[1px] px-[2px] rounded-md hover:bg-zinc-200">
+
+        <button v-if="!static" @click.stop="emit('remove')" class="flex-none cursor-pointer invisible group-hover:visible py-[1px] px-[2px] rounded-md hover:bg-zinc-200">
           <TrashIcon class="inline w-4"/>
         </button>
 

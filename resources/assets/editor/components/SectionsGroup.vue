@@ -19,6 +19,7 @@ const emit =defineEmits<{
   (e: 'reorder', order: string[]): void;
   (e: 'addSection', event: any): void;
   (e: 'toggleSection', id: string): void;
+  (e: 'removeSection', id: string): void;
   (e: 'activateSection', id: string): void;
   (e: 'deactivateSection', id: string): void;
 }>();
@@ -48,8 +49,10 @@ function test() {alert('ok');}
       <template v-if="sections.length > 0">
         <Section
           v-for="section in sections"
+          :static="static"
           :section="section"
           @toggle="emit('toggleSection', section.id)"
+          @remove="emit('removeSection', section.id)"
           @activate="emit('activateSection', section.id)"
           @deactivate="emit('deactivateSection', section.id)"
         />

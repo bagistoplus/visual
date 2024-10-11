@@ -3,15 +3,15 @@
     "file": "assets/_plugin-vue_export-helper-DlAUqK2U.js",
     "name": "_plugin-vue_export-helper"
   },
-  "_sortable.core.esm-CASc3zXj.js": {
-    "file": "assets/sortable.core.esm-CASc3zXj.js",
+  "_sortable.core.esm-Duu8_KWm.js": {
+    "file": "assets/sortable.core.esm-Duu8_KWm.js",
     "name": "sortable.core.esm",
     "imports": [
       "resources/assets/editor/index.ts"
     ]
   },
   "resources/assets/editor/index.ts": {
-    "file": "assets/index-Dexbsdpm.js",
+    "file": "assets/index-B5tWcT16.js",
     "name": "index",
     "src": "resources/assets/editor/index.ts",
     "isEntry": true,
@@ -22,7 +22,7 @@
       "resources/assets/editor/views/settings.vue"
     ],
     "css": [
-      "assets/index-BzCKSOFk.css"
+      "assets/index-DUFtaiM0.css"
     ]
   },
   "resources/assets/editor/injected.ts": {
@@ -32,7 +32,7 @@
     "isEntry": true
   },
   "resources/assets/editor/views/[section].[block].vue": {
-    "file": "assets/_section_._block_-BwGCpz2m.js",
+    "file": "assets/_section_._block_-BXB_NbZ_.js",
     "name": "_section_._block_",
     "src": "resources/assets/editor/views/[section].[block].vue",
     "isDynamicEntry": true,
@@ -42,27 +42,27 @@
     ]
   },
   "resources/assets/editor/views/[section].vue": {
-    "file": "assets/_section_-CSYolu6t.js",
+    "file": "assets/_section_-CWQ0IjBu.js",
     "name": "_section_",
     "src": "resources/assets/editor/views/[section].vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/assets/editor/index.ts",
-      "_sortable.core.esm-CASc3zXj.js"
+      "_sortable.core.esm-Duu8_KWm.js"
     ]
   },
   "resources/assets/editor/views/index.vue": {
-    "file": "assets/index-DLv1V6DQ.js",
+    "file": "assets/index-BGVxr8l7.js",
     "name": "index",
     "src": "resources/assets/editor/views/index.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_sortable.core.esm-CASc3zXj.js",
+      "_sortable.core.esm-Duu8_KWm.js",
       "resources/assets/editor/index.ts"
     ]
   },
   "resources/assets/editor/views/settings.vue": {
-    "file": "assets/settings-ez5iV5R-.js",
+    "file": "assets/settings-BbAQGehx.js",
     "name": "settings",
     "src": "resources/assets/editor/views/settings.vue",
     "isDynamicEntry": true,

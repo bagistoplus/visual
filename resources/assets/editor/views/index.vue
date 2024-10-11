@@ -17,6 +17,10 @@ function onToggleSection(sectionId: string) {
   store.toggleSection(sectionId);
 }
 
+function onRemoveSection(sectionId: string) {
+  store.removeSection(sectionId);
+}
+
 function onActivateSection(sectionId: string) {
   store.activateSection(sectionId);
 }
@@ -49,6 +53,7 @@ function onDeactivateSection(sectionId: string) {
         @reorder="onContentSectionsReorder"
         @addSection="togglePopover"
         @toggleSection="onToggleSection"
+        @removeSection="onRemoveSection"
         @activateSection="onActivateSection"
         @deactivateSection="onDeactivateSection"
       />

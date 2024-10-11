@@ -1,1 +1,0 @@
-import{_ as e}from"./_plugin-vue_export-helper-DlAUqK2U.js";import{c as t,o as c}from"./index-Dexbsdpm.js";const n={};function o(r,s){return c(),t("div",null," Settings ")}const f=e(n,[["render",o]]);export{f as default};
