@@ -40,7 +40,7 @@ function onExit() {
   <div class="h-screen w-full flex flex-col">
     <Header class="h-14 border-b flex-none" @exit="onExit"/>
     <div class="flex-1 bg-gray-100 flex overflow-y-hidden">
-      <div class="w-12 flex-none border-r bg-white">
+      <div class="w-14 flex-none border-r bg-white">
         <ActionBar/>
       </div>
       <aside class="flex-none w-72 border-r bg-white flex overflow-y-hidden">

@@ -14,6 +14,61 @@
       "label": "Announcement text"
     },
     {
+      "id": "count",
+      "type": "number",
+      "label": "Announcement count"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "Vertical alignment",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "middle",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        }
+      ],
+      "default": "middle"
+    },
+    {
+      "type": "header",
+      "label": "Test Group"
+    },
+    {
+      "type": "radio",
+      "id": "logo_aligment",
+      "label": "Logo alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "centered",
+          "label": "Centered"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Font size",
+      "default": 16
+    },
+    {
       "id": "position",
       "type": "select",
       "label": "Announcement position",
@@ -28,9 +83,15 @@
         },
         {
           "value": "right",
-          "label": "Right ="
+          "label": "Right"
         }
       ]
+    },
+    {
+      "type": "textarea",
+      "id": "home_welcome_message",
+      "label": "Welcome message",
+      "default": "Welcome to my shop!"
     }
   ]
 }

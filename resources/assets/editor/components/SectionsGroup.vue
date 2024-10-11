@@ -52,16 +52,12 @@ function test() {alert('ok');}
       />
     </div>
     <div class="space-y-2 mt-4" v-if="!props.static">
-      <Button
-        text
-        severity="info"
-        label="Add Section"
+      <button
         class="block w-full !text-left"
         @click="($event: any) => emit('addSection', $event)">
-        <template #icon>
           <PlusCircleIcon class="w-4 h-4 inline mr-1"/>
-        </template>
-      </Button>
+          Add Section
+      </button>
     </div>
   </div>
 </template>

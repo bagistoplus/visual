@@ -47,11 +47,12 @@ class ThemeDataCollector
         $data['id'] = $sectionId;
         $data['name'] = $section->name;
 
-        foreach ($section->settings as $setting) {
-            if (! isset($data['settings'][$setting['id']])) {
-                $data['settings'][$setting['id']] = $setting['default'] ?? null;
-            }
-        }
+        collect($section->settings)->whereNotIn('type', ['header'])
+            ->each(function ($setting) use (&$data) {
+                if (! isset($data['settings'][$setting['id']])) {
+                    $data['settings'][$setting['id']] = $setting['default'] ?? null;
+                }
+            });
 
         $this->sectionsData->put($sectionId, $data);
     }

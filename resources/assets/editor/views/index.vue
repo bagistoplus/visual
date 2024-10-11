@@ -1,11 +1,12 @@
 <script lang="ts" setup>
+import { Popover } from '@ark-ui/vue/popover'
 import { useStore } from '../store';
 
 const store = useStore();
-const popover = useTemplateRef('popover');
+const popoverOpen = ref(false);
 
 function togglePopover(event: unknown) {
-  popover.value.toggle(event);
+  popoverOpen.value = !popoverOpen.value;
 }
 
 function onContentSectionsReorder(order: string[]) {
@@ -50,17 +51,18 @@ function onDeactivateSection(sectionId: string) {
       <SectionsGroup static title="Layout Sections" :sections="[]" @addSection="togglePopover"/>
     </div>
 
-    <Popover ref="popover" class="ml-64 -mt-8">
-      <div class="-m-3 w-72 h-[480px]">
-        <header>
-          <IconField>
-            <InputIcon class="!-mt-3.5">
-              <MagnifyingGlassIcon class="inline w-4 h-4"/>
-            </InputIcon>
-            <InputText placeholder="Search" class="w-full" />
-          </IconField>
+    <Popover.Root v-model:open="popoverOpen" :positioning="{
+      placement: 'left-start',
+      gutter: 16,
+      offset: { mainAxis: 120, crossAxis: 120 },
+    }">
+      <Popover.Positioner>
+        <Popover.Content class="bg-white w-48 border rounded shadow p-1">
+          <header>
+            <TextInput />
         </header>
-      </div>
-    </Popover>
+        </Popover.Content>
+      </Popover.Positioner>
+    </Popover.Root>
   </div>
 </template>

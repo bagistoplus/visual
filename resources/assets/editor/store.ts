@@ -1,6 +1,7 @@
 import { useNProgress } from '@vueuse/integrations/useNProgress'
 import { acceptHMRUpdate, defineStore } from "pinia";
 import setValue from "lodash/set";
+import getValue from "lodash/get";
 import debounce from "lodash/debounce";
 
 import type { Section, ThemeData } from "./types";
@@ -83,8 +84,13 @@ export const useStore = defineStore('main', () => {
     availableSections = sections;
   }
 
+  function getThemeDataValue(keyPath: string): unknown {
+    return getValue(themeData.value, keyPath);
+  }
+
   function updateThemeDataValue(keyPath: string, value: unknown) {
-    setValue(themeData.value as  Object, keyPath, value);
+    setValue(themeData.value, keyPath, value);
+    persistThemeData();
   }
 
   function activateSection(sectionId: string) {
@@ -147,6 +153,18 @@ export const useStore = defineStore('main', () => {
     persistThemeData();
   }
 
+  function getSectionData(id: string) {
+    return themeData.value.sectionsData[id];
+  }
+
+  function getSectionBySlug(slug: string) {
+    return availableSections[slug];
+  }
+
+  function canRemoveSection(sectionId: string) {
+    return themeData.value.sectionsOrder.includes(sectionId);
+  }
+
   return {
     themeData,
     availableSections,
@@ -158,6 +176,7 @@ export const useStore = defineStore('main', () => {
     setThemeData,
     setAvailableSections,
     setPreviewIframe,
+    getThemeDataValue,
     updateThemeDataValue,
     activateSection,
     deactivateSection,
@@ -165,7 +184,10 @@ export const useStore = defineStore('main', () => {
     moveSectionUp,
     moveSectionDown,
     toggleSection,
-    removeSection
+    removeSection,
+    getSectionData,
+    getSectionBySlug,
+    canRemoveSection
   }
 });
 

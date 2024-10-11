@@ -1,32 +1,8 @@
-<template>
-  <div>
-    <Button text plain severity="primary" @click="toggle" class="min-w-28 !text-left !focus:ring-0">
-      <GlobeAsiaAustraliaIcon class="inline w-4 mr-2"/>
-        {{ selectedLabel }}
-      <ChevronDownIcon class="inline w-4 ml-2"/>
-    </Button>
-
-    <Popover ref="popover">
-      <div class="gap-1 w-40 -m-4">
-        <h2 class="font-medium text-sm pl-2 pb-1 mb-2 border-b">Locales</h2>
-        <a
-          v-for="locale in locales"
-          href="#"
-          class="flex items-center hover:bg-zinc-100 rounded-md px-2 py-1"
-          @click="select(locale)"
-        >
-          {{ locale.name }}
-        </a>
-      </div>
-    </Popover>
-  </div>
-</template>
-
 <script setup lang="ts">
-import type { Locale } from '../types';
+import { Menu } from '@ark-ui/vue/menu';
+
 const props = defineProps<{channel: string }>();
 
-const popover = useTemplateRef('popover');
 const channels = window.ThemeEditor.channels;
 const selected = defineModel();
 
@@ -52,13 +28,29 @@ watch(() => props.channel, (newChannel) => {
     selected.value = locales.value[0].code;
   }
 })
-
-function select(locale: Locale) {
-  selected.value = locale.code;
-  popover.value.hide();
-}
-
-function toggle(event: any) {
-  popover.value.toggle(event);
+function onSelect({ value }: { value: string }) {
+  selected.value = value;
 }
 </script>
+
+<template>
+  <Menu.Root @select="onSelect">
+    <Menu.Trigger class="min-w-32 py-2 appearance-none rounded-lg cursor-pointer inline-flex gap-3 outline-none relative select-none items-center justify-center hover:bg-gray-200">
+      <GlobeAsiaAustraliaIcon class="inline w-4"/>
+      {{ selectedLabel }}
+      <Menu.Indicator>
+        <ChevronDownIcon class="inline w-4"/>
+      </Menu.Indicator>
+    </Menu.Trigger>
+    <Menu.Positioner class="w-56">
+      <Menu.Content class="pointer-events-none border shadow flex gap-1 p-1 flex-col outline-none rounded bg-white data-[state=open]:animate-fade-in">
+        <Menu.ItemGroup class="flex flex-col">
+          <Menu.ItemGroupLabel class="px-2.5 mb-1 text-gray-700">Locales</Menu.ItemGroupLabel>
+          <Menu.Item v-for="l in locales" :key="l.code" :value="l.code" class="rounded cursor-pointer flex items-center h-9 px-3 gap-3 hover:bg-gray-200">
+            {{ l.name }}
+          </Menu.Item>
+        </Menu.ItemGroup>
+      </Menu.Content>
+    </Menu.Positioner>
+  </Menu.Root>
+</template>

@@ -50,6 +50,18 @@
     --p-text-hover-muted-color: var(--p-surface-600);
 }
 
+@layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  [hidden] {
+    display: none!important;
+  }
+}
+
 html, body, #app {
     height: 100%;
 }
@@ -130,4 +142,68 @@ html, body, #app {
 @keyframes nprogress-spinner {
   0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0.01;
+    height: 0;
+  }
+  to {
+    opacity: 1;
+    height: var(--height);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 1;
+    height: var(--height);
+  }
+  to {
+    opacity: 0.01;
+    height: 0;
+  }
+}
+
+[data-scope="accordion"][data-part="item"] {
+  @apply border-t first:border-t-0
+}
+[data-scope="accordion"][data-part="item-content"][data-state="open"] {
+  animation: slideDown 250ms ease-in-out;
+}
+
+[data-scope="accordion"][data-part="item-content"][data-state="closed"] {
+  animation: slideUp 200ms ease-in-out;
+}
+
+[data-scope="accordion"][data-part="item-trigger"] {
+  @apply w-full cursor-pointer text-zinc-900 p-3 text-lg font-semibold flex items-center justify-between;
+  @apply hover:bg-gray-100;
+}
+
+[data-scope="accordion"][data-part="item-indicator"] {
+  @apply transform origin-center duration-300;
+}
+
+[data-scope="accordion"][data-part="item-indicator"]:is([data-state=open]) {
+  @apply -rotate-180;
+}
+[data-scope="accordion"][data-part="item-indicator"] svg {
+  @apply w-4;
+}
+
+[data-scope="accordion"][data-part="item-content"] {
+  @apply p-3;
 }

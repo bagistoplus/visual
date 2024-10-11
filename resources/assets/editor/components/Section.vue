@@ -13,12 +13,9 @@ const props = defineProps<{
 }>();
 
 function open() {
-  router.push('/section')
+  router.push(props.section.id)
 }
 
-function test() {
-  alert('test');
-}
 </script>
 <template>
   <div class="" @mouseenter="emit('activate')" @mouseleave="emit('deactivate')">

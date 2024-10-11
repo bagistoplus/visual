@@ -2,12 +2,12 @@ sections:
   announcement-bar:
     type: visual-announcement-bar
     settings:
-      show: true
+      show_announcement: true
 
   announcement-bar-2:
     type: visual-announcement-bar
     settings:
-      show: false
+      show_announcement: false
 
 # order:
 #   - announcement-bar

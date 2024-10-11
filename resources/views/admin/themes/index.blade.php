@@ -11,7 +11,8 @@
   </div>
   <div class="mt-8 max-w-3xl">
     @forelse($themes as  $theme)
-      <div class="relative mb-6 min-h-[16rem] rounded border border-gray-200 bg-white px-8 pb-8 pt-8">
+      <div
+        class="relative mb-6 min-h-[16rem] rounded border border-gray-200 bg-white px-8 pb-8 pt-8 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300">
         <div class="absolute inset-0 h-full w-full bg-contain bg-right bg-no-repeat"
           style="background-image: url({{ $theme->previewImage ? $theme->url($theme->previewImage) : bagisto_asset('images/default_theme_preview.png', 'visual_admin') }})">
         </div>
@@ -32,7 +33,7 @@
               {{ __('visual::admin.themes.customize') }}
             </a>
             <a href="{{ route('shop.home.index', ['_previewMode' => $theme->code]) }}" target="_blank"
-              class="rounded border px-5 py-2 text-blue-600 shadow">
+              class="rounded border px-5 py-2 text-blue-600 shadow dark:border-gray-600 dark:bg-gray-800 dark:text-blue-300">
               {{ __('visual::admin.themes.preview') }}
             </a>
           </div>

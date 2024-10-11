@@ -30,8 +30,7 @@ export interface Setting {
   label: string;
   default?: unknown;
   info?: string;
-  group?: string;
-  [key: string]: unknown;
+  [key: string]: any;
 }
 
 interface Block {

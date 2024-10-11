@@ -9,6 +9,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import { VueRouterAutoImports } from 'unplugin-vue-router'
 import Components from 'unplugin-vue-components/vite'
 import {PrimeVueResolver} from '@primevue/auto-import-resolver';
+import {ArkUIVueResolver} from './resources/assets/editor/resolvers/ark';
 
 export default defineConfig({
   resolve: {
@@ -74,6 +75,7 @@ export default defineConfig({
       dirs: ['resources/assets/editor/components'],
       resolvers: [
         PrimeVueResolver(),
+        ArkUIVueResolver(),
         (componentName) => {
           if (componentName.endsWith('Icon')) {
             return {name: componentName, from: '@heroicons/vue/24/outline'}

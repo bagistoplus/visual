@@ -21,5 +21,6 @@ declare module 'vue-router/auto-routes' {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
     '/[section]': RouteRecordInfo<'/[section]', '/:section', { section: ParamValue<true> }, { section: ParamValue<false> }>,
     '/[section].[block]': RouteRecordInfo<'/[section].[block]', '/:section/:block', { section: ParamValue<true>, block: ParamValue<true> }, { section: ParamValue<false>, block: ParamValue<false> }>,
+    '/settings': RouteRecordInfo<'/settings', '/settings', Record<never, never>, Record<never, never>>,
   }
 }

@@ -11,6 +11,7 @@ export default defineConfig({
     buildDirectory: 'admin',
     hotFile: 'public/admin.hot'
   })],
+  base: '/vendor/bagistoplus/visual/admin/',
   css: {
     postcss: {
       plugins: [

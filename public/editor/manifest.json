@@ -1,16 +1,28 @@
 {
+  "_TextInput.vue_vue_type_script_setup_true_lang-C0nkeeYV.js": {
+    "file": "assets/TextInput.vue_vue_type_script_setup_true_lang-C0nkeeYV.js",
+    "name": "TextInput.vue_vue_type_script_setup_true_lang",
+    "imports": [
+      "resources/assets/editor/index.ts"
+    ]
+  },
+  "__plugin-vue_export-helper-DlAUqK2U.js": {
+    "file": "assets/_plugin-vue_export-helper-DlAUqK2U.js",
+    "name": "_plugin-vue_export-helper"
+  },
   "resources/assets/editor/index.ts": {
-    "file": "assets/index-Df9FwDAt.js",
+    "file": "assets/index-Dk3igTKn.js",
     "name": "index",
     "src": "resources/assets/editor/index.ts",
     "isEntry": true,
     "dynamicImports": [
       "resources/assets/editor/views/index.vue",
       "resources/assets/editor/views/[section].vue",
-      "resources/assets/editor/views/[section].[block].vue"
+      "resources/assets/editor/views/[section].[block].vue",
+      "resources/assets/editor/views/settings.vue"
     ],
     "css": [
-      "assets/index-B-D6MYoz.css"
+      "assets/index-CS8allnO.css"
     ]
   },
   "resources/assets/editor/injected.ts": {
@@ -20,29 +32,42 @@
     "isEntry": true
   },
   "resources/assets/editor/views/[section].[block].vue": {
-    "file": "assets/_section_._block_-BjihJ8ao.js",
+    "file": "assets/_section_._block_-BvIPV8s7.js",
     "name": "_section_._block_",
     "src": "resources/assets/editor/views/[section].[block].vue",
     "isDynamicEntry": true,
     "imports": [
+      "__plugin-vue_export-helper-DlAUqK2U.js",
       "resources/assets/editor/index.ts"
     ]
   },
   "resources/assets/editor/views/[section].vue": {
-    "file": "assets/_section_-CFSOH3O7.js",
+    "file": "assets/_section_-DiS8WwPa.js",
     "name": "_section_",
     "src": "resources/assets/editor/views/[section].vue",
     "isDynamicEntry": true,
     "imports": [
-      "resources/assets/editor/index.ts"
+      "resources/assets/editor/index.ts",
+      "_TextInput.vue_vue_type_script_setup_true_lang-C0nkeeYV.js"
     ]
   },
   "resources/assets/editor/views/index.vue": {
-    "file": "assets/index-bOabppX7.js",
+    "file": "assets/index-jZHo9oJo.js",
     "name": "index",
     "src": "resources/assets/editor/views/index.vue",
     "isDynamicEntry": true,
     "imports": [
+      "_TextInput.vue_vue_type_script_setup_true_lang-C0nkeeYV.js",
+      "resources/assets/editor/index.ts"
+    ]
+  },
+  "resources/assets/editor/views/settings.vue": {
+    "file": "assets/settings-xxdwCDBN.js",
+    "name": "settings",
+    "src": "resources/assets/editor/views/settings.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "__plugin-vue_export-helper-DlAUqK2U.js",
       "resources/assets/editor/index.ts"
     ]
   }

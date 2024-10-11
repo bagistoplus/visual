@@ -5,7 +5,10 @@ export default {
     './resources/assets/editor/**/*.{ts,vue,js}'
   ],
   theme: {
-    extend: {},
-  },
-  plugins: [require('tailwindcss-primeui')]
+    extend: {
+      animation: {
+        'fade-in': 'fadeIn .25s ease-out',
+      }
+    },
+  }
 }
