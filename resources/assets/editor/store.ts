@@ -3,8 +3,9 @@ import { acceptHMRUpdate, defineStore } from "pinia";
 import setValue from "lodash/set";
 import getValue from "lodash/get";
 import debounce from "lodash/debounce";
+import { v4 as uuidv4 } from "uuid";
 
-import type { Section, ThemeData } from "./types";
+import type { Block, Section, ThemeData } from "./types";
 
 export const useStore = defineStore('main', () => {
   let availableSections: Record<string, Section> = {};
@@ -77,6 +78,12 @@ export const useStore = defineStore('main', () => {
   }
 
   function setThemeData(data: ThemeData) {
+    for (const [id, section] of Object.entries(data.sectionsData)) {
+      if (section.blocksOrder.length === 0) {
+        section.blocks = {}
+      }
+    }
+
     themeData.value = data;
   }
 
@@ -165,6 +172,27 @@ export const useStore = defineStore('main', () => {
     return themeData.value.sectionsOrder.includes(sectionId);
   }
 
+  function addBlockToSection(sectionId: string, block: Block) {
+    const sectionData = themeData.value.sectionsData[sectionId];
+    const settings: Record<string, any> = {};
+    const id = uuidv4();
+
+    block.settings.forEach((setting) => {
+      settings[setting.id] = setting.default;
+    });
+
+    sectionData.blocks[id] = {
+      id,
+      type: block.type,
+      disabled: false,
+      settings
+    }
+
+    sectionData.blocksOrder.push(id);
+
+    persistThemeData();
+  }
+
   return {
     themeData,
     availableSections,
@@ -187,7 +215,8 @@ export const useStore = defineStore('main', () => {
     removeSection,
     getSectionData,
     getSectionBySlug,
-    canRemoveSection
+    canRemoveSection,
+    addBlockToSection
   }
 });
 

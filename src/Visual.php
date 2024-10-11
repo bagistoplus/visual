@@ -60,7 +60,7 @@ class Visual
         return array_map(fn ($p) => substr($p, strlen(base_path()) + 1), $paths);
     }
 
-    protected function buildThemePath($theme, $mode, $channel, $locale)
+    public function buildThemePath($theme, $mode, $channel, $locale)
     {
         return strtr(
             '%data_path/themes/%theme_code/%mode/%channel/%locale',

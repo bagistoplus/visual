@@ -1,5 +1,19 @@
-<script setup lang="ts">
+<script lang="ts" setup>
+// @ts-ignore
 import Sortable from 'sortablejs/modular/sortable.core.esm.js';
+import type { BlockData } from '../types';
+
+interface Props {
+  blocks: BlockData[];
+  order: string[];
+};
+
+const props = withDefaults(defineProps<Props>(), {
+});
+
+const emit =defineEmits<{
+  (e: 'reorder', order: string[]): void;
+}>();
 
 const sortable = useTemplateRef<HTMLElement>('sortable');
 
@@ -7,27 +21,23 @@ onMounted(() => {
   new Sortable(sortable.value, {
     animation: 150,
     ghostClass: 'sortable-ghost',
-    onEnd({ newIndex, oldIndex }) {
-      console.log(newIndex, oldIndex);
-    }
+    onEnd({ newIndex, oldIndex }: { newIndex: number; oldIndex: number }) {
+      const order = [...props.order];
+      const moved = order.splice(oldIndex, 1)[0];
+
+      order.splice(newIndex, 0, moved);
+      emit('reorder', order);
+    },
   });
 });
-
+function test() {alert('ok');}
 </script>
+
 <template>
-  <div>
-    <div class="space" ref="sortable">
-      <Block v-for="i in 2"/>
-    </div>
-    <Button
-      text
-      severity="info"
-      label="Add Block"
-      class="block w-full !text-left text-xs mt-1"
-      @click="$event => emit('addSection', $event)">
-      <template #icon>
-        <PlusCircleIcon class="w-4 h-4 inline mr-1"/>
-      </template>
-    </Button>
+  <div ref="sortable" class="space-y-1">
+    <Block
+      v-for="block in blocks"
+      :block="block"
+    />
   </div>
 </template>

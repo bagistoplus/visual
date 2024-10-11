@@ -27,16 +27,16 @@ function onDeactivateSection(sectionId: string) {
     <header class="flex none px-4 py-3 border-b font-medium">
       <h1>Page title</h1>
     </header>
-    <div class="flex-1 overflow-y-auto p-3">
+    <div class="flex-1 overflow-y-auto">
       <SectionsGroup
         static
-        title="Layout Sections g"
+        title="Layout Header Sections"
         :sections="store.beforeContentSections"
         @addSection="togglePopover"
         @activateSection="onActivateSection"
         @deactivateSection="onDeactivateSection"
       />
-      <hr class="my-2">
+      <hr>
 
       <SectionsGroup
         title="Template Sections"
@@ -47,8 +47,8 @@ function onDeactivateSection(sectionId: string) {
         @activateSection="onActivateSection"
         @deactivateSection="onDeactivateSection"
       />
-      <hr class="my-2">
-      <SectionsGroup static title="Layout Sections" :sections="[]" @addSection="togglePopover"/>
+      <hr>
+      <SectionsGroup static title="Layout Footer Sections" :sections="[]" @addSection="togglePopover"/>
     </div>
 
     <Popover.Root v-model:open="popoverOpen" :positioning="{

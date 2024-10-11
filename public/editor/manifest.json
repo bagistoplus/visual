@@ -1,17 +1,17 @@
 {
-  "_TextInput.vue_vue_type_script_setup_true_lang-C0nkeeYV.js": {
-    "file": "assets/TextInput.vue_vue_type_script_setup_true_lang-C0nkeeYV.js",
-    "name": "TextInput.vue_vue_type_script_setup_true_lang",
-    "imports": [
-      "resources/assets/editor/index.ts"
-    ]
-  },
   "__plugin-vue_export-helper-DlAUqK2U.js": {
     "file": "assets/_plugin-vue_export-helper-DlAUqK2U.js",
     "name": "_plugin-vue_export-helper"
   },
+  "_sortable.core.esm-EjNQnUTn.js": {
+    "file": "assets/sortable.core.esm-EjNQnUTn.js",
+    "name": "sortable.core.esm",
+    "imports": [
+      "resources/assets/editor/index.ts"
+    ]
+  },
   "resources/assets/editor/index.ts": {
-    "file": "assets/index-Dk3igTKn.js",
+    "file": "assets/index-CNToDnS_.js",
     "name": "index",
     "src": "resources/assets/editor/index.ts",
     "isEntry": true,
@@ -22,7 +22,7 @@
       "resources/assets/editor/views/settings.vue"
     ],
     "css": [
-      "assets/index-CS8allnO.css"
+      "assets/index-BzCKSOFk.css"
     ]
   },
   "resources/assets/editor/injected.ts": {
@@ -32,7 +32,7 @@
     "isEntry": true
   },
   "resources/assets/editor/views/[section].[block].vue": {
-    "file": "assets/_section_._block_-BvIPV8s7.js",
+    "file": "assets/_section_._block_-8SwR-wv9.js",
     "name": "_section_._block_",
     "src": "resources/assets/editor/views/[section].[block].vue",
     "isDynamicEntry": true,
@@ -42,27 +42,27 @@
     ]
   },
   "resources/assets/editor/views/[section].vue": {
-    "file": "assets/_section_-DiS8WwPa.js",
+    "file": "assets/_section_-B6pmuwpr.js",
     "name": "_section_",
     "src": "resources/assets/editor/views/[section].vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/assets/editor/index.ts",
-      "_TextInput.vue_vue_type_script_setup_true_lang-C0nkeeYV.js"
+      "_sortable.core.esm-EjNQnUTn.js"
     ]
   },
   "resources/assets/editor/views/index.vue": {
-    "file": "assets/index-jZHo9oJo.js",
+    "file": "assets/index-YXU6l8Kz.js",
     "name": "index",
     "src": "resources/assets/editor/views/index.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_TextInput.vue_vue_type_script_setup_true_lang-C0nkeeYV.js",
+      "_sortable.core.esm-EjNQnUTn.js",
       "resources/assets/editor/index.ts"
     ]
   },
   "resources/assets/editor/views/settings.vue": {
-    "file": "assets/settings-xxdwCDBN.js",
+    "file": "assets/settings-l8DDSDt4.js",
     "name": "settings",
     "src": "resources/assets/editor/views/settings.vue",
     "isDynamicEntry": true,

@@ -66,6 +66,7 @@
             "@composer run prepare",
             "@php vendor/bin/testbench workbench:build --ansi"
         ],
+        "ide-helper": "@php vendor/bin/testbench facade-docblock:generate src/Facades",
         "start": [
             "Composer\\Config::disableProcessTimeout",
             "@composer run build",

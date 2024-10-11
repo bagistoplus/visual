@@ -4,6 +4,8 @@ namespace BagistoPlus\Visual;
 
 use BagistoPlus\Visual\Facades\Sections;
 use BagistoPlus\Visual\Facades\ThemeEditor;
+use BagistoPlus\Visual\Facades\Visual;
+use BagistoPlus\Visual\Sections\Concerns\SectionData;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -14,7 +16,7 @@ class ThemeDataCollector
     /**
      * Undocumented variable
      *
-     * @var Collection<string, array>
+     * @var Collection<string, SectionData>
      */
     protected $sectionsData;
 
@@ -35,11 +37,8 @@ class ThemeDataCollector
 
     public function collectSectionData(string $sectionId, ?string $dataFilePath = null): void
     {
-        // dd($dataFilePath);
         if ($dataFilePath === null) {
-            $dataFilePath = $this->getDefaulDataFilePath(
-                mode: ThemeEditor::inDesignMode() ? 'editor' : 'live'
-            );
+            $dataFilePath = $this->getDefaulDataFilePath();
         }
 
         $data = $this->collectSectionDataFromPath($sectionId, $dataFilePath);
@@ -47,14 +46,7 @@ class ThemeDataCollector
         $data['id'] = $sectionId;
         $data['name'] = $section->name;
 
-        collect($section->settings)->whereNotIn('type', ['header'])
-            ->each(function ($setting) use (&$data) {
-                if (! isset($data['settings'][$setting['id']])) {
-                    $data['settings'][$setting['id']] = $setting['default'] ?? null;
-                }
-            });
-
-        $this->sectionsData->put($sectionId, $data);
+        $this->sectionsData->put($sectionId, SectionData::make($sectionId, $data, $section));
     }
 
     protected function collectSectionDataFromPath($sectionId, $path)
@@ -81,17 +73,15 @@ class ThemeDataCollector
         }
     }
 
-    protected function getDefaulDataFilePath(string $mode): string
+    protected function getDefaulDataFilePath(): string
     {
-        return strtr(
-            '%data_path/themes/%theme_code/%mode/%channel/%locale/theme.json',
-            [
-                '%data_path' => rtrim(config('bagisto_visual.data_path'), '/\\'),
-                '%theme_code' => app('themes')->current()->code,
-                '%channel' => app('core')->getRequestedChannelCode(),
-                '%locale' => app('core')->getRequestedLocaleCode(),
-                '%mode' => $mode,
-            ]
-        );
+        $mode = ThemeEditor::inDesignMode() ? 'editor' : 'live';
+
+        return Visual::buildThemePath(
+            theme: app('themes')->current()->code,
+            mode: $mode,
+            channel: app('core')->getRequestedChannelCode(),
+            locale: app('core')->getRequestedLocaleCode()
+        ).'/theme.json';
     }
 }

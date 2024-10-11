@@ -33,7 +33,7 @@ export interface Setting {
   [key: string]: any;
 }
 
-interface Block {
+export interface Block {
   type: string;
   name: string;
   limit: number;
@@ -52,12 +52,18 @@ export interface Section {
   maxBlocks: number;
 }
 
-export interface SectionData {
+export interface BlockData {
   id: string;
   type: string;
   name: string;
   disabled: boolean;
-  settings: Record<string, unknown>;
+  settings: Record<string, any>;
+}
+
+export interface SectionData extends BlockData {
+  name: string;
+  blocks: Record<string, BlockData>;
+  blocksOrder: string[];
 }
 
 export interface ThemeData {

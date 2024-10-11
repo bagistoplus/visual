@@ -93,5 +93,24 @@
       "label": "Welcome message",
       "default": "Welcome to my shop!"
     }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "Announcement",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "default": "Announcement text here",
+          "label": "Announcement text"
+        },
+        {
+          "type": "text",
+          "id": "link",
+          "label": "Url"
+        }
+      ]
+    }
   ]
 }

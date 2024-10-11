@@ -41,17 +41,22 @@ function test() {alert('ok');}
 </script>
 
 <template>
-  <div>
-    <h2 class="text-sm font-medium pl-2">{{ title }}</h2>
-    <div ref="sortable" class="space-y-1 mt-4">
-      <Section
-        v-for="section in sections"
-        :section="section"
-        @activate="emit('activateSection', section.id)"
-        @deactivate="emit('deactivateSection', section.id)"
-      />
+  <div class="pb-3">
+    <h2 class="text-sm font-semibold p-3">{{ title }}</h2>
+    <div ref="sortable" class="space-y-1 px-3">
+      <template v-if="sections.length > 0">
+        <Section
+          v-for="section in sections"
+          :section="section"
+          @activate="emit('activateSection', section.id)"
+          @deactivate="emit('deactivateSection', section.id)"
+        />
+      </template>
     </div>
-    <div class="space-y-2 mt-4" v-if="!props.static">
+
+    <p v-if="static" class="text-sm px-3">No sections</p>
+
+    <div class="space-y-2 mt-4 px-3" v-if="!props.static">
       <button
         class="block w-full !text-left"
         @click="($event: any) => emit('addSection', $event)">

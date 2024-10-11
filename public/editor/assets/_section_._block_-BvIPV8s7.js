@@ -1,1 +1,0 @@
-import{_ as c}from"./_plugin-vue_export-helper-DlAUqK2U.js";import{c as o,o as e}from"./index-Dk3igTKn.js";const t={};function n(_,r){return e(),o("div",null,"Block content")}const l=c(t,[["render",n]]);export{l as default};
