@@ -67,8 +67,12 @@ function onBlocksReorder(order: string[]) {
   )
 }
 
-function onBlockToggle(blockId: string) {
+function onToggleBlock(blockId: string) {
   store.toggleSectionBlock(sectionData.value.id, blockId);
+}
+
+function onRemoveBlock(blockId: string) {
+  store.removeSectionBlock(sectionData.value.id, blockId);
 }
 </script>
 
@@ -99,7 +103,8 @@ function onBlockToggle(blockId: string) {
               :blocks="blocksData"
               :order="sectionData.blocks_order"
               @reorder="onBlocksReorder"
-              @toggleBlock="onBlockToggle"
+              @toggleBlock="onToggleBlock"
+              @removeBlock="onRemoveBlock"
             />
 
             <Menu.Root v-if="availableBlocks.length > 0" @select="(details: SelectionDetails) => addBlock(details.value)">

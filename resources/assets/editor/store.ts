@@ -210,8 +210,18 @@ export const useStore = defineStore('main', () => {
   }
 
   function toggleSectionBlock(sectionId: string, blockId: string) {
-    themeData.value.sectionsData[sectionId].blocks[blockId].disabled =
-    !themeData.value.sectionsData[sectionId].blocks[blockId].disabled;
+    const block = themeData.value.sectionsData[sectionId].blocks[blockId];
+
+    block.disabled = !block.disabled;
+
+    persistThemeData();
+  }
+
+  function removeSectionBlock(sectionId: string, blockId: string) {
+    const section = themeData.value.sectionsData[sectionId];
+
+    delete section.blocks[blockId];
+    section.blocks_order = section.blocks_order.filter(id => id !== blockId);
 
     persistThemeData();
   }
@@ -242,7 +252,8 @@ export const useStore = defineStore('main', () => {
     getSectionBlockByType,
     canRemoveSection,
     addBlockToSection,
-    toggleSectionBlock
+    toggleSectionBlock,
+    removeSectionBlock
   }
 });
 

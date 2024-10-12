@@ -14,7 +14,7 @@ function open() {
 
 <template>
   <div class="">
-    <div class="flex rounded border border-zinc-100 hover:bg-zinc-100 cursor-pointer active:ring-inset active:ring-2 active:ring-gray-700">
+    <div class="flex rounded border border-zinc-100 hover:bg-zinc-100 cursor-pointer active:ring-inset active:ring-2 active:ring-gray-700 data-[disabled=true]:text-zinc-500" :data-disabled="block.disabled">
       <button class="handle flex-none py-1 px-1 rounded-md hover:bg-zinc-200 cursor-move">
         <ArrowsUpDownIcon class="inline w-3"/>
       </button>
@@ -27,7 +27,8 @@ function open() {
           <TrashIcon class="inline w-4"/>
         </button>
         <button @click.stop="emit('toggle')" class="flex-none invisible group-hover:visible py-[1px] px-[2px] rounded-md hover:bg-zinc-200 ml-1">
-          <EyeIcon class="inline w-4"/>
+          <EyeIcon v-if="!block.disabled" class="inline w-4"/>
+          <EyeSlashIcon v-else class="inline w-4"/>
         </button>
       </div>
     </div>

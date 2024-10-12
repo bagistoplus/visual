@@ -40,7 +40,14 @@ function setSettingValue(id: string, value: any): any {
   );
 }
 
-function removeBlock() {}
+function onRemoveBlock() {
+  store.removeSectionBlock(
+    route.params.section,
+    route.params.block
+  );
+
+  router.back();
+}
 </script>
 
 <template>

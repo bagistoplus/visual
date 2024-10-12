@@ -20,7 +20,7 @@ function open() {
 </script>
 <template>
   <div class="" @mouseenter="emit('activate')" @mouseleave="emit('deactivate')">
-    <div class="flex rounded border border-zinc-100 hover:bg-zinc-100 cursor-pointer active:ring-inset active:ring-2 active:ring-gray-700">
+    <div class="flex rounded border border-zinc-100 hover:bg-zinc-100 cursor-pointer active:ring-inset active:ring-2 active:ring-gray-700 data-[disabled=true]:text-zinc-500" :data-disabled="section.disabled">
       <button class="handle flex-none py-2 px-1 rounded-md hover:bg-zinc-200 cursor-move">
         <ArrowsUpDownIcon class="inline w-3"/>
       </button>
