@@ -17,6 +17,10 @@ const messageHandlers: Record<string, Function> = {
     nprogress.done();
   },
 
+  usedColors(colors: string[]) {
+    store.usedColors = colors;
+  },
+
   'moveSectionUp': store.moveSectionUp,
   'moveSectionDown': store.moveSectionDown,
   'toggleSection': store.toggleSection,

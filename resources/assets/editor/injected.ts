@@ -61,6 +61,8 @@ class ThemeEditor {
     })
 
     this.sectionsOrder = window.themeData.sectionsOrder;
+
+    this.extractUsedColors();
   }
 
   highlightSection(section: HTMLElement) {
@@ -159,5 +161,33 @@ class ThemeEditor {
         this.refreshPreviewer(data as string);
         break;
     }
+  }
+
+  extractUsedColors(limit = 6) {
+    const colorCount = new Map<string, number>();
+
+    document.querySelectorAll('*').forEach(el => {
+      const styles = getComputedStyle(el);
+
+      const backgroundColor = styles.backgroundColor;
+      const textColor = styles.color;
+
+      const countColor = (color: string) => {
+        if (color !== 'transparent' && color !== "rgba(0, 0, 0, 0)" && color !== '') {
+          colorCount.set(color, (colorCount.get(color) || 0) + 1);
+        }
+      };
+
+      countColor(backgroundColor);
+      countColor(textColor);
+    });
+
+    const sortedColors = Array.from(colorCount.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(entry => entry[0]);
+
+    const mostlyUsedColors = sortedColors.slice(0, limit);
+
+    this.postMessage('usedColors', mostlyUsedColors)
   }
 }

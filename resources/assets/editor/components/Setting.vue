@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useStore } from '../store';
 import { Setting } from '../types';
 
 const props = defineProps<{
@@ -9,6 +10,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'input', value: boolean|number|string): void;
 }>();
+
+const store = useStore();
 </script>
 
 <template>
@@ -66,6 +69,15 @@ const emit = defineEmits<{
       v-if="setting.type === 'select'"
       :label="setting.label"
       :options="setting.options"
+      :model-value="value"
+      @update:model-value="(v: string) => emit('input', v)"
+    />
+
+    <ColorPicker
+      v-if="setting.type === 'color'"
+      :label="setting.label"
+      :options="setting.options"
+      :used-colors="store.usedColors"
       :model-value="value"
       @update:model-value="(v: string) => emit('input', v)"
     />

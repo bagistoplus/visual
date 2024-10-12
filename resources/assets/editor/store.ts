@@ -12,6 +12,7 @@ export const useStore = defineStore('main', () => {
   let previewIframe: HTMLIFrameElement | null = null;
   const nprogress = useNProgress();
 
+  const usedColors = ref<string[]>([]);
   const themeData = ref<ThemeData>({
     url: '',
     channel: '',
@@ -228,6 +229,7 @@ export const useStore = defineStore('main', () => {
 
   return {
     themeData,
+    usedColors,
     availableSections,
 
     contentSections,

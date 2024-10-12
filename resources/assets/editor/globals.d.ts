@@ -8,5 +8,6 @@ declare global {
 
     availableSections: Record<string, Section>;
     themeData: ThemeData;
+    usedColors: string[];
   }
 }

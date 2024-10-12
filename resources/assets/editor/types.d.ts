@@ -8,7 +8,7 @@ export interface WindowThemeEditor {
   routes: {
     persistTheme: string;
     themesIndex: string
-  }
+  };
 }
 
 interface Locale {

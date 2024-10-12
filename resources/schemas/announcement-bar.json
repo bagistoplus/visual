@@ -3,6 +3,12 @@
   "description": "",
   "settings": [
     {
+      "id": "color",
+      "type": "color",
+      "label": "Text Color",
+      "default": "black"
+    },
+    {
       "id": "show_announcement",
       "type": "checkbox",
       "label": "Show announcement",
