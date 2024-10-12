@@ -5,6 +5,8 @@ import { ArrowsPointingOutIcon, ComputerDesktopIcon, DevicePhoneMobileIcon } fro
 
 const emit = defineEmits<{
   (e: 'exit'): void;
+  (e: 'channelChanged', channel: string): void;
+  (e: 'localeChanged', locale: string): void;
 }>();
 
 const store = useStore();
@@ -33,12 +35,14 @@ const viewModes = ref([
         <TemplateSelector/>
 
         <ChannelSelector
-          v-model="store.themeData.channel"
+          :model-value="store.themeData.channel"
+          @update:model-value="(channel: string) => emit('channelChanged', channel)"
         />
 
         <LocaleSelector
           :channel="store.themeData.channel"
-          v-model="store.themeData.locale"
+          :model-value="store.themeData.locale"
+          @update:model-value="(locale: string) => emit('localeChanged', locale)"
         />
       </div>
       <div class="mr-4 flex space-x-4">

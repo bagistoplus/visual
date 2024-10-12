@@ -2,7 +2,7 @@
 import { Menu } from '@ark-ui/vue/menu';
 
 const channels = window.ThemeEditor.channels;
-const selected = defineModel();
+const selected = defineModel<string>();
 const selectedLabel = computed(() => channels.find(c => c.code === selected.value)?.name);
 
 function onSelect({ value }: { value: string }) {

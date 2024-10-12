@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 import type { Section, ThemeData } from './types'
 import { useStore } from './store';
+import { useNProgress } from '@vueuse/integrations/useNProgress.mjs';
 
 const store = useStore();
+const nprogress = useNProgress();
 const storefrontUrl = window.ThemeEditor.storefrontUrl;
 
 const previewIframe = useTemplateRef('previewer');
@@ -11,6 +13,8 @@ const messageHandlers: Record<string, Function> = {
   initialize(data: {availableSections: Record<string, Section>; themeData: ThemeData }) {
     store.setThemeData(data.themeData);
     store.setAvailableSections(data.availableSections);
+
+    nprogress.done();
   },
 
   'moveSectionUp': store.moveSectionUp,
@@ -34,11 +38,41 @@ onMounted(() => {
 function onExit() {
   window.location.href = window.ThemeEditor.routes.themesIndex;
 }
+
+function onChannelChanged(channel: string) {
+  if (!previewIframe.value) {
+    return;
+  }
+
+  const url = new URL(window.ThemeEditor.storefrontUrl)
+  url.searchParams.set('channel', channel);
+
+  nprogress.start();
+  previewIframe.value!.contentWindow?.location.replace(url.href);
+}
+
+function onLocaleChanged(locale: string) {
+  if (!previewIframe.value) {
+    return;
+  }
+
+  const url = new URL(window.ThemeEditor.storefrontUrl)
+  url.searchParams.set('locale', locale);
+  url.searchParams.set('channel', store.themeData.channel);
+
+  nprogress.start();
+  previewIframe.value!.contentWindow?.location.replace(url.href);
+}
 </script>
 
 <template>
   <div class="h-screen w-full flex flex-col">
-    <Header class="h-14 border-b flex-none" @exit="onExit"/>
+    <Header
+      class="h-14 border-b flex-none"
+      @exit="onExit"
+      @channelChanged="onChannelChanged"
+      @localeChanged="onLocaleChanged"/>
+
     <div class="flex-1 bg-gray-100 flex overflow-y-hidden">
       <div class="w-14 flex-none border-r bg-white">
         <ActionBar/>
