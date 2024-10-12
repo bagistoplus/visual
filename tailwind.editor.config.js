@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+      colors: {
+        primary: "#0041ff",
+      },
       animation: {
         'fade-in': 'fadeIn .25s ease-out',
       }

@@ -91,11 +91,11 @@ export const useStore = defineStore('main', () => {
     availableSections = sections;
   }
 
-  function getThemeDataValue(keyPath: string): unknown {
+  function getThemeDataValue(keyPath: string|string[]): unknown {
     return getValue(themeData.value, keyPath);
   }
 
-  function updateThemeDataValue(keyPath: string, value: unknown) {
+  function updateThemeDataValue(keyPath: string|string[], value: unknown) {
     setValue(themeData.value, keyPath, value);
     persistThemeData();
   }
@@ -168,6 +168,21 @@ export const useStore = defineStore('main', () => {
     return availableSections[slug];
   }
 
+  function getSectionBlockData(sectionId: string, blockId: string) {
+    const sectionData = getSectionData(sectionId);
+    return sectionData ? sectionData.blocks[blockId] : null;
+  }
+
+  function getSectionBlockByType(sectionId: string, type: string) {
+    const sectionData = getSectionData(sectionId);
+    if (!sectionData) {
+      return null;
+    }
+
+    const section = getSectionBySlug(sectionData.type);
+    return section.blocks.find(b => b.type === type);
+  }
+
   function canRemoveSection(sectionId: string) {
     return themeData.value.sectionsOrder.includes(sectionId);
   }
@@ -216,6 +231,8 @@ export const useStore = defineStore('main', () => {
     removeSection,
     getSectionData,
     getSectionBySlug,
+    getSectionBlockData,
+    getSectionBlockByType,
     canRemoveSection,
     addBlockToSection
   }

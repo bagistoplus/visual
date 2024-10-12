@@ -7,9 +7,17 @@
 @endphp
 
 @if (true)
-  <div class="bg-primary text-on-primary {{ $positionValues['center'] }} mb-4 bg-purple-500 px-4 py-1 text-white">
-    {{ $section->settings->announcement }}
-    {{ $section->settings->count }}
-    {{ $section->settings->vertical_alignment }}
+  <div class="mb-4 flex bg-purple-500 px-4 py-1 text-white">
+    @forelse($section->blocks as $block)
+      <div>
+        {{ $block->settings->text }}
+      </div>
+    @empty
+      @if ($section->settings->announcement)
+        @for ($i = 0; $i < $section->settings->count; $i++)
+          <div>{{ $section->settings->announcement }} {{ $i }}</div>
+        @endfor
+      @endif
+    @endif
   </div>
 @endif

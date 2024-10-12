@@ -75,7 +75,7 @@ function onBlocksReorder(order: string[]) {
         <button class="p-1 px-2 rounded hover:bg-gray-200 focus:outline-none" @click="goBack">
           <ArrowLeftIcon class="inline w-4" />
         </button>
-        <span class="ml-2">{{ sectionData.settings.heading || section.name }}</span>
+        <span class="ml-2 truncate">{{ sectionData.settings.heading || section.name }}</span>
       </div>
       <p v-if="section.description" class="mt-2 text-sm">
         {{ section.description }}
@@ -98,7 +98,7 @@ function onBlocksReorder(order: string[]) {
             />
 
             <Menu.Root v-if="availableBlocks.length > 0" @select="(details: SelectionDetails) => addBlock(details.value)">
-              <Menu.Trigger class="w-full text-sm rounded-lg cursor-pointer outline-0 inline-flex items-center gap-2 px-2 py-1 hover:bg-gray-200 focus:ring-1 focus:ring-gray-700">
+              <Menu.Trigger class="w-full text-sm text-blue-600 rounded-lg cursor-pointer outline-0 inline-flex items-center gap-2 px-2 py-1 hover:bg-gray-200 focus:ring-1 focus:ring-gray-700">
                 <PlusCircleIcon class="w-4 h-4 inline mr-1"/>
                 Add Block
               </Menu.Trigger>

@@ -1,8 +1,15 @@
 <script lang="ts" setup>
 import { BlockData } from '../types';
 
+const router = useRouter();
+const route = useRoute('/[section]');
+
 const emit = defineEmits(['remove', 'toggle']);
 const props = defineProps<{ block: BlockData }>();
+
+function open() {
+  router.push({ name: '/[section].[block]', params: { block: props.block.id, section: route.params.section }})
+}
 </script>
 
 <template>
@@ -12,7 +19,7 @@ const props = defineProps<{ block: BlockData }>();
         <ArrowsUpDownIcon class="inline w-3"/>
       </button>
 
-      <div class="group mx-2 py-1 pr-1 text-sm flex-1 flex items-center max-w-full">
+      <div @click="open" class="group mx-2 py-1 pr-1 text-sm flex-1 flex items-center max-w-full">
         <div class="w-0 flex-1 truncate text-xs capitalize">
           {{ block.settings.title || block.settings.heading || block.settings.text || block.name }}
         </div>
