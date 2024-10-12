@@ -36,7 +36,7 @@ it('can create a SectionData instance', function () {
         ->name->toBe('Header')
         ->disabled->toBeFalse()
         ->blocks->toHaveCount(1)
-        ->blocksOrder->toBe(['block-1'])
+        ->blocks_order->toBe(['block-1'])
         ->and($data->settings->toArray())->toBe([
             'title' => 'Welcome',
             'subtitle' => 'Default Subtitle', // default value
@@ -60,8 +60,8 @@ it('serializes SectionData to JSON', function () {
         name: 'Header',
         settings: new Fluent(['title' => 'My Title']),
         disabled: false,
-        blocks: $blocks,
-        blocksOrder: ['block-1']
+        allBlocks: $blocks,
+        blocks_order: ['block-1']
     );
 
     expect($section->jsonSerialize())->toBe([
@@ -79,6 +79,6 @@ it('serializes SectionData to JSON', function () {
                 'settings' => ['size' => 'large'],
             ],
         ],
-        'blocksOrder' => ['block-1'],
+        'blocks_order' => ['block-1'],
     ]);
 });

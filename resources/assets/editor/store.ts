@@ -79,7 +79,7 @@ export const useStore = defineStore('main', () => {
 
   function setThemeData(data: ThemeData) {
     for (const [id, section] of Object.entries(data.sectionsData)) {
-      if (section.blocksOrder.length === 0) {
+      if (section.blocks_order.length === 0) {
         section.blocks = {}
       }
     }
@@ -204,7 +204,14 @@ export const useStore = defineStore('main', () => {
       settings
     }
 
-    sectionData.blocksOrder.push(id);
+    sectionData.blocks_order.push(id);
+
+    persistThemeData();
+  }
+
+  function toggleSectionBlock(sectionId: string, blockId: string) {
+    themeData.value.sectionsData[sectionId].blocks[blockId].disabled =
+    !themeData.value.sectionsData[sectionId].blocks[blockId].disabled;
 
     persistThemeData();
   }
@@ -234,7 +241,8 @@ export const useStore = defineStore('main', () => {
     getSectionBlockData,
     getSectionBlockByType,
     canRemoveSection,
-    addBlockToSection
+    addBlockToSection,
+    toggleSectionBlock
   }
 });
 

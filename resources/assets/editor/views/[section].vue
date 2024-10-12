@@ -16,7 +16,7 @@ const isRemovable = computed(() => store.canRemoveSection(route.params.section))
 
 const groupedSettings = computed(() => groupSettings(section.value?.settings || []));
 
-const blocksData = computed(() => sectionData.value.blocksOrder.map(id => sectionData.value.blocks[id]));
+const blocksData = computed(() => sectionData.value.blocks_order.map(id => sectionData.value.blocks[id]));
 const availableBlocks = computed(() => {
   const sectionBlocks = section.value?.blocks || [];
 
@@ -62,9 +62,13 @@ function addBlock(type: string) {
 
 function onBlocksReorder(order: string[]) {
   store.updateThemeDataValue(
-    `sectionsData.${sectionData.value.id}.blocksOrder`,
+    ['sectionsData', sectionData.value.id, 'blocks_order'],
     order
   )
+}
+
+function onBlockToggle(blockId: string) {
+  store.toggleSectionBlock(sectionData.value.id, blockId);
 }
 </script>
 
@@ -93,8 +97,9 @@ function onBlocksReorder(order: string[]) {
             <BlocksGroup
               class="-mt-2 mb-2"
               :blocks="blocksData"
-              :order="sectionData.blocksOrder"
+              :order="sectionData.blocks_order"
               @reorder="onBlocksReorder"
+              @toggleBlock="onBlockToggle"
             />
 
             <Menu.Root v-if="availableBlocks.length > 0" @select="(details: SelectionDetails) => addBlock(details.value)">

@@ -50,7 +50,7 @@ function removeBlock() {}
         <button class="p-1 px-2 rounded hover:bg-gray-200 focus:outline-none" @click="goBack">
           <ArrowLeftIcon class="inline w-4" />
         </button>
-        <span class="ml-2 truncate">{{ blockData.settings.title|| blockData.settings.heading || block.name }}</span>
+        <span class="ml-2 truncate">{{ blockData!.settings.title|| blockData!.settings.heading || block.name }}</span>
       </div>
       <p v-if="block.description" class="mt-2 text-sm">
         {{ block.description }}

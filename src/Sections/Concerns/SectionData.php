@@ -8,15 +8,24 @@ use JsonSerializable;
 
 class SectionData implements JsonSerializable
 {
+    public array $blocks;
+
     public function __construct(
         public string $id,
         public string $type,
         public string $name,
         public Fluent $settings,
         public bool $disabled,
-        public array $blocks,
-        public array $blocksOrder
-    ) {}
+        protected array $allBlocks,
+        public array $blocks_order
+    ) {
+        $this->blocks = collect($this->allBlocks)
+            ->reject(fn ($block) => $block->disabled)
+            ->sortKeysUsing(function ($a, $b) {
+                return array_search($a, $this->blocks_order) - array_search($b, $this->blocks_order);
+            })
+            ->toArray();
+    }
 
     public static function make(string $id, array $data, Section $section): self
     {
@@ -30,8 +39,8 @@ class SectionData implements JsonSerializable
             settings: new Fluent(
                 self::prepareSettings($data['settings'] ?? [], $section->settings)
             ),
-            blocks: $blocks,
-            blocksOrder: $data['blocks_order'] ?? array_keys($blocks)
+            allBlocks: $blocks,
+            blocks_order: $data['blocks_order'] ?? array_keys($blocks)
         );
     }
 
@@ -62,8 +71,8 @@ class SectionData implements JsonSerializable
             'name' => $this->name,
             'disabled' => $this->disabled,
             'settings' => $this->settings->toArray(),
-            'blocks' => array_map(fn ($block) => $block->jsonSerialize(), $this->blocks),
-            'blocksOrder' => $this->blocksOrder,
+            'blocks' => array_map(fn ($block) => $block->jsonSerialize(), $this->allBlocks),
+            'blocks_order' => $this->blocks_order,
         ];
     }
 }

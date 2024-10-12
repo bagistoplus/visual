@@ -63,7 +63,7 @@ export interface BlockData {
 export interface SectionData extends BlockData {
   name: string;
   blocks: Record<string, BlockData>;
-  blocksOrder: string[];
+  blocks_order: string[];
 }
 
 export interface ThemeData {

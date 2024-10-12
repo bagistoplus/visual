@@ -13,6 +13,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit =defineEmits<{
   (e: 'reorder', order: string[]): void;
+  (e: 'toggleBlock', id: string): void;
+  (e: 'removeBlock', id: string): void;
 }>();
 
 const sortable = useTemplateRef<HTMLElement>('sortable');
@@ -38,6 +40,8 @@ onMounted(() => {
     <Block
       v-for="block in blocks"
       :block="block"
+      @toggle="emit('toggleBlock', block.id)"
+      @remove="emit('removeBlock', block.id)"
     />
   </div>
 </template>
