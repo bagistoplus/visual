@@ -3,7 +3,6 @@
 namespace BagistoPlus\Visual\Sections\Concerns;
 
 use BagistoPlus\Visual\Sections\Section;
-use Illuminate\Support\Fluent;
 use JsonSerializable;
 
 class SectionData implements JsonSerializable
@@ -14,7 +13,7 @@ class SectionData implements JsonSerializable
         public string $id,
         public string $type,
         public string $name,
-        public Fluent $settings,
+        public SettingsValues $settings,
         public bool $disabled,
         protected array $allBlocks,
         public array $blocks_order
@@ -36,18 +35,19 @@ class SectionData implements JsonSerializable
             type: $data['type'] ?? $section->slug,
             name: $section->name,
             disabled: $data['disabled'] ?? false,
-            settings: new Fluent(
-                self::prepareSettings($data['settings'] ?? [], $section->settings)
+            settings: new SettingsValues(
+                self::prepareSettings($data['settings'] ?? [], $section->settings),
+                collect($section->settings)->keyBy('id')->toArray()
             ),
             allBlocks: $blocks,
             blocks_order: $data['blocks_order'] ?? array_keys($blocks)
         );
     }
 
-    protected static function prepareSettings(array $settings, array $settingsSchema): array
+    protected static function prepareSettings(array $settings, array $settingsSchemas): array
     {
-        return collect($settingsSchema)
-            ->reject(fn ($setting) => $setting['type'] === 'header')
+        return collect($settingsSchemas)
+            ->reject(fn ($schema) => $schema['type'] === 'header')
             ->mapWithKeys(fn ($schema) => [
                 $schema['id'] => $settings[$schema['id']] ?? $schema['default'] ?? null,
             ])

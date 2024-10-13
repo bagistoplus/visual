@@ -2,8 +2,8 @@
 
 use BagistoPlus\Visual\Sections\Concerns\BlockData;
 use BagistoPlus\Visual\Sections\Concerns\SectionData;
+use BagistoPlus\Visual\Sections\Concerns\SettingsValues;
 use BagistoPlus\Visual\Sections\Section;
-use Illuminate\Support\Fluent;
 
 it('can create a SectionData instance', function () {
     $sectionId = 'section-1';
@@ -50,7 +50,7 @@ it('serializes SectionData to JSON', function () {
             type: 'image',
             name: 'Image',
             disabled: false,
-            settings: new Fluent(['size' => 'large']),
+            settings: new SettingsValues(['size' => 'large'], ['size' => 'text']),
         ),
     ];
 
@@ -58,7 +58,7 @@ it('serializes SectionData to JSON', function () {
         id: 'section-1',
         type: 'header',
         name: 'Header',
-        settings: new Fluent(['title' => 'My Title']),
+        settings: new SettingsValues(['title' => 'My Title'], ['title' => 'text']),
         disabled: false,
         allBlocks: $blocks,
         blocks_order: ['block-1']

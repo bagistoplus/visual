@@ -3,7 +3,6 @@ import { ColorPicker, parseColor } from '@ark-ui/vue/color-picker'
 
 const value = defineModel({
   set(value: any) {
-    console.log(value.toString('hexa'))
     return value.toString('hexa');
   },
 

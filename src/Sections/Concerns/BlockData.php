@@ -2,7 +2,6 @@
 
 namespace BagistoPlus\Visual\Sections\Concerns;
 
-use Illuminate\Support\Fluent;
 use JsonSerializable;
 
 class BlockData implements JsonSerializable
@@ -11,7 +10,7 @@ class BlockData implements JsonSerializable
         public string $id,
         public string $type,
         public string $name,
-        public Fluent $settings,
+        public SettingsValues $settings,
         public bool $disabled
     ) {}
 
@@ -22,7 +21,10 @@ class BlockData implements JsonSerializable
             type: $data['type'] ?? $blockSchema['type'],
             name: $data['name'] ?? $data['type'],
             disabled: $data['disabled'] ?? false,
-            settings: new Fluent(self::prepareSettings($data['settings'], $blockSchema['settings']))
+            settings: new SettingsValues(
+                self::prepareSettings($data['settings'], $blockSchema['settings']),
+                collect($blockSchema['settings'])->keyBy('id')->toArray()
+            )
         );
     }
 

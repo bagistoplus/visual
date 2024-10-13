@@ -7,8 +7,7 @@
 @endphp
 
 @if (true)
-  <div class="mb-4 flex bg-purple-500 px-4 py-1 text-white">
-    {{ $section->settings->color }}
+  <div class="mb-4 bg-[var(--bg-color)] px-4 py-1 text-white" style="--bg-color: {{ $section->settings->color }}">
     @forelse($section->blocks as $block)
       <div>
         {{ $block->settings->text }}

@@ -1,7 +1,7 @@
 <?php
 
 use BagistoPlus\Visual\Sections\Concerns\BlockData;
-use Illuminate\Support\Fluent;
+use BagistoPlus\Visual\Sections\Concerns\SettingsValues;
 
 it('can create a BlockData instance', function () {
     $blockId = 'block-1';
@@ -39,7 +39,7 @@ it('serializes BlockData to JSON', function () {
         id: 'block-1',
         type: 'text',
         name: 'Font',
-        settings: new Fluent(['font' => 'Arial']),
+        settings: new SettingsValues(['font' => 'Arial'], ['font' => 'font']),
         disabled: true
     );
 
