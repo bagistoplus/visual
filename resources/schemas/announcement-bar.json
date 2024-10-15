@@ -9,6 +9,11 @@
       "default": "black"
     },
     {
+      "id": "image",
+      "type": "image",
+      "label": "Image"
+    },
+    {
       "id": "show_announcement",
       "type": "checkbox",
       "label": "Show announcement",

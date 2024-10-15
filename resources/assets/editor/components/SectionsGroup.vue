@@ -49,6 +49,7 @@ function test() {alert('ok');}
       <template v-if="sections.length > 0">
         <Section
           v-for="section in sections"
+          :key="section.id"
           :static="static"
           :section="section"
           @toggle="emit('toggleSection', section.id)"

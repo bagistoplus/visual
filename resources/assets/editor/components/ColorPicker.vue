@@ -78,7 +78,7 @@ function onSelect(color: any) {
           <p class="text-xs font-medium">Recently selected</p>
 
           <ColorPicker.SwatchGroup class="grid grid-cols-6 gap-2 mt-2">
-            <ColorPicker.SwatchTrigger v-for="color in selected.slice(0, 6)" :value="color">
+            <ColorPicker.SwatchTrigger v-for="color in selected.slice(0, 6)" :value="color" :key="value!.toHexInt()">
               <ColorPicker.Swatch :value="color" class="w-6 h-6 rounded border"/>
             </ColorPicker.SwatchTrigger>
           </ColorPicker.SwatchGroup>
@@ -88,7 +88,7 @@ function onSelect(color: any) {
           <p class="text-xs font-medium">Currently used</p>
 
           <ColorPicker.SwatchGroup class="grid grid-cols-6 gap-2 mt-2">
-            <ColorPicker.SwatchTrigger v-for="color in usedColors" :value="color">
+            <ColorPicker.SwatchTrigger v-for="color in usedColors" :value="color" :key="color">
               <ColorPicker.Swatch :value="color" class="w-6 h-6 rounded border"/>
             </ColorPicker.SwatchTrigger>
           </ColorPicker.SwatchGroup>

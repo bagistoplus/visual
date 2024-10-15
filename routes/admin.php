@@ -9,6 +9,12 @@ Route::group(['middleware' => ['web', 'admin'], 'prefix' => config('app.admin_ur
         Route::post('api/persist', [ThemeEditorController::class, 'persistTheme'])
             ->name('visual.admin.editor.api.persist');
 
+        Route::post('api/upload', [ThemeEditorController::class, 'uploadImages'])
+            ->name('visual.admin.editor.api.upload');
+
+        Route::get('api/images', [ThemeEditorController::class, 'listImages'])
+            ->name('visual.admin.editor.api.images');
+
         Route::get('{theme}/{path?}', [ThemeEditorController::class, 'index'])
             ->where('path', '.*')
             ->name('visual.admin.editor');

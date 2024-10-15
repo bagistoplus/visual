@@ -2,12 +2,15 @@ export type ViewMode = "desktop" | "mobile" | "fullscreen";
 
 export interface WindowThemeEditor {
   baseUrl: string;
+  imagesBaseUrl: string;
   storefrontUrl: string;
   channels: Channel[];
   defaultChannel: string;
   routes: {
     persistTheme: string;
-    themesIndex: string
+    themesIndex: string;
+    uploadImage: string;
+    listImages: string;
   };
 }
 
@@ -76,4 +79,11 @@ export interface ThemeData {
   beforeContentSectionsOrder: string[];
   afterContentSectionsOrder: string[];
   sectionsData: Record<string, SectionData>
+}
+
+interface Image {
+  name: string;
+  path: string;
+  url: string;
+  uploading?: boolean
 }

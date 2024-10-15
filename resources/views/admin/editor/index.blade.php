@@ -17,6 +17,7 @@
     <script type="text/javascript">
       window.ThemeEditor = {
         baseUrl: "{{ $baseUrl }}",
+        imagesBaseUrl: "{{ $imagesBaseUrl }}",
         storefrontUrl: "{{ $storefrontUrl }}",
         channels: @json($channels),
         defaultChannel: "{{ $defaultChannel }}",

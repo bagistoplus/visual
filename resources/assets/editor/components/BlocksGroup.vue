@@ -39,6 +39,7 @@ onMounted(() => {
   <div ref="sortable" class="space-y-1">
     <Block
       v-for="block in blocks"
+      :key="block.id"
       :block="block"
       @toggle="emit('toggleBlock', block.id)"
       @remove="emit('removeBlock', block.id)"

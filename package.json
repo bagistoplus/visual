@@ -41,6 +41,8 @@
   },
   "type": "module",
   "dependencies": {
+    "@zag-js/file-upload": "^0.74.2",
+    "@zag-js/vue": "^0.74.2",
     "sortablejs": "^1.15.3"
   }
 }

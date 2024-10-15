@@ -47,7 +47,7 @@ const viewModes = ref([
       </div>
       <div class="mr-4 flex space-x-4">
         <ToggleGroup.Root :model-value="[viewMode]" class="rounded-lg bg-gray-200 p-1 flex gap-1 overflow-hidden">
-          <ToggleGroup.Item v-for="mode in viewModes" :value="mode.value" class="appearance-none cursor-pointer inline-flex items-center justify-center outline-none relative p-1 rounded data-[state=on]:bg-white">
+          <ToggleGroup.Item v-for="mode in viewModes" :value="mode.value" :key="viewMode" class="appearance-none cursor-pointer inline-flex items-center justify-center outline-none relative p-1 rounded data-[state=on]:bg-white">
             <component :is="mode.icon" class="w-4"/>
           </ToggleGroup.Item>
         </ToggleGroup.Root>

@@ -74,6 +74,8 @@ declare module 'vue' {
     GlobeAsiaAustraliaIcon: typeof import('@heroicons/vue/24/outline')['GlobeAsiaAustraliaIcon']
     Header: typeof import('./components/Header.vue')['default']
     HomeIcon: typeof import('@heroicons/vue/24/outline')['HomeIcon']
+    ImagePicker: typeof import('./components/ImagePicker.vue')['default']
+    ImagePreview: typeof import('./components/ImagePreview.vue')['default']
     LocaleSelector: typeof import('./components/LocaleSelector.vue')['default']
     NumberInput: typeof import('./components/NumberInput.vue')['default']
     PlusCircleIcon: typeof import('@heroicons/vue/24/outline')['PlusCircleIcon']
@@ -90,5 +92,6 @@ declare module 'vue' {
     Textarea: typeof import('./components/Textarea.vue')['default']
     TextInput: typeof import('./components/TextInput.vue')['default']
     TrashIcon: typeof import('@heroicons/vue/24/outline')['TrashIcon']
+    XMarkIcon: typeof import('@heroicons/vue/24/outline')['XMarkIcon']
   }
 }

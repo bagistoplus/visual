@@ -19,5 +19,9 @@
         @endfor
       @endif
     @endif
+
+    @if ($section->settings->image)
+      <img src={{ $section->settings->image }} class="w-24" />
+    @endif
   </div>
 @endif

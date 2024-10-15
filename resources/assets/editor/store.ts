@@ -5,7 +5,8 @@ import getValue from "lodash/get";
 import debounce from "lodash/debounce";
 import { v4 as uuidv4 } from "uuid";
 
-import type { Block, Section, ThemeData } from "./types";
+import type { Block, Image, Section, ThemeData } from "./types";
+import { useFetchImages } from './api';
 
 export const useStore = defineStore('main', () => {
   let availableSections: Record<string, Section> = {};
@@ -25,6 +26,7 @@ export const useStore = defineStore('main', () => {
     sectionsData: {}
   });
   const activeSectionId = ref<string|null>(null);
+  const images = ref<Image[]>([]);
 
   const contentSectionsOrder = computed(() => themeData.value.sectionsOrder);
   const contentSections = computed(() => {
@@ -227,7 +229,23 @@ export const useStore = defineStore('main', () => {
     persistThemeData();
   }
 
+  function fetchImages() {
+    const { data, execute, onFetchResponse } = useFetchImages();
+
+    if (images.value.length === 0) {
+      execute();
+    }
+
+
+    onFetchResponse(() => {
+      data.value.forEach((item: any) => {
+        images.value.push({ ...item, uploading: false })
+      })
+    })
+  }
+
   return {
+    images,
     themeData,
     usedColors,
     availableSections,
@@ -255,7 +273,9 @@ export const useStore = defineStore('main', () => {
     canRemoveSection,
     addBlockToSection,
     toggleSectionBlock,
-    removeSectionBlock
+    removeSectionBlock,
+
+    fetchImages
   }
 });
 

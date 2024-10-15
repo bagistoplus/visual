@@ -66,7 +66,7 @@ const store = useStore();
     />
 
     <Select
-      v-if="setting.type === 'select'"
+      v-else-if="setting.type === 'select'"
       :label="setting.label"
       :options="setting.options"
       :model-value="value"
@@ -74,10 +74,16 @@ const store = useStore();
     />
 
     <ColorPicker
-      v-if="setting.type === 'color'"
+      v-else-if="setting.type === 'color'"
       :label="setting.label"
-      :options="setting.options"
       :used-colors="store.usedColors"
+      :model-value="value"
+      @update:model-value="(v: string) => emit('input', v)"
+    />
+
+    <ImagePicker
+      v-else-if="setting.type === 'image'"
+      :label="setting.label"
       :model-value="value"
       @update:model-value="(v: string) => emit('input', v)"
     />
