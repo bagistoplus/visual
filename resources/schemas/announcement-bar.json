@@ -3,6 +3,11 @@
   "description": "",
   "settings": [
     {
+      "id": "category",
+      "type": "category",
+      "label": "Category"
+    },
+    {
       "id": "color",
       "type": "color",
       "label": "Text Color",

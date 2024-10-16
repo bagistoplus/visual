@@ -28,3 +28,7 @@ export function useUploadImage(formData: FormData) {
 export function useFetchImages() {
   return useFetch(routes.listImages, { immediate: false }).get().json();
 }
+
+export function useFetchCategories() {
+  return useFetch('/api/categories').get().json();
+}

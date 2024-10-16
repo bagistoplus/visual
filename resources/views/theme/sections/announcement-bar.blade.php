@@ -23,5 +23,9 @@
     @if ($section->settings->image)
       <img src={{ $section->settings->image }} class="w-24" />
     @endif
+
+    @if ($section->settings->category)
+      category: {{ $section->settings->category->name }}
+    @endif
   </div>
 @endif

@@ -5,16 +5,20 @@ import getValue from "lodash/get";
 import debounce from "lodash/debounce";
 import { v4 as uuidv4 } from "uuid";
 
-import type { Block, Image, Section, ThemeData } from "./types";
-import { useFetchImages } from './api';
+import type { Block, Category, Image, Section, ThemeData } from "./types";
+import { useFetchCategories, useFetchImages } from './api';
+
+interface Models {
+  categories: Record<number, Category>;
+}
 
 export const useStore = defineStore('main', () => {
   let availableSections: Record<string, Section> = {};
   let previewIframe: HTMLIFrameElement | null = null;
   const nprogress = useNProgress();
 
-  const usedColors = ref<string[]>([]);
-  const themeData = ref<ThemeData>({
+  const usedColors = reactive<string[]>([]);
+  const themeData = reactive<ThemeData>({
     url: '',
     channel: '',
     locale: '',
@@ -26,18 +30,28 @@ export const useStore = defineStore('main', () => {
     sectionsData: {}
   });
   const activeSectionId = ref<string|null>(null);
-  const images = ref<Image[]>([]);
+  const images = reactive<Image[]>([]);
+  const models = reactive<Models>({
+    categories: {}
+  })
 
-  const contentSectionsOrder = computed(() => themeData.value.sectionsOrder);
+  const categories = computed(() => {
+    return Object.values(models.categories).map(c => ({
+      ...c,
+      ...c.translations.find(t => t.locale === themeData.locale)
+    }))
+  });
+
+  const contentSectionsOrder = computed(() => themeData.sectionsOrder);
   const contentSections = computed(() => {
     return contentSectionsOrder.value.map(
-      (id: string) => themeData.value?.sectionsData[id]
+      (id: string) => themeData.sectionsData[id]
     );
   });
 
   const beforeContentSections = computed(() => {
-    return themeData.value.beforeContentSectionsOrder.map(
-      (id: string) => themeData.value.sectionsData[id]
+    return themeData.beforeContentSectionsOrder.map(
+      (id: string) => themeData.sectionsData[id]
     );
   });
 
@@ -54,7 +68,7 @@ export const useStore = defineStore('main', () => {
     fetch(window.ThemeEditor.routes.persistTheme, {
       headers,
       method: 'post',
-      body: JSON.stringify(themeData.value)
+      body: JSON.stringify(themeData)
     }).then(res => res.text())
       .then(html => {
         nprogress.done();
@@ -87,7 +101,7 @@ export const useStore = defineStore('main', () => {
       }
     }
 
-    themeData.value = data;
+    Object.assign(themeData, data);
   }
 
   function setAvailableSections(sections: Record<string, Section>) {
@@ -95,11 +109,11 @@ export const useStore = defineStore('main', () => {
   }
 
   function getThemeDataValue(keyPath: string|string[]): unknown {
-    return getValue(themeData.value, keyPath);
+    return getValue(themeData, keyPath);
   }
 
   function updateThemeDataValue(keyPath: string|string[], value: unknown) {
-    setValue(themeData.value, keyPath, value);
+    setValue(themeData, keyPath, value);
     persistThemeData();
   }
 
@@ -120,51 +134,51 @@ export const useStore = defineStore('main', () => {
   }
 
   function moveSectionUp(sectionId: string) {
-    const index = themeData.value.sectionsOrder.indexOf(sectionId);
+    const index = themeData.sectionsOrder.indexOf(sectionId);
 
     if (index === 0) {
       return;
     }
 
-    themeData.value.sectionsOrder.splice(index, 1);
-    themeData.value.sectionsOrder.splice(index - 1, 0, sectionId);
+    themeData.sectionsOrder.splice(index, 1);
+    themeData.sectionsOrder.splice(index - 1, 0, sectionId);
 
-    notifyPreviewIframe('sectionsOrder', themeData.value.sectionsOrder);
+    notifyPreviewIframe('sectionsOrder', themeData.sectionsOrder);
     persistThemeData();
   }
 
   function moveSectionDown(sectionId: string) {
-    const index = themeData.value.sectionsOrder.indexOf(sectionId);
+    const index = themeData.sectionsOrder.indexOf(sectionId);
 
-    if (index === themeData.value.sectionsOrder.length - 1) {
+    if (index === themeData.sectionsOrder.length - 1) {
       return;
     }
 
-    themeData.value.sectionsOrder.splice(index, 1);
-    themeData.value.sectionsOrder.splice(index + 1, 0, sectionId);
+    themeData.sectionsOrder.splice(index, 1);
+    themeData.sectionsOrder.splice(index + 1, 0, sectionId);
 
-    notifyPreviewIframe('sectionsOrder', themeData.value.sectionsOrder);
+    notifyPreviewIframe('sectionsOrder', themeData.sectionsOrder);
     persistThemeData();
   }
 
   function toggleSection(sectionId: string) {
-    themeData.value.sectionsData[sectionId].disabled = !themeData.value.sectionsData[sectionId].disabled;
+    themeData.sectionsData[sectionId].disabled = !themeData.sectionsData[sectionId].disabled;
 
     persistThemeData();
   }
 
   function removeSection(sectionId: string) {
-    delete themeData.value.sectionsData[sectionId];
-    themeData.value.sectionsOrder = themeData.value.sectionsOrder.filter(
+    delete themeData.sectionsData[sectionId];
+    themeData.sectionsOrder = themeData.sectionsOrder.filter(
       id => id !== sectionId
     );
 
-    notifyPreviewIframe('sectionsOrder', themeData.value.sectionsOrder);
+    notifyPreviewIframe('sectionsOrder', themeData.sectionsOrder);
     persistThemeData();
   }
 
   function getSectionData(id: string) {
-    return themeData.value.sectionsData[id];
+    return themeData.sectionsData[id];
   }
 
   function getSectionBySlug(slug: string) {
@@ -187,11 +201,11 @@ export const useStore = defineStore('main', () => {
   }
 
   function canRemoveSection(sectionId: string) {
-    return themeData.value.sectionsOrder.includes(sectionId);
+    return themeData.sectionsOrder.includes(sectionId);
   }
 
   function addBlockToSection(sectionId: string, block: Block) {
-    const sectionData = themeData.value.sectionsData[sectionId];
+    const sectionData = themeData.sectionsData[sectionId];
     const settings: Record<string, any> = {};
     const id = uuidv4();
 
@@ -213,7 +227,7 @@ export const useStore = defineStore('main', () => {
   }
 
   function toggleSectionBlock(sectionId: string, blockId: string) {
-    const block = themeData.value.sectionsData[sectionId].blocks[blockId];
+    const block = themeData.sectionsData[sectionId].blocks[blockId];
 
     block.disabled = !block.disabled;
 
@@ -221,7 +235,7 @@ export const useStore = defineStore('main', () => {
   }
 
   function removeSectionBlock(sectionId: string, blockId: string) {
-    const section = themeData.value.sectionsData[sectionId];
+    const section = themeData.sectionsData[sectionId];
 
     delete section.blocks[blockId];
     section.blocks_order = section.blocks_order.filter(id => id !== blockId);
@@ -229,19 +243,36 @@ export const useStore = defineStore('main', () => {
     persistThemeData();
   }
 
+  function searchCategories(search: string) {
+    return categories.value.filter(category => new RegExp(search, 'gi').test(category.name));
+  }
+
   function fetchImages() {
     const { data, execute, onFetchResponse } = useFetchImages();
 
-    if (images.value.length === 0) {
+    if (images.length === 0) {
       execute();
     }
 
 
     onFetchResponse(() => {
       data.value.forEach((item: any) => {
-        images.value.push({ ...item, uploading: false })
+        images.push({ ...item, uploading: false })
       })
     })
+
+  }
+
+  function fetchCategories() {
+    const context = useFetchCategories();
+
+    context.onFetchResponse(() => {
+      context.data.value.data.forEach((item: any) => {
+        models.categories[item.id] = item
+      });
+    });
+
+    return context;
   }
 
   return {
@@ -249,6 +280,7 @@ export const useStore = defineStore('main', () => {
     themeData,
     usedColors,
     availableSections,
+    categories,
 
     contentSections,
     contentSectionsOrder,
@@ -274,8 +306,10 @@ export const useStore = defineStore('main', () => {
     addBlockToSection,
     toggleSectionBlock,
     removeSectionBlock,
+    searchCategories,
 
-    fetchImages
+    fetchImages,
+    fetchCategories
   }
 });
 

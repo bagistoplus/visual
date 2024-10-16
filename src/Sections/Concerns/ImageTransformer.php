@@ -13,7 +13,14 @@ class ImageTransformer
         }
 
         [$encodedName] = explode('_', pathinfo($path, PATHINFO_FILENAME));
-        $originalName = hex2bin($encodedName);
+
+        // check if it is hex string
+        // @see https://stackoverflow.com/questions/41194159/how-to-catch-hex2bin-warning
+        if (ctype_xdigit($encodedName) && strlen($encodedName) % 2 == 0) {
+            $originalName = hex2bin($encodedName);
+        } else {
+            $originalName = $encodedName;
+        }
 
         return new Image(
             name: $originalName,

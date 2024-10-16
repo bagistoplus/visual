@@ -88,6 +88,13 @@ const store = useStore();
       @update:model-value="(v: string) => emit('input', v)"
     />
 
+    <CategoryPicker
+      v-else-if="setting.type === 'category'"
+      :label="setting.label"
+      :model-value="value"
+      @update:model-value="(v: string) => emit('input', v)"
+    />
+
     <small v-if="setting.info">{{ setting.info }}</small>
   </div>
 </template>

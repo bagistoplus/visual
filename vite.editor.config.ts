@@ -1,14 +1,16 @@
-import path from 'node:path'
+import path from 'node:path';
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import tailwindcss from 'tailwindcss'
-import Vue from '@vitejs/plugin-vue'
-import VueMacros from 'unplugin-vue-macros/vite'
-import VueRouter from 'unplugin-vue-router/vite'
-import AutoImport from 'unplugin-auto-import/vite'
-import { VueRouterAutoImports } from 'unplugin-vue-router'
-import Components from 'unplugin-vue-components/vite'
-import {PrimeVueResolver} from '@primevue/auto-import-resolver';
+import tailwindcss from 'tailwindcss';
+import Vue from '@vitejs/plugin-vue';
+import VueMacros from 'unplugin-vue-macros/vite';
+import VueRouter from 'unplugin-vue-router/vite';
+import AutoImport from 'unplugin-auto-import/vite';
+import { VueRouterAutoImports } from 'unplugin-vue-router';
+import Components from 'unplugin-vue-components/vite';
+import IconsResolver from 'unplugin-icons/resolver';
+import Icons from 'unplugin-icons/vite';
+
 import {ArkUIVueResolver} from './resources/assets/editor/resolvers/ark';
 
 export default defineConfig({
@@ -74,7 +76,7 @@ export default defineConfig({
       dts: './resources/assets/editor/components.d.ts',
       dirs: ['resources/assets/editor/components'],
       resolvers: [
-        PrimeVueResolver(),
+        IconsResolver(),
         ArkUIVueResolver(),
         (componentName) => {
           if (componentName.endsWith('Icon')) {
@@ -82,6 +84,11 @@ export default defineConfig({
           }
         }
       ]
+    }),
+
+    Icons({
+      compiler: 'vue3',
+      autoInstall: true,
     }),
   ],
   css: {

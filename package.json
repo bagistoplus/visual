@@ -11,6 +11,8 @@
   "devDependencies": {
     "@ark-ui/vue": "^4.1.1",
     "@heroicons/vue": "^2.1.5",
+    "@iconify-json/bi": "^1.2.1",
+    "@iconify-json/heroicons": "^1.2.1",
     "@primevue/auto-import-resolver": "^4.0.7",
     "@primevue/themes": "^4.0.7",
     "@types/lodash": "^4.17.10",
@@ -31,6 +33,7 @@
     "tailwindcss": "^3.4.11",
     "tailwindcss-primeui": "^0.3.4",
     "unplugin-auto-import": "^0.18.3",
+    "unplugin-icons": "^0.19.3",
     "unplugin-vue-components": "^0.27.4",
     "unplugin-vue-macros": "^2.12.2",
     "unplugin-vue-router": "^0.10.8",

@@ -100,6 +100,7 @@ class SettingsValues implements JsonSerializable
         return match ($type) {
             'color' => (new ColorTransformer)($value),
             'image' => (new ImageTransformer)($value),
+            'category' => (new CategoryTransformer)($value),
             default => $value,
         };
     }

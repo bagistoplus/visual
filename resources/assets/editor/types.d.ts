@@ -87,3 +87,16 @@ interface Image {
   url: string;
   uploading?: boolean
 }
+
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  logo?: {
+    large_image_url: string;
+    medium_image_url: string;
+    original_image_url: string;
+    small_image_url: string;
+  },
+  translations: any[]
+}

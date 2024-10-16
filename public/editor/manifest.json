@@ -1,28 +1,28 @@
 {
-  "_focus-trap.esm-Du7aTJAV.js": {
-    "file": "assets/focus-trap.esm-Du7aTJAV.js",
-    "name": "focus-trap.esm",
+  "_popover-I_-RsA3e.js": {
+    "file": "assets/popover-I_-RsA3e.js",
+    "name": "popover",
     "imports": [
       "resources/assets/editor/index.ts"
     ]
   },
-  "_sortable.core.esm-CpnGq8Mt.js": {
-    "file": "assets/sortable.core.esm-CpnGq8Mt.js",
+  "_sortable.core.esm-DDSRVGDE.js": {
+    "file": "assets/sortable.core.esm-DDSRVGDE.js",
     "name": "sortable.core.esm",
     "imports": [
       "resources/assets/editor/index.ts"
     ]
   },
-  "_utils-CR_7WPeo.js": {
-    "file": "assets/utils-CR_7WPeo.js",
+  "_utils-cbprexJ9.js": {
+    "file": "assets/utils-cbprexJ9.js",
     "name": "utils",
     "imports": [
       "resources/assets/editor/index.ts",
-      "_focus-trap.esm-Du7aTJAV.js"
+      "_popover-I_-RsA3e.js"
     ]
   },
   "resources/assets/editor/index.ts": {
-    "file": "assets/index-T6PvvqwX.js",
+    "file": "assets/index-BFhrVZeI.js",
     "name": "index",
     "src": "resources/assets/editor/index.ts",
     "isEntry": true,
@@ -33,7 +33,7 @@
       "resources/assets/editor/views/settings.vue"
     ],
     "css": [
-      "assets/index-CQKEeBw_.css"
+      "assets/index-Cq81_ZAs.css"
     ]
   },
   "resources/assets/editor/injected.ts": {
@@ -43,41 +43,41 @@
     "isEntry": true
   },
   "resources/assets/editor/views/[section].[block].vue": {
-    "file": "assets/_section_._block_-BY0p1cvr.js",
+    "file": "assets/_section_._block_-Babcy7Wp.js",
     "name": "_section_._block_",
     "src": "resources/assets/editor/views/[section].[block].vue",
     "isDynamicEntry": true,
     "imports": [
-      "_utils-CR_7WPeo.js",
+      "_utils-cbprexJ9.js",
       "resources/assets/editor/index.ts",
-      "_focus-trap.esm-Du7aTJAV.js"
+      "_popover-I_-RsA3e.js"
     ]
   },
   "resources/assets/editor/views/[section].vue": {
-    "file": "assets/_section_-B3srXltg.js",
+    "file": "assets/_section_-C54s_rnD.js",
     "name": "_section_",
     "src": "resources/assets/editor/views/[section].vue",
     "isDynamicEntry": true,
     "imports": [
-      "_utils-CR_7WPeo.js",
+      "_utils-cbprexJ9.js",
       "resources/assets/editor/index.ts",
-      "_sortable.core.esm-CpnGq8Mt.js",
-      "_focus-trap.esm-Du7aTJAV.js"
+      "_sortable.core.esm-DDSRVGDE.js",
+      "_popover-I_-RsA3e.js"
     ]
   },
   "resources/assets/editor/views/index.vue": {
-    "file": "assets/index-vIvW-_m6.js",
+    "file": "assets/index-DhqMdlQp.js",
     "name": "index",
     "src": "resources/assets/editor/views/index.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_focus-trap.esm-Du7aTJAV.js",
+      "_popover-I_-RsA3e.js",
       "resources/assets/editor/index.ts",
-      "_sortable.core.esm-CpnGq8Mt.js"
+      "_sortable.core.esm-DDSRVGDE.js"
     ]
   },
   "resources/assets/editor/views/settings.vue": {
-    "file": "assets/settings-D804jZWu.js",
+    "file": "assets/settings-DAoMikNB.js",
     "name": "settings",
     "src": "resources/assets/editor/views/settings.vue",
     "isDynamicEntry": true,
