@@ -11,8 +11,6 @@ import Components from 'unplugin-vue-components/vite';
 import IconsResolver from 'unplugin-icons/resolver';
 import Icons from 'unplugin-icons/vite';
 
-import {ArkUIVueResolver} from './resources/assets/editor/resolvers/ark';
-
 export default defineConfig({
   resolve: {
     alias: {
@@ -76,13 +74,7 @@ export default defineConfig({
       dts: './resources/assets/editor/components.d.ts',
       dirs: ['resources/assets/editor/components'],
       resolvers: [
-        IconsResolver(),
-        ArkUIVueResolver(),
-        (componentName) => {
-          if (componentName.endsWith('Icon')) {
-            return {name: componentName, from: '@heroicons/vue/24/outline'}
-          }
-        }
+        IconsResolver()
       ]
     }),
 

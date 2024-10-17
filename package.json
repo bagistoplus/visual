@@ -1,5 +1,6 @@
 {
   "private": true,
+  "type": "module",
   "scripts": {
     "dev:shop": "vite --config vite.shop.config.ts",
     "build:shop": "vite build --config vite.shop.config.ts",
@@ -10,11 +11,8 @@
   },
   "devDependencies": {
     "@ark-ui/vue": "^4.1.1",
-    "@heroicons/vue": "^2.1.5",
     "@iconify-json/bi": "^1.2.1",
     "@iconify-json/heroicons": "^1.2.1",
-    "@primevue/auto-import-resolver": "^4.0.7",
-    "@primevue/themes": "^4.0.7",
     "@types/lodash": "^4.17.10",
     "@types/morphdom": "^2.4.2",
     "@types/node": "^22.5.5",
@@ -23,6 +21,8 @@
     "@vitejs/plugin-vue": "^5.1.4",
     "@vueuse/core": "^11.1.0",
     "@vueuse/integrations": "^11.1.0",
+    "@zag-js/file-upload": "^0.74.2",
+    "@zag-js/vue": "^0.74.2",
     "autoprefixer": "^10.4.20",
     "laravel-vite-plugin": "^1.0.5",
     "lodash": "^4.17.21",
@@ -30,6 +30,7 @@
     "nprogress": "^0.2.0",
     "pinia": "^2.2.4",
     "postcss": "^8.4.47",
+    "sortablejs": "^1.15.3",
     "tailwindcss": "^3.4.11",
     "tailwindcss-primeui": "^0.3.4",
     "unplugin-auto-import": "^0.18.3",
@@ -41,11 +42,5 @@
     "vite": "^5.4.6",
     "vue": "^3.5.8",
     "vue-router": "^4.4.5"
-  },
-  "type": "module",
-  "dependencies": {
-    "@zag-js/file-upload": "^0.74.2",
-    "@zag-js/vue": "^0.74.2",
-    "sortablejs": "^1.15.3"
   }
 }

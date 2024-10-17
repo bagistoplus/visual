@@ -23,7 +23,10 @@
 <template>
   <div class="flex">
     <div class="w-[21.45rem] h-full items-center flex-none flex">
-      <button class="hover:bg-gray-100 w-[3.45rem] flex justify-center items-center focus:outline-none h-full" @click="emit('exit')">
+      <button
+        class="hover:bg-gray-100 w-[3.45rem] flex justify-center items-center focus:outline-none h-full"
+        @click="emit('exit')"
+      >
         <i-heroicons-arrow-left-end-on-rectangle class="w-5" />
       </button>
 
@@ -36,23 +39,51 @@
       <div class="flex-1 flex justify-start pl-4 gap-4">
         <TemplateSelector />
 
-        <ChannelSelector :model-value="store.themeData.channel" @update:model-value="(channel: string) => emit('channelChanged', channel)" />
+        <ChannelSelector
+          :model-value="store.themeData.channel"
+          @update:model-value="(channel: string) => emit('channelChanged', channel)"
+        />
 
-        <LocaleSelector :channel="store.themeData.channel" :model-value="store.themeData.locale" @update:model-value="(locale: string) => emit('localeChanged', locale)" />
+        <LocaleSelector
+          :channel="store.themeData.channel"
+          :model-value="store.themeData.locale"
+          @update:model-value="(locale: string) => emit('localeChanged', locale)"
+        />
       </div>
       <div class="mr-4 flex space-x-4">
-        <ToggleGroup.Root :model-value="[viewMode]" class="rounded-lg bg-gray-200 p-1 flex gap-1 overflow-hidden">
-          <ToggleGroup.Item v-for="mode in viewModes" :value="mode.value" :key="viewMode" class="appearance-none cursor-pointer inline-flex items-center justify-center outline-none relative p-1 rounded data-[state=on]:bg-white">
-            <component :is="mode.icon" class="w-4" />
+        <ToggleGroup.Root
+          :model-value="[viewMode]"
+          class="rounded-lg bg-gray-200 p-1 flex gap-1 overflow-hidden"
+        >
+          <ToggleGroup.Item
+            v-for="mode in viewModes"
+            :value="mode.value"
+            :key="viewMode"
+            class="appearance-none cursor-pointer inline-flex items-center justify-center outline-none relative p-1 rounded data-[state=on]:bg-white"
+          >
+            <component
+              :is="mode.icon"
+              class="w-4"
+            />
           </ToggleGroup.Item>
         </ToggleGroup.Root>
 
         <div class="flex items-center gap-1">
-          <button link title="Undo" aria-label="Undo" class="!px-2 hover:bg-surface-100">
-            <ArrowUturnLeftIcon class="inline w-4" />
+          <button
+            link
+            title="Undo"
+            aria-label="Undo"
+            class="!px-2 hover:bg-surface-100"
+          >
+            <i-heroicons-arrow-uturn-left class="inline w-4" />
           </button>
-          <button link title="Redo" aria-label="Redo" class="!px-2 hover:bg-surface-100">
-            <ArrowUturnRightIcon class="inline w-4" />
+          <button
+            link
+            title="Redo"
+            aria-label="Redo"
+            class="!px-2 hover:bg-surface-100"
+          >
+            <i-heroicons-arrow-uturn-right class="inline w-4" />
           </button>
         </div>
 

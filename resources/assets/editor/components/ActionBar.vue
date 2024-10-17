@@ -10,14 +10,14 @@
       class="hover:bg-gray-100 h-12 flex items-center justify-center rounded-md"
       :class="{ 'bg-zinc-200 text-blue-800': sectionsPanelActive }"
     >
-      <Square3Stack3DIcon class="w-5" />
+      <i-heroicons-square-3-stack-3d class="w-5" />
     </RouterLink>
     <RouterLink
       to="/settings"
       class="hover:bg-gray-100 h-12 flex items-center justify-center rounded-md"
       active-class="bg-zinc-200 text-blue-800"
     >
-      <Cog6ToothIcon class="w-5" />
+      <i-heroicons-cog-6-tooth class="w-5" />
     </RouterLink>
   </div>
 </template>
