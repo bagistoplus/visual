@@ -6,12 +6,11 @@ import type { BlockData } from '../types';
 interface Props {
   blocks: BlockData[];
   order: string[];
-};
+}
 
-const props = withDefaults(defineProps<Props>(), {
-});
+const props = withDefaults(defineProps<Props>(), {});
 
-const emit =defineEmits<{
+const emit = defineEmits<{
   (e: 'reorder', order: string[]): void;
   (e: 'toggleBlock', id: string): void;
   (e: 'removeBlock', id: string): void;

@@ -25,7 +25,15 @@
     @endif
 
     @if ($section->settings->category)
-      category: {{ $section->settings->category->name }}
+      <div>
+        category: {{ $section->settings->category->name }}
+      </div>
+    @endif
+
+    @if ($section->settings->product)
+      <div>
+        Product: {{ $section->settings->product->name }}
+      </div>
     @endif
   </div>
 @endif

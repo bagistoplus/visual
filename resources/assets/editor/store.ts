@@ -5,11 +5,12 @@ import getValue from "lodash/get";
 import debounce from "lodash/debounce";
 import { v4 as uuidv4 } from "uuid";
 
-import type { Block, Category, Image, Section, ThemeData } from "./types";
-import { useFetchCategories, useFetchImages } from './api';
+import type { Block, Category, Image, Product, Section, ThemeData } from "./types";
+import { useFetchCategories, useFetchImages, useFetchProducts } from './api';
 
 interface Models {
   categories: Record<number, Category>;
+  products: Record<number, Product>;
 }
 
 export const useStore = defineStore('main', () => {
@@ -32,7 +33,8 @@ export const useStore = defineStore('main', () => {
   const activeSectionId = ref<string|null>(null);
   const images = reactive<Image[]>([]);
   const models = reactive<Models>({
-    categories: {}
+    categories: {},
+    products: {}
   })
 
   const categories = computed(() => {
@@ -41,6 +43,8 @@ export const useStore = defineStore('main', () => {
       ...c.translations.find(t => t.locale === themeData.locale)
     }))
   });
+
+  const products = computed(() => Object.values(models.products));
 
   const contentSectionsOrder = computed(() => themeData.sectionsOrder);
   const contentSections = computed(() => {
@@ -247,6 +251,10 @@ export const useStore = defineStore('main', () => {
     return categories.value.filter(category => new RegExp(search, 'gi').test(category.name));
   }
 
+  function getProduct(id: number) {
+    return models.products[id];
+  }
+
   function fetchImages() {
     const { data, execute, onFetchResponse } = useFetchImages();
 
@@ -260,8 +268,9 @@ export const useStore = defineStore('main', () => {
         images.push({ ...item, uploading: false })
       })
     })
-
   }
+
+
 
   function fetchCategories() {
     const context = useFetchCategories();
@@ -275,12 +284,29 @@ export const useStore = defineStore('main', () => {
     return context;
   }
 
+  function fetchProducts() {
+    const context = useFetchProducts();
+
+    context.onFetchResponse(() => {
+      context.data.value.data.forEach((item: any) => {
+        models.products[item.id] = item
+      });
+    });
+
+    function execute(params: any = {}) {
+      context.execute({ locale: themeData.locale, channel: themeData.channel, ...params })
+    }
+
+    return { ...context, execute };
+  }
+
   return {
     images,
     themeData,
     usedColors,
     availableSections,
     categories,
+    products,
 
     contentSections,
     contentSectionsOrder,
@@ -307,9 +333,11 @@ export const useStore = defineStore('main', () => {
     toggleSectionBlock,
     removeSectionBlock,
     searchCategories,
+    getProduct,
 
     fetchImages,
-    fetchCategories
+    fetchCategories,
+    fetchProducts
   }
 });
 

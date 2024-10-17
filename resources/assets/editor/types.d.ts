@@ -100,3 +100,21 @@ interface Category {
   },
   translations: any[]
 }
+
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  base_image?: {
+    large_image_url: string;
+    medium_image_url: string;
+    original_image_url: string;
+    small_image_url: string;
+  },
+  images: {
+    large_image_url: string;
+    medium_image_url: string;
+    original_image_url: string;
+    small_image_url: string
+  }[];
+}

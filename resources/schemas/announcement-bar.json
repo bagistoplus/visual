@@ -3,6 +3,11 @@
   "description": "",
   "settings": [
     {
+      "id": "product",
+      "type": "product",
+      "label": "Product"
+    },
+    {
       "id": "category",
       "type": "category",
       "label": "Category"

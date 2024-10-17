@@ -32,3 +32,20 @@ export function useFetchImages() {
 export function useFetchCategories() {
   return useFetch('/api/categories').get().json();
 }
+
+export function useFetchProducts() {
+  const url = ref('/api/products')
+  const context = useFetch(url, { refetch: true, immediate: false }).get().json();
+
+  function execute(params: Record<string, any>) {
+    const newUrl = new URL('/api/products', window.location.origin);
+
+    for (const [key, value] of Object.entries(params)) {
+      newUrl.searchParams.append(key, value);
+    }
+
+    url.value = newUrl.href;
+  }
+
+  return { ...context, execute };
+}

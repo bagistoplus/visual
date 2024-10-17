@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import { useStore } from '../store';
-import { Setting } from '../types';
+  import { useStore } from '../store';
+  import { Setting } from '../types';
 
-const props = defineProps<{
-  setting: Setting;
-  value: any;
-}>();
+  const props = defineProps<{
+    setting: Setting;
+    value: any;
+  }>();
 
-const emit = defineEmits<{
-  (e: 'input', value: boolean|number|string): void;
-}>();
+  const emit = defineEmits<{
+    (e: 'input', value: boolean | number | string): void;
+  }>();
 
-const store = useStore();
+  const store = useStore();
 </script>
 
 <template>
   <div class="mb-6 last:mb-0">
     <TextInput
-      v-if="setting.type==='text'"
+      v-if="setting.type === 'text'"
       :id="setting.id"
       :label="setting.label"
       :modelValue="props.value"
@@ -25,7 +25,7 @@ const store = useStore();
     />
 
     <Textarea
-      v-if="setting.type==='textarea'"
+      v-if="setting.type === 'textarea'"
       :id="setting.id"
       :label="setting.label"
       :modelValue="props.value"
@@ -90,6 +90,13 @@ const store = useStore();
 
     <CategoryPicker
       v-else-if="setting.type === 'category'"
+      :label="setting.label"
+      :model-value="value"
+      @update:model-value="(v: string) => emit('input', v)"
+    />
+
+    <ProductPicker
+      v-else-if="setting.type === 'product'"
       :label="setting.label"
       :model-value="value"
       @update:model-value="(v: string) => emit('input', v)"

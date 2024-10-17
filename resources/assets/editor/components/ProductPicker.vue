@@ -1,34 +1,39 @@
 <script setup lang="ts">
   import { Popover } from '@ark-ui/vue/popover';
+  import ProductListbox from './ProductListbox.vue'
   import { useStore } from '../store';
-  import { Category } from '../types';
+  import { Product } from '../types';
 
   const store = useStore();
-  const model = defineModel<number | null>();
   const props = defineProps<{ label: string; }>();
+  const model = defineModel<number | null>();
   const opened = ref(false);
   const search = ref('');
+  const { isFetching, execute, data } = store.fetchProducts();
 
-  const { } = store.fetchCategories();
+  const selectedProduct = computed(() => model.value ? store.getProduct(model.value) : null);
+  const products = computed<Product[]>(() => {
+    return data.value ? data.value.data : [];
+  });
 
-  const selectedCategory = computed<Category>(() => store.categories.find(c => c.id === model.value));
-  const categories = computed(() => {
-    if (!search.value) {
-      return store.categories
-    }
-
-    return store.searchCategories(search.value);
-  })
-
-  watch(opened, function (value) {
-    if (value === false) {
+  function onToggle(open: boolean) {
+    if (open === true) {
+      execute();
+    } else {
       search.value = '';
     }
-  });
+  }
+
+  function searchProducts() {
+    execute({ query: search.value });
+  }
 </script>
 
 <template>
-  <Popover.Root v-model:open="opened">
+  <Popover.Root
+    v-model:open="opened"
+    @update:open="onToggle"
+  >
     <label
       class="text-sm font-medium block mb-2"
       v-if="label"
@@ -36,19 +41,22 @@
       {{ label }}
     </label>
     <Popover.Trigger as-child>
-      <div class="flex items-center w-full gap-3 cursor-pointer border rounded px-3 h-10 text-sm">
-        <template v-if="selectedCategory">
+      <div
+        class="flex items-center w-full gap-3 cursor-pointer border rounded px-3 h-10 text-sm"
+        role="button"
+      >
+        <template v-if="selectedProduct">
           <img
-            v-if="selectedCategory.logo"
-            :src="selectedCategory.logo.small_image_url"
-            :alt="selectedCategory.name"
+            v-if="selectedProduct.base_image"
+            :src="selectedProduct.base_image.small_image_url"
+            :alt="selectedProduct.name"
             class="w-5 h-5 object-cover flex-none"
           >
           <i-bi-tags
             v-else
             class="w-4 h-4 flex-none transform rotate-90"
           />
-          <span class="flex-1 w-0 truncate">{{ selectedCategory.name }}</span>
+          <span class="flex-1 w-0 truncate">{{ selectedProduct.name }}</span>
           <button
             class="flex-none rounded-lg hover:bg-neutral-200 p-1"
             @click.stop="model = null"
@@ -56,7 +64,7 @@
             <i-heroicons-x-mark />
           </button>
         </template>
-        <span v-else>Select category</span>
+        <span v-else>Select product</span>
       </div>
     </Popover.Trigger>
     <Popover.Positioner class="w-[var(--reference-width)] !z-10">
@@ -68,11 +76,13 @@
           <Popover.ArrowTip class="border-t border-l" />
         </Popover.Arrow>
 
-        <CategoryListbox
-          :categories="categories"
+        <ProductListbox
+          :is-loading="isFetching"
+          :products="products"
           v-model="model"
           v-model:search="search"
-          @update:model-value="opened = false"
+          @update:search="searchProducts"
+          @update:model-value="(opened = false)"
         />
       </Popover.Content>
     </Popover.Positioner>
