@@ -103,6 +103,7 @@ class SettingsValues implements JsonSerializable
             'category' => (new CategoryTransformer)($value),
             'product' => (new ProductTransformer)($value),
             'cms_page' => (new CmsPageTransformer)($value),
+            'link' => (new LinkTransformer)($value),
             default => $value,
         };
     }

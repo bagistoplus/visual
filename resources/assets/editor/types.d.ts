@@ -105,6 +105,7 @@ interface Category {
 interface Product {
   id: number;
   name: string;
+  url_key: string;
   description: string;
   base_image?: {
     large_image_url: string;

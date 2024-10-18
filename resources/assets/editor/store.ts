@@ -49,10 +49,15 @@ export const useStore = defineStore('main', () => {
   const products = computed(() => Object.values(models.products));
 
   const cmsPages = computed(() => {
-    return Object.values(models.cmsPages).map(p => ({
-      ...p,
-      ...p.translations.find(t => t.locale === themeData.locale)
-    }));
+    return Object.values(models.cmsPages).map(page => {
+      const trans = page.translations.find(t => t.locale === themeData.locale);
+        if (trans) {
+          page.url_key = trans.url_key;
+          page.page_title = trans.page_title;
+        }
+
+        return page;
+    });
   })
 
   const contentSectionsOrder = computed(() => themeData.sectionsOrder);
@@ -268,9 +273,10 @@ export const useStore = defineStore('main', () => {
     let page = models.cmsPages[id];
 
     if (page) {
-      page = {
-        ...page,
-        ...page.translations.find(t => t.locale === themeData.locale)
+      const trans = page.translations.find(t => t.locale === themeData.locale);
+      if (trans) {
+        page.url_key = trans.url_key;
+        page.page_title = trans.page_title;
       }
     }
 

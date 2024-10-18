@@ -109,6 +109,13 @@
       @update:model-value="(v: string) => emit('input', v)"
     />
 
+    <LinkPicker
+      v-else-if="setting.type === 'link'"
+      :label="setting.label"
+      :model-value="value"
+      @update:model-value="(v: string) => emit('input', v)"
+    />
+
     <small v-if="setting.info">{{ setting.info }}</small>
   </div>
 </template>

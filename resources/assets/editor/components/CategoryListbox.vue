@@ -1,8 +1,9 @@
 <script setup lang="ts">
   import { useStore } from '../store';
+  import { Category } from '../types';
 
   const store = useStore();
-  const model = defineModel();
+  const model = defineModel<Category>();
   const search = ref('');
 
   const { isFetching, execute } = store.fetchCategories();
@@ -44,8 +45,8 @@
           :key="category.id"
           href="#"
           class="flex items-center gap-3 px-3 py-2 outline-none hover:bg-neutral-200 text-sm"
-          :class="{ 'bg-neutral-200': model === category.id }"
-          @click.stop="model = category.id"
+          :class="{ 'bg-neutral-200': model && model.id === category.id }"
+          @click.stop="model = category"
         >
           <img
             v-if="category.logo"

@@ -8,7 +8,6 @@
   const props = defineProps<{ label: string; }>();
   const model = defineModel<number | null>();
   const opened = ref(false);
-  const search = ref('');
 
   const selectedProduct = computed<Product | null>({
     get: () => model.value ? store.getProduct(model.value) : null,
@@ -64,7 +63,7 @@
         </Popover.Arrow>
 
         <ProductListbox
-          v-model="model"
+          v-model="selectedProduct"
           @update:model-value="(opened = false)"
         />
       </Popover.Content>

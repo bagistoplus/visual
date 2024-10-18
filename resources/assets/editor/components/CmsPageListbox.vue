@@ -3,14 +3,19 @@
   import { CmsPage } from '../types';
 
   const store = useStore();
-  const model = defineModel();
+  const model = defineModel<CmsPage>();
   const search = ref('');
   const { isFetching, data, execute } = store.fetchCmsPages();
 
-  const pages = computed(() => data.value ? data.value.map((page: CmsPage) => ({
-    ...page,
-    ...page.translations.find(t => t.locale === store.themeData.locale)
-  })) : []);
+  const pages = computed(() => data.value ? data.value.map((page: CmsPage) => {
+    const trans = page.translations.find(t => t.locale === store.themeData.locale);
+    if (trans) {
+      page.url_key = trans.url_key;
+      page.page_title = trans.page_title;
+    }
+
+    return page;
+  }) : []);
 
   onMounted(() => execute());
 
@@ -46,12 +51,12 @@
           :key="page.url_key"
           href="#"
           class="flex items-center gap-3 px-3 py-2 outline-none hover:bg-neutral-200 text-sm"
-          :class="{ 'bg-neutral-200': model === page }"
+          :class="{ 'bg-neutral-200': model && model.url_key === page.url_key }"
           @click.stop="model = page"
         >
           <i-mdi-file-document-outline class="w-4 h-4 flex-none text-gray-700" />
           <span class="truncate flex-1 w-0">
-            {{ page.page_title }}
+            {{ page.id }} {{ page.page_title }}
           </span>
         </a>
       </div>

@@ -3,6 +3,11 @@
   "description": "",
   "settings": [
     {
+      "id": "button_link",
+      "type": "link",
+      "label": "Announcement link"
+    },
+    {
       "id": "page",
       "type": "cms_page",
       "label": "Cms Page"

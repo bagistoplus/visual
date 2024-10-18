@@ -3,7 +3,7 @@
   import { Product } from '../types';
 
   const store = useStore();
-  const model = defineModel();
+  const model = defineModel<Product>();
   const search = ref('');
   const { isFetching, data, execute } = store.fetchProducts();
 
@@ -43,8 +43,8 @@
           v-for="product in products"
           :key="product.id"
           class="cursor-pointer flex items-center gap-3 px-3 py-2 outline-none hover:bg-neutral-200 text-sm"
-          :class="{ 'bg-neutral-200': model === product.id }"
-          @click.stop="model = product.id"
+          :class="{ 'bg-neutral-200': model && model.id === product.id }"
+          @click.stop="model = product"
         >
           <img
             v-if="product.base_image"

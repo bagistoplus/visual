@@ -58,7 +58,7 @@
         </Popover.Arrow>
 
         <CategoryListbox
-          v-model="model"
+          v-model="selectedCategory"
           @update:model-value="opened = false"
         />
       </Popover.Content>

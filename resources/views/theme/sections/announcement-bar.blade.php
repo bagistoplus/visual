@@ -41,5 +41,9 @@
         Page: {{ $section->settings->page->page_title }}
       </div>
     @endif
+
+    <div>
+      Link: {{ $section->settings->button_link }}
+    </div>
   </div>
 @endif
