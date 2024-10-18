@@ -35,5 +35,11 @@
         Product: {{ $section->settings->product->name }}
       </div>
     @endif
+
+    @if ($section->settings->page)
+      <div>
+        Page: {{ $section->settings->page->page_title }}
+      </div>
+    @endif
   </div>
 @endif

@@ -5,12 +5,13 @@ import getValue from "lodash/get";
 import debounce from "lodash/debounce";
 import { v4 as uuidv4 } from "uuid";
 
-import type { Block, Category, Image, Product, Section, ThemeData } from "./types";
-import { useFetchCategories, useFetchImages, useFetchProducts } from './api';
+import type { Block, Category, CmsPage, Image, Product, Section, ThemeData } from "./types";
+import { useFetchCategories, useFetchCmsPages, useFetchImages, useFetchProducts } from './api';
 
 interface Models {
   categories: Record<number, Category>;
   products: Record<number, Product>;
+  cmsPages: Record<number, CmsPage>;
 }
 
 export const useStore = defineStore('main', () => {
@@ -34,7 +35,8 @@ export const useStore = defineStore('main', () => {
   const images = reactive<Image[]>([]);
   const models = reactive<Models>({
     categories: {},
-    products: {}
+    products: {},
+    cmsPages: {}
   })
 
   const categories = computed(() => {
@@ -45,6 +47,13 @@ export const useStore = defineStore('main', () => {
   });
 
   const products = computed(() => Object.values(models.products));
+
+  const cmsPages = computed(() => {
+    return Object.values(models.cmsPages).map(p => ({
+      ...p,
+      ...p.translations.find(t => t.locale === themeData.locale)
+    }));
+  })
 
   const contentSectionsOrder = computed(() => themeData.sectionsOrder);
   const contentSections = computed(() => {
@@ -255,6 +264,19 @@ export const useStore = defineStore('main', () => {
     return models.products[id];
   }
 
+  function getCmsPage(id: number) {
+    let page = models.cmsPages[id];
+
+    if (page) {
+      page = {
+        ...page,
+        ...page.translations.find(t => t.locale === themeData.locale)
+      }
+    }
+
+    return page;
+  }
+
   function fetchImages() {
     const { data, execute, onFetchResponse } = useFetchImages();
 
@@ -276,7 +298,7 @@ export const useStore = defineStore('main', () => {
     const context = useFetchCategories();
 
     context.onFetchResponse(() => {
-      context.data.value.data.forEach((item: any) => {
+      context.data.value.data.forEach((item: Category) => {
         models.categories[item.id] = item
       });
     });
@@ -288,8 +310,24 @@ export const useStore = defineStore('main', () => {
     const context = useFetchProducts();
 
     context.onFetchResponse(() => {
-      context.data.value.data.forEach((item: any) => {
+      context.data.value.data.forEach((item: Product) => {
         models.products[item.id] = item
+      });
+    });
+
+    function execute(params: any = {}) {
+      context.execute({ locale: themeData.locale, channel: themeData.channel, ...params })
+    }
+
+    return { ...context, execute };
+  }
+
+  function fetchCmsPages() {
+    const context = useFetchCmsPages();
+
+    context.onFetchResponse(() => {
+      context.data.value.forEach((item: CmsPage) => {
+        models.cmsPages[item.id] = item
       });
     });
 
@@ -307,6 +345,7 @@ export const useStore = defineStore('main', () => {
     availableSections,
     categories,
     products,
+    cmsPages,
 
     contentSections,
     contentSectionsOrder,
@@ -332,12 +371,15 @@ export const useStore = defineStore('main', () => {
     addBlockToSection,
     toggleSectionBlock,
     removeSectionBlock,
+
     searchCategories,
     getProduct,
+    getCmsPage,
 
     fetchImages,
     fetchCategories,
-    fetchProducts
+    fetchProducts,
+    fetchCmsPages
   }
 });
 

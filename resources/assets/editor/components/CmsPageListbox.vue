@@ -1,34 +1,36 @@
 <script setup lang="ts">
   import { useStore } from '../store';
+  import { CmsPage } from '../types';
 
   const store = useStore();
   const model = defineModel();
   const search = ref('');
+  const { isFetching, data, execute } = store.fetchCmsPages();
 
-  const { isFetching, execute } = store.fetchCategories();
+  const pages = computed(() => data.value ? data.value.map((page: CmsPage) => ({
+    ...page,
+    ...page.translations.find(t => t.locale === store.themeData.locale)
+  })) : []);
 
-  const categories = computed(() => {
-    if (!search.value) {
-      return store.categories
-    }
+  onMounted(() => execute());
 
-    return store.searchCategories(search.value);
+  const onSearch = useDebounceFn(() => {
+    execute({ query: search.value });
   });
 
   watch([() => store.themeData.channel, () => store.themeData.locale], () => execute());
 </script>
+
 <template>
   <div class="flex flex-col overflow-y-hidden">
-    <div
-      v-if="search || categories.length > 2"
-      class="flex items-center mx-2 my-2 px-3 py-1 gap-3 border rounded-lg focus-within:ring focus-within:ring-gray-700"
-    >
+    <div class="flex items-center mx-2 my-2 px-3 py-1 gap-3 border rounded-lg focus-within:ring focus-within:ring-gray-700">
       <i-heroicons-magnifying-glass class="w-4 h-4" />
       <input
         v-model="search"
         type="text"
         class="focus:outline-none text-gray-600"
-        placeholder="Search category"
+        placeholder="Search page..."
+        @input="onSearch"
       >
     </div>
     <div class="flex-1 overflow-y-auto border-t">
@@ -40,25 +42,16 @@
       </div>
       <div v-else>
         <a
-          v-for="category in categories"
-          :key="category.id"
+          v-for="page in pages"
+          :key="page.url_key"
           href="#"
           class="flex items-center gap-3 px-3 py-2 outline-none hover:bg-neutral-200 text-sm"
-          :class="{ 'bg-neutral-200': model === category.id }"
-          @click.stop="model = category.id"
+          :class="{ 'bg-neutral-200': model === page }"
+          @click.stop="model = page"
         >
-          <img
-            v-if="category.logo"
-            :src="category.logo.small_image_url"
-            :alt="category.name"
-            class="w-5 h-5 object-cover flex-none"
-          >
-          <i-bi-tags
-            v-else
-            class="w-4 h-4 flex-none mr-1 transform rotate-90"
-          />
+          <i-mdi-file-document-outline class="w-4 h-4 flex-none text-gray-700" />
           <span class="truncate flex-1 w-0">
-            {{ category.name }}
+            {{ page.page_title }}
           </span>
         </a>
       </div>

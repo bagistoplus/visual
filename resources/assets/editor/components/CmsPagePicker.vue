@@ -1,21 +1,20 @@
 <script setup lang="ts">
   import { Popover } from '@ark-ui/vue/popover';
+  import { CmsPage } from '../types';
   import { useStore } from '../store';
-  import { Category } from '../types';
 
   const store = useStore();
   const model = defineModel<number | null>();
   const props = defineProps<{ label: string; }>();
   const opened = ref(false);
 
-  const selectedCategory = computed<Category | null>({
-    get: () => model.value ? store.categories.find(c => c.id === model.value) : null,
-    set: (category: Category | null) => {
-      model.value = category ? category.id : null;
+  const selectedPage = computed<CmsPage | null>({
+    get: () => (model.value ? store.getCmsPage(model.value) : null),
+    set: (page: CmsPage | null) => {
+      model.value = page ? page.id : null;
     }
   });
 </script>
-
 <template>
   <Popover.Root v-model:open="opened">
     <label
@@ -25,29 +24,24 @@
       {{ label }}
     </label>
     <Popover.Trigger as-child>
-      <div class="flex items-center w-full gap-3 cursor-pointer border rounded px-3 h-10 text-sm">
-        <template v-if="selectedCategory">
-          <img
-            v-if="selectedCategory.logo"
-            :src="selectedCategory.logo.small_image_url"
-            :alt="selectedCategory.name"
-            class="w-5 h-5 object-cover flex-none"
-          >
-          <i-bi-tags
-            v-else
-            class="w-4 h-4 flex-none transform rotate-90"
-          />
-          <span class="flex-1 w-0 truncate">{{ selectedCategory.name }}</span>
+      <div
+        role="button"
+        class="flex items-center w-full gap-3 cursor-pointer border rounded px-3 h-10 text-sm"
+      >
+        <template v-if="selectedPage">
+          <i-mdi-file-document-outline class="w-4 h-4 flex-none" />
+          <span class="flex-1 w-0 truncate">{{ selectedPage.page_title }}</span>
           <button
             class="flex-none rounded-lg hover:bg-neutral-200 p-1"
-            @click.stop="model = null"
+            @click.stop="selectedPage = null"
           >
             <i-heroicons-x-mark />
           </button>
         </template>
-        <span v-else>Select category</span>
+        <span v-else>Select page</span>
       </div>
     </Popover.Trigger>
+
     <Popover.Positioner class="w-[var(--reference-width)] !z-10">
       <Popover.Content class="border bg-white shadow rounded-lg outline-none max-h-80 flex flex-col">
         <Popover.Arrow
@@ -57,8 +51,8 @@
           <Popover.ArrowTip class="border-t border-l" />
         </Popover.Arrow>
 
-        <CategoryListbox
-          v-model="model"
+        <CmsPageListbox
+          v-model="selectedPage"
           @update:model-value="opened = false"
         />
       </Popover.Content>

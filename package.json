@@ -13,6 +13,7 @@
     "@ark-ui/vue": "^4.1.1",
     "@iconify-json/bi": "^1.2.1",
     "@iconify-json/heroicons": "^1.2.1",
+    "@iconify-json/mdi": "^1.2.1",
     "@types/lodash": "^4.17.10",
     "@types/morphdom": "^2.4.2",
     "@types/node": "^22.5.5",

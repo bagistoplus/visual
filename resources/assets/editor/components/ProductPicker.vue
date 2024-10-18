@@ -9,31 +9,18 @@
   const model = defineModel<number | null>();
   const opened = ref(false);
   const search = ref('');
-  const { isFetching, execute, data } = store.fetchProducts();
 
-  const selectedProduct = computed(() => model.value ? store.getProduct(model.value) : null);
-  const products = computed<Product[]>(() => {
-    return data.value ? data.value.data : [];
+  const selectedProduct = computed<Product | null>({
+    get: () => model.value ? store.getProduct(model.value) : null,
+    set: (product: Product | null) => {
+      model.value = product ? product.id : null;
+    }
   });
 
-  function onToggle(open: boolean) {
-    if (open === true) {
-      execute();
-    } else {
-      search.value = '';
-    }
-  }
-
-  function searchProducts() {
-    execute({ query: search.value });
-  }
 </script>
 
 <template>
-  <Popover.Root
-    v-model:open="opened"
-    @update:open="onToggle"
-  >
+  <Popover.Root v-model:open="opened">
     <label
       class="text-sm font-medium block mb-2"
       v-if="label"
@@ -77,11 +64,7 @@
         </Popover.Arrow>
 
         <ProductListbox
-          :is-loading="isFetching"
-          :products="products"
           v-model="model"
-          v-model:search="search"
-          @update:search="searchProducts"
           @update:model-value="(opened = false)"
         />
       </Popover.Content>

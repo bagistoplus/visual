@@ -45,7 +45,7 @@ class JsonViewCompiler extends Compiler implements CompilerInterface
         $bladeTemplate = $this->compileToBlade($path);
 
         $compiled = $this->blade->compileString($bladeTemplate);
-        $compiled = $this->addThemeEditorScript($compiled);
+        $compiled = $this->addThemeEditorScript($compiled, $path);
         $compiled = $this->appendFilePath($compiled, $path);
 
         $this->ensureCompiledDirectoryExists(
@@ -106,10 +106,11 @@ class JsonViewCompiler extends Compiler implements CompilerInterface
         return Yaml::parse($this->files->get($path));
     }
 
-    protected function addThemeEditorScript(string $content)
+    protected function addThemeEditorScript(string $content, string $path)
     {
         return <<<PHP
         <?php if (ThemeEditor::inDesignMode()) {
+            ThemeEditor::renderingJsonView('$path');
             ThemeEditor::startRenderingContent();
         } ?>
         {$content}

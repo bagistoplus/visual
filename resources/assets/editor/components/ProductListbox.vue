@@ -1,9 +1,23 @@
 <script setup lang="ts">
+  import { useStore } from '../store';
   import { Product } from '../types';
-  import Spinner from './Spinner.vue'
-  const props = defineProps<{ isLoading: boolean, products: Product[] }>();
+
+  const store = useStore();
   const model = defineModel();
-  const search = defineModel<string>('search');
+  const search = ref('');
+  const { isFetching, data, execute } = store.fetchProducts();
+
+  const products = computed<Product[]>(() => {
+    return data.value ? data.value.data : [];
+  });
+
+  onMounted(() => execute());
+
+  const onSearch = useDebounceFn(() => {
+    execute({ query: search.value });
+  });
+
+  watch([() => store.themeData.channel, () => store.themeData.locale], () => execute());
 </script>
 
 <template>
@@ -14,11 +28,12 @@
         class="flex-1 w-0 focus:outline-none text-gray-600 text-sm"
         placeholder="Search product"
         v-model="search"
+        @input="onSearch"
       />
     </div>
     <div class="flex-1 overflow-y-auto border-t">
       <div
-        v-if="isLoading"
+        v-if="isFetching"
         class="h-20 flex items-center justify-center"
       >
         <Spinner class="h-6 w-6 text-gray-700" />

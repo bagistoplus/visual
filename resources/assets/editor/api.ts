@@ -49,3 +49,20 @@ export function useFetchProducts() {
 
   return { ...context, execute };
 }
+
+export function useFetchCmsPages() {
+  const url = ref(window.ThemeEditor.routes.getCmsPages)
+  const context = useFetch(url, { refetch: true, immediate: false }).get().json();
+
+  function execute(params: Record<string, any>) {
+    const newUrl = new URL(window.ThemeEditor.routes.getCmsPages, window.location.origin);
+
+    for (const [key, value] of Object.entries(params)) {
+      newUrl.searchParams.append(key, value);
+    }
+
+    url.value = newUrl.href;
+  }
+
+  return { ...context, execute };
+}

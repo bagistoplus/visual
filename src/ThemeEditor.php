@@ -8,6 +8,8 @@ class ThemeEditor
 
     protected string $renderingView = '';
 
+    protected string $renderingJsonView = '';
+
     protected string $renderingSectionGroup = 'beforeContent';
 
     protected array $renderedSections = [];
@@ -45,6 +47,15 @@ class ThemeEditor
         }
 
         return $this->renderingView;
+    }
+
+    public function renderingJsonView(?string $view = '')
+    {
+        if ($view) {
+            $this->renderingJsonView = $view;
+        }
+
+        return $this->renderingJsonView;
     }
 
     public function startRenderingLayout()

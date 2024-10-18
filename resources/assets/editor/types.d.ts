@@ -11,6 +11,7 @@ export interface WindowThemeEditor {
     themesIndex: string;
     uploadImage: string;
     listImages: string;
+    getCmsPages: string;
   };
 }
 
@@ -116,5 +117,17 @@ interface Product {
     medium_image_url: string;
     original_image_url: string;
     small_image_url: string
+  }[];
+}
+
+interface CmsPage {
+  id: number;
+  url_key: string;
+  page_title: string;
+  translations: {
+    id: number;
+    url_key: string;
+    page_title: string;
+    locale: string;
   }[];
 }

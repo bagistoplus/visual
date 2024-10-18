@@ -14,3 +14,7 @@ parameters:
     stubFiles:
         - stubs/Webkul/Theme/Theme.stub
         - stubs/Webkul/Theme/Themes.stub
+    ignoreErrors:
+        -
+            message: '#Parameter \#1 \$column of method #'
+            path: src/Http/Controllers/Admin/ThemeEditorController.php

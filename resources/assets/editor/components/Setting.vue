@@ -102,6 +102,13 @@
       @update:model-value="(v: string) => emit('input', v)"
     />
 
+    <CmsPagePicker
+      v-else-if="setting.type === 'cms_page'"
+      :label="setting.label"
+      :model-value="value"
+      @update:model-value="(v: string) => emit('input', v)"
+    />
+
     <small v-if="setting.info">{{ setting.info }}</small>
   </div>
 </template>
