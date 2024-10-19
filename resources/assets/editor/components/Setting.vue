@@ -116,6 +116,21 @@
       @update:model-value="(v: string) => emit('input', v)"
     />
 
+    <RichtextEditor
+      v-else-if="setting.type === 'richtext'"
+      :label="setting.label"
+      :model-value="value"
+      @update:model-value="(v: string) => emit('input', v)"
+    />
+
+    <RichtextEditor
+      v-else-if="setting.type === 'inline_richtext'"
+      inline
+      :label="setting.label"
+      :model-value="value"
+      @update:model-value="(v: string) => emit('input', v)"
+    />
+
     <small v-if="setting.info">{{ setting.info }}</small>
   </div>
 </template>

@@ -22,7 +22,7 @@
 
 <template>
   <div class="flex">
-    <div class="w-[21.45rem] h-full items-center flex-none flex">
+    <div class="w-[23.47rem] h-full items-center flex-none flex">
       <button
         class="hover:bg-gray-100 w-[3.45rem] flex justify-center items-center focus:outline-none h-full"
         @click="emit('exit')"

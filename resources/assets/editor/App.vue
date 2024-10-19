@@ -82,7 +82,7 @@
       <div class="w-14 flex-none border-r bg-white">
         <ActionBar />
       </div>
-      <aside class="flex-none w-72 border-r bg-white flex overflow-y-hidden">
+      <aside class="flex-none w-80 border-r bg-white flex overflow-y-hidden">
         <RouterView />
       </aside>
       <div class="flex-1 flex justify-center items-center p-4">

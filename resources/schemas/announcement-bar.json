@@ -3,6 +3,11 @@
   "description": "",
   "settings": [
     {
+      "id": "content",
+      "type": "inline_richtext",
+      "label": "Content [rich]"
+    },
+    {
       "id": "button_link",
       "type": "link",
       "label": "Announcement link"

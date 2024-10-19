@@ -14,5 +14,8 @@ export default {
         'fade-out': 'fadeOut .25s ease-out',
       }
     },
-  }
+  },
+  plugins: [
+    require('@tailwindcss/typography')
+  ]
 }

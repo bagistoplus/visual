@@ -45,5 +45,11 @@
     <div>
       Link: {{ $section->settings->button_link }}
     </div>
+
+    @if ($section->settings->content)
+      <div class="prose prose-md prose-stone">
+        {!! $section->settings->content !!}
+      </div>
+    @endif
   </div>
 @endif
