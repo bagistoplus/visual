@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static string activeTheme()
  * @method static bool inPreviewMode()
  * @method static mixed renderingView(string|null $view = '')
+ * @method static mixed renderingJsonView(string|null $view = '')
  * @method static mixed startRenderingLayout()
  * @method static mixed startRenderingTemplate()
  * @method static mixed stopRenderingTemplate()

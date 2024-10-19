@@ -71,7 +71,12 @@
 
 <template>
   <div class="h-screen w-full flex flex-col">
-    <Header class="h-14 border-b flex-none" @exit="onExit" @channelChanged="onChannelChanged" @localeChanged="onLocaleChanged" />
+    <Header
+      class="h-14 border-b flex-none"
+      @exit="onExit"
+      @channelChanged="onChannelChanged"
+      @localeChanged="onLocaleChanged"
+    />
 
     <div class="flex-1 bg-gray-100 flex overflow-y-hidden">
       <div class="w-14 flex-none border-r bg-white">
@@ -81,7 +86,13 @@
         <RouterView />
       </aside>
       <div class="flex-1 flex justify-center items-center p-4">
-        <iframe ref="previewer" frameborder="0" class="transition-all shadow bg-white" :style="{ height: '100%', width: '100%' }" :src="storefrontUrl"></iframe>
+        <iframe
+          ref="previewer"
+          frameborder="0"
+          class="transition-all shadow bg-white"
+          :style="{ height: '100%', width: '100%' }"
+          :src="storefrontUrl"
+        ></iframe>
       </div>
     </div>
   </div>

@@ -25,6 +25,7 @@ export const useStore = defineStore('main', () => {
     channel: '',
     locale: '',
     template: '',
+    templateParent: '',
     hasStaticContent: false,
     sectionsOrder: [],
     beforeContentSectionsOrder: [],
@@ -119,7 +120,7 @@ export const useStore = defineStore('main', () => {
       }
     }
 
-    Object.assign(themeData, data);
+    Object.assign(themeData, { templateParent: '' }, data);
   }
 
   function setAvailableSections(sections: Record<string, Section>) {

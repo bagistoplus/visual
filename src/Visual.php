@@ -36,7 +36,7 @@ class Visual
         return ! $this->themeDataCollector->getSectionData($sectionId)->disabled;
     }
 
-    public function getVisualThemePaths(string $theme): array
+    public function getVisualThemePaths(string $themeCode): array
     {
         $mode = ThemeEditor::inDesignMode() ? 'editor' : 'live';
 
@@ -45,18 +45,18 @@ class Visual
         $requestedLocale = app('core')->getRequestedLocale();
 
         $paths = [
-            $this->buildThemePath($theme, $mode, $requestedChannel->code, $requestedLocale->code),
+            $this->buildThemePath($themeCode, $mode, $requestedChannel->code, $requestedLocale->code),
         ];
 
         if ($requestedLocale->code !== $requestedChannel->default_locale->code) {
-            $paths[] = $this->buildThemePath($theme, $mode, $requestedChannel->code, $requestedChannel->default_locale->code);
+            $paths[] = $this->buildThemePath($themeCode, $mode, $requestedChannel->code, $requestedChannel->default_locale->code);
         }
 
         if ($requestedChannel->code !== $defaultChannel->code) {
-            $paths[] = $this->buildThemePath($theme, $mode, $defaultChannel->code, $requestedLocale->code);
+            $paths[] = $this->buildThemePath($themeCode, $mode, $defaultChannel->code, $requestedLocale->code);
 
             if ($requestedLocale->code !== $defaultChannel->default_locale->code) {
-                $paths[] = $this->buildThemePath($theme, $mode, $defaultChannel->code, $defaultChannel->default_locale->code);
+                $paths[] = $this->buildThemePath($themeCode, $mode, $defaultChannel->code, $defaultChannel->default_locale->code);
             }
         }
 
@@ -65,17 +65,24 @@ class Visual
         return array_map(fn ($p) => substr($p, strlen(base_path()) + 1), $paths);
     }
 
-    public function buildThemePath($theme, $mode, $channel, $locale)
+    public function buildThemePath(string $themeCode, $mode, $channel, $locale)
     {
         return strtr(
-            '%data_path/themes/%theme_code/%mode/%channel/%locale',
+            '%data_path/%channel/%locale',
             [
-                '%data_path' => rtrim(config('bagisto_visual.data_path'), '/\\'),
-                '%theme_code' => $theme,
+                '%data_path' => $this->getThemeBaseDataPath($themeCode, $mode),
                 '%channel' => $channel,
                 '%locale' => $locale,
-                '%mode' => $mode,
             ]
         );
+    }
+
+    public function getThemeBaseDataPath(string $themeCode, string $mode = 'live')
+    {
+        return strtr('%data_path/themes/%theme_code/%mode', [
+            '%data_path' => rtrim(config('bagisto_visual.data_path'), '/\\'),
+            '%theme_code' => $themeCode,
+            '%mode' => $mode,
+        ]);
     }
 }

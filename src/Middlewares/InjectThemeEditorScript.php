@@ -67,6 +67,16 @@ class InjectThemeEditorScript
                 'sectionsData' => $this->themeDataCollector->getSectionsData()->all(),
             ];
 
+            $renderingJsonView = $this->themeEditor->renderingJsonView();
+            $viewData = $this->themeDataCollector->loadFileContent($renderingJsonView);
+            // dd($renderingJsonView, $viewData);
+
+            $themeData['dataPath'] = $renderingJsonView;
+
+            if (array_key_exists('parent', $viewData)) {
+                $themeData['templateParent'] = $viewData['parent'];
+            }
+
             $editorScript = view('visual::admin.editor.injected-script', [
                 'theme' => $this->themeEditor->activeTheme(),
                 'sections' => Sections::all(),

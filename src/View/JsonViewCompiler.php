@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\View;
 
 use BagistoPlus\Visual\Facades\Sections;
+use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Sections\Section;
 use Exception;
 use Illuminate\Filesystem\Filesystem;
@@ -57,7 +58,7 @@ class JsonViewCompiler extends Compiler implements CompilerInterface
 
     protected function compileToBlade(string $path): string
     {
-        $jsonView = $this->loadViewContent($path);
+        $jsonView = Visual::themeDataCollector()->loadFileContent($path);
 
         if ($jsonView === null || ! isset($jsonView['sections'])) {
             return '';

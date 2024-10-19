@@ -18,7 +18,8 @@ class SectionData implements JsonSerializable
         protected array $allBlocks,
         public array $blocks_order
     ) {
-        $this->blocks = collect($this->allBlocks)
+        $this->blocks = collect($this->blocks_order)
+            ->map(fn ($id) => $this->allBlocks[$id])
             ->reject(fn ($block) => $block->disabled)
             ->sortKeysUsing(function ($a, $b) {
                 return array_search($a, $this->blocks_order) - array_search($b, $this->blocks_order);
