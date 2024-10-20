@@ -6,6 +6,8 @@ use BagistoPlus\Visual\Facades\Sections;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Sections\Section;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Cache;
+use Swaggest\JsonSchema\Schema;
 
 class Visual
 {
@@ -23,12 +25,39 @@ class Visual
 
     public function registerSection(string $componentClass, string $prefix): void
     {
+        $schemaPath = $componentClass::getSchemaPath();
+
+        if ($this->shouldValidateSectionSchema($schemaPath)) {
+            $this->validateSectionSchema($schemaPath);
+            Cache::forever($schemaPath, [
+                'validated' => true,
+                'last_modified' => filemtime($schemaPath),
+            ]);
+        }
+
         $section = Section::createFromComponent($componentClass);
         $section->slug = $prefix.'-'.$section->slug;
 
         Sections::add($section);
 
         Blade::component($componentClass, $section->slug, 'visual-section');
+    }
+
+    protected function shouldValidateSectionSchema(string $schemaPath): bool
+    {
+        $cached = Cache::get($schemaPath);
+        $lastModified = filemtime($schemaPath);
+
+        return ! $cached || $cached['last_modified'] < $lastModified;
+    }
+
+    protected function validateSectionSchema(string $schemaPath): void
+    {
+        $data = json_decode(file_get_contents($schemaPath));
+        $schema = json_decode(file_get_contents(__DIR__.'/../resources/schemas/section.schema.json'));
+
+        $validator = Schema::import($schema);
+        $validator->in($data);
     }
 
     public function isSectionEnabled($sectionId): bool

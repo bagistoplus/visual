@@ -1,4 +1,5 @@
 {
+  "$schema": "https://github.com/BagistoPlus/visual/blob/main/resources/schemas/section.schema.json",
   "name": "Announcement Bar",
   "description": "",
   "settings": [
@@ -47,7 +48,8 @@
     {
       "id": "announcement",
       "type": "text",
-      "label": "Announcement text"
+      "label": "Announcement text",
+      "placeholder": "Hola"
     },
     {
       "id": "count",

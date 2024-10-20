@@ -2,7 +2,6 @@
 
 namespace BagistoPlus\Visual\Sections\Concerns;
 
-use Exception;
 use Illuminate\Support\Str;
 
 trait SectionTrait
@@ -45,10 +44,6 @@ trait SectionTrait
     public static function getSchema(): array
     {
         $schemaPath = self::getSchemaPath();
-
-        if (! file_exists($schemaPath)) {
-            throw new Exception('Invalid schema file path');
-        }
 
         return json_decode(file_get_contents($schemaPath), true);
     }

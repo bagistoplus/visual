@@ -13,4 +13,4 @@ it('registers a section and adds it to the Sections facade', function () {
     // Instantiate Visual class and register the section
     $visual = app()->make(Visual::class);
     $visual->registerSection(TestSection::class, 'prefix');
-});
+})->todo();

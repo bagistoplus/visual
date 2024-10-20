@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/BagistoPlus/visual/blob/main/resources/schemas/section.schema.json",
+  "title": "Section",
+  "description": "A theme section",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The section name"
+    },
+    "description": {
+      "type": "string",
+      "description": "The section description"
+    },
+    "settings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/setting" }
+    },
+    "blocks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "The block type, used to show the right component in the section template"
+          },
+          "name": {
+            "type": "string",
+            "description": "The block name, shown in the theme editor"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "The number of blocks of this type that can be used."
+          },
+          "settings": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/setting" }
+          }
+        },
+        "required": ["type", "name"]
+      }
+    },
+    "max_blocks": {
+      "type": "integer",
+      "description": "The maximum number of blocks that can be add to the section"
+    }
+  },
+  "required" : ["name"],
+  "$defs": {
+    "setting": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The setting id, used to access the setting value"
+        },
+        "type": {
+          "enum": ["header", "text", "textarea", "checkbox", "number", "radio", "range", "select", "color", "image", "category", "product", "link", "cms_page", "richtext", "inline_richtext"],
+          "description": "The type of the setting"
+        },
+        "label": {
+          "type": "string",
+          "description": "The setting label"
+        },
+        "default": {
+          "description": "The setting default value"
+        },
+        "info": {
+          "type": "string",
+          "description": "Helper text about the setting"
+        },
+        "placeholder": {
+          "type": "string",
+          "description": "Placeholder for input setting type"
+        },
+        "min": {
+          "type": "integer",
+          "description": "The minimum value of the input"
+        },
+        "max": {
+          "type": "integer",
+          "description": "The maximum value of the input"
+        },
+        "step": {
+          "type": "integer",
+          "description": "The step value of the range input. Default to 1"
+        },
+        "unit": {
+          "type": "string",
+          "description": "The unit for the input. Shown in the theme editor next to the input value"
+        },
+        "options": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/choice_option"}
+        }
+      },
+      "required": ["type", "label"],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": { "not": { "const": "header" } }
+            }
+          },
+          "then": {
+            "required": ["id"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": { "const": "range" }
+            }
+          },
+          "then": {
+            "required": ["min", "max"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": { "enum": ["select"] }
+            }
+          },
+          "then": {
+            "required": ["options"]
+          }
+        }
+      ]
+    },
+    "choice_option": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "The value of the option"
+        },
+        "label": {
+          "type": "string",
+          "description": "The label of the optionb"
+        }
+      },
+      "required": ["value", "label"]
+    }
+  }
+}

@@ -129,7 +129,7 @@ final class Section implements JsonSerializable
         return $this->toArray();
     }
 
-    public static function createFromComponent($component)
+    public static function createFromComponent(string $component)
     {
         $schema = $component::getSchema();
 

@@ -9,10 +9,15 @@ use RuntimeException;
 
 abstract class ThemeServiceProvider extends ServiceProvider
 {
+    /**
+     * The base path of the theme.
+     *
+     * @var string
+     */
     protected $basePath = '';
 
     /**
-     * Register services.
+     * Register any services.
      */
     public function register(): void
     {
@@ -20,13 +25,18 @@ abstract class ThemeServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap services.
+     * Bootstrap any services.
      */
     public function boot(): void
     {
         $this->registerThemeConfig();
     }
 
+    /**
+     * Register the theme configuration.
+     *
+     * @return void
+     */
     protected function registerThemeConfig()
     {
         $config = require $this->getThemeConfigPath();
@@ -40,7 +50,7 @@ abstract class ThemeServiceProvider extends ServiceProvider
     /**
      * Get the base directory of the package by traversing upwards to find composer.json.
      *
-     * @throws RuntimeException
+     * @throws RuntimeException If composer.json is not found.
      */
     public function getBasePath(): string
     {
@@ -63,13 +73,23 @@ abstract class ThemeServiceProvider extends ServiceProvider
             }
         }
 
-        // Return the directory where composer.json is found (the package root)
         return $this->basePath = $dir;
     }
 
+    /**
+     * Get the path to the theme configuration file.
+     */
     public function getThemeConfigPath(): string
     {
         return $this->getBasePath().'/config/theme.php';
+    }
+
+    /**
+     * Get the path to the theme settings schema file.
+     */
+    public function getThemeSettingsPath(): string
+    {
+        return $this->getBasePath().'/config/settings.json';
     }
 
     /**
@@ -80,6 +100,7 @@ abstract class ThemeServiceProvider extends ServiceProvider
      */
     protected function mergeConfigFromArray($key, array $config)
     {
+        // Only merge configuration if the app's configuration isn't cached.
         if (! ($this->app instanceof CachesConfiguration && $this->app->configurationIsCached())) {
             $configBag = $this->app->make('config');
 
