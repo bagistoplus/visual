@@ -18,6 +18,11 @@ class InjectThemeEditorScript
         protected ThemeDataCollector $themeDataCollector
     ) {}
 
+    /**
+     * Inject theme editor metadata in the response
+     *
+     * @return mixed
+     */
     public function handle(Request $request, Closure $next)
     {
         if (! $this->themeEditor->inDesignMode() && ! $this->themeEditor->inPreviewMode()) {
@@ -29,10 +34,13 @@ class InjectThemeEditorScript
         if (
             $response instanceof StreamedResponse
             || $response instanceof BinaryFileResponse
+            || $response->getStatusCode() >= 500
             || Route::currentRouteName() === 'imagecache'
         ) {
             return $response;
         }
+
+        // dd($response);
 
         if ($this->themeEditor->inDesignMode()) {
             $renderedSections = collect($this->themeEditor->renderedSections());
