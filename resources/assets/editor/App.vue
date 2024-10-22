@@ -10,6 +10,15 @@
 
   const previewIframe = useTemplateRef('previewer');
 
+  const viewMode = ref('desktop');
+  const iframeStyle = computed(() => {
+    if (viewMode.value !== "mobile") {
+      return "width: 100%; height: 100%";
+    }
+
+    return "width: 375px; height: 100%";
+  });
+
   const messageHandlers: Record<string, Function> = {
     initialize(data: { themeData: ThemeData, settingsSchema: SettingsSchema }) {
       store.setThemeData(data.themeData);
@@ -77,6 +86,7 @@
 <template>
   <div class="h-screen w-full flex flex-col">
     <Header
+      v-model:viewMode="viewMode"
       class="h-14 border-b flex-none"
       @exit="onExit"
       @channelChanged="onChannelChanged"
@@ -84,10 +94,16 @@
     />
 
     <div class="flex-1 bg-gray-100 flex overflow-y-hidden">
-      <div class="w-14 flex-none border-r bg-white">
+      <div
+        v-show="viewMode !== 'fullscreen'"
+        class="w-14 flex-none border-r bg-white transition-all shado"
+      >
         <ActionBar />
       </div>
-      <aside class="flex-none w-80 border-r bg-white flex overflow-y-hidden">
+      <aside
+        v-show="viewMode !== 'fullscreen'"
+        class="flex-none w-80 border-r bg-white flex overflow-y-hidden transition-all shadow"
+      >
         <RouterView />
       </aside>
       <div class="flex-1 flex justify-center items-center p-4">
@@ -95,8 +111,8 @@
           ref="previewer"
           frameborder="0"
           class="transition-all shadow bg-white"
-          :style="{ height: '100%', width: '100%' }"
           :src="storefrontUrl"
+          :style="iframeStyle"
         ></iframe>
       </div>
     </div>

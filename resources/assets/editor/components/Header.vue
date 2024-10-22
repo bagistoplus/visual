@@ -4,6 +4,7 @@
   import HeroiconsComputerDesktop from '~icons/heroicons/computer-desktop'
   import HeroiconsDevicePhoneMobile from '~icons/heroicons/device-phone-mobile'
   import HeroiconsArrowsPointingOut from '~icons/heroicons/arrows-pointing-out'
+  import { get } from 'sortablejs';
 
   const emit = defineEmits<{
     (e: 'exit'): void;
@@ -12,12 +13,24 @@
   }>();
 
   const store = useStore();
-  const viewMode = ref('desktop');
+  const viewModeModel = defineModel<string>('viewMode', { default: 'desktop' });
   const viewModes = ref([
     { icon: HeroiconsComputerDesktop, value: 'desktop', label: 'Desktop' },
     { icon: HeroiconsDevicePhoneMobile, value: 'mobile', label: 'Mobile' },
     { icon: HeroiconsArrowsPointingOut, value: 'fullscreen', label: 'Fullscreen' },
   ]);
+
+  const viewMode = computed<string[]>({
+    get: () => [viewModeModel.value],
+    set(value: string[]) {
+      viewModeModel.value = value[0];
+    }
+  });
+  watch(viewMode, (newValue, oldValue) => {
+    if (!newValue[0]) {
+      viewMode.value = oldValue;
+    }
+  })
 </script>
 
 <template>
@@ -52,13 +65,13 @@
       </div>
       <div class="mr-4 flex space-x-4">
         <ToggleGroup.Root
-          :model-value="[viewMode]"
+          v-model="viewMode"
           class="rounded-lg bg-gray-200 p-1 flex gap-1 overflow-hidden"
         >
           <ToggleGroup.Item
             v-for="mode in viewModes"
             :value="mode.value"
-            :key="viewMode"
+            :key="mode.value"
             class="appearance-none cursor-pointer inline-flex items-center justify-center outline-none relative p-1 rounded data-[state=on]:bg-white"
           >
             <component
