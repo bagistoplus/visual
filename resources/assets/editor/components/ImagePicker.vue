@@ -1,7 +1,7 @@
 <script setup lang="ts">
-  import { Dialog } from '@ark-ui/vue/dialog'
-  import { machine, connect } from "@zag-js/file-upload"
-  import { normalizeProps, useMachine } from "@zag-js/vue"
+  import { Dialog } from '@ark-ui/vue/dialog';
+  import { machine, connect } from "@zag-js/file-upload";
+  import { normalizeProps, useMachine } from "@zag-js/vue";
   import { useUploadImage } from '../api';
   import { useStore } from '../store';
   import { Image } from '../types';

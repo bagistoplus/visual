@@ -104,7 +104,7 @@ final class Section implements JsonSerializable
             $component = sprintf('<x-visual-section-%s visualId="%s" :viewData="%s" />', $this->slug, $id, $viewData);
         }
 
-        return sprintf("<div class='visual-section' data-section-type='%s' data-section-id='%s'>%s</div>", $this->slug, $id, $component);
+        return sprintf("<div class='visual-section' data-section-type='%s' data-section-id='%s' data-section-name='%s'>%s</div>", $this->slug, $id, $this->name, $component);
     }
 
     public function toArray(): array

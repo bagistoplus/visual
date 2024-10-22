@@ -6,6 +6,7 @@ export interface WindowThemeEditor {
   storefrontUrl: string;
   channels: Channel[];
   defaultChannel: string;
+  availableSections: Record<string, Section>;
   routes: {
     persistTheme: string;
     themesIndex: string;

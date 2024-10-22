@@ -73,7 +73,7 @@
       v-if="!props.static"
     >
       <button
-        class="block w-full !text-left"
+        class="w-full text-sm text-blue-600 rounded-lg cursor-pointer outline-0 inline-flex items-center gap-2 px-2 py-1 hover:bg-gray-200 focus:ring focus:ring-gray-700"
         @click="($event: any) => emit('addSection', $event)"
       >
         <i-heroicons-plus-circle class="w-4 h-4 inline mr-1" />

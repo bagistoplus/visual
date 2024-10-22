@@ -57,7 +57,6 @@ class ThemeEditor {
 
     this.postMessage('initialize', {
       themeData: window.themeData,
-      availableSections: window.availableSections,
       settingsSchema: window.settingsSchema
     })
 
@@ -76,7 +75,7 @@ class ThemeEditor {
     this.sectionOverlay.style.top = section.offsetTop + "px";
 
     const sectionType = section.dataset.sectionType as string;
-    this.sectionLabel.textContent = window.availableSections[sectionType].name;
+    this.sectionLabel.textContent = section.dataset.sectionName as string;
 
     (this.sectionOverlay.querySelector('#move-up') as HTMLButtonElement).style.display = 'none';
     (this.sectionOverlay.querySelector('#move-down') as HTMLButtonElement).style.display = 'none';

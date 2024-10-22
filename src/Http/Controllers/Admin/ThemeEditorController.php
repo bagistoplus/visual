@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Http\Controllers\Admin;
 
+use BagistoPlus\Visual\Facades\Sections;
 use BagistoPlus\Visual\Http\Controllers\Controller;
 use BagistoPlus\Visual\Sections\Concerns\ImageTransformer;
 use BagistoPlus\Visual\ThemePersister;
@@ -23,6 +24,7 @@ class ThemeEditorController extends Controller
             'storefrontUrl' => url('/').'?'.http_build_query(['_designMode' => $themeCode]),
             'channels' => $this->getChannels(),
             'defaultChannel' => app('core')->getDefaultChannelCode(),
+            'sections' => Sections::all(),
             'routes' => [
                 'themesIndex' => route('visual.admin.themes.index'),
                 'persistTheme' => route('visual.admin.editor.api.persist'),

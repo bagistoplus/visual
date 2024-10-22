@@ -3,6 +3,7 @@
   import { useStore } from './store';
   import { useNProgress } from '@vueuse/integrations/useNProgress.mjs';
 
+  const router = useRouter();
   const store = useStore();
   const nprogress = useNProgress();
   const storefrontUrl = window.ThemeEditor.storefrontUrl;
@@ -10,10 +11,12 @@
   const previewIframe = useTemplateRef('previewer');
 
   const messageHandlers: Record<string, Function> = {
-    initialize(data: { availableSections: Record<string, Section>; themeData: ThemeData, settingsSchema: SettingsSchema }) {
+    initialize(data: { themeData: ThemeData, settingsSchema: SettingsSchema }) {
       store.setThemeData(data.themeData);
-      store.setAvailableSections(data.availableSections);
       store.setSettingsSchema(data.settingsSchema);
+
+      store.setAvailableSections(window.ThemeEditor.availableSections);
+
       nprogress.done();
     },
 
@@ -53,6 +56,7 @@
 
     nprogress.start();
     previewIframe.value!.contentWindow?.location.replace(url.href);
+    router.replace('/');
   }
 
   function onLocaleChanged(locale: string) {
@@ -66,6 +70,7 @@
 
     nprogress.start();
     previewIframe.value!.contentWindow?.location.replace(url.href);
+    router.replace('/');
   }
 </script>
 

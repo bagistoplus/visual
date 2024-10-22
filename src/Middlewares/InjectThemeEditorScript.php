@@ -2,7 +2,6 @@
 
 namespace BagistoPlus\Visual\Middlewares;
 
-use BagistoPlus\Visual\Facades\Sections;
 use BagistoPlus\Visual\ThemeDataCollector;
 use BagistoPlus\Visual\ThemeEditor;
 use Closure;
@@ -81,7 +80,6 @@ class InjectThemeEditorScript
 
             $editorScript = view('visual::admin.editor.injected-script', [
                 'theme' => $this->themeEditor->activeTheme(),
-                'sections' => Sections::all(),
                 'themeData' => $themeData,
                 'settingsSchema' => app('themes')->current()->settingsSchema,
             ]);

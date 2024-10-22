@@ -21,6 +21,7 @@
         storefrontUrl: "{{ $storefrontUrl }}",
         channels: @json($channels),
         defaultChannel: "{{ $defaultChannel }}",
+        availableSections: @json($sections),
         routes: @json($routes)
       }
     </script>

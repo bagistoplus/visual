@@ -65,7 +65,6 @@
 
   <script type="text/javascript">
     window.themeData = @json($themeData);
-    window.availableSections = @json($sections);
     window.settingsSchema = @json($settingsSchema);
   </script>
   {{-- blade-formatter-disable --}}

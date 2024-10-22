@@ -34,7 +34,7 @@ export const useStore = defineStore('main', () => {
     sectionsData: {},
     settings: {}
   });
-  const activeSectionId = ref<string|null>(null);
+  const activeSectionId = ref<string | null>(null);
   const images = reactive<Image[]>([]);
   const models = reactive<Models>({
     categories: {},
@@ -54,12 +54,12 @@ export const useStore = defineStore('main', () => {
   const cmsPages = computed(() => {
     return Object.values(models.cmsPages).map(page => {
       const trans = page.translations.find(t => t.locale === themeData.locale);
-        if (trans) {
-          page.url_key = trans.url_key;
-          page.page_title = trans.page_title;
-        }
+      if (trans) {
+        page.url_key = trans.url_key;
+        page.page_title = trans.page_title;
+      }
 
-        return page;
+      return page;
     });
   })
 
@@ -133,11 +133,11 @@ export const useStore = defineStore('main', () => {
     settingsSchema.value = schema;
   }
 
-  function getThemeDataValue(keyPath: string|string[]): unknown {
+  function getThemeDataValue(keyPath: string | string[]): unknown {
     return getValue(themeData, keyPath);
   }
 
-  function updateThemeDataValue(keyPath: string|string[], value: unknown) {
+  function updateThemeDataValue(keyPath: string | string[], value: unknown) {
     setValue(themeData, keyPath, value);
     persistThemeData();
   }
@@ -149,7 +149,7 @@ export const useStore = defineStore('main', () => {
 
   function deactivateSection(sectionId: string) {
     activeSectionId.value = null;
-      notifyPreviewIframe('clearActiveSection', sectionId);
+    notifyPreviewIframe('clearActiveSection', sectionId);
   }
 
   function setContentSectionsOrder(order: string[]) {
@@ -227,6 +227,29 @@ export const useStore = defineStore('main', () => {
 
   function canRemoveSection(sectionId: string) {
     return themeData.sectionsOrder.includes(sectionId);
+  }
+
+  function addNewSection(section: Section) {
+    const settings: Record<string, unknown> = {};
+    const id = uuidv4();
+
+    section.settings.forEach((setting: Setting) => {
+      settings[setting.id] = setting.default;
+    });
+
+    themeData.sectionsData[id] = {
+      id,
+      name: section.name,
+      settings,
+      type: section.slug,
+      blocks: {},
+      blocks_order: [],
+      disabled: false,
+    };
+
+    themeData.sectionsOrder.push(id);
+
+    persistThemeData();
   }
 
   function addBlockToSection(sectionId: string, block: Block) {
@@ -383,6 +406,7 @@ export const useStore = defineStore('main', () => {
     getSectionBlockData,
     getSectionBlockByType,
     canRemoveSection,
+    addNewSection,
     addBlockToSection,
     toggleSectionBlock,
     removeSectionBlock,
