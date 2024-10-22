@@ -8,6 +8,8 @@ use BagistoPlus\Visual\Sections\AnnouncementBar;
 use BagistoPlus\Visual\Sections\SectionRepository;
 use BagistoPlus\Visual\ThemeDataCollector;
 use BagistoPlus\Visual\ThemeEditor;
+use BagistoPlus\Visual\ThemePathsResolver;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 
@@ -18,9 +20,9 @@ class CoreServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
         $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'visual');
 
-        Visual::registerSection(AnnouncementBar::class, 'visual');
-
         $this->bootMiddlewares();
+
+        Visual::registerSection(AnnouncementBar::class, 'visual');
 
         if ($this->app->runningInConsole()) {
             $this->publishAssets();
@@ -33,7 +35,12 @@ class CoreServiceProvider extends ServiceProvider
 
         $this->app->singleton(SectionRepository::class, fn () => new SectionRepository);
         $this->app->singleton(ThemeEditor::class, fn () => new ThemeEditor);
-        $this->app->singleton(ThemeDataCollector::class, fn () => new ThemeDataCollector($this->app->get('files')));
+        $this->app->singleton(ThemeDataCollector::class, function (Application $app) {
+            return new ThemeDataCollector(
+                $app->get(ThemePathsResolver::class),
+                $app->get('files')
+            );
+        });
     }
 
     protected function registerConfigs()

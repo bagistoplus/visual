@@ -5,7 +5,7 @@ import getValue from "lodash/get";
 import debounce from "lodash/debounce";
 import { v4 as uuidv4 } from "uuid";
 
-import type { Block, Category, CmsPage, Image, Product, Section, ThemeData } from "./types";
+import type { Block, Category, CmsPage, Image, Product, Section, Setting, SettingsSchema, ThemeData } from "./types";
 import { useFetchCategories, useFetchCmsPages, useFetchImages, useFetchProducts } from './api';
 
 interface Models {
@@ -19,18 +19,20 @@ export const useStore = defineStore('main', () => {
   let previewIframe: HTMLIFrameElement | null = null;
   const nprogress = useNProgress();
 
+  const settingsSchema = ref<SettingsSchema>([]);
   const usedColors = reactive<string[]>([]);
   const themeData = reactive<ThemeData>({
     url: '',
     channel: '',
     locale: '',
     template: '',
-    templateParent: '',
+    templateDataPath: '',
     hasStaticContent: false,
     sectionsOrder: [],
     beforeContentSectionsOrder: [],
     afterContentSectionsOrder: [],
-    sectionsData: {}
+    sectionsData: {},
+    settings: {}
   });
   const activeSectionId = ref<string|null>(null);
   const images = reactive<Image[]>([]);
@@ -120,11 +122,15 @@ export const useStore = defineStore('main', () => {
       }
     }
 
-    Object.assign(themeData, { templateParent: '' }, data);
+    Object.assign(themeData, data);
   }
 
   function setAvailableSections(sections: Record<string, Section>) {
     availableSections = sections;
+  }
+
+  function setSettingsSchema(schema: SettingsSchema) {
+    settingsSchema.value = schema;
   }
 
   function getThemeDataValue(keyPath: string|string[]): unknown {
@@ -350,6 +356,7 @@ export const useStore = defineStore('main', () => {
     themeData,
     usedColors,
     availableSections,
+    settingsSchema,
     categories,
     products,
     cmsPages,
@@ -361,6 +368,7 @@ export const useStore = defineStore('main', () => {
     setThemeData,
     setAvailableSections,
     setPreviewIframe,
+    setSettingsSchema,
     getThemeDataValue,
     updateThemeDataValue,
     activateSection,

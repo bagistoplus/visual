@@ -2,7 +2,7 @@
 
 namespace BagistoPlus\Visual\Theme;
 
-use BagistoPlus\Visual\Facades\Visual;
+use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use Webkul\Theme\Theme as BagistoTheme;
 
 class Theme extends BagistoTheme
@@ -19,7 +19,8 @@ class Theme extends BagistoTheme
             author: $attributes['author'] ?? '',
             previewImage: $attributes['preview_image'] ?? '',
             documentationUrl: $attributes['documentation_url'] ?? '',
-            isVisualTheme: $attributes['visual_theme'] ?? false
+            isVisualTheme: $attributes['visual_theme'] ?? false,
+            settingsSchema: $attributes['settings_schema'] ?? []
         );
     }
 
@@ -33,7 +34,8 @@ class Theme extends BagistoTheme
         public ?string $author = '',
         public ?string $previewImage = '',
         public ?string $documentationUrl = '',
-        public bool $isVisualTheme = false
+        public bool $isVisualTheme = false,
+        public array $settingsSchema = []
     ) {
         parent::__construct($code, $name, $assetsPath, $viewsPath, $vite);
     }
@@ -50,7 +52,7 @@ class Theme extends BagistoTheme
     {
         $paths = parent::getViewPaths();
 
-        $visualPaths = Visual::getVisualThemePaths($this->code);
+        $visualPaths = ThemePathsResolver::resolveThemeViewsPaths($this->code);
 
         return array_merge($visualPaths, $paths);
     }

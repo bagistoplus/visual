@@ -2,4 +2,7 @@
 
 namespace Webkul\Theme;
 
+/**
+ * @property-read array $settingsSchema
+ */
 class Theme {}

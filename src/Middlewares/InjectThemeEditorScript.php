@@ -73,22 +73,17 @@ class InjectThemeEditorScript
                     ->pluck('id'),
 
                 'sectionsData' => $this->themeDataCollector->getSectionsData()->all(),
+
+                'settings' => $this->themeDataCollector->getThemeSettings(),
+
+                'templateDataPath' => $this->themeEditor->renderingJsonView(),
             ];
-
-            $renderingJsonView = $this->themeEditor->renderingJsonView();
-            $viewData = $this->themeDataCollector->loadFileContent($renderingJsonView);
-            // dd($renderingJsonView, $viewData);
-
-            $themeData['dataPath'] = $renderingJsonView;
-
-            if (array_key_exists('parent', $viewData)) {
-                $themeData['templateParent'] = $viewData['parent'];
-            }
 
             $editorScript = view('visual::admin.editor.injected-script', [
                 'theme' => $this->themeEditor->activeTheme(),
                 'sections' => Sections::all(),
                 'themeData' => $themeData,
+                'settingsSchema' => app('themes')->current()->settingsSchema,
             ]);
         } else {
             $editorScript = view('visual::admin.editor.injected-script', [

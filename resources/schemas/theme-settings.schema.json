@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/BagistoPlus/visual/blob/main/resources/schemas/theme-settings.schema.json",
+  "title": "Theme settings definition",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Settings group name"
+      },
+      "settings": {
+        "type": "array",
+        "items": { "$ref": "file://definitions.schema.json#/setting" }
+      }
+    }
+  }
+}

@@ -3,12 +3,15 @@
 namespace BagistoPlus\Visual\Providers;
 
 use BagistoPlus\Visual\Theme\Themes;
+use BagistoPlus\Visual\ThemePathsResolver;
 use BagistoPlus\Visual\View\BladeDirectives;
 use BagistoPlus\Visual\View\JsonViewCompiler;
 use BagistoPlus\Visual\View\VisualTagsCompiler;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Engines\CompilerEngine;
+use Webkul\Core\Repositories\ChannelRepository;
 
 class ViewServiceProvider extends ServiceProvider
 {
@@ -16,6 +19,10 @@ class ViewServiceProvider extends ServiceProvider
     {
         $this->registerJsonViewCompiler();
         $this->registerEngineResolver();
+
+        $this->app->singleton('tets', function (Application $app) {
+            return $app->make(ChannelRepository::class);
+        });
     }
 
     public function boot()
@@ -23,7 +30,11 @@ class ViewServiceProvider extends ServiceProvider
         $this->registerVisualTagsCompiler();
         $this->registerBladeDirectives();
         $this->registerViewExtensions();
+
         $this->app->singleton('themes', fn () => new Themes);
+        $this->app->singleton(ThemePathsResolver::class, function (Application $app) {
+            return new ThemePathsResolver;
+        });
     }
 
     protected function registerVisualTagsCompiler()

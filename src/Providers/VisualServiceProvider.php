@@ -7,8 +7,8 @@ use Illuminate\Support\AggregateServiceProvider;
 class VisualServiceProvider extends AggregateServiceProvider
 {
     protected $providers = [
-        CoreServiceProvider::class,
         ViewServiceProvider::class,
+        CoreServiceProvider::class,
         AdminServiceProvider::class,
     ];
 }

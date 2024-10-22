@@ -57,7 +57,8 @@ class ThemeEditor {
 
     this.postMessage('initialize', {
       themeData: window.themeData,
-      availableSections: window.availableSections
+      availableSections: window.availableSections,
+      settingsSchema: window.settingsSchema
     })
 
     this.sectionsOrder = window.themeData.sectionsOrder;

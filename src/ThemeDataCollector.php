@@ -4,8 +4,8 @@ namespace BagistoPlus\Visual;
 
 use BagistoPlus\Visual\Facades\Sections;
 use BagistoPlus\Visual\Facades\ThemeEditor;
-use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Sections\Concerns\SectionData;
+use BagistoPlus\Visual\Sections\Concerns\SettingsValues;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -32,7 +32,7 @@ class ThemeDataCollector
      *
      * @param  Filesystem  $files  The filesystem instance for file operations.
      */
-    public function __construct(protected Filesystem $files)
+    public function __construct(protected ThemePathsResolver $themePathsResolver, protected Filesystem $files)
     {
         $this->sectionsData = collect();
     }
@@ -55,6 +55,33 @@ class ThemeDataCollector
     public function getSectionData(string $sectionId): ?SectionData
     {
         return $this->sectionsData->get($sectionId);
+    }
+
+    /**
+     * Get Theme Settings
+     */
+    public function getThemeSettings(): SettingsValues
+    {
+        if (! ($theme = app('themes')->current())) {
+            return new SettingsValues;
+        }
+
+        $dataPath = $this->getDefaultDataFilePath();
+        $data = $this->loadFileContent($dataPath);
+        // dd($data, $dataPath, file_get_contents($dataPath));
+        $settingsSchema = collect($theme->settingsSchema)
+            ->map(fn ($group) => $group['settings'])
+            ->flatten(1)
+            ->reject(fn ($schema) => $schema['type'] === 'header')
+            ->toArray();
+
+        $settings = collect($settingsSchema)->mapWithKeys(function ($schema) use ($data) {
+            return [
+                $schema['id'] => $data['settings'][$schema['id']] ?? $schema['default'] ?? null,
+            ];
+        })->toArray();
+
+        return new SettingsValues($settings, $settingsSchema);
     }
 
     /**
@@ -163,15 +190,26 @@ class ThemeDataCollector
         return $merged;
     }
 
-    protected function getDefaultDataFilePath(): string
+    public function getDefaultDataFilePath(): string
     {
         $mode = ThemeEditor::inDesignMode() ? 'editor' : 'live';
+        $themeCode = app('themes')->current()->code;
+        $channel = app('core')->getRequestedChannelCode();
+        $locale = app('core')->getRequestedLocaleCode();
 
-        return Visual::buildThemePath(
+        $path = $this->themePathsResolver->resolvePath($themeCode, $channel, $locale, $mode, 'theme.json');
+
+        if ($this->files->exists($path)) {
+            return $path;
+        }
+
+        return $this->themePathsResolver->resolveThemeFallbackDataPath(
             themeCode: app('themes')->current()->code,
-            mode: $mode,
             channel: app('core')->getRequestedChannelCode(),
-            locale: app('core')->getRequestedLocaleCode()
-        ).'/theme.json';
+            locale: app('core')->getRequestedLocaleCode(),
+            mode: $mode
+        );
     }
+
+    public function getThemeDataFilePath() {}
 }

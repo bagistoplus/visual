@@ -15,7 +15,7 @@
     },
     "settings": {
       "type": "array",
-      "items": { "$ref": "#/$defs/setting" }
+      "items": { "$ref": "file://definitions.schema.json#/setting" }
     },
     "blocks": {
       "type": "array",
@@ -36,7 +36,7 @@
           },
           "settings": {
             "type": "array",
-            "items": { "$ref": "#/$defs/setting" }
+            "items": { "$ref": "file://definitions.schema.json#/setting" }
           }
         },
         "required": ["type", "name"]

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import type { Section, ThemeData } from './types'
+  import type { Section, Setting, SettingsSchema, ThemeData } from './types'
   import { useStore } from './store';
   import { useNProgress } from '@vueuse/integrations/useNProgress.mjs';
 
@@ -10,10 +10,10 @@
   const previewIframe = useTemplateRef('previewer');
 
   const messageHandlers: Record<string, Function> = {
-    initialize(data: { availableSections: Record<string, Section>; themeData: ThemeData }) {
+    initialize(data: { availableSections: Record<string, Section>; themeData: ThemeData, settingsSchema: SettingsSchema }) {
       store.setThemeData(data.themeData);
       store.setAvailableSections(data.availableSections);
-
+      store.setSettingsSchema(data.settingsSchema);
       nprogress.done();
     },
 

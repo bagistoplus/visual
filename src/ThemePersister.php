@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual;
 
+use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use Illuminate\Filesystem\Filesystem;
 
 class ThemePersister
@@ -35,10 +36,11 @@ class ThemePersister
         // Resolve parent data path and merge if applicable
         $parentDataPath = null;
 
-        if (! empty($data['templateParent'])) {
-            $parentDataPath = config('bagisto_visual.data_path').DIRECTORY_SEPARATOR.$data['templateParent'];
-        } elseif ($data['dataPath'] !== $path && str_starts_with($data['dataPath'], config('bagisto_visual.data_path'))) {
-            $parentDataPath = $data['dataPath'];
+        if ($data['templateDataPath'] !== $path && str_starts_with($data['templateDataPath'], config('bagisto_visual.data_path'))) {
+            $parentDataPath = $data['templateDataPath'];
+        } elseif ($this->files->exists($path)) {
+            $currentData = json_decode($this->files->get($path), true);
+            $parentDataPath = $currentData['parent'] ?? null;
         }
 
         if ($parentDataPath) {
@@ -54,14 +56,41 @@ class ThemePersister
     protected function persistThemeData(array $data)
     {
         $content = [
-            'sections' => [],
+            'settings' => $data['settings'],
+            'sections' => collect(array_merge($data['beforeContentSectionsOrder'], $data['afterContentSectionsOrder']))
+                ->mapWithKeys(fn ($id) => [$id => $data['sectionsData'][$id]])
+                ->all(),
         ];
 
-        foreach (array_merge($data['beforeContentSectionsOrder'], $data['afterContentSectionsOrder']) as $id) {
-            $content['sections'][$id] = $data['sectionsData'][$id];
+        $path = ThemePathsResolver::resolvePath(
+            themeCode: $data['theme'],
+            channel: $data['channel'],
+            locale: $data['locale'],
+            mode: 'editor',
+            path: 'theme.json'
+        );
+
+        $parentDataPath = null;
+
+        if ($this->files->exists($path)) {
+            $currentData = json_decode($this->files->get($path), true);
+            $parentDataPath = $currentData['parent'] ?? null;
         }
 
-        $path = $this->getEditorThemeDataPath($data['theme'], $data['channel'], $data['locale']);
+        if (! $parentDataPath) {
+            $parentDataPath = ThemePathsResolver::resolveThemeFallbackDataPath(
+                themeCode: $data['theme'],
+                channel: $data['channel'],
+                locale: $data['locale'],
+                mode: 'editor'
+            );
+        }
+
+        if ($parentDataPath !== $path) {
+            $parentData = $this->themeDataCollector->loadFileContent($parentDataPath);
+            $content['parent'] = str_replace(config('bagisto_visual.data_path').DIRECTORY_SEPARATOR, '', $parentDataPath); // Store the relative path
+            $content = $this->computeDiff($content, $parentData);
+        }
 
         $this->files->ensureDirectoryExists(dirname($path));
         $this->files->put($path, json_encode($content));
@@ -111,47 +140,25 @@ class ThemePersister
         return $diff;
     }
 
-    protected function getEditorThemeDataPath(string $theme, string $channel, string $locale)
-    {
-        return strtr(
-            '%data_path/themes/%theme_code/%mode/%channel/%locale/theme.json',
-            [
-                '%data_path' => rtrim(config('bagisto_visual.data_path'), '/\\'),
-                '%theme_code' => $theme,
-                '%channel' => $channel,
-                '%locale' => $locale,
-                '%mode' => 'editor',
-            ]
-        );
-    }
-
     protected function getEditorContentPath(string $theme, string $channel, string $locale, string $template)
     {
-        return strtr(
-            '%data_path/themes/%theme_code/%mode/%channel/%locale/templates/presets/%template.json',
-            [
-                '%data_path' => rtrim(config('bagisto_visual.data_path'), '/\\'),
-                '%theme_code' => $theme,
-                '%channel' => $channel,
-                '%locale' => $locale,
-                '%mode' => 'editor',
-                '%template' => $template,
-            ]
+        return ThemePathsResolver::resolvePath(
+            themeCode: $theme,
+            channel: $channel,
+            locale: $locale,
+            mode: 'editor',
+            path: "templates/presets/$template.json"
         );
     }
 
     protected function getEditorTemplatePath(string $theme, string $channel, string $locale, string $template)
     {
-        return strtr(
-            '%data_path/themes/%theme_code/%mode/%channel/%locale/templates/%template.json',
-            [
-                '%data_path' => rtrim(config('bagisto_visual.data_path'), '/\\'),
-                '%theme_code' => $theme,
-                '%channel' => $channel,
-                '%locale' => $locale,
-                '%mode' => 'editor',
-                '%template' => $template,
-            ]
+        return ThemePathsResolver::resolvePath(
+            themeCode: $theme,
+            channel: $channel,
+            locale: $locale,
+            mode: 'editor',
+            path: "templates/$template.json"
         );
     }
 }

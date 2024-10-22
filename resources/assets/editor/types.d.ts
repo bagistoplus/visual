@@ -75,13 +75,19 @@ export interface ThemeData {
   channel: string;
   locale: string;
   template: string;
-  templateParent: string;
+  templateDataPath: string;
   hasStaticContent: boolean;
   sectionsOrder: string[];
   beforeContentSectionsOrder: string[];
   afterContentSectionsOrder: string[];
-  sectionsData: Record<string, SectionData>
+  sectionsData: Record<string, SectionData>;
+  settings: Record<string, any>
 }
+
+export type SettingsSchema = {
+  name: string;
+  settings: Setting[];
+}[];
 
 interface Image {
   name: string;

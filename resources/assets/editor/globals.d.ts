@@ -1,4 +1,4 @@
-import { Section, ThemeData, WindowThemeEditor } from "./types";
+import { Section, Setting, ThemeData, WindowThemeEditor } from "./types";
 
 export {}
 
@@ -8,6 +8,7 @@ declare global {
 
     availableSections: Record<string, Section>;
     themeData: ThemeData;
+    settingsSchema: { name: string; settings: Setting[] }[];
     usedColors: string[];
   }
 }

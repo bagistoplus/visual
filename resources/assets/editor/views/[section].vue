@@ -1,11 +1,11 @@
 <script setup lang="ts">
   import { Menu } from '@ark-ui/vue/menu'
+  import { Accordion } from '@ark-ui/vue/accordion';
   import { SelectionDetails } from 'node_modules/@ark-ui/vue/dist/components/menu/menu';
 
   import { useStore } from '../store';
   import { groupSettings } from '../utils';
   import { Block } from '../types';
-  import { Accordion } from '@ark-ui/vue/accordion';
 
   const router = useRouter();
   const route = useRoute<'/[section]'>();

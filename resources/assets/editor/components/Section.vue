@@ -29,7 +29,7 @@
       :data-disabled="section.disabled"
     >
       <button class="handle flex-none py-2 px-1 rounded-md hover:bg-zinc-200 cursor-move">
-        <i-heroicons-arrows-up-down class="inline w-3" />
+        <i-ri-draggable class="inline w-4" />
       </button>
 
       <div
