@@ -30,6 +30,12 @@
     }
   });
 
+  watch(model, (newContent) => {
+    if (editor.value && editor.value.getHTML() !== newContent) {
+      editor.value.commands.setContent(newContent as string);
+    }
+  })
+
   onBeforeMount(() => {
     editor.value?.destroy();
   });

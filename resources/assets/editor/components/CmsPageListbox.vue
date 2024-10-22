@@ -3,7 +3,7 @@
   import { CmsPage } from '../types';
 
   const store = useStore();
-  const model = defineModel<CmsPage>();
+  const model = defineModel<CmsPage | null>();
   const search = ref('');
   const { isFetching, data, execute } = store.fetchCmsPages();
 

@@ -21,7 +21,7 @@ class ThemeEditorController extends Controller
         return view('visual::admin.editor.index', [
             'baseUrl' => route('visual.admin.editor', ['theme' => $themeCode], false),
             'imagesBaseUrl' => Storage::disk(config('bagisto_visual.images_storage'))->url(''),
-            'storefrontUrl' => url('/').'?'.http_build_query(['_designMode' => $themeCode]),
+            'storefrontUrl' => url('/') . '?' . http_build_query(['_designMode' => $themeCode]),
             'channels' => $this->getChannels(),
             'defaultChannel' => app('core')->getDefaultChannelCode(),
             'sections' => Sections::all(),
@@ -45,7 +45,7 @@ class ThemeEditorController extends Controller
         return collect($request->file('image'))->map(function ($file) {
             $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $file->guessExtension();
-            $storedName = bin2hex($originalName).'_'.uniqid().'.'.$extension;
+            $storedName = bin2hex($originalName) . '_' . uniqid() . '.' . $extension;
 
             $path = $file->storeAs(
                 config('bagisto_visual.images_directory'),
@@ -100,7 +100,7 @@ class ThemeEditorController extends Controller
 
     protected function getChannels()
     {
-        return app('core')->getAllChannels()->map(fn ($channel) => [
+        return app('core')->getAllChannels()->map(fn($channel) => [
             'code' => $channel->code,
             'name' => $channel->name,
             'locales' => $channel->locales,

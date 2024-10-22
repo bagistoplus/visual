@@ -4,6 +4,7 @@ import setValue from "lodash/set";
 import getValue from "lodash/get";
 import debounce from "lodash/debounce";
 import { v4 as uuidv4 } from "uuid";
+import { History } from 'stateshot';
 
 import type { Block, Category, CmsPage, Image, Product, Section, Setting, SettingsSchema, ThemeData } from "./types";
 import { useFetchCategories, useFetchCmsPages, useFetchImages, useFetchProducts } from './api';
@@ -18,6 +19,7 @@ export const useStore = defineStore('main', () => {
   let availableSections: Record<string, Section> = {};
   let previewIframe: HTMLIFrameElement | null = null;
   const nprogress = useNProgress();
+  const history = new History();
 
   const settingsSchema = ref<SettingsSchema>([]);
   const usedColors = reactive<string[]>([]);
@@ -41,6 +43,9 @@ export const useStore = defineStore('main', () => {
     products: {},
     cmsPages: {}
   })
+
+  const canUndoHistory = ref(false);
+  const canRedoHistory = ref(false);
 
   const categories = computed(() => {
     return Object.values(models.categories).map(c => ({
@@ -76,7 +81,7 @@ export const useStore = defineStore('main', () => {
     );
   });
 
-  const persistThemeData = debounce(() => {
+  const persistThemeData = debounce(({ skipHistory }: {skipHistory: boolean } = { skipHistory: false }) => {
     const headers = new Headers();
     headers.append('content-type', 'application/json');
     headers.append(
@@ -85,6 +90,12 @@ export const useStore = defineStore('main', () => {
     );
 
     nprogress.start();
+
+    if (!skipHistory) {
+      history.pushSync(JSON.parse(JSON.stringify(themeData)));
+      canUndoHistory.value = history.hasUndo
+      canRedoHistory.value = history.hasRedo
+    }
 
     fetch(window.ThemeEditor.routes.persistTheme, {
       headers,
@@ -99,6 +110,26 @@ export const useStore = defineStore('main', () => {
         nprogress.done();
       });
   }, 500);
+
+  function undoHistory() {
+    Object.assign(themeData, history.undo().get());
+    canUndoHistory.value = history.hasUndo;
+    canRedoHistory.value = history.hasRedo;
+    persistThemeData({ skipHistory: true });
+  }
+
+  function redoHistory() {
+    Object.assign(themeData, history.redo().get());
+    canUndoHistory.value = history.hasUndo;
+    canRedoHistory.value = history.hasRedo;
+    persistThemeData({ skipHistory: true });
+  }
+
+  function resetHistory() {
+    history.reset();
+    canUndoHistory.value = history.hasUndo;
+    canRedoHistory.value = history.hasRedo;
+  }
 
   function notifyPreviewIframe(type: string, data?: any) {
     previewIframe?.contentWindow?.postMessage({
@@ -123,6 +154,7 @@ export const useStore = defineStore('main', () => {
     }
 
     Object.assign(themeData, data);
+    history.pushSync(JSON.parse(JSON.stringify(themeData)));
   }
 
   function setAvailableSections(sections: Record<string, Section>) {
@@ -387,6 +419,12 @@ export const useStore = defineStore('main', () => {
     contentSections,
     contentSectionsOrder,
     beforeContentSections,
+
+    canUndoHistory,
+    canRedoHistory,
+    undoHistory,
+    redoHistory,
+    resetHistory,
 
     setThemeData,
     setAvailableSections,

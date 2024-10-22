@@ -10,6 +10,13 @@
     (e: 'exit'): void;
     (e: 'channelChanged', channel: string): void;
     (e: 'localeChanged', locale: string): void;
+    (e: 'undoHistory'): void;
+    (e: 'redoHistory'): void;
+  }>();
+
+  const props = defineProps<{
+    canUndoHistory: boolean;
+    canRedoHistory: boolean;
   }>();
 
   const store = useStore();
@@ -26,11 +33,6 @@
       viewModeModel.value = value[0];
     }
   });
-  watch(viewMode, (newValue, oldValue) => {
-    if (!newValue[0]) {
-      viewMode.value = oldValue;
-    }
-  })
 </script>
 
 <template>
@@ -83,18 +85,22 @@
 
         <div class="flex items-center gap-1">
           <button
-            link
             title="Undo"
             aria-label="Undo"
-            class="!px-2 hover:bg-surface-100"
+            type="button"
+            class="px-2 hover:bg-surface-100"
+            :class="{ 'pointer-events-none text-gray-300': !canUndoHistory }"
+            @click="emit('undoHistory')"
           >
             <i-heroicons-arrow-uturn-left class="inline w-4" />
           </button>
           <button
-            link
             title="Redo"
             aria-label="Redo"
-            class="!px-2 hover:bg-surface-100"
+            type="button"
+            class="px-2 hover:bg-surface-100"
+            :class="{ 'pointer-events-none text-gray-300': !canRedoHistory }"
+            @click="emit('redoHistory')"
           >
             <i-heroicons-arrow-uturn-right class="inline w-4" />
           </button>

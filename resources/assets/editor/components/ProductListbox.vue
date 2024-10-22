@@ -3,7 +3,7 @@
   import { Product } from '../types';
 
   const store = useStore();
-  const model = defineModel<Product>();
+  const model = defineModel<Product | null>();
   const search = ref('');
   const { isFetching, data, execute } = store.fetchProducts();
 

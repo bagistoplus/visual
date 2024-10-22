@@ -65,6 +65,8 @@
 
     nprogress.start();
     previewIframe.value!.contentWindow?.location.replace(url.href);
+    store.redoHistory();
+
     router.replace('/');
   }
 
@@ -79,6 +81,7 @@
 
     nprogress.start();
     previewIframe.value!.contentWindow?.location.replace(url.href);
+    store.resetHistory();
     router.replace('/');
   }
 </script>
@@ -88,9 +91,13 @@
     <Header
       v-model:viewMode="viewMode"
       class="h-14 border-b flex-none"
+      :can-undo-history="store.canUndoHistory"
+      :can-redo-history="store.canRedoHistory"
       @exit="onExit"
       @channelChanged="onChannelChanged"
       @localeChanged="onLocaleChanged"
+      @undoHistory="store.undoHistory()"
+      @redoHistory="store.redoHistory()"
     />
 
     <div class="flex-1 bg-gray-100 flex overflow-y-hidden">
