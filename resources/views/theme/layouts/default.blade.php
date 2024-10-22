@@ -10,9 +10,11 @@
   <body class="{{ $direction }} style="scroll-behavior: smooth;">
 
     <main role="main" tabindex="-1">
+      <visual:section name="visual-announcement-bar" />
       @section('body')
         @visual_layout_content
       @show
+      <visual:section name="visual-announcement-bar" />
     </main>
 
     @include('shop::partials.scripts')

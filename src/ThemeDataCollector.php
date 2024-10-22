@@ -90,14 +90,14 @@ class ThemeDataCollector
      * @param  string  $sectionId  The ID of the section.
      * @param  string|null  $dataFilePath  Optional path to the data file.
      */
-    public function collectSectionData(string $sectionId, ?string $dataFilePath = null): void
+    public function collectSectionData(string $sectionId, ?string $dataFilePath = null, ?string $sectionType = null): void
     {
         if ($dataFilePath === null) {
             $dataFilePath = $this->getDefaultDataFilePath();
         }
 
         $data = $this->collectSectionDataFromPath($sectionId, $dataFilePath);
-        $section = Sections::get($data['type'] ?? $sectionId);
+        $section = Sections::get($data['type'] ?? $sectionType);
         $data['id'] = $sectionId;
         $data['name'] = $section->name;
 

@@ -81,6 +81,12 @@ export const useStore = defineStore('main', () => {
     );
   });
 
+  const afterContentSections = computed(() => {
+    return themeData.afterContentSectionsOrder.map(
+      (id: string) => themeData.sectionsData[id]
+    );
+  });
+
   const persistThemeData = debounce(({ skipHistory }: {skipHistory: boolean } = { skipHistory: false }) => {
     const headers = new Headers();
     headers.append('content-type', 'application/json');
@@ -419,6 +425,7 @@ export const useStore = defineStore('main', () => {
     contentSections,
     contentSectionsOrder,
     beforeContentSections,
+    afterContentSections,
 
     canUndoHistory,
     canRedoHistory,

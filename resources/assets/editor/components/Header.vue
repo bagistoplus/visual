@@ -88,21 +88,21 @@
             title="Undo"
             aria-label="Undo"
             type="button"
-            class="px-2 hover:bg-surface-100"
+            class="rounded px-2 py-1 hover:bg-gray-200"
             :class="{ 'pointer-events-none text-gray-300': !canUndoHistory }"
             @click="emit('undoHistory')"
           >
-            <i-heroicons-arrow-uturn-left class="inline w-4" />
+            <i-heroicons-arrow-uturn-left class="inline w-4 h-4" />
           </button>
           <button
             title="Redo"
             aria-label="Redo"
             type="button"
-            class="px-2 hover:bg-surface-100"
+            class="rounded px-2 hover:bg-gray-200 py-1"
             :class="{ 'pointer-events-none text-gray-300': !canRedoHistory }"
             @click="emit('redoHistory')"
           >
-            <i-heroicons-arrow-uturn-right class="inline w-4" />
+            <i-heroicons-arrow-uturn-right class="inline w-4 h-4" />
           </button>
         </div>
 

@@ -27,6 +27,10 @@
   const sortable = useTemplateRef<HTMLElement>('sortable');
 
   onMounted(() => {
+    if (props.static) {
+      return;
+    }
+
     new Sortable(sortable.value, {
       animation: 150,
       ghostClass: 'sortable-ghost',
@@ -64,9 +68,11 @@
     </div>
 
     <p
-      v-if="static"
+      v-if="static && sections.length === 0"
       class="text-sm px-3"
-    >No sections</p>
+    >
+      No sections
+    </p>
 
     <div
       class="space-y-2 mt-4 px-3"

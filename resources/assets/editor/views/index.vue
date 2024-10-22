@@ -102,7 +102,7 @@
       <SectionsGroup
         static
         title="Layout Footer Sections"
-        :sections="[]"
+        :sections="store.afterContentSections"
         @toggleSection="onToggleSection"
         @activateSection="onActivateSection"
         @deactivateSection="onDeactivateSection"
