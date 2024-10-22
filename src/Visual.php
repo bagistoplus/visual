@@ -16,9 +16,9 @@ class Visual
         return $this->themeDataCollector;
     }
 
-    public function collectSectionData(string $sectionId, ?string $renderPath = null, ?string $sectionType = null): void
+    public function collectSectionData(string $sectionId, ?string $renderPath = null): void
     {
-        $this->themeDataCollector->collectSectionData($sectionId, $renderPath, $sectionType);
+        $this->themeDataCollector->collectSectionData($sectionId, $renderPath);
     }
 
     public function registerSection(string $componentClass, string $prefix): void

@@ -91,7 +91,7 @@ class ThemeEditor
         }
 
         $this->renderedSections[] = [
-            'id' => $id ?: $type,
+            'id' => $id ?? $type,
             'group' => $this->renderingSectionGroup,
         ];
     }

@@ -68,7 +68,7 @@ class ThemeDataCollector
 
         $dataPath = $this->getDefaultDataFilePath();
         $data = $this->loadFileContent($dataPath);
-        // dd($data, $dataPath, file_get_contents($dataPath));
+
         $settingsSchema = collect($theme->settingsSchema)
             ->map(fn ($group) => $group['settings'])
             ->flatten(1)
@@ -90,14 +90,14 @@ class ThemeDataCollector
      * @param  string  $sectionId  The ID of the section.
      * @param  string|null  $dataFilePath  Optional path to the data file.
      */
-    public function collectSectionData(string $sectionId, ?string $dataFilePath = null, ?string $sectionType = null): void
+    public function collectSectionData(string $sectionId, ?string $dataFilePath = null): void
     {
         if ($dataFilePath === null) {
             $dataFilePath = $this->getDefaultDataFilePath();
         }
 
         $data = $this->collectSectionDataFromPath($sectionId, $dataFilePath);
-        $section = Sections::get($data['type'] ?? $sectionType);
+        $section = Sections::get($data['type'] ?? $sectionId);
         $data['id'] = $sectionId;
         $data['name'] = $section->name;
 
@@ -134,7 +134,7 @@ class ThemeDataCollector
             return $this->cache[$path];
         }
 
-        if (! $this->files->exists($path)) {
+        if ($path === null || ! $this->files->exists($path)) {
             return [];
         }
 
@@ -151,9 +151,9 @@ class ThemeDataCollector
     {
         $data = json_decode($this->files->get($path), true);
 
-        if (isset($data['parent'])) {
+        if (isset($data['parent']) && ! empty($data['parent'])) {
             $parentPath = config('bagisto_visual.data_path').DIRECTORY_SEPARATOR.$data['parent'];
-            $parentData = $this->loadJsonDataFile($parentPath);
+            $parentData = $this->loadFileContent($parentPath);
 
             return $this->mergeRecursively($data, $parentData);
         }
@@ -190,7 +190,7 @@ class ThemeDataCollector
         return $merged;
     }
 
-    public function getDefaultDataFilePath(): string
+    public function getDefaultDataFilePath(): ?string
     {
         $mode = ThemeEditor::inDesignMode() ? 'editor' : 'live';
         $themeCode = app('themes')->current()->code;

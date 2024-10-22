@@ -86,7 +86,7 @@ class ThemePersister
             );
         }
 
-        if ($parentDataPath !== $path) {
+        if ($parentDataPath && $parentDataPath !== $path) {
             $parentData = $this->themeDataCollector->loadFileContent($parentDataPath);
             $content['parent'] = str_replace(config('bagisto_visual.data_path').DIRECTORY_SEPARATOR, '', $parentDataPath); // Store the relative path
             $content = $this->computeDiff($content, $parentData);

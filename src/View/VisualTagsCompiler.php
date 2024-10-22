@@ -3,7 +3,6 @@
 namespace BagistoPlus\Visual\View;
 
 use BagistoPlus\Visual\Facades\Sections;
-use Illuminate\Support\Str;
 use Illuminate\View\Compilers\ComponentTagCompiler;
 
 class VisualTagsCompiler extends ComponentTagCompiler
@@ -38,16 +37,15 @@ class VisualTagsCompiler extends ComponentTagCompiler
                 }
 
                 $section = Sections::get($sectionName);
-                $sectionId = Str::random(16);
-                $template = $section->renderToBlade($sectionId);
+                $template = $section->renderToBlade($section->slug);
                 $template = <<<PHP
                 <?php
-                Visual::collectSectionData('$sectionId', null, '{$section->slug}');
+                Visual::collectSectionData("{$section->slug}");
                 if (ThemeEditor::inDesignMode()) {
-                    ThemeEditor::collectRenderedSection('{$section->slug}', '{$viewInfos['type']}', '{$viewInfos['view']}', '$sectionId');
+                    ThemeEditor::collectRenderedSection('{$section->slug}', '{$viewInfos['type']}', '{$viewInfos['view']}');
                 }
                 ?>
-                <?php if (Visual::isSectionEnabled('$sectionId')): ?>
+                <?php if (Visual::isSectionEnabled('{$section->slug}')): ?>
                 {$template}
                 <? endif; ?>
                 PHP;

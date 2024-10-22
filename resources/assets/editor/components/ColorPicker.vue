@@ -103,7 +103,7 @@
             <ColorPicker.SwatchTrigger
               v-for="color in selected.slice(0, 6)"
               :value="color"
-              :key="value!.toHexInt()"
+              :key="color!.toHexInt()"
             >
               <ColorPicker.Swatch
                 :value="color"
