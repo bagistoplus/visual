@@ -6,9 +6,8 @@ use BagistoPlus\Visual\ThemeDataCollector;
 use BagistoPlus\Visual\ThemeEditor;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class InjectThemeEditorScript
 {
@@ -31,15 +30,12 @@ class InjectThemeEditorScript
         $response = $next($request);
 
         if (
-            $response instanceof StreamedResponse
-            || $response instanceof BinaryFileResponse
+            ! $this->isHtmlResponse($response)
             || $response->getStatusCode() >= 500
             || Route::currentRouteName() === 'imagecache'
         ) {
             return $response;
         }
-
-        // dd($response);
 
         if ($this->themeEditor->inDesignMode()) {
             $renderedSections = collect($this->themeEditor->renderedSections());
@@ -93,5 +89,10 @@ class InjectThemeEditorScript
         $response->setContent($content);
 
         return $response;
+    }
+
+    protected function isHtmlResponse(Response $response)
+    {
+        return str_contains($response->headers->get('Content-Type'), 'text/html');
     }
 }

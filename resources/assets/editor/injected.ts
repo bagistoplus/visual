@@ -20,7 +20,7 @@ class ThemeEditor {
       this.handleMessage(data);
     });
 
-    document.querySelectorAll('.visual-section').forEach(section => {
+    document.querySelectorAll('[data-section-type]').forEach(section => {
       section.addEventListener('mouseover', this.onSectionHover.bind(this, section as HTMLElement));
 
       section.addEventListener("mouseleave", ((event: Event) => {

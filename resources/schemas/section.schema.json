@@ -13,6 +13,10 @@
       "type": "string",
       "description": "The section description"
     },
+    "wrapper": {
+      "type": "string",
+      "description": "emmet like string representing the wrapper tag of the section"
+    },
     "settings": {
       "type": "array",
       "items": { "$ref": "file://definitions.schema.json#/setting" }

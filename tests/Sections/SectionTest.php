@@ -71,7 +71,7 @@ it('renders a Section to blade template', function () {
     $rendered = $section->renderToBlade($id);
 
     expect($rendered)
-        ->toContain("<div class='visual-section' data-section-type='test-section' data-section-id='$id'")
+        ->toContain("<div data-section-type=\"test-section\" data-section-id=\"$id\"")
         ->toContain("<x-visual-section-test-section visualId=\"$id\"");
 });
 
