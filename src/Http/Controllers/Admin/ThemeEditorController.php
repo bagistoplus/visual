@@ -3,11 +3,11 @@
 namespace BagistoPlus\Visual\Http\Controllers\Admin;
 
 use BagistoPlus\Visual\Facades\Sections;
+use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Http\Controllers\Controller;
 use BagistoPlus\Visual\Sections\Concerns\ImageTransformer;
 use BagistoPlus\Visual\ThemePersister;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Webkul\CMS\Models\Page;
 use Webkul\CMS\Repositories\PageRepository;
@@ -25,6 +25,7 @@ class ThemeEditorController extends Controller
             'channels' => $this->getChannels(),
             'defaultChannel' => app('core')->getDefaultChannelCode(),
             'sections' => Sections::all(),
+            'templates' => ThemeEditor::getTemplates(),
             'routes' => [
                 'themesIndex' => route('visual.admin.themes.index'),
                 'persistTheme' => route('visual.admin.editor.api.persist'),

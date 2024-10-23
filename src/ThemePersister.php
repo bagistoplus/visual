@@ -21,7 +21,7 @@ class ThemePersister
     }
 
     /**
-     * publish
+     * Publish the theme version to the live path.
      */
     public function publish(string $themeCode): void
     {

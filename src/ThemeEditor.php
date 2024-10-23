@@ -2,6 +2,8 @@
 
 namespace BagistoPlus\Visual;
 
+use BagistoPlus\Visual\Support\Template;
+
 class ThemeEditor
 {
     protected string $renderingLayout = '';
@@ -14,7 +16,7 @@ class ThemeEditor
 
     protected array $renderedSections = [];
 
-    protected array $templates;
+    protected array $templates = [];
 
     public function active(): bool
     {
@@ -101,9 +103,10 @@ class ThemeEditor
         return $this->renderedSections;
     }
 
-    public function registerTemplateForRoute(string $routeName, array $template)
+    public function registerTemplate(Template $template)
     {
-        $this->templates[$routeName] = $template;
+        $template->icon = svg($template->icon, ['class' => 'w-4 h-4'])->toHtml();
+        $this->templates[] = $template;
     }
 
     public function getTemplates()

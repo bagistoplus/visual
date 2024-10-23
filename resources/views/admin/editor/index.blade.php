@@ -22,6 +22,7 @@
         channels: @json($channels),
         defaultChannel: "{{ $defaultChannel }}",
         availableSections: @json($sections),
+        templates: @json($templates),
         routes: @json($routes)
       }
     </script>

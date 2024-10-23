@@ -7,6 +7,7 @@ export interface WindowThemeEditor {
   channels: Channel[];
   defaultChannel: string;
   availableSections: Record<string, Section>;
+  templates: Template[];
   routes: {
     persistTheme: string;
     publishTheme: string;
@@ -17,6 +18,12 @@ export interface WindowThemeEditor {
   };
 }
 
+interface Template {
+  template: string,
+  label: string;
+  icon: string;
+  previewUrl: string;
+}
 interface Locale {
   code: string;
   name: string;

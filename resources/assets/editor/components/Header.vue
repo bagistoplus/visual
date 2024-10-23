@@ -5,6 +5,7 @@
   import HeroiconsComputerDesktop from '~icons/heroicons/computer-desktop'
   import HeroiconsDevicePhoneMobile from '~icons/heroicons/device-phone-mobile'
   import HeroiconsArrowsPointingOut from '~icons/heroicons/arrows-pointing-out'
+  import { Template } from '../types';
 
   const CONFIRM_PUBLISH_KEY = 'bagisto_visual_editor_confirm_publush';
 
@@ -15,6 +16,7 @@
     (e: 'undoHistory'): void;
     (e: 'redoHistory'): void;
     (e: 'publishTheme'): void;
+    (e: 'changeTemplate', template: Template): void;
   }>();
 
   const props = defineProps<{
@@ -76,7 +78,7 @@
     </div>
     <div class="flex flex-1 items-center justify-between">
       <div class="flex-1 flex justify-start pl-4 gap-4">
-        <TemplateSelector />
+        <TemplateSelector @select="(t: Template) => emit('changeTemplate', t)" />
 
         <ChannelSelector
           :model-value="store.themeData.channel"

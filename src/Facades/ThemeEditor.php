@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static mixed stopRenderingContent()
  * @method static mixed collectRenderedSection($type, $viewType, $viewName, $id = null)
  * @method static mixed renderedSections()
- * @method static mixed registerTemplateForRoute(string $routeName, array $template)
+ * @method static mixed registerTemplate(\BagistoPlus\Visual\Support\Template $template)
  * @method static mixed getTemplates()
  * @method static mixed getTemplateForRoute(string $routeName)
  *

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import type { Section, Setting, SettingsSchema, ThemeData } from './types'
+  import type { Section, Setting, SettingsSchema, Template, ThemeData } from './types'
   import { useStore } from './store';
   import { useNProgress } from '@vueuse/integrations/useNProgress.mjs';
 
@@ -84,6 +84,22 @@
     store.resetHistory();
     router.replace('/');
   }
+
+  function onChangeTemplate(template: Template) {
+    if (!previewIframe.value) {
+      return;
+    }
+
+    const url = new URL(template.previewUrl)
+    url.searchParams.set('locale', store.themeData.locale);
+    url.searchParams.set('channel', store.themeData.channel);
+    url.searchParams.set('_designMode', store.themeData.theme);
+
+    nprogress.start();
+    previewIframe.value!.contentWindow?.location.replace(url.href);
+    store.resetHistory();
+    router.replace('/');
+  }
 </script>
 
 <template>
@@ -99,6 +115,7 @@
       @undoHistory="store.undoHistory()"
       @redoHistory="store.redoHistory()"
       @publish-theme="store.publishTheme()"
+      @change-template="onChangeTemplate"
     />
 
     <div class="flex-1 bg-gray-100 flex overflow-y-hidden">

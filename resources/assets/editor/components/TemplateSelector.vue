@@ -1,27 +1,19 @@
 <script setup lang="ts">
   import { Menu } from '@ark-ui/vue/menu';
+  import { template } from 'lodash';
 
-  interface Props {
-    templates?: { icon: string; label: string; url: string; template: string }[];
-  }
-  const props = withDefaults(defineProps<Props>(), {
-    templates: () => [
-      { icon: '', label: 'Home page', url: '/', template: 'index' },
-      { icon: '', label: 'Categories', url: '/', template: 'categories' },
-      { icon: '', label: 'Cart', url: '/', template: 'cart' },
-    ]
-  });
+  const templates = window.ThemeEditor.templates;
 
   const emit = defineEmits<{
     (e: 'select', value: any): void;
   }>();
 
   const model = defineModel<string>();
-  const selected = computed(() => props.templates.find(t => t.template === model.value));
+  const selected = computed(() => templates.find(t => t.template === model.value));
 
   onBeforeMount(() => {
     if (!model.value) {
-      model.value = props.templates[0].template;
+      model.value = templates[0].template;
     }
   });
   function onSelect({ value }: { value: string }) {
@@ -33,23 +25,28 @@
 <template>
   <Menu.Root @select="onSelect">
     <Menu.Trigger class="min-w-44 py-2 appearance-none rounded-lg cursor-pointer inline-flex gap-3 outline-none relative select-none items-center justify-center hover:bg-gray-200">
-      <i-heroicons-home class="inline w-4" />
+      <span v-html="selected!.icon"></span>
       {{ selected!.label }}
       <Menu.Indicator>
         <i-heroicons-chevron-down class="inline w-4" />
       </Menu.Indicator>
     </Menu.Trigger>
-    <Menu.Positioner class="w-56">
+    <Menu.Positioner class="w-64">
       <Menu.Content class="pointer-events-none border shadow flex gap-1 p-1 flex-col outline-none rounded bg-white data-[state=open]:animate-fade-in">
-        <Menu.Item
+        <template
           v-for="t in templates"
           :key="t.template"
-          :value="t.template"
-          class="rounded cursor-pointer flex items-center h-9 px-3 gap-3 hover:bg-gray-200"
         >
-          <i-heroicons-home class="inline w-4" />
-          {{ t.label }}
-        </Menu.Item>
+          <Menu.Separator v-if="t.template === '__separator__'" />
+          <Menu.Item
+            v-else
+            :value="t.template"
+            class="rounded cursor-pointer flex items-center h-9 px-3 gap-3 hover:bg-gray-200"
+          >
+            <span v-html="t.icon"></span>
+            {{ t.label }}
+          </Menu.Item>
+        </template>
       </Menu.Content>
     </Menu.Positioner>
   </Menu.Root>

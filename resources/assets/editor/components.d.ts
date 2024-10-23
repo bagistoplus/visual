@@ -35,7 +35,6 @@ declare module 'vue' {
     IHeroiconsEyeDropper: typeof import('~icons/heroicons/eye-dropper')['default']
     IHeroiconsEyeSlash: typeof import('~icons/heroicons/eye-slash')['default']
     IHeroiconsGlobeAsiaAustralia: typeof import('~icons/heroicons/globe-asia-australia')['default']
-    IHeroiconsHome: typeof import('~icons/heroicons/home')['default']
     IHeroiconsItalic: typeof import('~icons/heroicons/italic')['default']
     IHeroiconsLink: typeof import('~icons/heroicons/link')['default']
     IHeroiconsMagnifyingGlass: typeof import('~icons/heroicons/magnifying-glass')['default']
