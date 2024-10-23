@@ -8,6 +8,7 @@ use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
 use BagistoPlus\Visual\Sections\AnnouncementBar;
 use BagistoPlus\Visual\Sections\SectionRepository;
 use BagistoPlus\Visual\Support\Template;
+use BagistoPlus\Visual\Support\UrlGenerator;
 use BagistoPlus\Visual\ThemeDataCollector;
 use BagistoPlus\Visual\ThemePathsResolver;
 use Illuminate\Contracts\Foundation\Application;
@@ -52,11 +53,28 @@ class CoreServiceProvider extends ServiceProvider
                 $app->get('files')
             );
         });
+
+        $this->registerCustomUrlGenerator();
     }
 
     protected function registerConfigs()
     {
         $this->mergeConfigFrom(__DIR__.'/../../config/bagisto-visual.php', 'bagisto_visual');
+    }
+
+    protected function registerCustomUrlGenerator()
+    {
+        $this->app->bind('url', function ($app) {
+            $routes = $app['router']->getRoutes();
+
+            return new UrlGenerator(
+                $routes,
+                $app->rebinding('request', function ($app, $request) {
+                    $app['url']->setRequest($request);
+                }),
+                $app['config']['app.asset_url']
+            );
+        });
     }
 
     protected function publishAssets()
