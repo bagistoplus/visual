@@ -1,10 +1,12 @@
 <script setup lang="ts">
   import { ToggleGroup } from '@ark-ui/vue/toggle-group'
+  import { Dialog } from '@ark-ui/vue/dialog';
   import { useStore } from '../store';
   import HeroiconsComputerDesktop from '~icons/heroicons/computer-desktop'
   import HeroiconsDevicePhoneMobile from '~icons/heroicons/device-phone-mobile'
   import HeroiconsArrowsPointingOut from '~icons/heroicons/arrows-pointing-out'
-  import { get } from 'sortablejs';
+
+  const CONFIRM_PUBLISH_KEY = 'bagisto_visual_editor_confirm_publush';
 
   const emit = defineEmits<{
     (e: 'exit'): void;
@@ -12,6 +14,7 @@
     (e: 'localeChanged', locale: string): void;
     (e: 'undoHistory'): void;
     (e: 'redoHistory'): void;
+    (e: 'publishTheme'): void;
   }>();
 
   const props = defineProps<{
@@ -33,6 +36,27 @@
       viewModeModel.value = value[0];
     }
   });
+
+  const publishDialogActive = ref(false);
+  const dontAskNextTime = ref(false);
+
+  function onPublishClick() {
+    if (null === localStorage.getItem(CONFIRM_PUBLISH_KEY)) {
+      publishDialogActive.value = true;
+      return;
+    }
+
+    emit('publishTheme');
+  }
+
+  function onConfirmPublish() {
+    if (dontAskNextTime.value) {
+      localStorage.setItem(CONFIRM_PUBLISH_KEY, 'true');
+    }
+
+    emit('publishTheme');
+    publishDialogActive.value = false;
+  }
 </script>
 
 <template>
@@ -106,10 +130,46 @@
           </button>
         </div>
 
-        <button class="cursor-pointer border px-3 rounded-lg shadow bg-gray-700 text-white disabled:bg-gray-200 disabled:text-gray-400">
-          Save
+        <button
+          class="cursor-pointer border px-3 rounded-md shadow-sm bg-gray-700 text-white active:bg-gray-600 focus:ring focus:ring-gray-200 disabled:bg-gray-200 disabled:text-gray-400"
+          :disabled="!canUndoHistory"
+          @click="onPublishClick"
+        >
+          Publish
         </button>
       </div>
     </div>
+    <Dialog.Root
+      v-model:open="publishDialogActive"
+      lazyMount
+    >
+      <Teleport to="body">
+        <Dialog.Backdrop class="fixed h-screen w-screen left-0 top-0 backdrop-blur-sm bg-gray-700/30" />
+        <Dialog.Positioner class="flex fixed inset-0 items-center justify-center">
+          <Dialog.Content class="bg-white shadow rounded-md flex flex-col w-full max-w-sm overflow-hidden">
+            <div class="flex flex-col gap-8 p-6">
+              <Dialog.Title class="text-lg font-semibold">Publish edits ?</Dialog.Title>
+              <Dialog.Description>
+                Your changes are being saved automatically, so you won't lose anything!<br><br>
+                Only publish when you're ready for your edits to go live on the storefront.
+              </Dialog.Description>
+
+              <Checkbox
+                v-model="dontAskNextTime"
+                label="Don't ask next time"
+              />
+              <div class="flex gap-6">
+                <Dialog.CloseTrigger class="flex-1 border rounded py-1 outline-none hover:bg-gray-100 focus:ring focus:ring-gray-700">Cancel</Dialog.CloseTrigger>
+                <button
+                  class="flex-1 border rounded bg-gray-900 hover:bg-gray-950 text-white"
+                  @click="onConfirmPublish"
+                >Publish</button>
+              </div>
+            </div>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Teleport>
+    </Dialog.Root>
   </div>
+
 </template>

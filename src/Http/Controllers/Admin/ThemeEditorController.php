@@ -28,6 +28,7 @@ class ThemeEditorController extends Controller
             'routes' => [
                 'themesIndex' => route('visual.admin.themes.index'),
                 'persistTheme' => route('visual.admin.editor.api.persist'),
+                'publishTheme' => route('visual.admin.editor.api.publish'),
                 'uploadImage' => route('visual.admin.editor.api.upload'),
                 'listImages' => route('visual.admin.editor.api.images'),
                 'getCmsPages' => route('visual.admin.editor.api.cms_pages'),
@@ -38,6 +39,13 @@ class ThemeEditorController extends Controller
     public function persistTheme(Request $request)
     {
         return $this->themePersister->persist($request->all());
+    }
+
+    public function publishTheme(Request $request)
+    {
+        $this->themePersister->publish($request->input('theme'));
+
+        return 'Done';
     }
 
     public function uploadImages(Request $request)

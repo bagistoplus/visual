@@ -20,6 +20,31 @@ class ThemePersister
         return redirect($data['url']);
     }
 
+    /**
+     * publish
+     */
+    public function publish(string $themeCode): void
+    {
+        $editorPath = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'editor');
+        $newVersionPath = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'versions/V'.time());
+        $livePath = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'live');
+
+        $files = $this->files->allFiles($editorPath);
+
+        foreach ($files as $file) {
+            $content = $this->themeDataCollector->loadFileContent($file->getPathname());
+            $filePath = $newVersionPath.'/'.$file->getRelativePathname();
+
+            $this->files->ensureDirectoryExists(dirname($filePath));
+            $this->files->put($filePath, json_encode($content));
+        }
+
+        // We make a copy the new version to "live path"
+        // We avoids relying on symlinks, which may not always behave consistently across different operating systems or deployment environments
+        // This will also allow developers to setup versions dir cleanup process
+        $this->files->copyDirectory($newVersionPath, $livePath);
+    }
+
     protected function persistTemplate(array $data)
     {
         $path = $data['hasStaticContent']

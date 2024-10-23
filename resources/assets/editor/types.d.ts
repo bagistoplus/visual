@@ -9,6 +9,7 @@ export interface WindowThemeEditor {
   availableSections: Record<string, Section>;
   routes: {
     persistTheme: string;
+    publishTheme: string;
     themesIndex: string;
     uploadImage: string;
     listImages: string;
@@ -73,6 +74,7 @@ export interface SectionData extends BlockData {
 
 export interface ThemeData {
   url: string;
+  theme: string;
   channel: string;
   locale: string;
   template: string;

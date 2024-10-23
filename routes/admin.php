@@ -6,10 +6,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['web', 'admin'], 'prefix' => config('app.admin_url')], function () {
     Route::prefix('/visual/editor')->group(function () {
-        Route::post('api/persist', [ThemeEditorController::class, 'persistTheme'])
+        Route::post('api/persist-theme', [ThemeEditorController::class, 'persistTheme'])
             ->name('visual.admin.editor.api.persist');
 
-        Route::post('api/upload', [ThemeEditorController::class, 'uploadImages'])
+        Route::post('api/publish-theme', [ThemeEditorController::class, 'publishTheme'])
+            ->name('visual.admin.editor.api.publish');
+
+        Route::post('api/upload-images', [ThemeEditorController::class, 'uploadImages'])
             ->name('visual.admin.editor.api.upload');
 
         Route::get('api/images', [ThemeEditorController::class, 'listImages'])

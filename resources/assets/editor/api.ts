@@ -1,4 +1,5 @@
 import { createFetch } from "@vueuse/core";
+import { ThemeData } from "./types";
 
 const routes = window.ThemeEditor.routes;
 
@@ -65,4 +66,8 @@ export function useFetchCmsPages() {
   }
 
   return { ...context, execute };
+}
+
+export function usePublishTheme(data: any) {
+  return useFetch(window.ThemeEditor.routes.publishTheme).post(data);
 }

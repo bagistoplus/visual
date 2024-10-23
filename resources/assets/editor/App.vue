@@ -98,6 +98,7 @@
       @localeChanged="onLocaleChanged"
       @undoHistory="store.undoHistory()"
       @redoHistory="store.redoHistory()"
+      @publish-theme="store.publishTheme()"
     />
 
     <div class="flex-1 bg-gray-100 flex overflow-y-hidden">

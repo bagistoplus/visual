@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import { History } from 'stateshot';
 
 import type { Block, Category, CmsPage, Image, Product, Section, Setting, SettingsSchema, ThemeData } from "./types";
-import { useFetchCategories, useFetchCmsPages, useFetchImages, useFetchProducts } from './api';
+import { useFetchCategories, useFetchCmsPages, useFetchImages, useFetchProducts, usePublishTheme } from './api';
 
 interface Models {
   categories: Record<number, Category>;
@@ -25,6 +25,7 @@ export const useStore = defineStore('main', () => {
   const usedColors = reactive<string[]>([]);
   const themeData = reactive<ThemeData>({
     url: '',
+    theme: '',
     channel: '',
     locale: '',
     template: '',
@@ -116,6 +117,21 @@ export const useStore = defineStore('main', () => {
         nprogress.done();
       });
   }, 500);
+
+  function publishTheme() {
+    nprogress.start();
+
+    const { onFetchResponse } = usePublishTheme({theme: themeData.theme });
+
+    onFetchResponse(() => {
+      nprogress.done();
+      history.reset();
+      history.pushSync(JSON.parse(JSON.stringify(themeData)));
+
+      canUndoHistory.value = history.hasUndo;
+      canRedoHistory.value = history.hasRedo;
+    })
+  }
 
   function undoHistory() {
     Object.assign(themeData, history.undo().get());
@@ -432,6 +448,7 @@ export const useStore = defineStore('main', () => {
     undoHistory,
     redoHistory,
     resetHistory,
+    publishTheme,
 
     setThemeData,
     setAvailableSections,

@@ -154,6 +154,7 @@ class ThemeDataCollector
         if (isset($data['parent']) && ! empty($data['parent'])) {
             $parentPath = config('bagisto_visual.data_path').DIRECTORY_SEPARATOR.$data['parent'];
             $parentData = $this->loadFileContent($parentPath);
+            unset($data['parent']);
 
             return $this->mergeRecursively($data, $parentData);
         }
