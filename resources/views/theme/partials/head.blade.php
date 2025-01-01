@@ -23,3 +23,4 @@
 {{-- blade-formatter-enable --}}
 
 @stack('styles')
+@livewireStyles

@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Providers;
 
+use BagistoPlus\Visual\LivewireFeatures\SupportSectionData;
 use BagistoPlus\Visual\Theme\Themes;
 use BagistoPlus\Visual\ThemePathsResolver;
 use BagistoPlus\Visual\View\BladeDirectives;
@@ -31,7 +32,9 @@ class ViewServiceProvider extends ServiceProvider
         $this->registerBladeDirectives();
         $this->registerViewExtensions();
 
-        $this->app->singleton('themes', fn () => new Themes);
+        $this->bootLivewireFeatures();
+
+        $this->app->singleton('themes', fn() => new Themes);
         $this->app->singleton(ThemePathsResolver::class, function (Application $app) {
             return new ThemePathsResolver;
         });
@@ -81,5 +84,10 @@ class ViewServiceProvider extends ServiceProvider
         Blade::directive('visual_layout_content', [BladeDirectives::class, 'visualLayoutContent']);
         Blade::directive('visual_content', [BladeDirectives::class, 'visualContent']);
         Blade::directive('end_visual_content', [BladeDirectives::class, 'endVisualContent']);
+    }
+
+    protected function bootLivewireFeatures()
+    {
+        app('livewire')->componentHook(SupportSectionData::class);
     }
 }

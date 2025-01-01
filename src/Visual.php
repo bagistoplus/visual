@@ -6,6 +6,7 @@ use BagistoPlus\Visual\Facades\Sections;
 use BagistoPlus\Visual\Sections\Section;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Livewire;
 
 class Visual
 {
@@ -34,11 +35,15 @@ class Visual
         }
 
         $section = Section::createFromComponent($componentClass);
-        $section->slug = $prefix.'-'.$section->slug;
+        $section->slug = $prefix . '-' . $section->slug;
 
         Sections::add($section);
 
-        Blade::component($componentClass, $section->slug, 'visual-section');
+        if ($section->isLivewire) {
+            Livewire::component('visual-section-' . $section->slug, $componentClass);
+        } else {
+            Blade::component($componentClass, $section->slug, 'visual-section');
+        }
     }
 
     protected function shouldValidateSectionSchema(string $schemaPath): bool

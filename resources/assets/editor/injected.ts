@@ -1,5 +1,6 @@
 import morphdom from "morphdom";
 import type { ThemeData } from "./types";
+import { effect } from "vue";
 
 window.addEventListener('DOMContentLoaded', function() {
   const editor = new ThemeEditor();
@@ -134,7 +135,29 @@ class ThemeEditor {
 
     morphdom(
       document.querySelector("html") as HTMLElement,
-      htmlDocument.querySelector("html") as HTMLElement
+      htmlDocument.querySelector("html") as HTMLElement,
+      {
+        onBeforeElUpdated(fromEl, toEl) {
+          if (fromEl.hasAttribute('x-data') && window.Alpine) {
+            window.Alpine.morph(fromEl, toEl);
+            return false
+          } else if (fromEl.hasAttribute('wire:id') && window.Livewire) {
+            toEl.setAttribute('wire:id', fromEl.getAttribute('wire:id') as string);
+            toEl.removeAttribute('wire:snapshot');
+
+            window.Livewire.trigger('effect', {
+              // @ts-ignore
+              component: fromEl.__livewire,
+              effects: {html: toEl.outerHTML },
+              // @ts-ignore
+              cleanup: c => fromEl.__livewire.addCleanup(c)
+            })
+            return false;
+          }
+
+          return true;
+        }
+      }
     );
   }
 

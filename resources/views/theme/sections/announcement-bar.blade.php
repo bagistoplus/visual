@@ -51,5 +51,12 @@
         {!! $section->settings->content !!}
       </div>
     @endif
+
+    <div x-data="{ count: 1 }">
+      <button @click="count++">+</button>
+      <span x-text="count"></span>
+      <button @click="count--">-</button>
+      <span x-text="'count'"></span>
+    </div>
   </div>
 @endif

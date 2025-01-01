@@ -18,6 +18,7 @@
     </main>
 
     @include('shop::partials.scripts')
+    @livewireScripts
   </body>
 
 </html>

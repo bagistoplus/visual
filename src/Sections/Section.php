@@ -105,10 +105,10 @@ final class Section implements JsonSerializable
             $component = sprintf('<x-visual-section-%s visualId="%s" :viewData="%s" />', $this->slug, $id, $viewData);
         }
 
-        $template = $this->wrapper ? SimpleEmmetParser::parse($this->wrapper.'{__section__}') : '<div>{__section__}</div>';
+        $template = $this->wrapper ? SimpleEmmetParser::parse($this->wrapper . '{__section__}') : '<div>{__section__}</div>';
 
         preg_match('/(<\w+)([>|\s].*)/', $template, $matches);
-        $template = $matches[1].sprintf(' data-section-type="%s" data-section-id="%s"', $this->slug, $id).$matches[2];
+        $template = $matches[1] . sprintf(' data-section-type="%s" data-section-id="%s"', $this->slug, $id) . $matches[2];
         $template = str_replace('__section__', $component, $template);
 
         return $template;
@@ -147,7 +147,8 @@ final class Section implements JsonSerializable
             settings: $schema['settings'] ?? [],
             blocks: $schema['blocks'] ?? [],
             maxBlocks: $schema['maxBlocks'] ?? 16,
-            description: $schema['description'] ?? ''
+            description: $schema['description'] ?? '',
+            isLivewire: is_subclass_of($component, \Livewire\Component::class)
         );
     }
 }

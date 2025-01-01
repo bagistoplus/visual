@@ -5,6 +5,7 @@ namespace BagistoPlus\Visual\Middlewares;
 use BagistoPlus\Visual\ThemeDataCollector;
 use BagistoPlus\Visual\ThemeEditor;
 use Closure;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
@@ -91,8 +92,12 @@ class InjectThemeEditorScript
         return $response;
     }
 
-    protected function isHtmlResponse(Response $response)
+    protected function isHtmlResponse($response)
     {
+        if ($response instanceof JsonResponse) {
+            return false; // JSON responses are not HTML
+        }
+
         return str_contains($response->headers->get('Content-Type'), 'text/html');
     }
 }

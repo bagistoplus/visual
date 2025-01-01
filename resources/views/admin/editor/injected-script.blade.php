@@ -77,9 +77,9 @@
 @endif
 
 <script type="text/javascript">
-  if (window.Livewire) {
-    window.Livewire.addHeaders({
-      'x-visual-editor-theme': '{{ $theme }}'
-    });
-  }
+  // if (window.Livewire) {
+  //   window.Livewire.addHeaders({
+  //     'x-visual-editor-theme': '{{ $theme }}'
+  //   });
+  // }
 </script>
