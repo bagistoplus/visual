@@ -6,20 +6,18 @@ use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Sections\LivewireSection;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Cache;
-use Livewire\Component;
 use Livewire\ComponentHook;
-use Livewire\Livewire;
 
 class SupportSectionData extends ComponentHook
 {
     protected function getSectionCacheKey(): string
     {
-        return session()->getId() . ':' . $this->component->visualId;
+        return session()->getId().':'.$this->component->visualId;
     }
 
     public function mount($params)
     {
-        if (!($this->component instanceof LivewireSection)) {
+        if (! ($this->component instanceof LivewireSection)) {
             return;
         }
 
@@ -46,6 +44,7 @@ class SupportSectionData extends ComponentHook
             $this->component->setSection($viewData['section']);
         }
     }
+
     public function render($view)
     {
         if (! ($this->component instanceof LivewireSection)) {

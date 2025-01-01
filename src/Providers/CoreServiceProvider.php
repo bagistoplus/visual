@@ -27,8 +27,8 @@ class CoreServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'visual');
-        $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'visual');
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
+        $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'visual');
 
         $this->bootMiddlewares();
         $this->bootMiddlewaresForLivewire();
@@ -52,7 +52,7 @@ class CoreServiceProvider extends ServiceProvider
     {
         $this->registerConfigs();
 
-        $this->app->singleton(SectionRepository::class, fn() => new SectionRepository);
+        $this->app->singleton(SectionRepository::class, fn () => new SectionRepository);
         $this->app->singleton(ThemeDataCollector::class, function (Application $app) {
             return new ThemeDataCollector(
                 $app->get(ThemePathsResolver::class),
@@ -65,7 +65,7 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function registerConfigs()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../../config/bagisto-visual.php', 'bagisto_visual');
+        $this->mergeConfigFrom(__DIR__.'/../../config/bagisto-visual.php', 'bagisto_visual');
     }
 
     protected function registerCustomUrlGenerator()
@@ -86,7 +86,7 @@ class CoreServiceProvider extends ServiceProvider
     protected function publishAssets()
     {
         $this->publishes([
-            __DIR__ . '/../../public' => public_path('vendor/bagistoplus/visual'),
+            __DIR__.'/../../public' => public_path('vendor/bagistoplus/visual'),
         ], ['public', 'bagistoplus-visual-assets']);
     }
 

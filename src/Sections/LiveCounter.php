@@ -4,7 +4,7 @@ namespace BagistoPlus\Visual\Sections;
 
 class LiveCounter extends LivewireSection
 {
-    protected static string $schema = __DIR__ . '/../../resources/schemas/live-counter.json';
+    protected static string $schema = __DIR__.'/../../resources/schemas/live-counter.json';
 
     protected static string $view = 'shop::sections.live-counter';
 

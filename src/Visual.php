@@ -35,12 +35,12 @@ class Visual
         }
 
         $section = Section::createFromComponent($componentClass);
-        $section->slug = $prefix . '-' . $section->slug;
+        $section->slug = $prefix.'-'.$section->slug;
 
         Sections::add($section);
 
         if ($section->isLivewire) {
-            Livewire::component('visual-section-' . $section->slug, $componentClass);
+            Livewire::component('visual-section-'.$section->slug, $componentClass);
         } else {
             Blade::component($componentClass, $section->slug, 'visual-section');
         }
