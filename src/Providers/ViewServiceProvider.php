@@ -36,7 +36,7 @@ class ViewServiceProvider extends ServiceProvider
         $this->bootLivewireFeatures();
         $this->bootViewComposers();
 
-        $this->app->singleton('themes', fn() => new Themes);
+        $this->app->singleton('themes', fn () => new Themes);
         $this->app->singleton(ThemePathsResolver::class, function (Application $app) {
             return new ThemePathsResolver;
         });
@@ -86,6 +86,8 @@ class ViewServiceProvider extends ServiceProvider
         Blade::directive('visual_layout_content', [BladeDirectives::class, 'visualLayoutContent']);
         Blade::directive('visual_content', [BladeDirectives::class, 'visualContent']);
         Blade::directive('end_visual_content', [BladeDirectives::class, 'endVisualContent']);
+
+        Blade::directive('visual_color_vars', [BladeDirectives::class, 'visualColorVars']);
     }
 
     protected function bootLivewireFeatures()

@@ -58,4 +58,22 @@ class BladeDirectives
     {
         return '<?php $__env->stopSection(); ?>';
     }
+
+    public static function visualColorVars($expression)
+    {
+        return "<?php echo \BagistoPlus\Visual\View\BladeDirectives::generateColorPalette($expression); ?>";
+    }
+
+    public static function generateColorPalette($name, $color, $isDarkScheme = false)
+    {
+        $shades = TailwindPaletteGenerator::generate($color, $isDarkScheme);
+
+        $palette = '';
+
+        foreach ($shades as $key => $c) {
+            $palette .= "--color-{$name}-{$key}: {$c->red()} {$c->green()} {$c->blue()};\n";
+        }
+
+        return $palette;
+    }
 }

@@ -34,7 +34,7 @@
         v-model="search"
         type="text"
         class="focus:outline-none text-gray-600"
-        placeholder="Search page..."
+        :placeholder="$t('Search page')"
         @input="onSearch"
       >
     </div>

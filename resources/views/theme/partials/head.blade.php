@@ -9,6 +9,8 @@
 
 @stack('meta')
 
+@include('shop::partials.colors')
+
 {{-- <link rel="icon" sizes="16x16" href="{{ core()->getCurrentChannel()->favicon_url ?? bagisto_asset('images/favicon.ico') }}" /> --}}
 
 {{ Vite::useHotFile('vendor/bagistoplus/visual/shop.hot')->useBuildDirectory('vendor/bagistoplus/visual/shop')->withEntryPoints(['resources/assets/shop/css/shop.css', 'resources/assets/shop/ts/index.ts']) }}

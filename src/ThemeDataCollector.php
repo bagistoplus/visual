@@ -47,6 +47,11 @@ class ThemeDataCollector
         return $this->sectionsData;
     }
 
+    public function setSectionData($id, SectionData $data)
+    {
+        $this->sectionsData->put($id, $data);
+    }
+
     /**
      * Get data for a specific section by ID.
      *
@@ -70,9 +75,9 @@ class ThemeDataCollector
         $data = $this->loadFileContent($dataPath);
 
         $settingsSchema = collect($theme->settingsSchema)
-            ->map(fn($group) => $group['settings'])
+            ->map(fn ($group) => $group['settings'])
             ->flatten(1)
-            ->reject(fn($schema) => $schema['type'] === 'header')
+            ->reject(fn ($schema) => $schema['type'] === 'header')
             ->keyBy('id')
             ->toArray();
 
@@ -102,6 +107,20 @@ class ThemeDataCollector
         $data['id'] = $sectionId;
         $data['name'] = $section->name;
 
+        if (! isset($data['settings']) && isset($section->default)) {
+            $data['settings'] = $section->default['settings'] ?? [];
+        }
+
+        if (! isset($data['blocks']) && isset($section->default)) {
+            $data['blocks'] = collect($section->default['blocks'] ?? [])
+                ->mapWithKeys(function ($block) {
+                    return [$block['type'] => $block];
+                })
+                ->toArray();
+
+            $data['blocks_order'] = array_keys($data['blocks']);
+        }
+
         $this->sectionsData->put($sectionId, SectionData::make($sectionId, $data, $section));
     }
 
@@ -116,11 +135,7 @@ class ThemeDataCollector
     {
         $data = $this->loadFileContent($path);
 
-        return Arr::get($data, "sections.$sectionId", [
-            'settings' => [],
-            'blocks' => [],
-            'block_order' => [],
-        ]);
+        return Arr::get($data, "sections.$sectionId");
     }
 
     /**
@@ -153,7 +168,7 @@ class ThemeDataCollector
         $data = json_decode($this->files->get($path), true);
 
         if (isset($data['parent']) && ! empty($data['parent'])) {
-            $parentPath = config('bagisto_visual.data_path') . DIRECTORY_SEPARATOR . $data['parent'];
+            $parentPath = config('bagisto_visual.data_path').DIRECTORY_SEPARATOR.$data['parent'];
             $parentData = $this->loadFileContent($parentPath);
             unset($data['parent']);
 

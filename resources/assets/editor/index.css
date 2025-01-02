@@ -189,7 +189,7 @@ html, body, #app {
 }
 
 [data-scope="accordion"][data-part="item-trigger"] {
-  @apply w-full cursor-pointer text-zinc-900 p-3 text-lg font-semibold flex items-center justify-between;
+  @apply w-full cursor-pointer text-zinc-900 p-3 text-base font-medium flex items-center justify-between;
   @apply hover:bg-gray-100;
 }
 

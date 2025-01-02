@@ -1,3 +1,35 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-background text-neutral;
+    }
+
+    /* Form Elements */
+    [type="text"],
+    [type="email"],
+    [type="password"],
+    [type="number"],
+    [type="search"],
+    [type="tel"],
+    [type="url"],
+    input:where(:not([type])),
+    textarea,
+    select {
+        @apply appearance-none bg-no-repeat;
+        @apply w-full px-4 py-2 rounded-lg border border-neutral-300 bg-white;
+        @apply placeholder:text-neutral-400;
+        @apply focus:outline-none focus:border-primary;
+        @apply disabled:bg-neutral-50 disabled:text-neutral-400 disabled:cursor-not-allowed;
+        @apply transition-colors duration-200;
+    }
+
+    select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.5rem center;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+    }
+}

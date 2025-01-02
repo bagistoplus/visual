@@ -46,8 +46,19 @@ class Visual
         }
     }
 
+    public function registerSections(array $sections, string $prefix): void
+    {
+        foreach ($sections as $section) {
+            $this->registerSection($section, $prefix);
+        }
+    }
+
     protected function shouldValidateSectionSchema(string $schemaPath): bool
     {
+        if (empty($schemaPath)) {
+            return false;
+        }
+
         $cached = Cache::get($schemaPath);
         $lastModified = filemtime($schemaPath);
 

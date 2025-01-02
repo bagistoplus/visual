@@ -2,19 +2,18 @@
 
 namespace BagistoPlus\Visual\Sections\Concerns;
 
-use ArrayIterator;
 use Illuminate\Contracts\Support\Arrayable;
-use JsonSerializable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use IteratorAggregate;
+use JsonSerializable;
 use Traversable;
 
 /**
  * @template TKey of array-key
  * @template TValue
  */
-class SettingsValues implements JsonSerializable, IteratorAggregate, Arrayable
+final class SettingsValues implements Arrayable, IteratorAggregate, JsonSerializable
 {
     /**
      * All of the settings values.
@@ -46,10 +45,6 @@ class SettingsValues implements JsonSerializable, IteratorAggregate, Arrayable
 
     /**
      * Register a transformer for a specific type.
-     *
-     * @param string $type
-     * @param callable $transformer
-     * @return void
      */
     public static function registerTransformer(string $type, callable $transformer): void
     {
@@ -77,7 +72,7 @@ class SettingsValues implements JsonSerializable, IteratorAggregate, Arrayable
     /**
      * Magic getter for accessing values.
      *
-     * @param string $name
+     * @param  string  $name
      * @return mixed
      */
     public function __get($name)
@@ -115,8 +110,7 @@ class SettingsValues implements JsonSerializable, IteratorAggregate, Arrayable
     /**
      * Transform a value based on its type.
      *
-     * @param mixed $value
-     * @param string|null $type
+     * @param  mixed  $value
      * @return mixed
      */
     protected function transformValue($value, ?string $type)
@@ -142,8 +136,7 @@ class SettingsValues implements JsonSerializable, IteratorAggregate, Arrayable
     /**
      * Check if a key exists in the values array.
      *
-     * @param TKey $key
-     * @return bool
+     * @param  TKey  $key
      */
     public function has(string|int $key): bool
     {
@@ -168,7 +161,7 @@ class SettingsValues implements JsonSerializable, IteratorAggregate, Arrayable
             $schemas = Arr::only($this->schemas, $keys);
         }
 
-        return new static($values, $schemas);
+        return new self($values, $schemas);
     }
 
     /**
@@ -189,18 +182,17 @@ class SettingsValues implements JsonSerializable, IteratorAggregate, Arrayable
             $schemas = Arr::except($this->schemas, $keys);
         }
 
-        return new static($values, $schemas);
+        return new self($values, $schemas);
     }
 
     /**
      * Filter the settings, returning a bag of settings that pass the filter.
      *
      * @param  callable  $callback
-     * @return static
      */
     public function filter($callback): static
     {
-        return new static(collect($this->values)->filter($callback)->all(), $this->schemas);
+        return new self(collect($this->values)->filter($callback)->all(), $this->schemas);
     }
 
     /**
@@ -217,19 +209,13 @@ class SettingsValues implements JsonSerializable, IteratorAggregate, Arrayable
     }
 
     /**
-     * Convert the values to an array with transformations applied.
+     * Return all raw values.
      *
      * @return array<TKey, TValue>
      */
     public function toArray()
     {
-        $result = [];
-
-        foreach ($this->values as $key => $value) {
-            $result[$key] = $this->get($key); // Ensure values are transformed
-        }
-
-        return $result;
+        return $this->values;
     }
 
     public function jsonSerialize(): mixed

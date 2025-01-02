@@ -7,7 +7,24 @@
         "description": "The setting id, used to access the setting value"
       },
       "type": {
-        "enum": ["header", "text", "textarea", "checkbox", "number", "radio", "range", "select", "color", "image", "category", "product", "link", "cms_page", "richtext", "inline_richtext"],
+        "enum": [
+          "header",
+          "text",
+          "textarea",
+          "checkbox",
+          "number",
+          "radio",
+          "range",
+          "select",
+          "color",
+          "image",
+          "category",
+          "product",
+          "link",
+          "cms_page",
+          "richtext",
+          "inline_richtext"
+        ],
         "description": "The type of the setting"
       },
       "label": {
@@ -43,39 +60,62 @@
       },
       "options": {
         "type": "array",
-        "items": { "$ref": "#/choice_option"}
+        "items": {
+          "$ref": "#/choice_option"
+        }
       }
     },
-    "required": ["type", "label"],
+    "required": [
+      "type",
+      "label"
+    ],
     "allOf": [
       {
         "if": {
           "properties": {
-            "type": { "not": { "const": "header" } }
+            "type": {
+              "not": {
+                "const": "header"
+              }
+            }
           }
         },
         "then": {
-          "required": ["id"]
+          "required": [
+            "id"
+          ]
         }
       },
       {
         "if": {
           "properties": {
-            "type": { "const": "range" }
+            "type": {
+              "const": "range"
+            }
           }
         },
         "then": {
-          "required": ["min", "max"]
+          "required": [
+            "min",
+            "max"
+          ]
         }
       },
       {
         "if": {
           "properties": {
-            "type": { "enum": ["select", "radio"] }
+            "type": {
+              "enum": [
+                "select",
+                "radio"
+              ]
+            }
           }
         },
         "then": {
-          "required": ["options"]
+          "required": [
+            "options"
+          ]
         }
       }
     ]
@@ -91,6 +131,43 @@
         "description": "The label of the optionb"
       }
     },
-    "required": ["value", "label"]
+    "required": [
+      "value",
+      "label"
+    ]
+  },
+  "sectionData": {
+    "type": "object",
+    "description": "Defaults settings for the section, containing a list of key-value pairs.",
+    "properties": {
+      "settings": {
+        "type": "object",
+        "description": "Defaults settings for the section, containing a list of key-value pairs.",
+        "additionalProperties": {
+          "description": "A key-value pair in the settings object. Keys are strings, and values can be of any type."
+        }
+      },
+      "blocks": {
+        "type": "array",
+        "description": "Defaults blocks of the section",
+        "item": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Type of the block"
+            },
+            "settings": {
+              "type": "object",
+              "description": "Defaults settings for the block, containing a list of key-value pairs.",
+              "additionalProperties": {
+                "description": "A key-value pair in the settings object. Keys are strings, and values can be of any type."
+              }
+            },
+            "required": ["type"]
+          }
+        }
+      }
+    }
   }
 }

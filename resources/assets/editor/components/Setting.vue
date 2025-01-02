@@ -15,7 +15,7 @@
 </script>
 
 <template>
-  <div class="mb-6 last:mb-0">
+  <div class="mb-4 last:mb-0">
     <TextInput
       v-if="setting.type === 'text'"
       :id="setting.id"
@@ -69,7 +69,7 @@
       v-else-if="setting.type === 'select'"
       :label="setting.label"
       :options="setting.options"
-      :model-value="value"
+      :model-value="String(value)"
       @update:model-value="(v: string) => emit('input', v)"
     />
 
@@ -131,6 +131,9 @@
       @update:model-value="(v: string) => emit('input', v)"
     />
 
-    <small v-if="setting.info">{{ setting.info }}</small>
+    <small
+      v-if="setting.info"
+      class="text-xs leading-3"
+    >{{ setting.info }}</small>
   </div>
 </template>

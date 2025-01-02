@@ -8,6 +8,7 @@ use BagistoPlus\Visual\Http\Controllers\Controller;
 use BagistoPlus\Visual\Sections\Concerns\ImageTransformer;
 use BagistoPlus\Visual\ThemePersister;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Storage;
 use Webkul\CMS\Models\Page;
 use Webkul\CMS\Repositories\PageRepository;
@@ -34,6 +35,8 @@ class ThemeEditorController extends Controller
                 'listImages' => route('visual.admin.editor.api.images'),
                 'getCmsPages' => route('visual.admin.editor.api.cms_pages'),
             ],
+            'messages' => Lang::get('visual::theme-editor'),
+            'editorLocale' => app()->getLocale(),
         ]);
     }
 

@@ -30,6 +30,7 @@
     "codeat3/blade-fluentui-system-icons": "^1.33",
     "illuminate/contracts": "^10.0",
     "livewire/livewire": "^3.5",
+    "mallardduck/blade-lucide-icons": "^1.23",
     "spatie/color": "^1.6",
     "swaggest/json-schema": "^0.12.42",
     "symfony/yaml": "^6.4"

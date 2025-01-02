@@ -8,6 +8,7 @@ import { History } from 'stateshot';
 
 import type { Block, Category, CmsPage, Image, Product, Section, Setting, SettingsSchema, ThemeData } from "./types";
 import { useFetchCategories, useFetchCmsPages, useFetchImages, useFetchProducts, usePublishTheme } from './api';
+import { get } from 'sortablejs';
 
 interface Models {
   categories: Record<number, Category>;

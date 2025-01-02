@@ -38,7 +38,7 @@
             <i-heroicons-x-mark />
           </button>
         </template>
-        <span v-else>Select page</span>
+        <span v-else>{{ $t('Select page') }}</span>
       </div>
     </Popover.Trigger>
 

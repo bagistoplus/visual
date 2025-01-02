@@ -1,157 +1,31 @@
 {
   "$schema": "https://github.com/BagistoPlus/visual/blob/main/resources/schemas/section.schema.json",
-  "name": "Announcement Bar",
-  "description": "",
+  "name": "visual::sections.announcement-bar.name",
+  "description": "visual::sections.announcement-bar.description",
   "settings": [
     {
-      "id": "content",
-      "type": "inline_richtext",
-      "label": "Content [rich]"
-    },
-    {
-      "id": "button_link",
-      "type": "link",
-      "label": "Announcement link"
-    },
-    {
-      "id": "page",
-      "type": "cms_page",
-      "label": "Cms Page"
-    },
-    {
-      "id": "product",
-      "type": "product",
-      "label": "Product"
-    },
-    {
-      "id": "category",
-      "type": "category",
-      "label": "Category"
-    },
-    {
-      "id": "color",
-      "type": "color",
-      "label": "Text Color",
-      "default": "black"
-    },
-    {
-      "id": "image",
-      "type": "image",
-      "label": "Image"
-    },
-    {
-      "id": "show_announcement",
-      "type": "checkbox",
-      "label": "Show announcement",
-      "info": "Show announcement bar when enabled"
-    },
-    {
-      "id": "announcement",
       "type": "text",
-      "label": "Announcement text",
-      "placeholder": "Hola"
+      "id": "text",
+      "default": "visual::sections.announcement-bar.settings.default_text",
+      "label": "visual::sections.announcement-bar.settings.text_label"
+    },
+
+    {
+      "type": "link",
+      "id": "link",
+      "label": "visual::sections.announcement-bar.settings.link_label"
     },
     {
-      "id": "count",
-      "type": "number",
-      "label": "Announcement count",
-      "default": 1,
-      "min": 1,
-      "max": 3
+      "type": "color",
+      "id": "background_color",
+      "default": "#4f46e5",
+      "label": "visual::sections.announcement-bar.settings.background_color_label"
     },
     {
-      "type": "select",
-      "id": "vertical_alignment",
-      "label": "Vertical alignment",
-      "options": [
-        {
-          "value": "top",
-          "label": "Top"
-        },
-        {
-          "value": "middle",
-          "label": "Middle"
-        },
-        {
-          "value": "bottom",
-          "label": "Bottom"
-        }
-      ],
-      "default": "middle"
-    },
-    {
-      "type": "header",
-      "label": "Test Group"
-    },
-    {
-      "type": "radio",
-      "id": "logo_aligment",
-      "label": "Logo alignment",
-      "options": [
-        {
-          "value": "left",
-          "label": "Left"
-        },
-        {
-          "value": "centered",
-          "label": "Centered"
-        }
-      ],
-      "default": "left"
-    },
-    {
-      "type": "range",
-      "id": "font_size",
-      "min": 12,
-      "max": 24,
-      "step": 1,
-      "unit": "px",
-      "label": "Font size",
-      "default": 16
-    },
-    {
-      "id": "position",
-      "type": "select",
-      "label": "Announcement position",
-      "options": [
-        {
-          "value": "left",
-          "label": "Left"
-        },
-        {
-          "value": "center",
-          "label": "Center"
-        },
-        {
-          "value": "right",
-          "label": "Right"
-        }
-      ]
-    },
-    {
-      "type": "textarea",
-      "id": "home_welcome_message",
-      "label": "Welcome message",
-      "default": "Welcome to my shop!"
-    }
-  ],
-  "blocks": [
-    {
-      "type": "announcement",
-      "name": "Announcement",
-      "settings": [
-        {
-          "type": "text",
-          "id": "text",
-          "default": "Announcement text here",
-          "label": "Announcement text"
-        },
-        {
-          "type": "text",
-          "id": "link",
-          "label": "Url"
-        }
-      ]
+      "type": "color",
+      "id": "text_color",
+      "default": "#ffffff",
+      "label": "visual::sections.announcement-bar.settings.text_color_label"
     }
   ]
 }

@@ -1,6 +1,4 @@
 import morphdom from "morphdom";
-import type { ThemeData } from "./types";
-import { effect } from "vue";
 
 window.addEventListener('DOMContentLoaded', function() {
   const editor = new ThemeEditor();

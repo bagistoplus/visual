@@ -36,6 +36,11 @@ trait SectionTrait
         return Str::kebab(self::className());
     }
 
+    public static function name(): string
+    {
+        return Str::of(self::slug())->replace('-', ' ')->title();
+    }
+
     public static function getSchemaPath(): string
     {
         return static::$schema;
@@ -44,6 +49,10 @@ trait SectionTrait
     public static function getSchema(): array
     {
         $schemaPath = self::getSchemaPath();
+
+        if (empty($schemaPath)) {
+            return [];
+        }
 
         return json_decode(file_get_contents($schemaPath), true);
     }

@@ -23,7 +23,9 @@
         defaultChannel: "{{ $defaultChannel }}",
         availableSections: @json($sections),
         templates: @json($templates),
-        routes: @json($routes)
+        routes: @json($routes),
+        messages: @json($messages),
+        editorLocale: "{{ $editorLocale }}"
       }
     </script>
 
