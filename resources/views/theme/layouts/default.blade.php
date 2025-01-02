@@ -8,7 +8,9 @@
   </head>
 
   <body class="{{ $direction }} style="scroll-behavior: smooth;">
-
+    @foreach ($theme->settings->whereStartsWith('color_') as $color)
+      @dump($color)
+    @endforeach
     <main role="main" tabindex="-1">
       <visual:section name="visual-announcement-bar" />
       @section('body')

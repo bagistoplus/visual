@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Providers;
 
+use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\LivewireFeatures\SupportSectionData;
 use BagistoPlus\Visual\Theme\Themes;
 use BagistoPlus\Visual\ThemePathsResolver;
@@ -33,8 +34,9 @@ class ViewServiceProvider extends ServiceProvider
         $this->registerViewExtensions();
 
         $this->bootLivewireFeatures();
+        $this->bootViewComposers();
 
-        $this->app->singleton('themes', fn () => new Themes);
+        $this->app->singleton('themes', fn() => new Themes);
         $this->app->singleton(ThemePathsResolver::class, function (Application $app) {
             return new ThemePathsResolver;
         });
@@ -89,5 +91,17 @@ class ViewServiceProvider extends ServiceProvider
     protected function bootLivewireFeatures()
     {
         app('livewire')->componentHook(SupportSectionData::class);
+    }
+
+    protected function bootViewComposers()
+    {
+        view()->composer('shop::*', function ($view) {
+            $theme = app('themes')->current();
+
+            if ($theme->isVisualTheme) {
+                $theme->settings = Visual::themeDataCollector()->getThemeSettings();
+                $view->with('theme', $theme);
+            }
+        });
     }
 }

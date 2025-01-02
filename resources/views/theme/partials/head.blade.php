@@ -11,16 +11,7 @@
 
 {{-- <link rel="icon" sizes="16x16" href="{{ core()->getCurrentChannel()->favicon_url ?? bagisto_asset('images/favicon.ico') }}" /> --}}
 
-{{-- blade-formatter-disable --}}
-{{
-    Vite::useHotFile('vendor/bagistoplus/visual/shop.hot')
-      ->useBuildDirectory('vendor/bagistoplus/visual/shop')
-      ->withEntryPoints([
-        'resources/assets/shop/css/shop.css',
-        'resources/assets/shop/ts/index.ts'
-      ])
-}}
-{{-- blade-formatter-enable --}}
+{{ Vite::useHotFile('vendor/bagistoplus/visual/shop.hot')->useBuildDirectory('vendor/bagistoplus/visual/shop')->withEntryPoints(['resources/assets/shop/css/shop.css', 'resources/assets/shop/ts/index.ts']) }}
 
 @stack('styles')
 @livewireStyles
