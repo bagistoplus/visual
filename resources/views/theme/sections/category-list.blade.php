@@ -22,7 +22,7 @@
 
 <section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
   @if ($section->settings->heading)
-    <h2 class="{{ $headingSize[$section->settings->heading_size] }} mb-12 text-center font-bold">
+    <h2 class="{{ $headingSize[$section->settings->heading_size] }} mb-12 text-center font-bold text-neutral-600">
       {{ $section->settings->heading }}
     </h2>
   @endif
@@ -30,7 +30,7 @@
   <div
     class="{{ $mobileGridClass[$section->settings->columns_mobile] }} {{ $desktopGridClass[$section->settings->columns_desktop] }} grid gap-8">
     @foreach ($section->blocks as $block)
-      <div class="group relative h-64 cursor-pointer bg-gray-200">
+      <div class="bg-surface-alt group relative h-64 cursor-pointer overflow-hidden rounded">
         <div class="absolute inset-0 z-10 bg-black/20 transition-colors group-hover:bg-black/40"></div>
         @php($image = $block->settings->category->banner_url ?? $block->settings->category->logo_url)
         @if ($image)
