@@ -10,6 +10,17 @@
     label: string;
   }
 
+  // @see https://stackoverflow.com/a/5717133
+  const isValidUrl = (str: string) => {
+    var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+      '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+    return !!pattern.test(str);
+  }
+
   const store = useStore();
   const props = defineProps<Props>();
   const model = defineModel({
@@ -22,7 +33,7 @@
         return null;
       }
 
-      return { path: v, url: window.ThemeEditor.imagesBaseUrl + v, name: v };
+      return { path: v, url: isValidUrl(v) ? v : window.ThemeEditor.imagesBaseUrl + v, name: v };
     }
   });
 
@@ -107,6 +118,7 @@
           <img
             :src="model.url"
             alt=""
+            class="object-cover"
           >
           <button
             class="absolute top-4 right-4 bg-gray-700/30 text-gray-200 p-px rounded"
