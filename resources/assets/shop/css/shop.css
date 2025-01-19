@@ -21,7 +21,7 @@
         @apply appearance-none bg-no-repeat;
         @apply w-full px-4 py-2 rounded-lg border border-neutral-300 bg-white;
         @apply placeholder:text-neutral-400;
-        @apply focus:outline-none focus:border-primary;
+        @apply focus:outline-none focus:border-transparent focus:ring-2 focus:ring-primary;
         @apply disabled:bg-neutral-50 disabled:text-neutral-400 disabled:cursor-not-allowed;
         @apply transition-colors duration-200;
     }
