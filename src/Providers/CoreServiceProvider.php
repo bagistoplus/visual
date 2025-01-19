@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Providers;
 
+use BagistoPlus\Visual\Components\AddToCartButton;
 use BagistoPlus\Visual\Components\CartPreview;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
@@ -38,6 +39,7 @@ class CoreServiceProvider extends ServiceProvider
 
     protected static $livewireComponents = [
         'cart-preview' => CartPreview::class,
+        'add-to-cart-button' => AddToCartButton::class,
     ];
 
     public function boot()

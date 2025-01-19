@@ -3,8 +3,10 @@
 namespace BagistoPlus\Visual\Components;
 
 use BagistoPlus\Visual\Support\InteractsWithCart;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
+#[On('cartUpdated')]
 class CartPreview extends Component
 {
     use InteractsWithCart;
