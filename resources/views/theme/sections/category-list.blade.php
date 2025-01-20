@@ -40,7 +40,8 @@
         <div class="absolute inset-0 z-20 flex items-center justify-center">
           <h3 class="text-2xl font-bold text-white">{{ $block->settings->category->name }}</h3>
         </div>
-        <a href="{{ $block->settings->category->url }}" class="absolute inset-0 z-30"></a>
+        <a href="{{ $block->settings->category->url }}" class="absolute inset-0 z-30"
+          aria-label="{{ $block->settings->category->name }}"></a>
       </div>
     @endforeach
   </div>

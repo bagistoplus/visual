@@ -1,5 +1,5 @@
 <div class="relative" x-data="{ showUserMenu: false }">
-  <button class="relative p-2" @click="showUserMenu = !showUserMenu">
+  <button class="relative p-2" aria-label="user menu" @click="showUserMenu = !showUserMenu">
     <x-lucide-user class="hover:text-primary h-5 w-5 transition-colors" />
   </button>
   <div x-show="showUserMenu" x-transition

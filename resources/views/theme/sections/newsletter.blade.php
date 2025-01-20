@@ -8,7 +8,7 @@
     </p>
     <form class="mx-auto max-w-md">
       <div class="flex gap-4">
-        <input type="email" placeholder="Enter your email" class="rounded-full" required>
+        <input type="email" name="email" autocomplete="on" placeholder="Enter your email" class="rounded-full" required>
         <button type="submit" class="bg-primary text-primary-100 rounded-full px-6">
           Subscribe
         </button>

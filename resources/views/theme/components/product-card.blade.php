@@ -13,14 +13,15 @@
 <div class="group relative rounded-lg bg-white shadow-sm transition-shadow hover:shadow-md">
   <div class="relative aspect-square overflow-hidden rounded-t-lg">
     <img src="{{ $previewImage }}" alt="{{ $product->name }}"
-      class="w-full object-cover object-center transition-transform duration-300 group-hover:scale-105">
+      class="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105">
 
     <div class="absolute inset-0 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
-      <a class="absolute inset-0" href="{{ url($product->url_key) }}"></a>
+      <a class="absolute inset-0" href="{{ url($product->url_key) }}" aria-label="{{ $product->name }}"></a>
       <div
         class="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 transform items-center justify-center gap-2">
         <livewire:add-to-cart-button :productId="$product->id" simple />
-        <button class="text-secondary hover:text-primary rounded-full bg-white p-3 transition-colors">
+        <button aria-label="add to whishlist"
+          class="text-secondary hover:text-primary rounded-full bg-white p-3 transition-colors">
           <x-lucide-heart class="h-5 w-5" />
         </button>
       </div>

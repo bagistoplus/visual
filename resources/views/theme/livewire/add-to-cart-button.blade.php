@@ -12,7 +12,7 @@
 
 <button wire:click="handle" wire:loading.attr="disabled"
   class="{{ $classes }} relative flex items-center justify-center rounded-full p-3 transition-opacity hover:opacity-90">
-  <x-lucide-shopping-cart class="h-5 w-5" wire:loading.class="text-transparent" />
+  <x-lucide-shopping-cart class="h-5 w-5" wire:loading.class="text-transparent" aria-label="add to cart" />
 
   @if (!$simple)
     <span class="ml-3" wire:loading.class="text-transparent">Add to cart</span>

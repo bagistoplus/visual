@@ -1,6 +1,6 @@
 <div class="relative" x-data="{ showCartPreview: false }">
   <!-- Cart Button -->
-  <button class="relative p-2" @click="showCartPreview = !showCartPreview">
+  <button class="relative p-2" aria-label="cart preview" @click="showCartPreview = !showCartPreview">
     <x-lucide-shopping-cart class="hover:text-primary h-5 w-5 transition-colors" />
     @if (!$this->isCartEmpty())
       <span

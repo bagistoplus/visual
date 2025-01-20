@@ -7,8 +7,8 @@
 
 @if ($locales->count() > 0)
   @isset($mobile)
-    <label for="mobile-currency" class="text-secondary mb-2 block text-sm font-medium">Language</label>
-    <select id="mobile-currency" x-data
+    <label for="mobile-locale" class="text-secondary mb-2 block text-sm font-medium">Language</label>
+    <select id="mobile-locale" x-data
       @change="
         const url = new URL(window.location.href);
         url.searchParams.set('locale', $event.target.value);
