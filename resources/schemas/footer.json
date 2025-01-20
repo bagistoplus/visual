@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/BagistoPlus/visual/blob/main/resources/schemas/section.schema.json",
+  "name": "visual::sections.footer.name",
+  "description": "visual::sections.footer.description",
+  "settings": [
+    {
+      "type": "text",
+      "label": "visual::sections.footer.settings.heading_label",
+      "id": "heading",
+      "default": "visual::sections.footer.settings.heading_default"
+    },
+    {
+      "type": "textarea",
+      "label": "visual::sections.footer.settings.description_label",
+      "id": "description",
+      "default": "visual::sections.footer.settings.description_default"
+    },
+    {
+      "type": "checkbox",
+      "label": "visual::sections.footer.settings.show_social_links_label",
+      "id": "show_social_links",
+      "default": true,
+      "info": "visual::sections.footer.settings.show_social_links_info"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "group",
+      "name": "visual::sections.footer.blocks.group.name",
+      "settings": [
+        {
+          "id": "title",
+          "type": "text",
+          "label": "visual::sections.footer.blocks.group.settings.title_label",
+          "default": "visual::sections.footer.blocks.group.settings.title_default"
+        }
+      ]
+    },
+    {
+      "type": "link",
+      "name": "visual::sections.footer.blocks.link.name",
+      "settings": [
+        {
+          "id": "text",
+          "type": "text",
+          "label": "Text",
+          "default": "Link text"
+        },
+        {
+          "id": "link",
+          "type": "link",
+          "label": "visual::sections.footer.blocks.link.settings.link_label",
+          "default": "/"
+        }
+      ]
+    }
+  ]
+}

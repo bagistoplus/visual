@@ -25,6 +25,7 @@
   ],
   "require": {
     "php": "^8.1",
+    "andreiio/blade-remix-icon": "^3.6",
     "blade-ui-kit/blade-heroicons": "^2.4",
     "blade-ui-kit/blade-icons": "^1.7",
     "codeat3/blade-fluentui-system-icons": "^1.33",

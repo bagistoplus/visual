@@ -43,7 +43,34 @@ return [
             ],
         ],
     ],
-    'footer' => [],
+    'footer' => [
+        'name' => 'Footer',
+        'description' => '',
+        'settings' => [
+            'heading_label' => 'Heading',
+            'heading_default' => 'My Store',
+            'description_label' => 'Description',
+            'description_default' => 'Add a description of your store here',
+
+            'show_social_links_label' => 'Show social links',
+            'show_social_links_info' => 'You can configure links in theme settings',
+        ],
+        'blocks' => [
+            'group' => [
+                'name' => 'Links group',
+                'settings' => [
+                    'title_label' => 'Name',
+                    'title_default' => 'Links group',
+                ],
+            ],
+            'link' => [
+                'name' => 'Link',
+                'settings' => [
+                    'link_label' => 'Link',
+                ],
+            ],
+        ],
+    ],
     'hero' => [
         'name' => 'Hero',
         'description' => '',
