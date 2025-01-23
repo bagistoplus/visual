@@ -1,7 +1,7 @@
 @props(['mobile'])
 
 @php
-  $locales = core()->getCurrentChannel()->locales()->orderBy('name')->get();
+  $locales = once(fn() => core()->getCurrentChannel()->locales()->orderBy('name')->get());
   $currentLocale = core()->getCurrentLocale();
 @endphp
 
@@ -27,8 +27,8 @@
         <x-heroicon-o-globe-alt class="h-5 w-5" />
         <span class="ml-1 uppercase">{{ $currentLocale->code }}</span>
       </button>
-      <div x-show="showLanguageMenu" x-transition class="bg-surface absolute right-0 mt-2 w-48 rounded-lg py-2 shadow-lg"
-        @click.outside="showLanguageMenu = false">
+      <div x-cloak x-show="showLanguageMenu" x-transition
+        class="bg-surface absolute right-0 mt-2 w-48 rounded-lg py-2 shadow-lg" @click.outside="showLanguageMenu = false">
         @foreach ($locales as $locale)
           <a href="{{ request()->fullUrlWithQuery(['locale' => $locale->code]) }}"
             class="hover:bg-surface-alt block w-full px-4 py-2 text-left transition-colors">

@@ -1,4 +1,4 @@
-<div x-data="{ show: true }" x-show="show"
+<div x-data="{ show: true }" x-cloak x-show="show"
   class="bg-primary text-primary-200 relative truncate px-4 py-2 text-center text-sm">
   @if ($section->settings->link)
     <a href="{{ $section->settings->link }}" class="hover:underline">{{ $section->settings->text }}</a>

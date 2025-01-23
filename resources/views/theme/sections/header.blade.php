@@ -20,7 +20,7 @@
       @foreach ($section->blocks as $block)
         @if ($block->type === 'logo')
           <div class="flex items-center">
-            <a href="/" class="truncate text-2xl font-medium">
+            <a href="{{ url('') }}" class="truncate text-2xl font-medium">
               @if ($block->settings->logo)
                 <span class="sr-only">{{ $block->settings->logo_text ?? config('app.name') }}</span>
                 <img src="{{ $block->settings->logo }}" alt="{{ $block->settings->logo_text ?? config('app.name') }}" />

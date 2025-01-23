@@ -9,7 +9,7 @@
   ];
 @endphp
 
-<footer class="bg-secondary text-neutral-400">
+<footer class="bg-secondary text-neutral-300">
   <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 gap-8 md:grid-cols-4">
       <div>
@@ -23,8 +23,8 @@
 
       @foreach ($getLinks() as $linksGroup)
         <div>
-          <h4 class="mb-4 font-medium">{{ $linksGroup['group'] }}</h4>
-          <ul class="space-y-2 text-neutral-300">
+          <h4 class="mb-4 font-semibold">{{ $linksGroup['group'] }}</h4>
+          <ul class="space-y-2 text-neutral-200">
             @foreach ($linksGroup['links'] as $item)
               <li><a class="hover:text-neutral-400" href="{{ $item['url'] }}">{{ $item['text'] }}</a></li>
             @endforeach
@@ -43,7 +43,8 @@
           <div class="flex space-x-4">
             @foreach ($socials as $key => $icon)
               @if ($theme->settings->get($key))
-                <a href="#" class="text-neutral-300 hover:text-neutral-400">
+                <a href="{{ $theme->settings->get($key) }}" aria-label="{{ $key }}"
+                  class="text-neutral-300 hover:text-neutral-400">
                   @svg($icon, ['class' => 'h-5 w-5'])
                 </a>
               @endif

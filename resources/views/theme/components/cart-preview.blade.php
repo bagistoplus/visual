@@ -11,7 +11,7 @@
   </button>
 
   <!-- Cart Preview -->
-  <div x-show="showCartPreview" x-transition
+  <div x-cloak x-show="showCartPreview" x-transition
     class="bg-surface border-surface-600 absolute right-0 mt-2 w-80 rounded-lg border py-4 shadow-lg"
     @click.outside="showCartPreview = false">
     <!-- Header -->

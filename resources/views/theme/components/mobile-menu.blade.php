@@ -9,12 +9,12 @@
       ['name' => 'Contact', 'path' => '/contact'],
   ];
 @endphp
-<div x-show="showMobileMenu" x-transition:enter="transition ease-out duration-300"
+<div x-cloak x-show="showMobileMenu" x-transition:enter="transition ease-out duration-300"
   x-transition:enter-start="transform -translate-x-full" x-transition:enter-end="transform translate-x-0"
   x-transition:leave="transition ease-in duration-300" x-transition:leave-start="transform translate-x-0"
   x-transition:leave-end="transform -translate-x-full" class="fixed inset-0 bg-black/50 sm:hidden"
   @click="showMobileMenu = false">
-  <div x-show="showMobileMenu" x-transition
+  <div x-cloak x-show="showMobileMenu" x-transition
     class="bg-surface fixed inset-y-0 left-0 w-4/5 max-w-sm transform transition-transform duration-300 ease-out"
     @click.stop>
     <div class="border-surface-600 flex h-16 items-center justify-between border-b px-4">

@@ -9,12 +9,16 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
+use Webkul\Category\Repositories\CategoryRepository;
+use Webkul\Product\Repositories\ProductRepository;
 
 class InjectThemeEditorScript
 {
     public function __construct(
         protected ThemeEditor $themeEditor,
-        protected ThemeDataCollector $themeDataCollector
+        protected ThemeDataCollector $themeDataCollector,
+        protected CategoryRepository $categoryRepository,
+        protected ProductRepository $productRepository
     ) {}
 
     /**
@@ -50,7 +54,9 @@ class InjectThemeEditorScript
 
                 'locale' => app('core')->getRequestedLocaleCode(),
 
-                'template' => $this->themeEditor->getTemplateForRoute(Route::currentRouteName()),
+                'template' => $this->themeEditor->getTemplateForRoute(
+                    $this->fixCategoryOrProductRoute(Route::currentRouteName())
+                ),
 
                 'hasStaticContent' => $renderedSections->filter(function ($item) {
                     return in_array($item['group'], ['beforeContent', 'afterContent']);
@@ -99,5 +105,22 @@ class InjectThemeEditorScript
         }
 
         return str_contains($response->headers->get('Content-Type'), 'text/html');
+    }
+
+    protected function fixCategoryOrProductRoute($routeName)
+    {
+        if ($routeName === 'shop.product_or_category.index') {
+            $slug = urldecode(trim(request()->getPathInfo(), '/'));
+
+            if ($this->categoryRepository->findBySlug($slug) !== null) {
+                return 'shop.categories.index';
+            } elseif ($this->productRepository->findBySlug($slug) !== null) {
+                return 'shop.products.index';
+            } else {
+                return 'shop.home.index';
+            }
+        }
+
+        return $routeName;
     }
 }

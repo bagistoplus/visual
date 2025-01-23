@@ -14,6 +14,7 @@ use BagistoPlus\Visual\Support\UrlGenerator;
 use BagistoPlus\Visual\ThemeDataCollector;
 use BagistoPlus\Visual\ThemePathsResolver;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
@@ -35,6 +36,8 @@ class CoreServiceProvider extends ServiceProvider
         Sections\CategoryList::class,
         Sections\FeaturedProducts::class,
         Sections\Newsletter::class,
+
+        Sections\CategoryPage::class,
     ];
 
     protected static $livewireComponents = [
@@ -47,6 +50,8 @@ class CoreServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
         $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'visual');
 
+        Paginator::defaultView('shop::pagination.default');
+
         Blade::componentNamespace('BagistoPlus\\Visual\\Components', 'visual');
 
         $this->bootMiddlewares();
@@ -56,6 +61,9 @@ class CoreServiceProvider extends ServiceProvider
         Visual::registerSections(static::$sections, 'visual');
 
         $this->app->booted(function (Application $app) {
+
+            Paginator::defaultView('shop::pagination.default');
+            Paginator::defaultSimpleView('shop::pagination.default');
 
             if (! $app->runningInConsole()) {
                 Route::getRoutes()->refreshNameLookups();
@@ -147,9 +155,9 @@ class CoreServiceProvider extends ServiceProvider
         ];
 
         // add category template if any category exists
-
         $category = app(CategoryRepository::class)
-            ->where('parent_id', app('core')->getCurrentChannel()->root_category_id)
+            ->getModel()
+            ->has('products')
             ->first();
 
         if ($category !== null) {
@@ -172,7 +180,7 @@ class CoreServiceProvider extends ServiceProvider
                 route: 'shop.products.index',
                 label: __('visual::theme-editor.templates.product'),
                 icon: 'lucide-tag',
-                previewUrl: $category->url,
+                previewUrl: url($product->url_key),
             );
         }
 

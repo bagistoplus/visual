@@ -5,13 +5,15 @@
       'accent' => 'bg-accent text-accent-100',
   };
 
+  $classes .= $simple ? ' p-3' : ' px-4 py-2';
+
   if ($fullwidth) {
       $classes .= ' w-full';
   }
 @endphp
 
 <button wire:click="handle" wire:loading.attr="disabled"
-  class="{{ $classes }} relative flex items-center justify-center rounded-full p-3 transition-opacity hover:opacity-90">
+  class="{{ $classes }} relative flex items-center justify-center rounded-full transition-opacity hover:opacity-90">
   <x-lucide-shopping-cart class="h-5 w-5" wire:loading.class="text-transparent" aria-label="add to cart" />
 
   @if (!$simple)

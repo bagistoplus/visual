@@ -33,12 +33,14 @@
     "livewire/livewire": "^3.5",
     "mallardduck/blade-lucide-icons": "^1.23",
     "spatie/color": "^1.6",
+    "spatie/once": "^3.1",
     "swaggest/json-schema": "^0.12.42",
     "symfony/yaml": "^6.4"
   },
   "require-dev": {
     "archielite/laravel-facade-docblock-generator": "^1.0",
     "bagisto/bagisto": "^2.2",
+    "calebdw/larastan-livewire": "^1.1",
     "larastan/larastan": "^2.9",
     "laravel/pint": "^1.14",
     "mockery/mockery": "^1.6",

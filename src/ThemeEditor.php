@@ -116,10 +116,8 @@ class ThemeEditor
 
     public function getTemplateForRoute(string $routeName)
     {
-        if (isset($this->templates[$routeName])) {
-            return $this->templates[$routeName]['template'];
-        }
+        $template = collect($this->templates)->firstWhere('route', $routeName);
 
-        return 'index';
+        return $template ? $template->template : 'index';
     }
 }

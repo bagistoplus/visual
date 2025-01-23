@@ -28,7 +28,7 @@ class SupportSectionData extends ComponentHook
         $this->component->setContext($viewData);
         $this->component->setSection($sectionData);
 
-        Cache::put($this->getSectionCacheKey(), $viewData, now()->addHours(1));
+        Cache::put($this->getSectionCacheKey(), $viewData, now()->addHours(6));
     }
 
     public function hydrate()

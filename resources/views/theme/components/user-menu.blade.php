@@ -2,7 +2,7 @@
   <button class="relative p-2" aria-label="user menu" @click="showUserMenu = !showUserMenu">
     <x-lucide-user class="hover:text-primary h-5 w-5 transition-colors" />
   </button>
-  <div x-show="showUserMenu" x-transition
+  <div x-cloak x-show="showUserMenu" x-transition
     class="bg-surface absolute right-0 mt-2 rounded-lg border py-2 text-neutral-600 shadow-lg"
     @click.outside="showUserMenu = false">
     @guest('customer')

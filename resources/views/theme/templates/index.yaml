@@ -32,6 +32,7 @@ sections:
         type: category
         settings:
           category: 3
+
   featured-products:
     type: visual-featured-products
     settings:
