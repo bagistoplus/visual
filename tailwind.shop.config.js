@@ -11,17 +11,17 @@ export default {
         background: 'rgb(var(--color-background))',
         neutral: {
           DEFAULT: 'rgb(var(--color-neutral-500))',
-          50: 'rgb(var(--color-neutral-50))',
-          100: 'rgb(var(--color-neutral-100))',
-          200: 'rgb(var(--color-neutral-200))',
-          300: 'rgb(var(--color-neutral-300))',
-          400: 'rgb(var(--color-neutral-400))',
-          500: 'rgb(var(--color-neutral-500))',
-          600: 'rgb(var(--color-neutral-600))',
-          700: 'rgb(var(--color-neutral-700))',
-          800: 'rgb(var(--color-neutral-800))',
-          900: 'rgb(var(--color-neutral-900))',
-          950: 'rgb(var(--color-neutral-950))',
+          '50': 'rgb(var(--color-neutral-50))',
+          '100': 'rgb(var(--color-neutral-100))',
+          '200': 'rgb(var(--color-neutral-200))',
+          '300': 'rgb(var(--color-neutral-300))',
+          '400': 'rgb(var(--color-neutral-400))',
+          '500': 'rgb(var(--color-neutral-500))',
+          '600': 'rgb(var(--color-neutral-600))',
+          '700': 'rgb(var(--color-neutral-700))',
+          '800': 'rgb(var(--color-neutral-800))',
+          '900': 'rgb(var(--color-neutral-900))',
+          '950': 'rgb(var(--color-neutral-950))',
         },
         primary: {
           DEFAULT: 'rgb(var(--color-primary-500))',
@@ -153,7 +153,23 @@ export default {
       typography: ({theme}) => ({
         DEFAULT: {
           css: {
-            color: theme('colors.neutral')
+            '--tw-prose-body': theme('colors.neutral.500'),
+            '--tw-prose-headings': theme('colors.neutral.900'),
+            '--tw-prose-lead': theme('colors.neutral.600'),
+            '--tw-prose-links': theme('colors.primary.500'),
+            '--tw-prose-bold': theme('colors.neutral.700'),
+            '--tw-prose-bullets': theme('colors.neutral.300'),
+            '--tw-prose-hr': theme('colors.neutral.200'),
+            '--tw-prose-quotes': theme('colors.neutral.900'),
+            '--tw-prose-quote-borders': theme('colors.neutral.200'),
+            '--tw-prose-captions': theme('colors.neutral.500'),
+            '--tw-prose-kbd': theme('colors.neutral.900'),
+            '--tw-prose-kbd-shadows': theme('colors.neutral.900'),
+            '--tw-prose-code': theme('colors.neutral.900'),
+            '--tw-prose-pre-code': theme('colors.neutral.200'),
+            '--tw-prose-pre-bg' : theme('colors.neutral.800'),
+            '--tw-prose-th-borders': theme('colors.neutral.300'),
+            '--tw-prose-td-borders': theme('colors.neutral.200'),
           }
         }
       })

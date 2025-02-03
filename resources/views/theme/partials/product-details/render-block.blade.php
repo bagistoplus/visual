@@ -55,4 +55,6 @@
   <x-shop::products.grouped-options :product="$product" />
 @elseif($block->type === 'bundle-options' && $product->type === 'bundle')
   <x-shop::products.bundle-options :product="$product" />
+@elseif($block->type === 'downloadable-options' && $product->type === 'downloadable')
+  <x-shop::products.downloadable-options :product="$product" />
 @endif

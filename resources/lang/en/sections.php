@@ -231,6 +231,9 @@ return [
             'bundle-options' => [
                 'name' => 'Product bundle options',
             ],
+            'downloadable-options' => [
+                'name' => 'Downloadable products options',
+            ],
         ],
     ],
 ];

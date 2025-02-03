@@ -202,6 +202,23 @@
       ]
     },
     {
+      "type": "downloadable-options",
+      "name": "visual::sections.product-details.blocks.downloadable-options.name",
+      "limit": 1,
+      "settings": [
+        {
+          "id": "position",
+          "type": "select",
+          "label": "visual::sections.product-details.settings.position_label",
+          "default": "right",
+          "options": [
+            { "value": "right", "label": "visual::sections.product-details.settings.position_right"},
+            { "value": "under_gallery", "label": "visual::sections.product-details.settings.position_under_gallery"}
+          ]
+        }
+      ]
+    },
+    {
       "type": "separator",
       "name": "visual::sections.product-details.blocks.separator.name",
       "settings": [
@@ -227,6 +244,7 @@
       { "type": "variant-picker" },
       { "type": "grouped-options" },
       { "type": "bundle-options" },
+      { "type": "downloadable-options" },
       { "type": "quantity-selector" },
       { "type": "buy-buttons" },
       { "type": "separator" },
