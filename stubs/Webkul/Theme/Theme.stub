@@ -3,7 +3,7 @@
 namespace Webkul\Theme;
 
 /**
- * @property-read array $settingsSchema
+ * @property-read array<array<mixed>> $settingsSchema
  * @property-read bool $isVisualTheme
  * @property mixed $settings
  */

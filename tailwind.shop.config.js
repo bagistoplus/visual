@@ -2,7 +2,8 @@
 export default {
   content: [
     './resources/views/theme/**/*',
-    './resources/assets/shop/ts/**/*'
+    './resources/assets/shop/ts/**/*',
+    '../vendor/bagisto/bagisto/packages/Webkul/Shop/src/Resources/views/products/prices/**/*.blade.php'
   ],
   theme: {
     extend: {
@@ -148,7 +149,14 @@ export default {
           900: 'rgb(var(--color-success-900))',
           950: 'rgb(var(--color-success-950))',
         },
-      }
+      },
+      typography: ({theme}) => ({
+        DEFAULT: {
+          css: {
+            color: theme('colors.neutral')
+          }
+        }
+      })
     },
   },
   plugins: [

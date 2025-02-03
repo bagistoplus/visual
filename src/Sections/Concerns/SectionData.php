@@ -24,7 +24,7 @@ class SectionData implements JsonSerializable
             ->sortKeysUsing(function ($a, $b) {
                 return array_search($a, $this->blocks_order) - array_search($b, $this->blocks_order);
             })
-            ->toArray();
+            ->all();
     }
 
     public static function make(string $id, array $data, Section $section): self
@@ -52,7 +52,7 @@ class SectionData implements JsonSerializable
             ->mapWithKeys(fn ($schema) => [
                 $schema['id'] => $settings[$schema['id']] ?? $schema['default'] ?? null,
             ])
-            ->toArray();
+            ->all();
     }
 
     protected static function prepareBlocks(array $blocks, array $blocksSchemas): array
@@ -61,7 +61,7 @@ class SectionData implements JsonSerializable
             $blockSchema = collect($blocksSchemas)->firstWhere('type', $block['type']);
 
             return BlockData::make($id, $block, $blockSchema);
-        })->toArray();
+        })->all();
     }
 
     public function jsonSerialize(): mixed

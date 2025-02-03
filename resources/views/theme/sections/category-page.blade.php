@@ -36,7 +36,7 @@
         <x-shop::products.toolbar :availableSortOptions="$this->availableSortOptions" :availablePaginationLimits="$this->availablePaginationLimits" />
 
         <!-- Products grid view -->
-        <div x-cloak x-show="displayMode === 'grid'"
+        <div x-show="displayMode === 'grid'"
           class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           @foreach ($products as $product)
             <x-shop::product-card :product="$product" x-model="displayMode" />
@@ -44,7 +44,7 @@
         </div>
 
         <!-- Products list view -->
-        <div x-cloak x-show="displayMode === 'list'" class="grid grid-cols-1 gap-6">
+        <div x-show="displayMode === 'list'" class="grid grid-cols-1 gap-6">
           @foreach ($products as $product)
             <x-shop::product-card :product="$product" x-model="displayMode" />
           @endforeach

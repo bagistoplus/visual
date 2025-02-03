@@ -23,7 +23,7 @@ class BlockData implements JsonSerializable
             disabled: $data['disabled'] ?? false,
             settings: new SettingsValues(
                 self::prepareSettings($data['settings'] ?? [], $blockSchema['settings'] ?? []),
-                collect($blockSchema['settings'])->keyBy('id')->toArray()
+                collect($blockSchema['settings'] ?? [])->keyBy('id')->toArray()
             )
         );
     }

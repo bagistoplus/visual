@@ -177,4 +177,60 @@ return [
             'button_text_color_label' => 'Button Text Color',
         ],
     ],
+
+    'product-details' => [
+        'name' => 'Product Details',
+        'description' => 'Product Details',
+
+        'settings' => [
+            'position_label' => 'Position',
+            'position_right' => 'Right',
+            'position_under_gallery' => 'Under images gallery',
+        ],
+        'blocks' => [
+            'text' => [
+                'name' => 'Text',
+                'settings' => [
+                    'text_label' => 'Text',
+                ],
+            ],
+            'title' => [
+                'name' => 'Title',
+            ],
+            'price' => [
+                'name' => 'Price',
+            ],
+            'rating' => [
+                'name' => 'Rating',
+            ],
+            'short-description' => [
+                'name' => 'Short description',
+            ],
+            'quantity-selector' => [
+                'name' => 'Quantity selector',
+            ],
+            'buy-buttons' => [
+                'name' => 'Buy buttons',
+                'settings' => [
+                    'enable_buy_now_label' => 'Show buy now button',
+                    'enable_buy_now_info' => 'Enable this option to display a \'Buy Now\' button, allowing customers to proceed directly to checkout for a faster purchasing experience.',
+                ],
+            ],
+            'description' => [
+                'name' => 'Product description',
+            ],
+            'separator' => [
+                'name' => 'Separator',
+            ],
+            'variant-picker' => [
+                'name' => 'Variant Picker',
+            ],
+            'grouped-options' => [
+                'name' => 'Grouped product options',
+            ],
+            'bundle-options' => [
+                'name' => 'Product bundle options',
+            ],
+        ],
+    ],
 ];

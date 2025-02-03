@@ -24,12 +24,12 @@
     <button x-on:click="toggle" x-bind:aria-expanded="expanded" type="button"
       class="flex w-full items-center justify-between py-2 font-bold">
       <span>{{ $title }}</span>
-      <x-lucide-chevron-up x-cloak x-show="expanded" class="ml-4 h-5 w-5" />
-      <x-lucide-chevron-down x-cloak x-show="!expanded" class="ml-4 h-5 w-5" />
+      <x-lucide-chevron-up x-show="expanded" class="ml-4 h-5 w-5" />
+      <x-lucide-chevron-down x-show="!expanded" class="ml-4 h-5 w-5" />
     </button>
   @endif
 
-  <div x-cloak x-show="expanded" x-collapse>
+  <div x-show="expanded" x-collapse>
     {{ $slot }}
   </div>
 </div>

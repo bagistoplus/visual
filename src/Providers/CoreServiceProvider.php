@@ -36,8 +36,9 @@ class CoreServiceProvider extends ServiceProvider
         Sections\CategoryList::class,
         Sections\FeaturedProducts::class,
         Sections\Newsletter::class,
-
+        Sections\Breadcrumbs::class,
         Sections\CategoryPage::class,
+        Sections\ProductDetails::class,
     ];
 
     protected static $livewireComponents = [

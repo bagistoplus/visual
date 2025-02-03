@@ -21,7 +21,7 @@ it('merges additional methods to ignoredMethods list', function () {
     $ignoredMethods = $reflection->invoke($section);
 
     expect($ignoredMethods)
-        ->toContain('slug', 'getSchemaPath', 'getSchema');
+        ->toContain('slug', 'name', 'getSchemaPath', 'getSchema', 'getViewData');
 });
 
 class TestBladeSection extends BladeSection {}

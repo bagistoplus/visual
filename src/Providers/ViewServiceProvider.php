@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Providers;
 
 use BagistoPlus\Visual\Facades\Visual;
+use BagistoPlus\Visual\LivewireFeatures\SupportComponentAttributes;
 use BagistoPlus\Visual\LivewireFeatures\SupportSectionData;
 use BagistoPlus\Visual\Theme\Themes;
 use BagistoPlus\Visual\ThemePathsResolver;
@@ -93,6 +94,7 @@ class ViewServiceProvider extends ServiceProvider
     protected function bootLivewireFeatures()
     {
         app('livewire')->componentHook(SupportSectionData::class);
+        app('livewire')->componentHook(SupportComponentAttributes::class);
     }
 
     protected function bootViewComposers()

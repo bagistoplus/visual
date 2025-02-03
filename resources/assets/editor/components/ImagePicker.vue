@@ -48,8 +48,6 @@
     onFileAccept(details) {
       fileUpload.value.clearFiles();
 
-      console.log(details.files);
-
       uploadingImages.value = details.files.map(file => ({
         url: URL.createObjectURL(file),
         path: file.name,

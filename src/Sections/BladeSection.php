@@ -13,9 +13,12 @@ abstract class BladeSection extends Component implements SectionInterface
 
     public SectionData $section;
 
+    public array $context;
+
     public function __construct(public string $visualId, protected array $viewData)
     {
         $this->section = Visual::themeDataCollector()->getSectionData($visualId);
+        $this->context = $viewData;
     }
 
     public function data()
@@ -39,8 +42,10 @@ abstract class BladeSection extends Component implements SectionInterface
     {
         return array_merge(parent::ignoredMethods(), [
             'slug',
+            'name',
             'getSchemaPath',
             'getSchema',
+            'getViewData',
         ]);
     }
 

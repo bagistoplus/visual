@@ -7,17 +7,13 @@ use Livewire\Component;
 
 class AddToCartButton extends Component
 {
-    public bool $simple = false;
-
-    public string $variant = 'primary';
-
-    public bool $fullwidth = false;
+    public string $action = 'addToCart';
 
     public $productId;
 
     public $quantity = 1;
 
-    public function handle()
+    public function addToCart()
     {
         $result = app(AddProductToCart::class)->execute([
             'product_id' => $this->productId,
@@ -32,6 +28,8 @@ class AddToCartButton extends Component
             $this->redirect($result['redirect_url']);
         }
     }
+
+    public function buyNow() {}
 
     public function render()
     {
