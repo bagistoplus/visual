@@ -17,8 +17,11 @@
 
         init() {
           this.container = this.$root.querySelector('.images');
-          this.checkOverflow();
           this.defaultMedias = [...this.medias];
+
+          this.$nextTick(() => {
+            this.checkOverflow();
+          });
         },
 
         checkOverflow() {

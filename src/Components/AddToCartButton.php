@@ -33,6 +33,6 @@ class AddToCartButton extends Component
 
     public function render()
     {
-        return view('shop::livewire.add-to-cart-button');
+        return view('shop::components.add-to-cart-button');
     }
 }

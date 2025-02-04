@@ -20,31 +20,9 @@
     {!! visual_clear_inline_styles($product->short_description) !!}
   </div>
 @elseif($block->type === 'quantity-selector' && $showQuantitySelector)
-  <x-shop::quantity-selector x-on:change="quantity = $event.detail" />
+  <x-shop::quantity-selector x-on:change="$wire.quantity = $event.detail" />
 @elseif($block->type === 'buy-buttons')
-  <div class="flex w-full max-w-sm flex-col gap-4">
-    <div class="w-full">
-      <livewire:add-to-cart-button
-        fullwidth
-        x-model="quantity"
-        variant="{{ $block->settings->enable_buy_now ? 'primary-outline' : 'primary' }}"
-        :productId="$product->id"
-        wire:key="{{ str()->random(16) }}"
-      />
-    </div>
-    <div class="w-full">
-      @if ($block->settings->enable_buy_now)
-        <livewire:add-to-cart-button
-          x-model="quantity"
-          fullwidth
-          text="Buy now"
-          action="buyNow"
-          :productId="$product->id"
-          wire:key="{{ str()->random(16) }}"
-        />
-      @endif
-    </div>
-  </div>
+  <x-shop::products.buy-buttons :showBuyNowButton="$block->settings->enable_buy_now" />
 @elseif($block->type === 'description')
   <div class="prose max-w-none">
     {!! visual_clear_inline_styles($product->description) !!}

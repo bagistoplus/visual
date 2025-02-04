@@ -9,6 +9,7 @@
 
   <body class="{{ $direction }} style="scroll-behavior: smooth;">
     <main role="main" tabindex="-1">
+      <x-shop::toasts />
       <visual:section name="visual-announcement-bar" />
       <visual:section name="visual-header" />
 

@@ -11,6 +11,8 @@ class CartPreview extends Component
 {
     use InteractsWithCart;
 
+    public $open = false;
+
     public function updateItemQuantity($itemId, $quantity)
     {
         $this->updateCartItemQuantity($itemId, $quantity);

@@ -2,14 +2,38 @@
 
 namespace BagistoPlus\Visual\Sections;
 
+use BagistoPlus\Visual\Actions\AddProductToCart;
 use Webkul\Product\Helpers\ProductType;
 use Webkul\Product\Helpers\Review;
 
-class ProductDetails extends BladeSection
+class ProductDetails extends LivewireSection
 {
     public static string $view = 'shop::sections.product-details';
 
     public static string $schema = __DIR__.'/../../resources/schemas/product-details.json';
+
+    public $quantity = 1;
+
+    public function addToCart(bool $buyNow = false)
+    {
+        $result = app(AddProductToCart::class)->execute([
+            'product_id' => $this->context['product']->id,
+            'quantity' => $this->quantity,
+        ]);
+
+        if ($result['success']) {
+            session()->flash('success', $result['message']);
+            $this->dispatch('cartUpdated');
+        } else {
+            session()->flash('error', $result['message']);
+            $this->redirect($result['redirect_url']);
+        }
+    }
+
+    public function buyNow()
+    {
+        return $this->addToCart(buyNow: true);
+    }
 
     public function getImages()
     {

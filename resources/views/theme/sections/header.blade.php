@@ -10,10 +10,14 @@
   $categories = $getCategories();
 @endphp
 
-<header class="bg-surface sticky top-0 z-50 w-full border-b" x-data="{ showMobileMenu: false, showSearch: false }">
+<header class="bg-surface sticky top-0 z-20 w-full border-b" x-data="{ showMobileMenu: false, showSearch: false }">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="flex h-16 items-center justify-between text-neutral-700">
-      <button class="-ml-2 p-2 transition-colors sm:hidden" aria-label="Open menu" @click="showMobileMenu = true">
+      <button
+        class="-ml-2 p-2 transition-colors sm:hidden"
+        aria-label="Open menu"
+        @click="showMobileMenu = true"
+      >
         <x-heroicon-s-bars-3 class="h-6 w-6" />
       </button>
 

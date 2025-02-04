@@ -129,7 +129,8 @@
           "id": "enable_buy_now",
           "type": "checkbox",
           "label": "visual::sections.product-details.blocks.buy-buttons.settings.enable_buy_now_label",
-          "info": "visual::sections.product-details.blocks.buy-buttons.settings.enable_buy_now_info"
+          "info": "visual::sections.product-details.blocks.buy-buttons.settings.enable_buy_now_info",
+          "default": true
         }
       ]
     },

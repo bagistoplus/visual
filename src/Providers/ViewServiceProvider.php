@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Providers;
 
 use BagistoPlus\Visual\Facades\Visual;
+use BagistoPlus\Visual\LivewireFeatures\InterceptSessionFlash;
 use BagistoPlus\Visual\LivewireFeatures\SupportComponentAttributes;
 use BagistoPlus\Visual\LivewireFeatures\SupportSectionData;
 use BagistoPlus\Visual\Theme\Themes;
@@ -95,6 +96,7 @@ class ViewServiceProvider extends ServiceProvider
     {
         app('livewire')->componentHook(SupportSectionData::class);
         app('livewire')->componentHook(SupportComponentAttributes::class);
+        app('livewire')->componentHook(InterceptSessionFlash::class);
     }
 
     protected function bootViewComposers()
