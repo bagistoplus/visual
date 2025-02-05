@@ -10,8 +10,8 @@ use BagistoPlus\Visual\LivewireFeatures\SectionDataSynth;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
 use BagistoPlus\Visual\Sections;
 use BagistoPlus\Visual\Sections\SectionRepository;
-use BagistoPlus\Visual\Support\Template;
 use BagistoPlus\Visual\Support\UrlGenerator;
+use BagistoPlus\Visual\TemplateRegistrar;
 use BagistoPlus\Visual\ThemeDataCollector;
 use BagistoPlus\Visual\ThemePathsResolver;
 use Illuminate\Contracts\Foundation\Application;
@@ -23,16 +23,16 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use Webkul\Category\Models\Category;
-use Webkul\Category\Repositories\CategoryRepository;
-use Webkul\CMS\Repositories\PageRepository;
 use Webkul\Installer\Http\Middleware\Locale;
 use Webkul\Product\Models\Product;
-use Webkul\Product\Repositories\ProductRepository;
 use Webkul\Shop\Http\Middleware\Currency;
 
 class CoreServiceProvider extends ServiceProvider
 {
-    protected static $sections = [
+    /**
+     * The list of sections to be registered.
+     */
+    protected static array $sections = [
         Sections\AnnouncementBar::class,
         Sections\Header::class,
         Sections\Footer::class,
@@ -45,100 +45,84 @@ class CoreServiceProvider extends ServiceProvider
         Sections\ProductDetails::class,
     ];
 
-    protected static $livewireComponents = [
+    /**
+     * The list of Livewire components to be registered.
+     */
+    protected static array $livewireComponents = [
         'cart-preview' => CartPreview::class,
         'add-to-cart-button' => AddToCartButton::class,
     ];
 
-    public function boot()
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
     {
-        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
-        $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'visual');
-
-        Paginator::defaultView('shop::pagination.default');
-
-        Blade::componentNamespace('BagistoPlus\\Visual\\Components', 'visual');
-
+        $this->bootViewsAndTranslations();
+        $this->bootBladeComponents();
         $this->bootMiddlewares();
-        $this->bootMiddlewaresForLivewire();
-
+        $this->bootLivewireMiddlewares();
         $this->bootLivewireComponents();
-        Visual::registerSections(static::$sections, 'visual');
-
-        Relation::morphMap([
-            'product' => Product::class,
-            'category' => Category::class,
-        ]);
-
-        Livewire::propertySynthesizer(SectionDataSynth::class);
+        $this->bootVisualSections();
+        $this->bootMorphMap();
+        $this->bootLivewirePropertySynthesizer();
 
         $this->app->booted(function (Application $app) {
-
-            Paginator::defaultView('shop::pagination.default');
-            Paginator::defaultSimpleView('shop::pagination.default');
+            $this->bootPaginationViews();
 
             if (! $app->runningInConsole()) {
                 Route::getRoutes()->refreshNameLookups();
-                $this->registerTemplates();
+                $this->bootTemplates();
             }
         });
 
         if ($this->app->runningInConsole()) {
-            $this->publishAssets();
+            $this->bootPublishAssets();
         }
     }
 
-    public function register()
+    /**
+     * Register any application services.
+     */
+    public function register(): void
     {
         $this->registerConfigs();
-
-        $this->app->singleton(SectionRepository::class, fn () => new SectionRepository);
-        $this->app->singleton(ThemeDataCollector::class, function (Application $app) {
-            return new ThemeDataCollector(
-                $app->get(ThemePathsResolver::class),
-                $app->get('files')
-            );
-        });
-
+        $this->registerSingletons();
         $this->registerCustomUrlGenerator();
     }
 
-    protected function registerConfigs()
+    /*
+     * ---------------------------------------------------------
+     * Boot Methods
+     * ---------------------------------------------------------
+     */
+
+    protected function bootViewsAndTranslations(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../../config/bagisto-visual.php', 'bagisto_visual');
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
+        $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'visual');
     }
 
-    protected function registerCustomUrlGenerator()
+    protected function bootPaginationViews(): void
     {
-        $this->app->bind('url', function ($app) {
-            $routes = $app['router']->getRoutes();
-
-            return new UrlGenerator(
-                $routes,
-                $app->rebinding('request', function ($app, $request) {
-                    $app['url']->setRequest($request);
-                }),
-                $app['config']['app.asset_url']
-            );
-        });
+        Paginator::defaultView('shop::pagination.default');
+        Paginator::defaultSimpleView('shop::pagination.default');
     }
 
-    protected function publishAssets()
+    protected function bootBladeComponents(): void
     {
-        $this->publishes([
-            __DIR__.'/../../public' => public_path('vendor/bagistoplus/visual'),
-        ], ['public', 'bagistoplus-visual-assets']);
+        Blade::componentNamespace('BagistoPlus\\Visual\\Components', 'visual');
     }
 
-    protected function bootMiddlewares()
+    protected function bootMiddlewares(): void
     {
         $this->app->booted(function () {
-            $router = $this->app[Router::class];
-            $router->aliasMiddleware('theme', UseShopThemeFromRequest::class);
+            $this->app->make(Router::class)
+                ->aliasMiddleware('theme', UseShopThemeFromRequest::class);
         });
     }
 
-    public function bootMiddlewaresForLivewire()
+    protected function bootLivewireMiddlewares(): void
     {
         Livewire::addPersistentMiddleware([
             Locale::class,
@@ -147,115 +131,78 @@ class CoreServiceProvider extends ServiceProvider
         ]);
     }
 
-    protected function bootLivewireComponents()
+    protected function bootLivewireComponents(): void
     {
         foreach (self::$livewireComponents as $name => $component) {
             Livewire::component($name, $component);
         }
     }
 
-    protected function registerTemplates()
+    protected function bootVisualSections(): void
     {
-        $templates = [
-            new Template(
-                template: 'index',
-                route: 'shop.home.index',
-                label: __('visual::theme-editor.templates.homepage'),
-                icon: 'lucide-home',
-                previewUrl: url()->to('/')
-            ),
-        ];
+        Visual::registerSections(static::$sections, 'visual');
+    }
 
-        // add category template if any category exists
-        $category = app(CategoryRepository::class)
-            ->getModel()
-            ->has('products')
-            ->first();
+    protected function bootMorphMap(): void
+    {
+        Relation::morphMap([
+            'product' => Product::class,
+            'category' => Category::class,
+        ]);
+    }
 
-        if ($category !== null) {
-            $templates[] = new Template(
-                template: 'category',
-                route: 'shop.categories.index',
-                label: __('visual::theme-editor.templates.category'),
-                icon: 'lucide-tags',
-                previewUrl: $category->url,
+    protected function bootLivewirePropertySynthesizer(): void
+    {
+        Livewire::propertySynthesizer(SectionDataSynth::class);
+    }
+
+    protected function bootPublishAssets(): void
+    {
+        $this->publishes([
+            __DIR__.'/../../public' => public_path('vendor/bagistoplus/visual'),
+        ], ['public', 'bagistoplus-visual-assets']);
+    }
+
+    protected function bootTemplates(): void
+    {
+        if (ThemeEditor::inDesignMode()) {
+            $this->app->make(TemplateRegistrar::class)->registerTemplates();
+        }
+    }
+
+    /*
+     * ---------------------------------------------------------
+     * Register Methods
+     * ---------------------------------------------------------
+     */
+
+    protected function registerConfigs(): void
+    {
+        $this->mergeConfigFrom(__DIR__.'/../../config/bagisto-visual.php', 'bagisto_visual');
+    }
+
+    protected function registerSingletons(): void
+    {
+        $this->app->singleton(SectionRepository::class, fn () => new SectionRepository);
+
+        $this->app->singleton(ThemeDataCollector::class, function (Application $app) {
+            return new ThemeDataCollector(
+                $app->get(ThemePathsResolver::class),
+                $app->get('files')
             );
-        }
+        });
+    }
 
-        // add product template if any product exists
+    protected function registerCustomUrlGenerator(): void
+    {
+        $this->app->bind('url', function ($app) {
+            $routes = $app['router']->getRoutes();
 
-        $product = app(ProductRepository::class)->first();
-
-        if ($product !== null && $product->url_key) {
-            $templates[] = new Template(
-                template: 'product',
-                route: 'shop.products.index',
-                label: __('visual::theme-editor.templates.product'),
-                icon: 'lucide-tag',
-                previewUrl: url($product->url_key),
+            return new UrlGenerator(
+                $routes,
+                $app->rebinding('request', fn ($app, $request) => $app['url']->setRequest($request)),
+                $app['config']['app.asset_url']
             );
-        }
-
-        $templates[] = Template::separator();
-
-        $templates[] = new Template(
-            template: 'cart',
-            route: 'shop.checkout.cart.index',
-            label: __('visual::theme-editor.templates.cart'),
-            icon: 'lucide-shopping-cart',
-            previewUrl: route('shop.checkout.cart.index')
-        );
-
-        $templates[] = new Template(
-            template: 'checkout',
-            route: 'shop.checkout.onepage.index',
-            label: __('visual::theme-editor.templates.checkout'),
-            icon: 'lucide-shopping-cart',
-            previewUrl: route('shop.checkout.onepage.index')
-        );
-
-        $templates[] = new Template(
-            template: 'checkout-success',
-            route: 'shop.checkout.onepage.success',
-            label: __('visual::theme-editor.templates.checkout_success'),
-            icon: 'lucide-shopping-cart',
-            previewUrl: route('shop.checkout.onepage.success')
-        );
-
-        $templates[] = Template::separator();
-
-        $templates[] = new Template(
-            template: 'search',
-            route: 'shop.search.index',
-            label: __('visual::theme-editor.templates.search'),
-            icon: 'lucide-search',
-            previewUrl: route('shop.search.index')
-        );
-
-        // add cms page template if there is any page
-
-        $page = app(PageRepository::class)->first();
-
-        if ($page !== null) {
-            $templates[] = new Template(
-                template: 'page',
-                route: 'shop.cms.page',
-                label: __('visual::theme-editor.templates.cms'),
-                icon: 'lucide-file',
-                previewUrl: route('shop.cms.page', [$page->url_key])
-            );
-        }
-
-        $templates[] = new Template(
-            template: 'contact',
-            route: 'shop.home.contact_us',
-            label: __('visual::theme-editor.templates.contact'),
-            icon: 'lucide-phone',
-            previewUrl: route('shop.home.contact_us')
-        );
-
-        foreach ($templates as $template) {
-            ThemeEditor::registerTemplate($template);
-        }
+        });
     }
 }
