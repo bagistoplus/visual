@@ -14,13 +14,20 @@ class ProductDetails extends LivewireSection
 
     public $quantity = 1;
 
+    public $variantAttributes = [];
+
+    public $selectedVariant;
+
     public function addToCart(bool $buyNow = false)
     {
-        $result = app(AddProductToCart::class)->execute([
-            'product_id' => $this->context['product']->id,
-            'quantity' => $this->quantity,
-            'is_buy_now' => $buyNow,
-        ]);
+        $result = app(AddProductToCart::class)->execute(array_merge(
+            [
+                'product_id' => $this->context['product']->id,
+                'quantity' => $this->quantity,
+                'is_buy_now' => $buyNow,
+            ],
+            empty($this->variantAttributes) ? [] : ['super_attributes' => $this->variantAttributes, 'selected_configurable_option' => $this->selectedVariant]
+        ));
 
         if ($result['success']) {
             session()->flash('success', $result['message']);

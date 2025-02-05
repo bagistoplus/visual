@@ -62,6 +62,8 @@ trait InteractsWithCart
     {
         Cart::removeItem($itemId);
         Cart::collectTotals();
+
+        session()->flash('success', __('shop::app.checkout.cart.success-remove'));
     }
 
     public function shouldDisplayCartSubtotalIncludingTax()

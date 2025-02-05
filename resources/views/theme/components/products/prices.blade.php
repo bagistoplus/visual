@@ -30,12 +30,13 @@
             if (event.detail.variant) {
               const prices = event.detail.prices;
               this.labelEl.style.display = 'none';
-
               this.finalPriceEl.textContent = prices.final.formatted_price;
 
               if (parseInt(prices.regular.price, 10) > parseInt(prices.final.price, 10)) {
-                this.regularPriceEl.style.display = 'inline-block';
-                this.regularPriceEl.textContent = prices.regular.formatted_price;
+                if (this.regularPriceEl) {
+                  this.regularPriceEl.style.display = 'inline-block';
+                  this.regularPriceEl.textContent = prices.regular.formatted_price;
+                }
               } else {
                 this.regularPriceEl && (this.regularPriceEl.style.display = 'none');
               }

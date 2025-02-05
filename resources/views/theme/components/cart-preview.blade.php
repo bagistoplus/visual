@@ -1,4 +1,4 @@
-<div class="relative" x-data="{ showCartPreview: false }">
+<div class="relative" x-data="{ showCartPreview: $wire.entangle('open') }">
   <!-- Cart Button -->
   <button
     class="relative p-2"

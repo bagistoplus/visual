@@ -24,13 +24,15 @@ class InterceptSessionFlash extends ComponentHook
             ->mapWithKeys(fn ($type) => [$type => session()->get($type)]);
 
         $messages->each(function ($message, $type) use (&$alreadyDispatched) {
-            if (in_array($type, $alreadyDispatched)) {
+            $toast = base64_encode(json_encode(compact('type', 'message')));
+
+            if (in_array($toast, $alreadyDispatched)) {
                 return; // Skip if message was already dispatched in this request
             }
 
             $this->component->dispatch('show-toast', type: $type, message: $message);
 
-            $alreadyDispatched[] = $type;
+            $alreadyDispatched[] = $toast;
         });
 
         request()->attributes->set(self::DISPATCHED_FLASH_KEY, $alreadyDispatched);

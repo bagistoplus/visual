@@ -20,15 +20,42 @@
         },
 
         init() {
-          this.updateOptionAvailability();
+          const firstOption = this.variantAttributes[0].options[0];
+          if (firstOption) {
+            const firstVariantId = firstOption.products[0];
+            const defaultSelections = {};
+
+            this.variantAttributes.forEach(variant => {
+              const option = variant.options.find(o => o.products.includes(firstVariantId));
+              if (option) {
+                defaultSelections[variant.id] = option.id;
+              }
+            });
+
+            this.selections = defaultSelections;
+
+          }
+
+          this.updateMatchingProducts();
+
+          if (this.$wire) {
+            this.$wire.set('variantAttributes', this.selections, false);
+            this.$wire.set('selectedVariant', this.selectedVariant, false);
+          }
+
+          document.addEventListener('cartUpdated', () => {
+            this.$nextTick(() => {
+              this.dispatchChange();
+            });
+          });
         },
 
         isDropdownSwatch(swatchType) {
           return !swatchType || swatchType === 'dropdown';
         },
 
-        findAttribute(code) {
-          return this.variantAttributes.find(attr => attr.code === code);
+        findAttribute(id) {
+          return this.variantAttributes.find(attr => attr.id === id);
         },
 
         findOption(attribute, optionId) {
@@ -39,8 +66,8 @@
           const products = new Set();
           let isFirst = true;
 
-          for (const [code, value] of Object.entries(selections)) {
-            const attribute = this.findAttribute(code);
+          for (const [id, value] of Object.entries(selections)) {
+            const attribute = this.findAttribute(Number(id));
             const option = this.findOption(attribute, value);
 
             if (!option) {
@@ -73,7 +100,7 @@
               const otherSelections = {
                 ...this.selections
               };
-              delete otherSelections[attribute.code];
+              delete otherSelections[attribute.id];
 
               // If no other selections, all options are available
               if (Object.keys(otherSelections).length === 0) {
@@ -88,14 +115,18 @@
           });
         },
 
-        onOptionSelected(attributeCode, value) {
+        onOptionSelected(attributeId, value) {
           value = Number.isNaN(Number(value)) ? null : Number(value);
 
-          if (value === null || this.selections[attributeCode] === value) {
+          if (value === null || this.selections[attributeId] === value) {
             // Unselect
-            delete this.selections[attributeCode];
+            delete this.selections[attributeId];
           } else {
-            this.selections[attributeCode] = value;
+            this.selections[attributeId] = value;
+          }
+
+          if (this.$wire) {
+            this.$wire.set('variantAttributes', this.selections, false);
           }
 
           this.updateMatchingProducts();
@@ -116,7 +147,11 @@
               images: this.variantImages[this.selectedVariant],
               videos: this.variantVideos[this.selectedVariant],
             })
-          })
+          });
+
+          if (this.$wire) {
+            this.$wire.set('selectedVariant', this.selectedVariant, false);
+          }
         }
       }));
     });
@@ -131,14 +166,14 @@
 
       <template x-if="isDropdownSwatch(attribute.swatch_type)">
         <select
-          x-bind:id="attribute.code"
-          x-bind:value="selections[attribute.code]"
+          x-bind:id="attribute.id"
           class="py-1"
-          x-on:change="onOptionSelected(attribute.code, event.target.value)"
+          x-on:change="onOptionSelected(attribute.id, event.target.value)"
         >
           <option x-text="'Select ' + attribute.label"></option>
           <template x-for="option in attribute.options" x-bind:key="option.id">
             <option
+              x-bind:selected="selections[attribute.id] == option.id"
               x-bind:value="option.id"
               x-bind:disabled="!option.isAvailable"
               x-text="option.label + (!option.isAvailable ? ' (Unavailable)' : '')"
@@ -153,13 +188,13 @@
             <button
               x-bind:class="[
                   'w-8 h-8 border rounded-full flex items-center justify-center relative',
-                  selections[attribute.code] === option.id ? 'ring-2 ring-offset-2 ring-primary' :
+                  selections[attribute.id] === option.id ? 'ring-2 ring-offset-2 ring-primary' :
                   'hover:ring-2 hover:ring-offset-2 hover:ring-neutral-200',
                   !option.isAvailable ? 'cursor-not-allowed !ring-primary-300' : ''
               ]"
               x-bind:style="{ backgroundColor: option.swatch_value }"
               x-bind:title="option.label + (!option.isAvailable ? ' (Unavailable)' : '')"
-              @click="onOptionSelected(attribute.code, option.id)"
+              @click="onOptionSelected(attribute.id, option.id)"
             >
               <template x-if="!option.isAvailable">
                 <div class="absolute inset-0 rounded-full bg-black/20"></div>
@@ -175,12 +210,12 @@
             <button
               x-bind:class="[
                   'w-10 h-10 rounded-lg relative overflow-hidden',
-                  selections[attribute.code] === option.id ? 'ring-2 ring-offset-2 ring-primary' :
+                  selections[attribute.id] === option.id ? 'ring-2 ring-offset-2 ring-primary' :
                   'hover:ring-2 hover:ring-offset-2 hover:ring-neutral-200',
                   !option.isAvailable ? 'cursor-not-allowed' : ''
               ]"
               x-bind:title="option.label + (!option.isAvailable ? ' (Unavailable)' : '')"
-              @click="onOptionSelected(attribute.code, option.id)"
+              @click="onOptionSelected(attribute.id, option.id)"
             >
               <img x-bind:src="option.swatch_value" class="h-full w-full rounded-lg">
               <template x-if="!option.isAvailable">
@@ -197,12 +232,12 @@
             <button
               :class="[
                   'py-2 px-3 text-sm font-medium rounded-md relative',
-                  selections[attribute.code] === option.id ? 'bg-gray-900 text-white' :
+                  selections[attribute.id] === option.id ? 'bg-gray-900 text-white' :
                   'bg-white text-gray-900 border border-gray-200 hover:bg-gray-50',
                   !option.isAvailable ? 'cursor-not-allowed' : ''
               ]"
               :title="option.label + (!option.isAvailable ? ' (Unavailable)' : '')"
-              @click="onOptionSelected(attribute.code, option.id)"
+              @click="onOptionSelected(attribute.id, option.id)"
             >
               <span x-text="option.label"></span>
               <template x-if="!option.isAvailable">

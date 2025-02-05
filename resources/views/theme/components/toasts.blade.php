@@ -124,7 +124,7 @@
           :data-toast-id="toast.id"
           x-show="true"
           :class="[getTypeStyles(toast.type), getEnterAnimation(toast.position)]"
-          class="min-w-[300px] rounded-lg border-l-4 px-4 py-3 text-white shadow-lg"
+          class="min-w-[300px] rounded-lg border-l-4 px-4 py-3 shadow-lg"
         >
           <div class="flex items-center">
             <span x-text="toast.message"></span>

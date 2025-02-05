@@ -21,6 +21,8 @@ class CartPreview extends Component
     public function removeItem($itemId)
     {
         $this->removeCartItem($itemId);
+        $this->open = false;
+        $this->dispatch('cartUpdated');
     }
 
     public function render()
