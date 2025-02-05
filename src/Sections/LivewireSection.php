@@ -12,13 +12,14 @@ class LivewireSection extends Component implements SectionInterface
 
     public $visualId;
 
-    protected $context;
+    public $context;
 
     protected $section;
 
     public function setContext($context)
     {
         $this->context = $context;
+        $this->setSection($context['section']);
     }
 
     public function getContext()

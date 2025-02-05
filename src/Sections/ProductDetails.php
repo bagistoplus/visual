@@ -19,11 +19,16 @@ class ProductDetails extends LivewireSection
         $result = app(AddProductToCart::class)->execute([
             'product_id' => $this->context['product']->id,
             'quantity' => $this->quantity,
+            'is_buy_now' => $buyNow,
         ]);
 
         if ($result['success']) {
             session()->flash('success', $result['message']);
             $this->dispatch('cartUpdated');
+
+            if ($result['redirect_url']) {
+                $this->redirect($result['redirect_url']);
+            }
         } else {
             session()->flash('error', $result['message']);
             $this->redirect($result['redirect_url']);

@@ -121,7 +121,12 @@ class ThemeDataCollector
             $data['blocks_order'] = array_keys($data['blocks']);
         }
 
-        $this->sectionsData->put($sectionId, SectionData::make($sectionId, $data, $section));
+        $this->sectionsData->put($sectionId, SectionData::make(
+            id: $sectionId,
+            data: $data,
+            section: $section,
+            sourceFile: $dataFilePath
+        ));
     }
 
     /**

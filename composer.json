@@ -35,6 +35,7 @@
     "spatie/color": "^1.6",
     "spatie/once": "^3.1",
     "swaggest/json-schema": "^0.12.42",
+    "symfony/filesystem": "^6.4",
     "symfony/yaml": "^6.4"
   },
   "require-dev": {

@@ -16,7 +16,8 @@ class SectionData implements JsonSerializable
         public SettingsValues $settings,
         public bool $disabled,
         protected array $allBlocks,
-        public array $blocks_order
+        public array $blocks_order,
+        public ?string $sourceFile = null,
     ) {
         $this->blocks = collect($this->blocks_order)
             ->map(fn ($id) => $this->allBlocks[$id])
@@ -27,7 +28,7 @@ class SectionData implements JsonSerializable
             ->all();
     }
 
-    public static function make(string $id, array $data, Section $section): self
+    public static function make(string $id, array $data, Section $section, ?string $sourceFile = null): self
     {
         $blocks = self::prepareBlocks($data['blocks'] ?? [], $section->blocks);
 
@@ -41,7 +42,8 @@ class SectionData implements JsonSerializable
                 collect($section->settings)->keyBy('id')->toArray()
             ),
             allBlocks: $blocks,
-            blocks_order: $data['blocks_order'] ?? array_keys($blocks)
+            blocks_order: $data['blocks_order'] ?? array_keys($blocks),
+            sourceFile: $sourceFile
         );
     }
 

@@ -32,7 +32,7 @@ class AddProductToCart
             return [
                 'success' => true,
                 'message' => $responseData['message'],
-                'redirect_url' => null,
+                'redirect_url' => $responseData['redirect'] ?? null,
             ];
         }
 

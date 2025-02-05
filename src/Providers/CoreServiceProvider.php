@@ -6,6 +6,7 @@ use BagistoPlus\Visual\Components\AddToCartButton;
 use BagistoPlus\Visual\Components\CartPreview;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
+use BagistoPlus\Visual\LivewireFeatures\SectionDataSynth;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
 use BagistoPlus\Visual\Sections;
 use BagistoPlus\Visual\Sections\SectionRepository;
@@ -14,15 +15,18 @@ use BagistoPlus\Visual\Support\UrlGenerator;
 use BagistoPlus\Visual\ThemeDataCollector;
 use BagistoPlus\Visual\ThemePathsResolver;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
+use Webkul\Category\Models\Category;
 use Webkul\Category\Repositories\CategoryRepository;
 use Webkul\CMS\Repositories\PageRepository;
 use Webkul\Installer\Http\Middleware\Locale;
+use Webkul\Product\Models\Product;
 use Webkul\Product\Repositories\ProductRepository;
 use Webkul\Shop\Http\Middleware\Currency;
 
@@ -60,6 +64,13 @@ class CoreServiceProvider extends ServiceProvider
 
         $this->bootLivewireComponents();
         Visual::registerSections(static::$sections, 'visual');
+
+        Relation::morphMap([
+            'product' => Product::class,
+            'category' => Category::class,
+        ]);
+
+        Livewire::propertySynthesizer(SectionDataSynth::class);
 
         $this->app->booted(function (Application $app) {
 
