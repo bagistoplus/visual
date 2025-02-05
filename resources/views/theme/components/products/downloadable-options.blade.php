@@ -1,5 +1,30 @@
 @props(['product'])
-<div class="space-y-4">
+
+@pushOnce('scripts')
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('DownloadableOptions', () => ({
+        links: [],
+        showErrors: false,
+
+        init() {
+          Alpine.store('ProductForm').register(() => this.validate());
+
+          this.$watch('links', () => {
+            this.showErrors = this.links.length === 0;
+          });
+        },
+
+        validate() {
+          this.showErrors = this.links.length === 0;
+          return this.links.length > 0;
+        },
+      }));
+    });
+  </script>
+@endpushOnce
+
+<div x-data="DownloadableOptions" class="space-y-4">
   @if ($product->downloadable_samples->isNotEmpty())
     <div class="">
       <h3 class="mb-2 text-base font-semibold text-neutral-900">@lang('shop::app.products.view.type.downloadable.samples')</h3>
@@ -35,6 +60,8 @@
                 name="downloadable_links[]"
                 value="{{ $link->id }}"
                 class="text-primary"
+                x-model.number="links"
+                wire:model="links"
               >
               <span>{{ $link->title . ' + ' . core()->currency($link->price) }}</span>
 
@@ -50,6 +77,10 @@
             </label>
           </div>
         @endforeach
+
+        <span x-show="showErrors" class="text-danger text-sm italic">
+          The links are required.
+        </span>
       </div>
     </div>
   @endif

@@ -24,6 +24,8 @@ class ProductDetails extends LivewireSection
 
     public array $bundleProductQuantities = [];
 
+    public array $links = [];
+
     public function mount(): void
     {
         $this->initializeGroupedProductQuantities();
@@ -110,6 +112,11 @@ class ProductDetails extends LivewireSection
                 'bundle_options' => collect($this->bundleProductOptions)->filter()->all(),
                 'bundle_option_qty' => $this->bundleProductQuantities,
             ]);
+        }
+
+        // Add bundle product options and quantities if present
+        if (! empty($this->links)) {
+            $cartParams = array_merge($cartParams, ['links' => $this->links]);
         }
 
         $result = app(AddProductToCart::class)->execute($cartParams);

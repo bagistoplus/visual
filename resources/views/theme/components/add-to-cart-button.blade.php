@@ -24,14 +24,14 @@
 @endphp
 
 <button
-  wire:click.prevent="{{ $action }}"
-  wire:target="{{ $action }}"
+  x-on:click.prevent="submit('{{ $action }}')"
   wire:loading.attr="disabled"
   class="{{ $classes }} relative flex items-center justify-center rounded-full transition-opacity hover:opacity-90 disabled:cursor-not-allowed"
   {{ $attributes }}
 >
   <x-lucide-shopping-cart
     class="h-5 w-5"
+    wire:target="{{ $action }}"
     wire:loading.class="text-transparent"
     aria-label="add to cart"
   />
@@ -48,8 +48,8 @@
 
   <div
     wire:loading
-    wire:target="{{ $action }}"
     wire:loading.class="!flex"
+    wire:target="{{ $action }}"
     class="absolute inset-0 h-full w-full items-center justify-center"
   >
     <x-lucide-loader-2 class="h-5 w-5 animate-spin" />

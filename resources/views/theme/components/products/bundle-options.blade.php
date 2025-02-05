@@ -80,9 +80,7 @@
           const option = this.options.find(option => option.id === optionId);
 
           if (option.type === 'checkbox') {
-            this.$dispatch('disable-buy-buttons', {
-              disable: this.selectedProducts[optionId].length <= 0
-            });
+            Alpine.store('ProductForm').disableButtons = this.selectedProducts[optionId].length <= 0;
           }
         }
       }));

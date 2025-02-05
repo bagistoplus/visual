@@ -149,6 +149,8 @@
             })
           });
 
+          Alpine.store('ProductForm').disableButtons = !this.selectedVariant;
+
           if (this.$wire) {
             this.$wire.set('selectedVariant', this.selectedVariant, false);
           }

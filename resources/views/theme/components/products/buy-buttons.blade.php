@@ -5,18 +5,32 @@
 @pushOnce('scripts')
   <script>
     document.addEventListener('alpine:init', () => {
-      Alpine.data('VisualBuyButtons', () => ({
+      Alpine.store('ProductForm', {
+        validators: [],
         disableButtons: false,
 
-        init() {
-          window.addEventListener('product-variant-change', (event) => {
-            this.disableButtons = !event.detail.variant;
-          });
 
-          window.addEventListener('disable-buy-buttons', (event) => {
-            this.disableButtons = event.detail.disable;
-          });
+        register(fn) {
+          this.validators.push(fn);
+        },
+
+        validate() {
+          return this.validators.every(fn => fn());
         }
+      });
+
+      Alpine.data('VisualBuyButtons', () => ({
+        get disableButtons() {
+          return Alpine.store('ProductForm').disableButtons;
+        },
+
+        submit(action) {
+          if (this.disableButtons) return;
+
+          if (!Alpine.store('ProductForm').validate()) return;
+
+          this.$wire.call(action);
+        },
       }));
     });
   </script>
