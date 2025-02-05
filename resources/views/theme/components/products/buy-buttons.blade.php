@@ -12,6 +12,10 @@
           window.addEventListener('product-variant-change', (event) => {
             this.disableButtons = !event.detail.variant;
           });
+
+          window.addEventListener('disable-buy-buttons', (event) => {
+            this.disableButtons = event.detail.disable;
+          });
         }
       }));
     });

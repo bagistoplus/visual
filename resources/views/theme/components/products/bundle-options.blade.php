@@ -58,6 +58,12 @@
           });
         },
 
+        productIsSelected(optionId, productId) {
+          return Array.isArray(this.selectedProducts[optionId]) ?
+            this.selectedProducts[optionId].includes(productId) :
+            this.selectedProducts[optionId] === productId;
+        },
+
         onQuantityChange(optionId, quantity) {
           this.quantities[optionId] = quantity;
           const product = this.options.find(option => option.id === optionId).products
@@ -65,6 +71,18 @@
 
           if (product) {
             product.qty = quantity;
+          }
+
+          this.$wire.set('bundleProductQuantities', this.quantities, false);
+        },
+
+        onSelectionChange(optionId, value) {
+          const option = this.options.find(option => option.id === optionId);
+
+          if (option.type === 'checkbox') {
+            this.$dispatch('disable-buy-buttons', {
+              disable: this.selectedProducts[optionId].length <= 0
+            });
           }
         }
       }));
@@ -79,7 +97,12 @@
         @if ($option['type'] === 'select')
           <label>
             <span class="text-sm font-semibold">{{ $option['label'] }}</span>
-            <select class="mt-1 w-full" x-model.number="selectedProducts[{{ $option['id'] }}]">
+            <select
+              class="mt-1 w-full"
+              x-model.number="selectedProducts[{{ $option['id'] }}]"
+              wire:model.number="bundleProductOptions.{{ $option['id'] }}"
+              x-on:change="onSelectionChange({{ $option['id'] }}, event.target.value)"
+            >
               @if (!$option['is_required'])
                 <option value="">
                   @lang('shop::app.products.view.type.bundle.none')
@@ -97,9 +120,11 @@
           <label>
             <span class="text-sm font-semibold">{{ $option['label'] }}</span>
             <select
+              multiple
               class="mt-1 w-full"
               x-model.number="selectedProducts[{{ $option['id'] }}]"
-              multiple
+              wire:model.number="bundleProductOptions.{{ $option['id'] }}"
+              x-on:change="onSelectionChange({{ $option['id'] }}, event.target.value)"
             >
               @if (!$option['is_required'])
                 <option value="">
@@ -124,6 +149,7 @@
                   type="radio"
                   value=""
                   name="bundle_options[{{ $option['id'] }}][]"
+                  wire:model.number="bundleProductOptions.{{ $option['id'] }}"
                 >
                 <span>@lang('shop::app.products.view.type.bundle.none')</span>
               </label>
@@ -136,6 +162,8 @@
                   name="bundle_options[{{ $option['id'] }}][]"
                   value="{{ $product['id'] }}"
                   x-model.number="selectedProducts[{{ $option['id'] }}]"
+                  wire:model.number="bundleProductOptions.{{ $option['id'] }}"
+                  x-on:change="onSelectionChange({{ $option['id'] }}, event.target.value)"
                 >
                 <span>{{ $product['name'] }} + {{ $product['price']['final']['formatted_price'] }}</span>
               </label>
@@ -152,10 +180,17 @@
                   name="bundle_options[{{ $option['id'] }}][]"
                   value="{{ $product['id'] }}"
                   x-model.number="selectedProducts[{{ $option['id'] }}]"
+                  x-on:change="onSelectionChange({{ $option['id'] }})"
                 >
                 <span>{{ $product['name'] }} + {{ $product['price']['final']['formatted_price'] }}</span>
               </label>
             @endforeach
+
+            @if ($option['is_required'])
+              <template x-if="selectedProducts[{{ $option['id'] }}].length <= 0">
+                <span class="text-danger mt-1 text-xs italic">{{ $option['label'] }} is required</span>
+              </template>
+            @endif
           </div>
         @endif
 
@@ -186,9 +221,7 @@
         <span x-text="option.label" class="font-semibold text-neutral-700"></span>
         <div>
           <template x-for="product in option.products" x-bind:key="product.id">
-            <template
-              x-if="selectedProducts[option.id] === product.id || selectedProducts[option.id].includes(product.id)"
-            >
+            <template x-if="productIsSelected(option.id, product.id)">
               <div>
                 <span x-text="product.qty"></span>
                 x
