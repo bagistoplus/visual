@@ -18,6 +18,25 @@ class ProductDetails extends LivewireSection
 
     public $selectedVariant;
 
+    public $groupedProductQuantities = [];
+
+    public function mount()
+    {
+        $this->initializeGroupedProductQuantities();
+    }
+
+    public function initializeGroupedProductQuantities()
+    {
+        if ($this->context['product']->type !== 'grouped') {
+            return;
+        }
+
+        $this->groupedProductQuantities = $this->context['product']->grouped_products
+            ->mapWithKeys(function ($groupedProduct) {
+                return [$groupedProduct->id => $groupedProduct->qty];
+            })->all();
+    }
+
     public function addToCart(bool $buyNow = false)
     {
         $result = app(AddProductToCart::class)->execute(array_merge(
@@ -26,7 +45,8 @@ class ProductDetails extends LivewireSection
                 'quantity' => $this->quantity,
                 'is_buy_now' => $buyNow,
             ],
-            empty($this->variantAttributes) ? [] : ['super_attributes' => $this->variantAttributes, 'selected_configurable_option' => $this->selectedVariant]
+            empty($this->variantAttributes) ? [] : ['super_attributes' => $this->variantAttributes, 'selected_configurable_option' => $this->selectedVariant],
+            empty($this->groupedProductQuantities) ? [] : ['qty' => $this->groupedProductQuantities],
         ));
 
         if ($result['success']) {

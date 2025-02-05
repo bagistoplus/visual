@@ -19,7 +19,7 @@
           <x-shop::quantity-selector
             label=''
             value="{{ $groupedProduct->qty }}"
-            x-on:change="data.qty[{{ $groupedProduct->associated_product_id }}] = $event.detail"
+            x-on:change="$wire.set('groupedProductQuantities.{{ $groupedProduct->associated_product->id }}', $event.detail, false)"
           />
         </div>
       @endif
