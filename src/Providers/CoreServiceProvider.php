@@ -43,6 +43,7 @@ class CoreServiceProvider extends ServiceProvider
         Sections\Breadcrumbs::class,
         Sections\CategoryPage::class,
         Sections\ProductDetails::class,
+        Sections\LoginForm::class,
     ];
 
     /**
