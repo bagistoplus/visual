@@ -29,8 +29,8 @@
               type="email"
               name="email"
               autocomplete="email"
-              class="border-surface-alt-600 focus:ring-primary focus:border-primary block w-full rounded-lg border py-3 pl-10 pr-3 focus:ring-2"
-              placeholder="Enter your email"
+              class="border-surface-alt-600 py-3 pl-10 pr-12"
+              placeholder="email@example.com"
             >
           </div>
           @error('email')
@@ -50,8 +50,8 @@
               id="password"
               name="password"
               autocomplete="current-password"
-              placeholder="Enter your password"
-              class="border-surface-alt-600 focus:ring-primary focus:border-primary block w-full rounded-lg border py-3 pl-10 pr-12 focus:ring-2"
+              placeholder="{{ trans('shop::app.customers.login-form.password') }}"
+              class="border-surface-alt-600 py-3 pl-10 pr-12"
               x-bind:type="passwordType"
             >
             <button
@@ -63,7 +63,7 @@
               <x-lucide-eye-off x-show="passwordType === 'text'" class="h-5 w-5" />
             </button>
           </div>
-          @error('email')
+          @error('password')
             <span class="text-danger text-xs">{{ $message }}</span>
           @enderror
         </div>
@@ -94,7 +94,7 @@
 
       <p class="text-center text-sm">
         @lang('shop::app.customers.login-form.new-customer')
-        <a class="text-primary hover:opacity-80"href="/register">
+        <a class="text-primary hover:opacity-80" href="{{ route('shop.customers.register.index') }}">
           @lang('shop::app.customers.login-form.create-your-account')
         </a>
       </p>

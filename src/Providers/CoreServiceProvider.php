@@ -44,6 +44,7 @@ class CoreServiceProvider extends ServiceProvider
         Sections\CategoryPage::class,
         Sections\ProductDetails::class,
         Sections\LoginForm::class,
+        Sections\RegisterForm::class,
     ];
 
     /**
