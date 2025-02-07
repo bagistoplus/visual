@@ -13,6 +13,7 @@ class Breadcrumbs extends BladeSection
     {
         $breadcrumbsData = match (Route::currentRouteName()) {
             'shop.product_or_category.index' => ['name' => 'product', 'entity' => $this->context['product']],
+            'shop.checkout.cart.index' => ['name' => 'cart'],
             default => []
         };
 

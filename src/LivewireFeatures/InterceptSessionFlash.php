@@ -31,6 +31,7 @@ class InterceptSessionFlash extends ComponentHook
             }
 
             $this->component->dispatch('show-toast', type: $type, message: $message);
+            session()->forget($type);
 
             $alreadyDispatched[] = $toast;
         });

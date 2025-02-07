@@ -3,7 +3,9 @@
 namespace BagistoPlus\Visual\Providers;
 
 use BagistoPlus\Visual\Components\AddToCartButton;
+use BagistoPlus\Visual\Components\CartCouponForm;
 use BagistoPlus\Visual\Components\CartPreview;
+use BagistoPlus\Visual\Components\EstimateShipping;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\LivewireFeatures\SectionDataSynth;
@@ -43,6 +45,7 @@ class CoreServiceProvider extends ServiceProvider
         Sections\Breadcrumbs::class,
         Sections\CategoryPage::class,
         Sections\ProductDetails::class,
+        Sections\CartContent::class,
         Sections\LoginForm::class,
         Sections\RegisterForm::class,
     ];
@@ -52,7 +55,9 @@ class CoreServiceProvider extends ServiceProvider
      */
     protected static array $livewireComponents = [
         'cart-preview' => CartPreview::class,
+        'cart-coupon-form' => CartCouponForm::class,
         'add-to-cart-button' => AddToCartButton::class,
+        'estimate-shipping' => EstimateShipping::class,
     ];
 
     /**

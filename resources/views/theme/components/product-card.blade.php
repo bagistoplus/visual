@@ -37,6 +37,7 @@
           class="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 transform items-center justify-center gap-2"
         >
           <livewire:add-to-cart-button
+            x-data="{ submit() { this.$wire.addToCart() } }"
             :productId="$product->id"
             wire:key="{{ str()->random(16) }}"
             simple
@@ -134,7 +135,11 @@
             {!! $product->getTypeInstance()->getPriceHtml() !!}
           </div>
 
-          <livewire:add-to-cart-button :productId="$product->id" wire:key="{{ str()->random(16) }}" />
+          <livewire:add-to-cart-button
+            x-data="{ submit() { this.$wire.addToCart() } }"
+            :productId="$product->id"
+            wire:key="{{ str()->random(16) }}"
+          />
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Support;
 
 use Webkul\Checkout\Facades\Cart;
+use Webkul\Shop\Http\Resources\CartItemResource;
 
 trait InteractsWithCart
 {
@@ -38,12 +39,8 @@ trait InteractsWithCart
             return collect([]);
         }
 
-        // dd($this->getCart()->items->map->toArray());
-
         return $this->getCart()->items->map(function ($item) {
-            $item->baseImage = $item->getTypeInstance()->getBaseImage($item);
-
-            return $item;
+            return (object) (new CartItemResource($item))->toArray(request());
         });
     }
 

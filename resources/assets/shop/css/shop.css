@@ -94,6 +94,10 @@
         @apply appearance-none h-4 w-4 bg-primary border-primary rounded-full;
         @apply cursor-pointer pointer-events-auto;
     }
+
+    label.require:after, label[required]:after {
+        content: '*';
+    }
 }
 
 @keyframes slideInLeft {

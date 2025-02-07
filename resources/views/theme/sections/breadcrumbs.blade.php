@@ -9,7 +9,9 @@
             </a>
             <x-lucide-chevron-right class="mx-2 h-4 w-4" />
           @else
-            <span class="text-primary truncate font-medium">Rose Quartz Face Serum</span>
+            <span class="text-primary truncate font-medium">
+              {{ $breadcrumb->title }}
+            </span>
           @endif
         @endforeach
       </nav>

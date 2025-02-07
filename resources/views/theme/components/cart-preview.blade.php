@@ -41,9 +41,9 @@
             <div class="flex gap-3">
               <!-- Item Image -->
               <div class="flex-shrink-0 overflow-hidden rounded">
-                <a class="block h-12 w-12" href="{{ url($item->product->url_key) }}">
+                <a class="block h-12 w-12" href="{{ url($item->product_url_key) }}">
                   <img
-                    src="{{ $item->baseImage['small_image_url'] }}"
+                    src="{{ $item->base_image['small_image_url'] }}"
                     alt="{{ $item->name }}"
                     class="h-full w-full object-cover"
                   />
@@ -54,7 +54,7 @@
               <div class="min-w-0 flex-1">
                 <div class="flex items-start justify-between">
                   <h4 class="text-on-surface truncate text-sm font-medium">
-                    <a href="{{ url($item->product->url_key) }}">
+                    <a href="{{ url($item->product_url_key) }}">
                       {{ $item->name }}
                     </a>
                   </h4>
