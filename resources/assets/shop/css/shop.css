@@ -95,7 +95,7 @@
         @apply cursor-pointer pointer-events-auto;
     }
 
-    label.require:after, label[required]:after {
+    .required:after, [required]:after {
         content: '*';
     }
 }

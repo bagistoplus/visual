@@ -1,0 +1,6 @@
+sections:
+  breadcrumbs:
+    type: visual-breadcrumbs
+
+  checkout:
+    type: visual-checkout

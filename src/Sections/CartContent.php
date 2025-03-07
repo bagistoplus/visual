@@ -6,7 +6,6 @@ use BagistoPlus\Visual\Enums\Events;
 use BagistoPlus\Visual\Support\InteractsWithCart;
 use Livewire\Attributes\On;
 use Webkul\Checkout\Facades\Cart;
-use Webkul\Shop\Http\Resources\CartResource;
 
 #[On(Events::SHIPPING_METHOD_SET)]
 class CartContent extends LivewireSection
@@ -48,7 +47,7 @@ class CartContent extends LivewireSection
         return [
             'items' => $this->getCartItems(),
             'cartErrors' => Cart::getErrors(),
-            'cartResource' => (new CartResource($this->getCart()))->toArray(request()),
+            'cartResource' => $this->getCartResource(),
         ];
     }
 }

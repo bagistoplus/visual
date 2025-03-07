@@ -46,6 +46,7 @@ class CoreServiceProvider extends ServiceProvider
         Sections\CategoryPage::class,
         Sections\ProductDetails::class,
         Sections\CartContent::class,
+        Sections\Checkout::class,
         Sections\LoginForm::class,
         Sections\RegisterForm::class,
     ];
