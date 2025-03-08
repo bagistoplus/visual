@@ -234,16 +234,16 @@
             <button
               :class="[
                   'py-2 px-3 text-sm font-medium rounded-md relative',
-                  selections[attribute.id] === option.id ? 'bg-gray-900 text-white' :
-                  'bg-white text-gray-900 border border-gray-200 hover:bg-gray-50',
-                  !option.isAvailable ? 'cursor-not-allowed' : ''
+                  selections[attribute.id] === option.id ? 'bg-primary text-primary-50' :
+                  'bg-white text-gray-900 border border-neutral-200 hover:bg-neutral-50',
+                  !option.isAvailable ? 'cursor-not-allowed text-neutral-300' : ''
               ]"
               :title="option.label + (!option.isAvailable ? ' (Unavailable)' : '')"
               @click="onOptionSelected(attribute.id, option.id)"
             >
               <span x-text="option.label"></span>
               <template x-if="!option.isAvailable">
-                <div class="absolute inset-0 rounded-md bg-black/50"></div>
+                <div class="absolute inset-0 rounded-md bg-black/30"></div>
               </template>
             </button>
           </template>
