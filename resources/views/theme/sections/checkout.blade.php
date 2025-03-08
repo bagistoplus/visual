@@ -30,20 +30,26 @@
       <div class="order-first lg:order-last">
         <div class="lg:sticky lg:top-8">
           <div class="bg-surface-alt rounded-lg p-6 shadow-sm">
-            <h2 class="mb-6 font-serif text-xl">Order Summary</h2>
+            <h2 class="mb-6 font-serif text-xl text-neutral-700">
+              @lang('shop::app.checkout.onepage.summary.cart-summary')
+            </h2>
             <div class="mb-6 space-y-4">
-              <div class="flex gap-4">
-                <div class="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100"><img
-                    src="https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&amp;fit=crop&amp;q=80&amp;w=800"
-                    alt="Rose Quartz Face Serum"
-                    class="h-full w-full object-cover"
-                  ></div>
-                <div class="flex-1">
-                  <h3 class="font-medium">Rose Quartz Face Serum</h3>
-                  <p class="text-sm">Quantity: 1</p>
-                  <p class="text-primary text-sm">$48.00</p>
+              @foreach ($cartResource['items'] as $item)
+                <div class="flex gap-4">
+                  <div class="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
+                    <img
+                      src="{{ $item['base_image']['small_image_url'] }}"
+                      alt="Rose Quartz Face Serum"
+                      class="h-full w-full object-cover"
+                    >
+                  </div>
+                  <div class="flex-1">
+                    <h3 class="font-medium">{{ $item['name'] }}</h3>
+                    <p class="text-sm">Quantity: {{ $item['quantity'] }}</p>
+                    <p class="text-primary text-sm">{{ $item['formatted_price'] }}</p>
+                  </div>
                 </div>
-              </div>
+              @endforeach
             </div>
 
             <x-shop::cart.summary :cart="$cartResource" />

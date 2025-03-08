@@ -16,7 +16,13 @@ trait InteractsWithCart
 
     public function getCartResource()
     {
-        return (new CartResource($this->getCart()))->toArray(request());
+        $cart = (new CartResource($this->getCart()))->toArray(request());
+
+        $cart['items'] = $cart['items']->map(function ($item) {
+            return (new CartItemResource($item))->toArray(request());
+        });
+
+        return $cart;
     }
 
     public function cartHasErrors()
