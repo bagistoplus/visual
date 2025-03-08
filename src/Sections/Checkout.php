@@ -3,15 +3,19 @@
 namespace BagistoPlus\Visual\Sections;
 
 use BagistoPlus\Visual\Actions\StoreCartAddresses;
+use BagistoPlus\Visual\Enums\Events;
 use BagistoPlus\Visual\Support\InteractsWithCart;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Livewire\Attributes\On;
 use Webkul\Shipping\Facades\Shipping;
 use Webkul\Shop\Http\Controllers\API\OnepageController;
 use Webkul\Shop\Http\Requests\CartAddressRequest;
 
+#[On(Events::COUPON_APPLIED)]
+#[On(Events::COUPON_REMOVED)]
 class Checkout extends LivewireSection
 {
     use InteractsWithCart;

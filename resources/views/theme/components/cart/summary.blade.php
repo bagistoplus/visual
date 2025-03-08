@@ -48,10 +48,22 @@
     </div>
   @endif
 
-  <!-- Discount -->
+  <!-- Apply coupon -->
   <div class="border-y border-neutral-300 py-4">
     <livewire:cart-coupon-form />
   </div>
+
+  <!-- Discount amount -->
+  @if ($cart['discount_amount'])
+    <div class="flex justify-between">
+      <span class="text-neutral-600">
+        @lang('shop::app.checkout.onepage.summary.discount-amount')
+      </span>
+      <span class="text-neutral-900">
+        {{ $cart['formatted_discount_amount'] }}
+      </span>
+    </div>
+  @endif
 
   <!-- Shipping Rates -->
   @if ($displayTax['shipping'] === 'including_tax')

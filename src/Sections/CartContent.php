@@ -8,6 +8,8 @@ use Livewire\Attributes\On;
 use Webkul\Checkout\Facades\Cart;
 
 #[On(Events::SHIPPING_METHOD_SET)]
+#[On(Events::COUPON_APPLIED)]
+#[On(Events::COUPON_REMOVED)]
 class CartContent extends LivewireSection
 {
     use InteractsWithCart;
