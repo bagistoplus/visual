@@ -5,12 +5,15 @@ namespace BagistoPlus\Visual\Sections;
 use BagistoPlus\Visual\Actions\GetProducts;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
+use Livewire\WithPagination;
 use Webkul\Attribute\Repositories\AttributeRepository;
 use Webkul\Product\Helpers\Toolbar;
 use Webkul\Product\Repositories\ProductRepository;
 
 class CategoryPage extends LivewireSection
 {
+    use WithPagination;
+
     public static string $view = 'shop::sections.category-page';
 
     #[Url]
@@ -26,6 +29,16 @@ class CategoryPage extends LivewireSection
     public $displayMode = 'grid';
 
     public $maxPrice = 0;
+
+    public function paginationView()
+    {
+        return 'shop::pagination.default';
+    }
+
+    public function paginationSimpleView()
+    {
+        return 'shop::pagination.default';
+    }
 
     public function setFilter($code, $value)
     {

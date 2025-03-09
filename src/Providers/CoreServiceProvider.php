@@ -18,7 +18,6 @@ use BagistoPlus\Visual\ThemeDataCollector;
 use BagistoPlus\Visual\ThemePathsResolver;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
@@ -77,8 +76,6 @@ class CoreServiceProvider extends ServiceProvider
         $this->bootLivewirePropertySynthesizer();
 
         $this->app->booted(function (Application $app) {
-            $this->bootPaginationViews();
-
             if (! $app->runningInConsole()) {
                 Route::getRoutes()->refreshNameLookups();
                 $this->bootTemplates();
@@ -110,12 +107,6 @@ class CoreServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
         $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'visual');
-    }
-
-    protected function bootPaginationViews(): void
-    {
-        Paginator::defaultView('shop::pagination.default');
-        Paginator::defaultSimpleView('shop::pagination.default');
     }
 
     protected function bootBladeComponents(): void
