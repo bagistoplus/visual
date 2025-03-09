@@ -104,6 +104,8 @@ class CategoryPage extends LivewireSection
             request()->query(),
             [
                 'category_id' => $this->context['category']->id,
+                'limit' => $this->limit,
+                'sort' => $this->sort,
             ],
             collect($this->filters)
                 ->map(fn ($value) => implode(',', $value))
