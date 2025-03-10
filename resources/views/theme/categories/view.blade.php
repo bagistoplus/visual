@@ -2,7 +2,8 @@
 
 @push('meta')
   <meta name="description"
-    content="{{ trim($category->meta_description) != '' ? $category->meta_description : \Illuminate\Support\Str::limit(strip_tags($category->description), 120, '') }}" />
+    content="{{ trim($category->meta_description) != '' ? $category->meta_description : \Illuminate\Support\Str::limit(strip_tags($category->description), 120, '') }}"
+  />
 
   <meta name="keywords" content="{{ $category->meta_keywords }}" />
 
@@ -12,6 +13,10 @@
     </script>
   @endif
 @endpush
+
+@section('page_title')
+  {{ trim($category->meta_title) != '' ? $category->meta_title : $category->name }}
+@stop
 
 @visual_content
 @include('shop::templates.category')

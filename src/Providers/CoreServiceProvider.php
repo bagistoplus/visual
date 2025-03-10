@@ -43,6 +43,7 @@ class CoreServiceProvider extends ServiceProvider
         Sections\Newsletter::class,
         Sections\Breadcrumbs::class,
         Sections\CategoryPage::class,
+        Sections\SearchResult::class,
         Sections\ProductDetails::class,
         Sections\CartContent::class,
         Sections\Checkout::class,

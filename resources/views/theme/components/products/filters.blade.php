@@ -19,14 +19,19 @@
         @if ($filter->type === 'price')
           <div class="py-3 pr-3">
             <x-shop::range-input :max="number_format($maxPrice, 2)"
-              @range-change.debounce="$wire.setFilter('{{ $filter->code }}', $event.detail)" />
+              @range-change.debounce="$wire.setFilter('{{ $filter->code }}', $event.detail)"
+            />
           </div>
         @else
           <div class="space-y-2 py-3">
             @foreach ($filter->options as $option)
               <label class="flex items-center">
-                <input wire:model.live="filters.{{ $filter->code }}" type="checkbox" name="{{ $filter->code }}"
-                  value="{{ $option->id }}">
+                <input
+                  wire:model.live="filters.{{ $filter->code }}"
+                  type="checkbox"
+                  name="{{ $filter->code }}"
+                  value="{{ $option->id }}"
+                >
                 <span class="ml-3">{{ $option->label ?? $option->admin_name }}</span>
               </label>
             @endforeach

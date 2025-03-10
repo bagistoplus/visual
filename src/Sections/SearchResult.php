@@ -8,12 +8,12 @@ use Livewire\Attributes\Computed;
 use Livewire\WithPagination;
 use Webkul\Attribute\Repositories\AttributeRepository;
 
-class CategoryPage extends LivewireSection
+class SearchResult extends LivewireSection
 {
     use HandlesProductListing;
     use WithPagination;
 
-    public static string $view = 'shop::sections.category-page';
+    public static string $view = 'shop::sections.search-result';
 
     public function paginationView()
     {
@@ -28,9 +28,7 @@ class CategoryPage extends LivewireSection
     #[Computed(persist: true)]
     public function availableFilters()
     {
-        if (empty($filterableAttributes = $this->context['category']->filterableAttributes)) {
-            $filterableAttributes = app(AttributeRepository::class)->getFilterableAttributes();
-        }
+        $filterableAttributes = app(AttributeRepository::class)->getFilterableAttributes();
 
         return $filterableAttributes->filter(function ($filter) {
             return $filter->type === 'price' || $filter->options->isNotEmpty();
@@ -39,7 +37,7 @@ class CategoryPage extends LivewireSection
 
     public function mount()
     {
-        $this->initializeMaxPrice(['category_id' => $this->context['category']->id]);
+        $this->initializeMaxPrice();
         $this->initializeFilters();
     }
 
@@ -47,7 +45,7 @@ class CategoryPage extends LivewireSection
     {
         return [
             'products' => app(GetProducts::class)->execute(
-                $this->buildProductParams(['category_id' => $this->context['category']->id])
+                $this->buildProductParams()
             ),
         ];
     }

@@ -39,7 +39,7 @@
           <livewire:add-to-cart-button
             x-data="{ submit() { this.$wire.addToCart() } }"
             :productId="$product->id"
-            wire:key="{{ str()->random(16) }}"
+            :key="str()->random(16)"
             simple
           />
           <button aria-label="add to whishlist"
@@ -138,7 +138,7 @@
           <livewire:add-to-cart-button
             x-data="{ submit() { this.$wire.addToCart() } }"
             :productId="$product->id"
-            wire:key="{{ str()->random(16) }}"
+            :key="str()->random(16)"
           />
         </div>
       </div>
