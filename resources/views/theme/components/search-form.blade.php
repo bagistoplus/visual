@@ -30,7 +30,7 @@
       <input
         type="search"
         name="query"
-        value="{{ old('query') }}"
+        value="{{ request('query') }}"
         minlength="{{ core()->getConfigData('catalog.products.search.min_query_length') }}"
         maxlength="{{ core()->getConfigData('catalog.products.search.max_query_length') }}"
         placeholder="@lang('shop::app.components.layouts.header.search-text')"
@@ -41,9 +41,9 @@
         class="focus:ring-primary rounded-full pl-12 pr-10 focus:border-transparent focus:outline-none focus:ring-2"
       >
 
-      {{-- <button type="submit" class="hover:text-primary absolute right-4 top-1/2 -translate-y-1/2 transition-colors">
-        <x-lucide-x class="h-5 w-5" />
-      </button> --}}
+      @if (core()->getConfigData('catalog.products.settings.image_search'))
+        <x-shop::image-search-button class="absolute right-4 top-1/2 flex -translate-y-1/2 transform items-center" />
+      @endif
     </form>
   </div>
 </div>
