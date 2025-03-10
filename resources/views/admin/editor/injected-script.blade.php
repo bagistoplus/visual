@@ -54,11 +54,9 @@
     <span id="label">section name</span>
     <div id="buttons">
       <button id="move-down" class="btn move-down" title="Move down"><x-heroicon-o-arrow-down /></button>
-      <button id="move-up" class="btn move-up" title="Move up"
-        style="margin-right: 8px;"><x-heroicon-o-arrow-up /></button>
+      <button id="move-up" class="btn move-up" title="Move up" style="margin-right: 8px;"><x-heroicon-o-arrow-up /></button>
       <button id="edit" class="btn" title="Edit"><x-heroicon-o-pencil /></button>
-      <button id="disable" class="btn" title="Hide"
-        style="margin-right: 8px;"><x-heroicon-o-eye-slash /></button>
+      <button id="disable" class="btn" title="Hide" style="margin-right: 8px;"><x-heroicon-o-eye-slash /></button>
       <button id="remove" class="btn" title="Remove"><x-heroicon-o-trash /></button>
     </div>
   </div>
@@ -66,6 +64,7 @@
   <script type="text/javascript">
     window.themeData = @json($themeData);
     window.settingsSchema = @json($settingsSchema);
+    window.templates = @json($templates);
   </script>
   {{-- blade-formatter-disable --}}
   {{

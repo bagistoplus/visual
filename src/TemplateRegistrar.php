@@ -103,7 +103,7 @@ class TemplateRegistrar
             route: 'shop.search.index',
             label: __('visual::theme-editor.templates.search'),
             icon: 'lucide-search',
-            previewUrl: route('shop.search.index')
+            previewUrl: route('shop.search.index', ['query' => 'e'])
         );
 
         // Add CMS page template if any page exists.
@@ -125,6 +125,16 @@ class TemplateRegistrar
             label: __('visual::theme-editor.templates.contact'),
             icon: 'lucide-phone',
             previewUrl: route('shop.home.contact_us')
+        );
+
+        $templates[] = Template::separator();
+
+        $templates[] = new Template(
+            template: 'error',
+            route: 'shop.error.index',
+            label: __('visual::theme-editor.templates.error'),
+            icon: 'lucide-file-question',
+            previewUrl: url('/not-found')
         );
 
         foreach ($templates as $template) {

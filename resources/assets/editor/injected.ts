@@ -56,6 +56,7 @@ class ThemeEditor {
 
     this.postMessage('initialize', {
       themeData: window.themeData,
+      templates: window.templates,
       settingsSchema: window.settingsSchema
     })
 

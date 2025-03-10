@@ -7,7 +7,6 @@ use BagistoPlus\Visual\ThemeEditor;
 use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 use Webkul\Category\Repositories\CategoryRepository;
 use Webkul\Product\Repositories\ProductRepository;
@@ -84,6 +83,7 @@ class InjectThemeEditorScript
             $editorScript = view('visual::admin.editor.injected-script', [
                 'theme' => $this->themeEditor->activeTheme(),
                 'themeData' => $themeData,
+                'templates' => $this->themeEditor->getTemplates(),
                 'settingsSchema' => app('themes')->current()->settingsSchema,
             ]);
         } else {
@@ -117,7 +117,7 @@ class InjectThemeEditorScript
             } elseif ($this->productRepository->findBySlug($slug) !== null) {
                 return 'shop.products.index';
             } else {
-                return 'shop.home.index';
+                return 'shop.error.index';
             }
         }
 

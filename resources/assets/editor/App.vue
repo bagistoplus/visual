@@ -20,9 +20,10 @@
   });
 
   const messageHandlers: Record<string, Function> = {
-    initialize(data: { themeData: ThemeData, settingsSchema: SettingsSchema }) {
+    initialize(data: { themeData: ThemeData, templates: Template[], settingsSchema: SettingsSchema }) {
       store.setThemeData(data.themeData);
       store.setSettingsSchema(data.settingsSchema);
+      store.setTemplates(data.templates);
 
       store.setAvailableSections(window.ThemeEditor.availableSections);
 

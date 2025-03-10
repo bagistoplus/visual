@@ -1,21 +1,23 @@
 <script setup lang="ts">
   import { Menu } from '@ark-ui/vue/menu';
-  import { template } from 'lodash';
+  import { useStore } from '../store';
 
-  const templates = window.ThemeEditor.templates;
+  const store = useStore();
 
   const emit = defineEmits<{
     (e: 'select', value: any): void;
   }>();
 
   const model = defineModel<string>();
-  const selected = computed(() => templates.find(t => t.template === model.value));
+  const selected = computed(() => store.templates.find(t => t.template === model.value));
 
-  onBeforeMount(() => {
-    if (!model.value) {
+
+  watch(() => store.templates, (templates) => {
+    if (!model.value && templates.length) {
       model.value = templates[0].template;
     }
   });
+
   function onSelect({ value }: { value: string }) {
     model.value = value;
     emit('select', selected.value);
@@ -25,8 +27,10 @@
 <template>
   <Menu.Root @select="onSelect">
     <Menu.Trigger class="min-w-44 py-2 appearance-none rounded-lg cursor-pointer inline-flex gap-3 outline-none relative select-none items-center justify-center hover:bg-gray-200">
-      <span v-html="selected!.icon"></span>
-      {{ selected!.label }}
+      <template v-if="selected">
+        <span v-html="selected!.icon"></span>
+        {{ selected!.label }}
+      </template>
       <Menu.Indicator>
         <i-heroicons-chevron-down class="inline w-4" />
       </Menu.Indicator>
@@ -34,7 +38,7 @@
     <Menu.Positioner class="w-64">
       <Menu.Content class="pointer-events-none border shadow flex gap-1 p-1 flex-col outline-none rounded bg-white data-[state=open]:animate-fade-in">
         <template
-          v-for="t in templates"
+          v-for="t in store.templates"
           :key="t.template"
         >
           <Menu.Separator v-if="t.template === '__separator__'" />

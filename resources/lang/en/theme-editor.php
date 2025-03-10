@@ -71,5 +71,6 @@ return [
         'search' => 'Search results',
         'cms' => 'CMS Page',
         'contact' => 'Contact us',
+        'error' => 'Error Page',
     ],
 ];
