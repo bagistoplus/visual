@@ -50,6 +50,7 @@ class CoreServiceProvider extends ServiceProvider
         Sections\CheckoutSuccess::class,
         Sections\LoginForm::class,
         Sections\RegisterForm::class,
+        Sections\ErrorPage::class,
     ];
 
     /**
