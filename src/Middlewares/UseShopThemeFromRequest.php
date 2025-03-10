@@ -10,8 +10,6 @@ class UseShopThemeFromRequest extends Theme
 {
     public function handle($request, Closure $next)
     {
-        // session()->forget('_dispatched_flash');
-
         if (ThemeEditor::inDesignMode() || ThemeEditor::inPreviewMode()) {
             app('themes')->set(ThemeEditor::activeTheme());
 

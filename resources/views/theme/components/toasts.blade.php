@@ -120,19 +120,12 @@
   <template x-for="position in positions" :key="position">
     <div :class="getPositionStyles(position)">
       <template x-for="toast in toasts.filter(t => t.position === position)" :key="toast.id">
-        <div
-          :data-toast-id="toast.id"
-          x-show="true"
-          :class="[getTypeStyles(toast.type), getEnterAnimation(toast.position)]"
-          class="min-w-[300px] rounded-lg border-l-4 px-4 py-3 shadow-lg"
-        >
-          <div class="flex items-center">
+        <div :data-toast-id="toast.id" x-show="true" :class="[getTypeStyles(toast.type), getEnterAnimation(toast.position)]"
+          class="min-w-[300px] max-w-[420px] rounded-lg border-l-4 px-4 py-3 shadow-lg">
+          <div class="flex items-start">
             <span x-text="toast.message"></span>
-            <button
-              class="-mx-1.5 -my-1.5 ml-auto inline-flex items-center justify-center rounded-lg p-1.5"
-              x-bind:class="getButtonStyles(toast.type)"
-              @click="removeToast(toast.id)"
-            >
+            <button class="-mx-1.5 -my-1.5 ml-auto inline-flex items-center justify-center rounded-lg p-1.5" x-bind:class="getButtonStyles(toast.type)"
+              @click="removeToast(toast.id)">
               <span class="sr-only">Close</span>
               <x-lucide-x class="h-4 w-4" />
             </button>
