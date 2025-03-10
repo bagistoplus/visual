@@ -60,7 +60,7 @@
             info: 'bg-info-200 border-info-600 text-info-900',
             success: 'bg-success-200 border-success-600 text-success-900',
             warning: 'bg-warning-200 border-warning-600 text-warning-900',
-            danger: 'bg-danger-200 border-danger-600 text-danger-900'
+            error: 'bg-danger-200 border-danger-600 text-danger-900'
           };
           return styles[type] || styles.info;
         },
@@ -70,7 +70,7 @@
             info: 'bg-info-200 hover:bg-info-300',
             success: 'bg-success-200 hover:bg-success-300',
             warning: 'bg-warning-200 hover:bg-warning-300',
-            danger: 'bg-danger-200 hover:bg-danger-300'
+            error: 'bg-danger-200 hover:bg-danger-300'
           };
           return styles[type] || styles.info;
         },
@@ -120,12 +120,19 @@
   <template x-for="position in positions" :key="position">
     <div :class="getPositionStyles(position)">
       <template x-for="toast in toasts.filter(t => t.position === position)" :key="toast.id">
-        <div :data-toast-id="toast.id" x-show="true" :class="[getTypeStyles(toast.type), getEnterAnimation(toast.position)]"
-          class="min-w-[300px] max-w-[420px] rounded-lg border-l-4 px-4 py-3 shadow-lg">
+        <div
+          :data-toast-id="toast.id"
+          x-show="true"
+          :class="[getTypeStyles(toast.type), getEnterAnimation(toast.position)]"
+          class="min-w-[300px] max-w-[420px] rounded-lg border-l-4 px-4 py-3 shadow-lg"
+        >
           <div class="flex items-start">
             <span x-text="toast.message"></span>
-            <button class="-mx-1.5 -my-1.5 ml-auto inline-flex items-center justify-center rounded-lg p-1.5" x-bind:class="getButtonStyles(toast.type)"
-              @click="removeToast(toast.id)">
+            <button
+              class="-mx-1.5 -my-1.5 ml-auto inline-flex items-center justify-center rounded-lg p-1.5"
+              x-bind:class="getButtonStyles(toast.type)"
+              @click="removeToast(toast.id)"
+            >
               <span class="sr-only">Close</span>
               <x-lucide-x class="h-4 w-4" />
             </button>
