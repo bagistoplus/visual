@@ -25,3 +25,4 @@ parameters:
         - '#Call to an undefined static method Webkul\\Checkout\\Facades\\Cart::[a-zA-Z0-9\\_]+#'
         - '#Call to an undefined static method Webkul\\Shipping\\Facades\\Shipping::[a-zA-Z0-9\\_]+#'
         - '#Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable::\$addresses#'
+        - '#Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable::\$wishlist_items#'

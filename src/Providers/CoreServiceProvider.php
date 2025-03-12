@@ -2,10 +2,11 @@
 
 namespace BagistoPlus\Visual\Providers;
 
-use BagistoPlus\Visual\Components\AddToCartButton;
-use BagistoPlus\Visual\Components\CartCouponForm;
-use BagistoPlus\Visual\Components\CartPreview;
-use BagistoPlus\Visual\Components\EstimateShipping;
+use BagistoPlus\Visual\Components\Livewire\AddToCartButton;
+use BagistoPlus\Visual\Components\Livewire\AddToWishlistButton;
+use BagistoPlus\Visual\Components\Livewire\CartCouponForm;
+use BagistoPlus\Visual\Components\Livewire\CartPreview;
+use BagistoPlus\Visual\Components\Livewire\EstimateShipping;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\LivewireFeatures\SectionDataSynth;
@@ -61,6 +62,7 @@ class CoreServiceProvider extends ServiceProvider
         'cart-preview' => CartPreview::class,
         'cart-coupon-form' => CartCouponForm::class,
         'add-to-cart-button' => AddToCartButton::class,
+        'add-to-wishlist-button' => AddToWishlistButton::class,
         'estimate-shipping' => EstimateShipping::class,
     ];
 
@@ -114,7 +116,7 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function bootBladeComponents(): void
     {
-        Blade::componentNamespace('BagistoPlus\\Visual\\Components', 'visual');
+        Blade::componentNamespace('BagistoPlus\\Visual\\Components\\Blade', 'visual');
     }
 
     protected function bootMiddlewares(): void

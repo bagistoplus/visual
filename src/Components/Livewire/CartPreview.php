@@ -1,6 +1,6 @@
 <?php
 
-namespace BagistoPlus\Visual\Components;
+namespace BagistoPlus\Visual\Components\Livewire;
 
 use BagistoPlus\Visual\Support\InteractsWithCart;
 use Livewire\Attributes\On;

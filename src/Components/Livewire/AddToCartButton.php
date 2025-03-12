@@ -1,14 +1,16 @@
 <?php
 
-namespace BagistoPlus\Visual\Components;
+namespace BagistoPlus\Visual\Components\Livewire;
 
 use BagistoPlus\Visual\Actions\AddProductToCart;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class AddToCartButton extends Component
 {
     public string $action = 'addToCart';
 
+    #[Locked]
     public $productId;
 
     public $quantity = 1;
@@ -29,10 +31,8 @@ class AddToCartButton extends Component
         }
     }
 
-    public function buyNow() {}
-
     public function render()
     {
-        return view('shop::components.add-to-cart-button');
+        return view('shop::livewire.add-to-cart-button');
     }
 }

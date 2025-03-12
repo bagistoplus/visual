@@ -18,7 +18,7 @@
     </div>
 
     <div class="flex-1 space-y-6 overflow-y-auto p-4">
-      <x-shop::products.filters no-header :maxPrice="$maxPrice" />
+      <x-shop::product.filters no-header :maxPrice="$maxPrice" />
 
       @if ($sortOptions->isNotEmpty())
         <label class="block">

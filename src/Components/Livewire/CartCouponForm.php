@@ -1,6 +1,6 @@
 <?php
 
-namespace BagistoPlus\Visual\Components;
+namespace BagistoPlus\Visual\Components\Livewire;
 
 use BagistoPlus\Visual\Enums\Events;
 use BagistoPlus\Visual\Support\InteractsWithCart;
@@ -43,7 +43,7 @@ class CartCouponForm extends Component
 
     public function render()
     {
-        return view('shop::components.cart.coupon-form', [
+        return view('shop::livewire.coupon-form', [
             'cart' => $this->getCartResource(),
         ]);
     }

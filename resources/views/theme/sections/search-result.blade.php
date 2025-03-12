@@ -35,7 +35,7 @@
     </h1>
 
     <div class="flex flex-col gap-8 md:flex-row">
-      <x-shop::products.filters class="hidden w-64 md:block" :maxPrice="$maxPrice" />
+      <x-shop::product.filters class="hidden w-64 md:block" :maxPrice="$maxPrice" />
 
       <!-- Mobile filter button -->
       <div class="flex items-center justify-between gap-4 md:hidden">
@@ -48,7 +48,7 @@
         </button>
       </div>
 
-      <x-shop::products.mobile-filters
+      <x-shop::product.mobile-filters
         :maxPrice="$maxPrice"
         :sortOptions="$this->availableSortOptions"
         :paginationLimits="$this->availablePaginationLimits"
@@ -56,13 +56,13 @@
 
       <div class="flex-1">
         <!-- Toolbar -->
-        <x-shop::products.toolbar :availableSortOptions="$this->availableSortOptions" :availablePaginationLimits="$this->availablePaginationLimits" />
+        <x-shop::product.toolbar :availableSortOptions="$this->availableSortOptions" :availablePaginationLimits="$this->availablePaginationLimits" />
 
         <!-- Products grid view -->
         <div x-show="displayMode === 'grid'"
           class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           @foreach ($products as $product)
-            <x-shop::product-card
+            <x-shop::product.card
               :key="$product->id"
               :product="$product"
               x-model="displayMode"
@@ -73,7 +73,7 @@
         <!-- Products list view -->
         <div x-show="displayMode === 'list'" class="grid grid-cols-1 gap-6">
           @foreach ($products as $product)
-            <x-shop::product-card
+            <x-shop::product.card
               :key="$product->id"
               :product="$product"
               x-model="displayMode"

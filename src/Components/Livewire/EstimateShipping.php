@@ -1,6 +1,6 @@
 <?php
 
-namespace BagistoPlus\Visual\Components;
+namespace BagistoPlus\Visual\Components\Livewire;
 
 use BagistoPlus\Visual\Enums\Events;
 use BagistoPlus\Visual\Sections\CartContent;
@@ -46,7 +46,7 @@ class EstimateShipping extends Component
 
     public function render()
     {
-        return view('shop::components.cart.estimate-shipping', [
+        return view('shop::livewire.estimate-shipping', [
             'countries' => app('core')->countries(),
             'states' => app('core')->groupedStatesByCountries(),
         ]);

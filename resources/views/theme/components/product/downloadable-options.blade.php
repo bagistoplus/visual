@@ -12,6 +12,7 @@
 
           this.$watch('links', () => {
             this.showErrors = this.links.length === 0;
+            Alpine.store('ProductForm').disableButtons = this.showErrors;
           });
         },
 

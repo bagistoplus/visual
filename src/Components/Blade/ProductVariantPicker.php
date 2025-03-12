@@ -1,6 +1,6 @@
 <?php
 
-namespace BagistoPlus\Visual\Components;
+namespace BagistoPlus\Visual\Components\Blade;
 
 use Illuminate\View\Component;
 use Webkul\Product\Helpers\ConfigurableOption;
