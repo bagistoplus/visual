@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Providers;
 
 use BagistoPlus\Visual\Components\Livewire\AddToCartButton;
+use BagistoPlus\Visual\Components\Livewire\AddToCompareButton;
 use BagistoPlus\Visual\Components\Livewire\AddToWishlistButton;
 use BagistoPlus\Visual\Components\Livewire\CartCouponForm;
 use BagistoPlus\Visual\Components\Livewire\CartPreview;
@@ -63,6 +64,7 @@ class CoreServiceProvider extends ServiceProvider
         'cart-coupon-form' => CartCouponForm::class,
         'add-to-cart-button' => AddToCartButton::class,
         'add-to-wishlist-button' => AddToWishlistButton::class,
+        'add-to-compare-button' => AddToCompareButton::class,
         'estimate-shipping' => EstimateShipping::class,
     ];
 

@@ -45,15 +45,19 @@
           />
 
           @auth('customer')
-            <livewire:add-to-wishlist-button
-              :product-id="$productResource['id']"
-              :in-user-wishlist="$productResource['is_wishlist']"
-              :key="str()->random(16)"
-              size="lg"
-              icon-only
-              rounded
-            />
+            @if (core()->getConfigData('customer.settings.wishlist.wishlist_option'))
+              <livewire:add-to-wishlist-button
+                :product-id="$productResource['id']"
+                :in-user-wishlist="$productResource['is_wishlist']"
+                :key="str()->random(16)"
+                size="lg"
+              />
+            @endif
           @endauth
+
+          @if (core()->getConfigData('catalog.products.settings.compare_option'))
+            <livewire:add-to-compare-button :product-id="$productResource['id']" size="lg" />
+          @endif
         </div>
       </div>
     </div>
@@ -138,14 +142,18 @@
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           @auth('customer')
-            <livewire:add-to-wishlist-button
-              :product-id="$productResource['id']"
-              :in-user-wishlist="$productResource['is_wishlist']"
-              :key="str()->random(16)"
-              icon-only
-              rounded
-            />
+            @if (core()->getConfigData('customer.settings.wishlist.wishlist_option'))
+              <livewire:add-to-wishlist-button
+                :product-id="$productResource['id']"
+                :in-user-wishlist="$productResource['is_wishlist']"
+                :key="str()->random(16)"
+              />
+            @endif
           @endauth
+
+          @if (core()->getConfigData('catalog.products.settings.compare_option'))
+            <livewire:add-to-compare-button :product-id="$productResource['id']" />
+          @endif
         </div>
 
         <div class="flex items-center gap-4">
