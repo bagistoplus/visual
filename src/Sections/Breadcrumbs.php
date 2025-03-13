@@ -15,6 +15,7 @@ class Breadcrumbs extends BladeSection
             'shop.product_or_category.index' => ['name' => 'product', 'entity' => $this->context['product']],
             'shop.checkout.cart.index' => ['name' => 'cart'],
             'shop.checkout.onepage.index' => ['name' => 'checkout'],
+            'shop.compare.index' => ['name' => 'compare'],
             default => []
         };
 

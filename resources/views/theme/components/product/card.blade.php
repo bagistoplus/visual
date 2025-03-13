@@ -1,4 +1,4 @@
-@props(['product'])
+@props(['product', 'noCompare' => false])
 
 @inject('reviewHelper', \Webkul\Product\Helpers\Review::class)
 
@@ -54,9 +54,12 @@
               />
             @endif
           @endauth
-
-          @if (core()->getConfigData('catalog.products.settings.compare_option'))
-            <livewire:add-to-compare-button :product-id="$productResource['id']" size="lg" />
+          @if (!$noCompare && core()->getConfigData('catalog.products.settings.compare_option'))
+            <livewire:add-to-compare-button
+              :product-id="$productResource['id']"
+              :key="str()->random(16)"
+              size="lg"
+            />
           @endif
         </div>
       </div>
@@ -151,8 +154,8 @@
             @endif
           @endauth
 
-          @if (core()->getConfigData('catalog.products.settings.compare_option'))
-            <livewire:add-to-compare-button :product-id="$productResource['id']" />
+          @if (!$noCompare && core()->getConfigData('catalog.products.settings.compare_option'))
+            <livewire:add-to-compare-button :product-id="$productResource['id']" :key="str()->random(16)" />
           @endif
         </div>
 

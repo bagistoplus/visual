@@ -22,7 +22,7 @@
         <input
           type="hidden"
           name="{{ $key }}"
-          value="{{ $value }}"
+          value=@json($value)
         >
       @endforeach
       <x-lucide-search class="hover:text-primary absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 transition-colors" />

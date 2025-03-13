@@ -35,6 +35,9 @@ return [
             'search' => [
                 'name' => 'Search form',
             ],
+            'compare' => [
+                'name' => 'Compare',
+            ],
             'user' => [
                 'name' => 'User menu',
             ],

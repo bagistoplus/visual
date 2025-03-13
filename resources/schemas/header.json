@@ -45,6 +45,12 @@
       "settings": []
     },
     {
+      "type": "compare",
+      "name": "visual::sections.header.blocks.compare.name",
+      "limit": 1,
+      "settings": []
+    },
+    {
       "type": "user",
       "name": "visual::sections.header.blocks.user.name",
       "limit": 1,
@@ -73,6 +79,9 @@
       },
       {
         "type": "search"
+      },
+      {
+        "type": "compare"
       },
       {
         "type": "user"

@@ -67,6 +67,20 @@
             <x-shop::user-menu />
           @elseif ($block->type === 'cart')
             <livewire:cart-preview />
+          @elseif ($block->type === 'compare')
+            @if (core()->getConfigData('catalog.products.settings.compare_option'))
+              <a
+                class="relative hidden items-center p-2 sm:flex"
+                aria-label="@lang('shop::app.components.layouts.header.compare')"
+                title="@lang('shop::app.components.layouts.header.compare')"
+                href="{{ route('shop.compare.index') }}"
+              >
+                <x-lucide-arrow-left-right class="hover:text-primary h-5 w-5 transition-colors" />
+                {{-- <span
+                  class="bg-primary absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full text-xs text-white"
+                >1</span> --}}
+              </a>
+            @endif
           @endif
         @endforeach
       </div>

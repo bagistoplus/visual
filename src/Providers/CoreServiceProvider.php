@@ -54,6 +54,7 @@ class CoreServiceProvider extends ServiceProvider
         Sections\RegisterForm::class,
         Sections\ErrorPage::class,
         Sections\ContactForm::class,
+        Sections\Compare::class,
     ];
 
     /**
