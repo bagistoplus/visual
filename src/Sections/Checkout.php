@@ -194,6 +194,8 @@ class Checkout extends LivewireSection
         }
 
         $this->currentStep = 'review';
+
+        $this->dispatch(Events::PAYMENT_METHOD_SET, paymentMethod: $method);
     }
 
     /**

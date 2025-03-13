@@ -9,4 +9,6 @@ interface Events
     public const COUPON_APPLIED = 'coupon_applied';
 
     public const COUPON_REMOVED = 'coupon_removed';
+
+    public const PAYMENT_METHOD_SET = 'checkout:payment_method_set';
 }

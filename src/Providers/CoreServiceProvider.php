@@ -22,6 +22,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
@@ -29,6 +30,7 @@ use Webkul\Category\Models\Category;
 use Webkul\Installer\Http\Middleware\Locale;
 use Webkul\Product\Models\Product;
 use Webkul\Shop\Http\Middleware\Currency;
+use Webkul\Theme\ViewRenderEventManager;
 
 class CoreServiceProvider extends ServiceProvider
 {
@@ -76,6 +78,7 @@ class CoreServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->bootViewsAndTranslations();
+        $this->bootViewEventListeners();
         $this->bootBladeComponents();
         $this->bootMiddlewares();
         $this->bootLivewireMiddlewares();
@@ -115,7 +118,24 @@ class CoreServiceProvider extends ServiceProvider
     protected function bootViewsAndTranslations(): void
     {
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
         $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'visual');
+
+        $this->booted(function (Application $app) {
+            // should move to a before middleware that check that our theme is the active theme before adding the namespace
+            $app['view']->prependNamespace('paypal', __DIR__.'/../../resources/views/webkul/paypal');
+        });
+    }
+
+    protected function bootViewEventListeners()
+    {
+        Event::listen('bagisto.shop.checkout.payment.paypal_smart_button', function (ViewRenderEventManager $event) {
+            if (app('themes')->current()->code !== 'visual-debut') {
+                return;
+            }
+
+            $event->addTemplate('paypal::checkout.onepage.payment-button');
+        });
     }
 
     protected function bootBladeComponents(): void

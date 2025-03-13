@@ -2,6 +2,11 @@
 
 namespace BagistoPlus\Visual\View;
 
+/**
+ * Retrieves view information based on the current compiled blade view file.
+ *
+ * @return array{type: string, view: string, path: string, name: string}
+ */
 class BladeDirectives
 {
     public static function viewInfo()

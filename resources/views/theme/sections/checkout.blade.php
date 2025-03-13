@@ -1,4 +1,7 @@
 <section>
+  <div class="fixed inset-0 z-50 flex h-full w-full items-center justify-center bg-black/30">
+    <x-lucide-loader-2 class="h-16 w-16 animate-spin text-white" />
+  </div>
   <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
 
@@ -23,12 +26,12 @@
         @endif
 
         @if ($currentStep === 'review')
-          <x-shop::checkout.buttons :cart="$cartResource" class="lg:hidden" />
+          <x-shop::checkout.buttons :cart="$cartResource" class="mobile lg:hidden" />
         @endif
       </div>
 
       <div class="order-first lg:order-last">
-        <div class="lg:sticky lg:top-8">
+        <div id="test" class="lg:sticky lg:top-8">
           <div class="bg-surface-alt rounded-lg p-6 shadow-sm">
             <h2 class="mb-6 font-serif text-xl text-neutral-700">
               @lang('shop::app.checkout.onepage.summary.cart-summary')
@@ -55,7 +58,7 @@
             <x-shop::cart.summary :cart="$cartResource" />
 
             @if ($currentStep === 'review')
-              <x-shop::checkout.buttons :cart="$cartResource" class="mt-4 hidden lg:block" />
+              <x-shop::checkout.buttons :cart="$cartResource" class="desktop mt-4 hidden lg:block" />
             @endif
           </div>
         </div>
