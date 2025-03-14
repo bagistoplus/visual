@@ -3,7 +3,9 @@
 @section('body')
   <div class="bg-surface min-h-screen">
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div class="flex flex-col gap-8 lg:flex-row">
+      <visual:section name="visual-breadcrumbs" />
+
+      <div class="mt-4 flex flex-col gap-8 lg:flex-row">
         <div class="lg:w-[300px] lg:flex-shrink-0" x-data="{ menuOpen: false }">
           <div class="mb-4 rounded-lg border lg:hidden">
             <button x-on:click="menuOpen = !menuOpen"
@@ -78,9 +80,7 @@
         </div>
 
         <div class="flex-1">
-          <div class="rounded-lg bg-white shadow-sm">
-            @visual_layout_content
-          </div>
+          @visual_layout_content
         </div>
       </div>
     </div>

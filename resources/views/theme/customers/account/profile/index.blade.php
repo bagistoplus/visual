@@ -1,5 +1,5 @@
 @extends('shop::layouts.account')
 
 @visual_content
-profile/index
+@includeIf('shop::templates.account.profile')
 @end_visual_content

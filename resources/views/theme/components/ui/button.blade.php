@@ -82,6 +82,13 @@
 
   $wireTarget = $attributes->has('wire:target') ? 'wire:target=' . $attributes->get('wire:target') : '';
 
+  $iconSizes = [
+      'sm' => 'h-4 w-4',
+      'md' => 'h-5 w-5',
+      'lg' => 'h-6 w-6',
+  ];
+  $iconSizeClasses = $iconSizes[$size] ?? 'h-5 w-5';
+
   // When not icon-only, add margin for the icon (if text is present)
   $iconMarginClass = $slot->isEmpty() || $iconOnly ? '' : 'mr-2 rtl:ml-2 -ml-1 rtl:-mr-1';
 
@@ -100,7 +107,7 @@
       {!! $wireTarget !!}
       class="{{ $iconMarginClass }} h-5 w-5 transition-opacity duration-200"
     >
-      @svg($icon, ['class' => 'h-5 h-5'])
+      @svg($icon, ['class' => $iconSizeClasses])
     </span>
   @endif
 
@@ -119,6 +126,6 @@
     {!! $wireTarget !!}
     class="absolute inset-0 inline-flex h-full w-full items-center justify-center"
   >
-    <x-lucide-loader-2 class="h-5 w-5 animate-spin" />
+    <x-lucide-loader-2 class="{{ $iconSizeClasses }} animate-spin" />
   </span>
   </{{ $tag }}>

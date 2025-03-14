@@ -16,6 +16,9 @@ class Breadcrumbs extends BladeSection
             'shop.checkout.cart.index' => ['name' => 'cart'],
             'shop.checkout.onepage.index' => ['name' => 'checkout'],
             'shop.compare.index' => ['name' => 'compare'],
+
+            // Account pages
+            'shop.customers.account.profile.index' => ['name' => 'profile'],
             default => []
         };
 
