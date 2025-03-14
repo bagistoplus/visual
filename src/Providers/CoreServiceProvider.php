@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\View\DynamicComponent;
 use Livewire\Livewire;
 use Webkul\Category\Models\Category;
 use Webkul\Installer\Http\Middleware\Locale;
@@ -84,6 +85,7 @@ class CoreServiceProvider extends ServiceProvider
         $this->bootLivewireMiddlewares();
         $this->bootLivewireComponents();
         $this->bootVisualSections();
+        $this->bootBladeIcons();
         $this->bootMorphMap();
         $this->bootLivewirePropertySynthesizer();
 
@@ -172,6 +174,21 @@ class CoreServiceProvider extends ServiceProvider
         Visual::registerSections(static::$sections, 'visual');
     }
 
+    protected function bootBladeIcons()
+    {
+        $icons = [
+            'icon-users' => 'lucide-chevron-right ',
+        ];
+
+        Blade::component('dynamic-component', DynamicComponent::class);
+
+        $this->app->booted(function () use ($icons) {
+            foreach ($icons as $alias => $icon) {
+                Blade::component($icon, $alias);
+            }
+        });
+    }
+
     protected function bootMorphMap(): void
     {
         Relation::morphMap([
@@ -208,6 +225,7 @@ class CoreServiceProvider extends ServiceProvider
     protected function registerConfigs(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../../config/bagisto-visual.php', 'bagisto_visual');
+        $this->mergeConfigFrom(__DIR__.'/../../config/svg-iconmap.php', 'bagisto_visual_iconmap');
     }
 
     protected function registerSingletons(): void
