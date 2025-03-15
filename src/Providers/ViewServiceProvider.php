@@ -109,5 +109,11 @@ class ViewServiceProvider extends ServiceProvider
                 $view->with('theme', $theme);
             }
         });
+
+        view()->composer('shop::layouts.account', function ($view) {
+            if (auth('customer')->check()) {
+                $view->with('customer', auth('customer')->user());
+            }
+        });
     }
 }

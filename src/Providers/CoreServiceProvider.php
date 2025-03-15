@@ -62,6 +62,7 @@ class CoreServiceProvider extends ServiceProvider
 
         Sections\Profile::class,
         Sections\ProfileForm::class,
+        Sections\CustomerAddresses::class,
     ];
 
     /**
