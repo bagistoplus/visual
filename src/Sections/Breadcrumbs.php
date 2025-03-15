@@ -19,6 +19,7 @@ class Breadcrumbs extends BladeSection
 
             // Account pages
             'shop.customers.account.profile.index' => ['name' => 'profile'],
+            'shop.customers.account.profile.edit' => ['name' => 'profile.edit'],
             default => []
         };
 

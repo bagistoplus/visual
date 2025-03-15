@@ -105,7 +105,7 @@
     <span
       wire:loading.class="opacity-0"
       {!! $wireTarget !!}
-      class="{{ $iconMarginClass }} h-5 w-5 transition-opacity duration-200"
+      class="{{ $iconMarginClass }} inline-flex h-5 w-5 items-center transition-opacity duration-200"
     >
       @svg($icon, ['class' => $iconSizeClasses])
     </span>

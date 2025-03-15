@@ -12,6 +12,7 @@
     [type="email"],
     [type="password"],
     [type="number"],
+    [type='date'],
     [type="search"],
     [type="tel"],
     [type="url"],
@@ -95,7 +96,7 @@
         @apply cursor-pointer pointer-events-auto;
     }
 
-    .required:after, [required]:after {
+    .required:after, label[required]:after {
         content: '*';
     }
 }

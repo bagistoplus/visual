@@ -61,6 +61,7 @@ class CoreServiceProvider extends ServiceProvider
         Sections\CmsPage::class,
 
         Sections\Profile::class,
+        Sections\ProfileForm::class,
     ];
 
     /**

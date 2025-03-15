@@ -24,12 +24,25 @@
           <div class="space-y-6 lg:block" x-bind:class="menuOpen ? 'block' : 'hidden'">
             <div class="bg-surface-alt rounded-lg p-6 shadow-sm">
               <div class="flex items-center gap-4">
-                <div class="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
-                  <x-lucide-user class="text-primary h-6 w-6" />
-                </div>
+                @if ($customer->image_url)
+                  <img
+                    src="{{ $customer->image_url }}"
+                    alt="Profile"
+                    class="h-10 w-10 overflow-hidden rounded-full object-cover"
+                  />
+                @else
+                  <div class="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
+                    <x-lucide-user class="text-primary h-6 w-6" />
+                  </div>
+                @endif
                 <div>
-                  <h3 class="text-secondary font-medium">John Doe</h3>
-                  <p class="text-secondary text-sm">john@example.com</p>
+                  <h3 class="text-secondary font-medium">
+                    {{ $customer->first_name }}
+                    {{ $customer->last_name }}
+                  </h3>
+                  <p class="text-secondary text-sm">
+                    {{ $customer->email }}
+                  </p>
                 </div>
               </div>
             </div>

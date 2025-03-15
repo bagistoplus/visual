@@ -1,5 +1,7 @@
 @extends('shop::layouts.account')
 
 @visual_content
-profile/edit
+
+@includeIf('shop::templates.account.edit-profile')
+
 @end_visual_content
