@@ -20,6 +20,9 @@ class Breadcrumbs extends BladeSection
             // Account pages
             'shop.customers.account.profile.index' => ['name' => 'profile'],
             'shop.customers.account.profile.edit' => ['name' => 'profile.edit'],
+            'shop.customers.account.addresses.index' => ['name' => 'addresses'],
+            'shop.customers.account.addresses.create' => ['name' => 'addresses.create'],
+            'shop.customers.account.addresses.edit' => ['name' => 'addresses.edit', 'entity' => $this->context['address']],
             default => []
         };
 

@@ -1,5 +1,7 @@
 @extends('shop::layouts.account')
 
 @visual_content
-addresses/create
+
+@includeIf('shop::templates.account.add-address')
+
 @end_visual_content

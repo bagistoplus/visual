@@ -1,5 +1,13 @@
 @extends('shop::layouts.default')
 
+@php
+  function isMenuActive($menu)
+  {
+      $menuUrl = str($menu->getUrl())->before('?');
+
+      return str(request()->url())->is($menuUrl . '*');
+  }
+@endphp
 @section('body')
   <div class="bg-surface min-h-screen">
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -60,7 +68,7 @@
                 @if ($menuItem->haveChildren())
                   <nav class="space-y-1">
                     @foreach ($menuItem->getChildren() as $subMenuItem)
-                      <a class="{{ $subMenuItem->isActive() ? 'bg-primary text-primary-50' : 'text-secondary hover:bg-surface-600' }} group flex items-center justify-between rounded-lg px-4 py-3 transition-colors"
+                      <a class="{{ isMenuActive($subMenuItem) ? 'bg-primary text-primary-50' : 'text-secondary hover:bg-surface-600' }} group flex items-center justify-between rounded-lg px-4 py-3 transition-colors"
                         href="{{ $subMenuItem->getUrl() }}"
                       >
                         <div class="flex items-center gap-3">
