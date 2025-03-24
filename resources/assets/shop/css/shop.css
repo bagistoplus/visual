@@ -13,6 +13,7 @@
     [type="password"],
     [type="number"],
     [type='date'],
+    [type='datetime-local'],
     [type="search"],
     [type="tel"],
     [type="url"],
@@ -98,6 +99,49 @@
 
     .required:after, label[required]:after {
         content: '*';
+    }
+
+    .label-pending,
+    .label-processing,
+    .label-closed,
+    .label-canceled,
+    .label-info,
+    .label-fraud,
+    .label-pending_payment,
+    .label-completed,
+    .label-active {
+        @apply text-xs font-semibold py-px px-2 rounded-full text-center max-w-max;
+    }
+
+    .label-pending,
+    .label-pending_payment {
+		@apply bg-warning text-warning-50;
+	}
+
+    .label-processing{
+		@apply bg-cyan-600 text-cyan-100;
+    }
+
+    .label-completed,
+    .label-active {
+		@apply bg-success text-success-50;
+	}
+
+    .label-closed {
+		@apply bg-indigo-600 text-indigo-100;
+	}
+
+    .label-canceled,
+    .label-fraud {
+        @apply bg-danger text-danger-50;
+    }
+
+    .label-info {
+        @apply bg-info-400 text-info-50;
+    }
+
+    .icon-eye {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgb(110,110,110)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0'%3E%3C/path%3E%3Ccircle cx='12' cy='12' r='3'%3E%3C/circle%3E%3C/svg%3E");
     }
 }
 

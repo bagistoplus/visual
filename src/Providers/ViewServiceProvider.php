@@ -6,6 +6,7 @@ use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\LivewireFeatures\InterceptSessionFlash;
 use BagistoPlus\Visual\LivewireFeatures\SupportComponentAttributes;
 use BagistoPlus\Visual\LivewireFeatures\SupportSectionData;
+use BagistoPlus\Visual\Theme\Theme;
 use BagistoPlus\Visual\Theme\Themes;
 use BagistoPlus\Visual\ThemePathsResolver;
 use BagistoPlus\Visual\View\BladeDirectives;
@@ -104,7 +105,7 @@ class ViewServiceProvider extends ServiceProvider
         view()->composer('shop::*', function ($view) {
             $theme = app('themes')->current();
 
-            if ($theme->isVisualTheme) {
+            if ($theme instanceof Theme && $theme->isVisualTheme) {
                 $theme->settings = Visual::themeDataCollector()->getThemeSettings();
                 $view->with('theme', $theme);
             }

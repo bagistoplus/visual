@@ -24,20 +24,18 @@
 
   // Extra padding classes when an icon is present.
   $prependPadding = [
-      'sm' => 'pl-6',
+      'sm' => 'pl-8',
       'md' => 'pl-10',
       'lg' => 'pl-12',
   ];
 
   $appendPadding = [
-      'sm' => 'pr-6',
+      'sm' => 'pr-8',
       'md' => 'pr-10',
       'lg' => 'pr-12',
   ];
 
-  $extraPadding =
-      ($prependIcon ? ' ' . ($prependPadding[$size] ?? 'pl-10') : '') .
-      ($appendIcon ? ' ' . ($appendPadding[$size] ?? 'pr-10') : '');
+  $extraPadding = ($prependIcon ? ' ' . ($prependPadding[$size] ?? 'pl-10') : '') . ($appendIcon ? ' ' . ($appendPadding[$size] ?? 'pr-10') : '');
 @endphp
 
 <x-shop::ui.form.field

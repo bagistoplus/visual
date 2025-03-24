@@ -1,4 +1,6 @@
-@php($direction = core()->getCurrentLocale()->direction)
+@php
+  $direction = core()->getCurrentLocale()->direction;
+@endphp
 
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}" dir="{{ $direction }}">

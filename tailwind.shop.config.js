@@ -5,6 +5,7 @@ export default {
     './resources/assets/shop/ts/**/*',
     '../vendor/bagisto/bagisto/packages/Webkul/Shop/src/Resources/views/products/prices/**/*.blade.php'
   ],
+  safelist: ['label-processing', 'label-active', 'label-canceled', 'label-closed', 'label-pending', 'label-canceled', 'icon-eye'],
   theme: {
     extend: {
       colors: {

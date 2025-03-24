@@ -1,5 +1,7 @@
 @extends('shop::layouts.account')
 
 @visual_content
-orders/index
+
+@includeIf('shop::templates.account.orders')
+
 @end_visual_content

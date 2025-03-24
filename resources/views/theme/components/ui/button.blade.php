@@ -10,12 +10,12 @@
 ])
 
 @php
-  $baseClasses =
-      'relative border inline-flex items-center justify-center flex-row rtl:flex-row-reverse font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
+  $baseClasses = 'relative border inline-flex items-center justify-center flex-row rtl:flex-row-reverse font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
 
   // Size classes: if iconOnly, use fixed width and height; otherwise, use padding.
   if ($iconOnly) {
       $iconOnlySizes = [
+          'sm' => 'w-6 h-6 text-xs',
           'sm' => 'w-8 h-8 text-sm',
           'md' => 'w-10 h-10 text-base',
           'lg' => 'w-12 h-12 text-lg',
@@ -23,6 +23,7 @@
       $sizeClasses = $iconOnlySizes[$size] ?? 'w-10 h-10 text-base';
   } else {
       $sizeVariants = [
+          'xs' => 'px-1.5 py-0.5 text-xs',
           'sm' => 'px-3 py-1.5 text-sm',
           'md' => 'px-4 py-2 text-base',
           'lg' => 'px-6 py-3 text-lg',
@@ -37,16 +38,16 @@
   $variants = [
       'solid' => [
           'primary' => 'bg-primary-500 border-primary-500 text-primary-50 hover:bg-primary-600 focus:ring-primary-500',
-          'secondary' =>
-              'bg-secondary-500 border-secondary-500 text-secondary-50 hover:bg-secondary-600 focus:ring-secondary-500',
+          'secondary' => 'bg-secondary-500 border-secondary-500 text-secondary-50 hover:bg-secondary-600 focus:ring-secondary-500',
+          'neutral' => 'bg-neutral-500 border-neutral-500 text-neutral-50 hover:bg-neutral-600 focus:ring-neutral-500',
           'danger' => 'bg-danger-500 border-danger-500 text-danger-50 hover:bg-danger-600 focus:ring-danger-500',
           'warning' => 'bg-warning-500 border-warning-500 text-warning-50 hover:bg-warning-600 focus:ring-warning-500',
           'success' => 'bg-success-500 border-success-500 text-success-50 hover:bg-success-600 focus:ring-success-500',
       ],
       'soft' => [
           'primary' => 'bg-primary-100 border-primary-100 text-primary-700 hover:bg-primary-200 focus:ring-primary-500',
-          'secondary' =>
-              'bg-secondary-100 border-secondary-100 text-secondary-700 hover:bg-secondary-200 focus:ring-secondary-500',
+          'secondary' => 'bg-secondary-100 border-secondary-100 text-secondary-700 hover:bg-secondary-200 focus:ring-secondary-500',
+          'neutral' => 'bg-neutral-100 border-neutral-100 text-neutral-700 hover:bg-neutral-200 focus:ring-neutral-500',
           'danger' => 'bg-danger-100 border-danger-100 text-danger-700 hover:bg-danger-200 focus:ring-danger-500',
           'warning' => 'bg-warning-100 border-warning-100 text-warning-700 hover:bg-warning-200 focus:ring-warning-500',
           'success' => 'bg-success-100 border-success-100 text-success-700 hover:bg-success-200 focus:ring-success-500',
@@ -54,6 +55,7 @@
       'outline' => [
           'primary' => 'border-primary-500 text-primary-500 hover:bg-primary-50 focus:ring-primary-500',
           'secondary' => 'border-secondary-500 text-secondary-500 hover:bg-secondary-50 focus:ring-secondary-500',
+          'neutral' => 'border-neutral-200 text-neutral-500 hover:bg-neutral-100 focus:ring-neutral-500',
           'danger' => 'border-danger-500 text-danger-500 hover:bg-danger-50 focus:ring-danger-500',
           'warning' => 'border-warning-500 text-warning-500 hover:bg-warning-50 focus:ring-warning-500',
           'success' => 'border-success-500 text-success-500 hover:bg-success-50 focus:ring-success-500',

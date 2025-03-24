@@ -24,12 +24,12 @@
   $baseSelectClass = $sizeClasses[$size] ?? $sizeClasses['md'];
 
   $prependPadding = [
-      'sm' => 'pl-6',
+      'sm' => 'pl-8',
       'md' => 'pl-10',
       'lg' => 'pl-12',
   ];
   $appendPadding = [
-      'sm' => 'pr-6',
+      'sm' => 'pr-8',
       'md' => 'pr-10',
       'lg' => 'pr-12',
   ];
