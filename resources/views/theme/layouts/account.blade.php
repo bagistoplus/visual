@@ -1,13 +1,5 @@
 @extends('shop::layouts.default')
 
-@php
-  function isMenuActive($menu)
-  {
-      $menuUrl = str($menu->getUrl())->before('?');
-
-      return str(request()->url())->is($menuUrl . '*');
-  }
-@endphp
 @section('body')
   <div class="bg-surface min-h-screen">
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -16,16 +8,12 @@
       <div class="mt-4 flex flex-col gap-8 lg:flex-row">
         <div class="lg:w-[300px] lg:flex-shrink-0" x-data="{ menuOpen: false }">
           <div class="mb-4 rounded-lg border lg:hidden">
-            <button x-on:click="menuOpen = !menuOpen"
-              class="text-secondary flex w-full items-center justify-between px-6 py-4"
-            >
+            <button x-on:click="menuOpen = !menuOpen" class="text-secondary flex w-full items-center justify-between px-6 py-4">
               <div class="flex items-center gap-3">
                 <x-lucide-menu class="text-primary h-5 w-5" />
                 <span class="font-medium">Menu</span>
               </div>
-              <x-lucide-chevron-down class="lucide-chevron-down h-5 w-5 transition-transform duration-200"
-                x-bind:class="{ 'rotate-180': menuOpen }"
-              />
+              <x-lucide-chevron-down class="lucide-chevron-down h-5 w-5 transition-transform duration-200" x-bind:class="{ 'rotate-180': menuOpen }" />
             </button>
           </div>
 
@@ -68,7 +56,7 @@
                 @if ($menuItem->haveChildren())
                   <nav class="space-y-1">
                     @foreach ($menuItem->getChildren() as $subMenuItem)
-                      <a class="{{ isMenuActive($subMenuItem) ? 'bg-primary text-primary-50' : 'text-secondary hover:bg-surface-600' }} group flex items-center justify-between rounded-lg px-4 py-3 transition-colors"
+                      <a class="{{ visual_is_menu_active($subMenuItem) ? 'bg-primary text-primary-50' : 'text-secondary hover:bg-surface-600' }} group flex items-center justify-between rounded-lg px-4 py-3 transition-colors"
                         href="{{ $subMenuItem->getUrl() }}"
                       >
                         <div class="flex items-center gap-3">
@@ -90,9 +78,7 @@
             >
               @csrf
               @method('DELETE')
-              <button type="submit"
-                class="border-danger text-danger hover:bg-danger hover:text-danger-50 flex w-full items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 transition-colors"
-              >
+              <button type="submit" class="border-danger text-danger hover:bg-danger hover:text-danger-50 flex w-full items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 transition-colors">
                 <x-lucide-log-out class="h-5 w-5" />
                 @lang('shop::app.components.layouts.header.logout')
               </button>

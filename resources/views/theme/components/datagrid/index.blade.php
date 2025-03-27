@@ -847,7 +847,7 @@
       <tbody class="divide-neutral-200 sm:divide-y">
         <template x-if="available.records.length > 0">
           <template x-for="record in available.records">
-            <tr class="hover:bg-gray-50 max-sm:mb-4 max-sm:block max-sm:rounded max-sm:border">
+            <tr class="hover:bg-neutral-50 max-sm:mb-4 max-sm:block max-sm:rounded max-sm:border">
               <template x-if="available.massActions.length > 0">
                 <td class="px-6 py-4 text-left max-sm:block">
                   <input

@@ -16,7 +16,6 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Engines\CompilerEngine;
-use Webkul\Core\Repositories\ChannelRepository;
 
 class ViewServiceProvider extends ServiceProvider
 {
@@ -24,10 +23,6 @@ class ViewServiceProvider extends ServiceProvider
     {
         $this->registerJsonViewCompiler();
         $this->registerEngineResolver();
-
-        $this->app->singleton('tets', function (Application $app) {
-            return $app->make(ChannelRepository::class);
-        });
     }
 
     public function boot()

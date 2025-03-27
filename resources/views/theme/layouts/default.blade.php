@@ -18,6 +18,8 @@
 
     <x-shop::toasts />
 
+    <x-shop::confirm-modal />
+
     {!! view_render_event('bagisto.shop.layout.content.before') !!}
 
     <main role="main" tabindex="-1">

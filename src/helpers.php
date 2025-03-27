@@ -13,3 +13,12 @@ if (! function_exists('visual_mapped_svg_icon')) {
         return config("bagisto_visual_iconmap.$icon", 'lucide-file-question');
     }
 }
+
+if (! function_exists('visual_is_menu_active')) {
+    function visual_is_menu_active($menu)
+    {
+        $menuUrl = str($menu->getUrl())->before('?');
+
+        return str(request()->url())->is($menuUrl.'*');
+    }
+}

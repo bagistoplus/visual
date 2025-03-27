@@ -137,6 +137,80 @@
           throw error;
         });
     });
+
+    // TODO: should refactor this
+    // always fallback to default message on cancel/accept
+    Alpine.store('confirmModal', {
+      title: "@lang('shop::app.components.modal.confirm.title')",
+      message: "@lang('shop::app.components.modal.confirm.message')",
+      okText: "@lang('shop::app.components.modal.confirm.agree-btn')",
+      cancelText: "@lang('shop::app.components.modal.confirm.disagree-btn')",
+      resolve: () => {},
+
+      accept() {
+        console.log('accept');
+        this.resolve(true);
+        window.modal('confirm').hide();
+      },
+
+      trigger(options) {
+        this.resolve = options.resolve || this.resolve;
+        this.title = options.title || this.title;
+        this.message = options.message || this.message;
+        this.okText = options.okText || this.okText;
+        this.cancelText = options.cancelText || this.cancelText;
+
+        window.modal('confirm').show();
+      }
+    })
+
+    window.modal = function(name) {
+      return {
+        show() {
+          window.dispatchEvent(new CustomEvent('show-modal', {
+            detail: name
+          }));
+        },
+
+        hide() {
+          window.dispatchEvent(new CustomEvent('hide-modal', {
+            detail: name
+          }));
+        }
+      }
+    };
+
+    Alpine.magic('modal', (el) => {
+      const modalFn = function(name) {
+        return window.modal(name);
+      };
+
+      const parentComponent = Alpine.$data(el);
+
+      if (parentComponent.$el.dataset.modalName) {
+        const currentModal = parentComponent.$el.dataset.modalName;
+        modalFn.show = () => modalFn(currentModal).show();
+        modalFn.hide = () => modalFn(currentModal).hide();
+      }
+
+      return modalFn;
+    });
+
+    Alpine.magic('confirm', (el) => (callback) => {
+      return (event) => {
+        Alpine.store('confirmModal').trigger({
+          title: el.dataset.confirmTitle,
+          message: el.dataset.confirm,
+          okText: el.dataset.confirmOkText,
+          cancelText: el.dataset.confirmCancelText,
+          resolve(comfirmed) {
+            if (typeof callback === 'function') {
+              callback(event);
+            }
+          }
+        });
+      };
+    });
   });
 </script>
 @stack('scripts')
