@@ -1,5 +1,7 @@
 @extends('shop::layouts.account')
 
 @visual_content
-reviews/index
+
+@includeIf('shop::templates.account.reviews')
+
 @end_visual_content
