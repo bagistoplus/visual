@@ -828,7 +828,7 @@
           </template>
           <template x-for="column in available.columns">
             <template x-if="column.visibility">
-              <th class="cursor-pointer px-6 py-4 text-left align-middle text-sm font-medium text-neutral-700" x-on:click="changeSort(column)">
+              <th class="cursor-pointer whitespace-nowrap px-6 py-4 text-left align-middle text-sm font-medium text-neutral-700" x-on:click="changeSort(column)">
                 <span x-text="column.label"></span>
                 <template x-if="column.index === applied.sort.column">
                   <x-lucide-chevron-down class="inline h-4 w-4" x-bind:class="applied.sort.order !== 'asc' ? 'transform rotate-180' : ''" />

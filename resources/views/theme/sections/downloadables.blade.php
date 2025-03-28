@@ -2,12 +2,12 @@
   <div class="border-b border-neutral-200 p-4">
     <div class="flex items-center justify-between">
       <h1 class="text-secondary font-serif text-2xl">
-        @lang('shop::app.customers.account.orders.title')
+        @lang('shop::app.customers.account.downloadable-products.name')
       </h1>
     </div>
   </div>
 
-  <x-shop::datagrid :src="route('shop.customers.account.orders.index')">
+  <x-shop::datagrid :src="route('shop.customers.account.downloadable_products.index')">
     {{-- <x-slot:mobile>
       hey
     </x-slot:mobile> --}}

@@ -1,5 +1,7 @@
 @extends('shop::layouts.account')
 
 @visual_content
-downloadable/index
+
+@includeIf('shop::templates.account.downloadables')
+
 @end_visual_content

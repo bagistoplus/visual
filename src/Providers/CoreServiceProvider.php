@@ -67,6 +67,7 @@ class CoreServiceProvider extends ServiceProvider
         Sections\CustomerEditAddress::class,
         Sections\CustomerOrders::class,
         Sections\CustomerOrderDetails::class,
+        Sections\Downloadables::class,
     ];
 
     /**

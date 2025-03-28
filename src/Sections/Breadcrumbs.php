@@ -27,6 +27,8 @@ class Breadcrumbs extends BladeSection
 
             'shop.customers.account.orders.index' => ['name' => 'orders'],
             'shop.customers.account.orders.view' => ['name' => 'orders.view', 'entity' => $this->context['order']],
+
+            'shop.customers.account.downloadable_products.index' => ['name' => 'downloadable-products'],
             default => []
         };
 
