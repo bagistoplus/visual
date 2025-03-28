@@ -1,5 +1,7 @@
 @extends('shop::layouts.account')
 
 @visual_content
-wishlist/index
+
+@includeIf('shop::templates.account.wishlist')
+
 @end_visual_content

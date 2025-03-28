@@ -22,13 +22,13 @@ class CartContent extends LivewireSection
     {
         $this->updateCartItemQuantity($itemId, $quantity);
 
-        $this->dispatch('cartUpdated');
+        $this->dispatch(Events::CART_UPDATED);
     }
 
     public function removeItem($itemId)
     {
         $this->removeCartItem($itemId);
-        $this->dispatch('cartUpdated');
+        $this->dispatch(Events::CART_UPDATED);
     }
 
     public function removeSelectedItems()
@@ -37,7 +37,7 @@ class CartContent extends LivewireSection
             $this->removeCartItem($itemId);
         }
 
-        $this->dispatch('cartUpdated');
+        $this->dispatch(Events::CART_UPDATED);
     }
 
     public function getViewData(): array

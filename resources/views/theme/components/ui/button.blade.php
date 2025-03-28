@@ -102,6 +102,7 @@
   @if ($href) href="{{ $href }}" @endif
   {{ $attributes->merge(['class' => $classes]) }}
   @if ($icon && $slot->isEmpty() && $ariaLabel) aria-label="{{ $ariaLabel }}" @endif
+  wire:loading.attr="disabled"
 >
   @if ($icon)
     <span

@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Sections;
 
 use BagistoPlus\Visual\Actions\AddProductToCart;
+use BagistoPlus\Visual\Enums\Events;
 use Webkul\Product\Helpers\ProductType;
 use Webkul\Product\Helpers\Review;
 
@@ -123,7 +124,7 @@ class ProductDetails extends LivewireSection
 
         if ($result['success']) {
             session()->flash('success', $result['message']);
-            $this->dispatch('cartUpdated');
+            $this->dispatch(Events::CART_UPDATED);
 
             if (! empty($result['redirect_url'])) {
                 $this->redirect($result['redirect_url']);

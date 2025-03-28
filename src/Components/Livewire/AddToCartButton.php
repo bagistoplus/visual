@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Components\Livewire;
 
 use BagistoPlus\Visual\Actions\AddProductToCart;
+use BagistoPlus\Visual\Enums\Events;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -24,7 +25,7 @@ class AddToCartButton extends Component
 
         if ($result['success']) {
             session()->flash('success', $result['message']);
-            $this->dispatch('cartUpdated');
+            $this->dispatch(Events::CART_UPDATED);
         } else {
             session()->flash('error', $result['message']);
             $this->redirect($result['redirect_url']);

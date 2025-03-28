@@ -2,11 +2,12 @@
 
 namespace BagistoPlus\Visual\Components\Livewire;
 
+use BagistoPlus\Visual\Enums\Events;
 use BagistoPlus\Visual\Support\InteractsWithCart;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
-#[On('cartUpdated')]
+#[On(Events::CART_UPDATED)]
 class CartPreview extends Component
 {
     use InteractsWithCart;
@@ -22,7 +23,7 @@ class CartPreview extends Component
     {
         $this->removeCartItem($itemId);
         $this->open = false;
-        $this->dispatch('cartUpdated');
+        $this->dispatch(Events::CART_UPDATED);
     }
 
     public function render()

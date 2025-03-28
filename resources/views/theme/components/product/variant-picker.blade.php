@@ -43,7 +43,7 @@
             this.$wire.set('selectedVariant', this.selectedVariant, false);
           }
 
-          document.addEventListener('cartUpdated', () => {
+          document.addEventListener('cart_updated', () => {
             this.$nextTick(() => {
               this.dispatchChange();
             });
