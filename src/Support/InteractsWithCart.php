@@ -40,10 +40,10 @@ trait InteractsWithCart
         }
 
         if (app('core')->getConfigData('sales.checkout.my_cart.summary') === 'display_item_quantity') {
-            return $cart->items_qty;
+            return intval($cart->items_qty);
         }
 
-        return $cart->items_count;
+        return intval($cart->items_count);
     }
 
     public function isCartEmpty()
