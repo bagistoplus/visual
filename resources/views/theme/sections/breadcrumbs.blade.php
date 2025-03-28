@@ -1,5 +1,5 @@
 @unless ($breadcrumbs->isEmpty())
-  <div class="bg-surface border-neutral-200">
+  <div class="bg-surface border-b border-neutral-100">
     <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
       <nav class="flex items-center text-sm" aria-label="breadcrumbs">
         @foreach ($breadcrumbs as $breadcrumb)

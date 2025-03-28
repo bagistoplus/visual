@@ -860,7 +860,7 @@
               <template x-for="column in available.columns">
                 <template x-if="column.visibility">
                   <td
-                    class="px-2 py-1 max-sm:flex max-sm:justify-between max-sm:before:text-sm max-sm:before:font-semibold max-sm:before:text-neutral-600 max-sm:before:content-[attr(data-label)] sm:px-6 sm:py-4"
+                    class="px-2 py-1 max-sm:flex max-sm:justify-between max-sm:before:pr-2 max-sm:before:text-sm max-sm:before:font-semibold max-sm:before:text-neutral-600 max-sm:before:content-[attr(data-label)] sm:px-6 sm:py-4"
                     x-bind:data-label="column.label"
                   >
                     <span x-html="record[column.index]"></span>
