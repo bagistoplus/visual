@@ -24,7 +24,10 @@
       "type": "nav",
       "name": "visual::sections.header.blocks.nav.name",
       "limit": 1,
-      "settings": []
+      "settings": [
+        {"type": "checkbox", "id": "push_to_left", "label": "Push to left", "default": true},
+        {"type": "checkbox", "id": "push_to_right", "label": "Push to right", "default": false}
+      ]
     },
     {
       "type": "currency",

@@ -1,25 +1,21 @@
 @php
-  $menuItems = [
-      ['name' => 'Shop', 'path' => '/shop'],
-      ['name' => 'About', 'path' => '/about'],
-      ['name' => 'Journal', 'path' => '/journal'],
-      ['name' => 'FAQ', 'path' => '/faq'],
-      ['name' => 'Contact', 'path' => '/contact'],
-  ];
-
   $categories = $getCategories();
 @endphp
 
 <header class="bg-surface sticky top-0 z-20 w-full border-b" x-data="{ showMobileMenu: false, showSearch: false }">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="flex h-16 items-center justify-between text-neutral-700">
-      <button
-        class="-ml-2 p-2 transition-colors sm:hidden"
-        aria-label="Open menu"
-        @click="showMobileMenu = true"
-      >
-        <x-heroicon-s-bars-3 class="h-6 w-6" />
-      </button>
+    <div class="flex h-16 items-center justify-between gap-x-6 text-neutral-700">
+      <x-shop::ui.slide-over position="left">
+        <x-slot:trigger>
+          <button class="-ml-2 p-2 transition-colors sm:hidden" aria-label="Open menu">
+            <x-heroicon-s-bars-3 class="h-6 w-6" />
+          </button>
+        </x-slot:trigger>
+        <div class="w-screen">
+          <!-- Mobile Menu -->
+          <x-shop::mobile-menu :categories="$categories" />
+        </div>
+      </x-shop::ui.slide-over>
 
       @foreach ($section->blocks as $block)
         @if ($block->type === 'logo')
@@ -37,20 +33,18 @@
             </a>
           </div>
         @elseif($block->type === 'nav')
-          <div class="hidden items-center space-x-8 sm:flex">
-            @if ($categories->count() > 1)
-              @foreach ($getCategories() as $category)
-                <a href="{{ url($category->slug) }}" class="hover:text-primary transition-colors">
-                  {{ $category['name'] }}
-                </a>
-              @endforeach
-            @else
-              @foreach ($menuItems as $menu)
-                <a href="{{ $menu['path'] }}" class="hover:text-primary transition-colors">
-                  {{ $menu['name'] }}
-                </a>
-              @endforeach
-            @endif
+          @php
+            $classes = '';
+            if ($block->settings->push_to_left) {
+                $classes .= ' mr-auto';
+            }
+
+            if ($block->settings->push_to_right) {
+                $classes .= ' ml-auto';
+            }
+          @endphp
+          <div class="{{ $classes }} hidden h-full sm:block">
+            <x-shop::navigation :categories="$categories" />
           </div>
         @endif
       @endforeach
@@ -86,7 +80,4 @@
       </div>
     </div>
   </div>
-
-  <!-- Mobile Menu -->
-  <x-shop::mobile-menu :categories="$categories" />
 </header>

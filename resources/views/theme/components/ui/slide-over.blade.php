@@ -1,10 +1,10 @@
-@props(['position' => 'right', 'title' => 'Slide Over'])
+@props(['position' => 'right', 'title'])
 
 @php
   // Position configuration map to avoid repetitive conditionals
   $positionConfig = [
       'right' => [
-          'panelWrapper' => 'fixed inset-y-0 right-0 flex max-w-full pl-10',
+          'panelWrapper' => 'fixed inset-y-0 right-0 flex max-w-full',
           'enterStart' => 'translate-x-full',
           'enterEnd' => 'translate-x-0',
           'leaveStart' => 'translate-x-0',
@@ -13,7 +13,7 @@
           'borderClass' => 'border-l',
       ],
       'left' => [
-          'panelWrapper' => 'fixed inset-y-0 left-0 flex max-w-full pr-10',
+          'panelWrapper' => 'fixed top-0 bottom-0 left-0 flex max-w-full',
           'enterStart' => '-translate-x-full',
           'enterEnd' => 'translate-x-0',
           'leaveStart' => 'translate-x-0',
@@ -78,7 +78,7 @@
       <div
         x-show="open"
         x-transition.opacity.duration.300ms
-        class="fixed inset-0 bg-black bg-opacity-10"
+        class="fixed inset-0 bg-black/10"
         @click="open = false"
       ></div>
 
@@ -88,6 +88,7 @@
           <div class="{{ $config['panelWrapper'] }}">
             <div
               x-show="open"
+              x-trap.inert.noscroll="open"
               x-transition:enter="transform transition ease-in-out duration-200 sm:duration-300"
               x-transition:enter-start="{{ $config['enterStart'] }}"
               x-transition:enter-end="{{ $config['enterEnd'] }}"
@@ -98,20 +99,22 @@
               @click.away="open = false"
             >
               <div class="{{ $config['borderClass'] }} bg-background flex h-full flex-col overflow-y-hidden border-neutral-100/70 shadow-lg">
-                <div class="flex flex-none items-center justify-between border-b border-neutral-200 px-4 py-2">
-                  <h2 class="text-base font-semibold leading-6 text-neutral-800">
-                    {{ $title }}
-                  </h2>
-                  <x-shop::ui.button
-                    variant="ghost"
-                    color="secondary"
-                    icon="lucide-x"
-                    size="sm"
-                    icon-only
-                    rounded
-                    x-on:click="open = false"
-                  />
-                </div>
+                @isset($title)
+                  <div class="flex flex-none items-center justify-between border-b border-neutral-200 px-4 py-2">
+                    <h2 class="text-base font-semibold leading-6 text-neutral-800">
+                      {{ $title }}
+                    </h2>
+                    <x-shop::ui.button
+                      variant="ghost"
+                      color="secondary"
+                      icon="lucide-x"
+                      size="sm"
+                      icon-only
+                      rounded
+                      x-on:click="open = false"
+                    />
+                  </div>
+                @endisset
 
                 <!-- Content -->
                 <div class="flex-1 overflow-y-hidden">
