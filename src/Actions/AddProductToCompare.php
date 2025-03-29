@@ -17,20 +17,14 @@ class AddProductToCompare
 
     public function execute($productId)
     {
-        // We replace request body with $data to discard custom livewire inputs
-        $originalRequestData = request()->request->all();
-        request()->request->replace([
+        request()->request->add([
             'product_id' => $productId,
         ]);
 
         $response = $this->compareApi->store();
 
-        // and then we restore livewire request data to prevent ignition crash
-        // we should probably move this logic to some livewire middleware
-        request()->request->replace($originalRequestData);
-
         if ($response instanceof JsonResource) {
-            $responseData = $response->toArray(request());
+            $responseData = $response->resolve();
 
             session()->flash('success', $responseData['message']);
         } elseif ($response instanceof JsonResponse) {

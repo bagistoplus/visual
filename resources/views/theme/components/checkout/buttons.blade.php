@@ -1,7 +1,7 @@
 @props(['cart' => []])
 
 @php
-  $checkoutButons = view_render_event('bagisto.shop.checkout.payment.' . $cart['payment_method'], [
+  $checkoutButons = view_render_event('bagisto.shop.checkout.payment.' . $cart->payment_method, [
       'cart' => $cart,
   ]);
 @endphp

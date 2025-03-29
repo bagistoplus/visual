@@ -16,7 +16,7 @@ class RemoveItemFromCompareList
         request()->request->add(['product_id' => $productId]);
 
         $response = $this->compareApi->destroy();
-        $responseData = $response->toArray(request());
+        $responseData = $response->resolve();
 
         session()->flash('success', $responseData['message']);
     }

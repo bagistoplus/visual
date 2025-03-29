@@ -3,7 +3,6 @@
 namespace BagistoPlus\Visual\Support;
 
 use Webkul\Checkout\Facades\Cart;
-use Webkul\Shop\Http\Resources\CartItemResource;
 use Webkul\Shop\Http\Resources\CartResource;
 
 trait InteractsWithCart
@@ -11,18 +10,11 @@ trait InteractsWithCart
     public function getCart()
     {
         // @phpstan-ignore-next-line
-        return Cart::getCart();
-    }
+        $cart = Cart::getCart();
 
-    public function getCartResource()
-    {
-        $cart = (new CartResource($this->getCart()))->toArray(request());
-
-        $cart['items'] = $cart['items']->map(function ($item) {
-            return (new CartItemResource($item))->toArray(request());
-        });
-
-        return $cart;
+        return $cart
+            ? (new CartResource($cart))->response()->getData()->data
+            : null;
     }
 
     public function cartHasErrors()
@@ -53,18 +45,12 @@ trait InteractsWithCart
 
     public function getCartItems()
     {
-        if ($this->isCartEmpty()) {
-            return collect([]);
-        }
-
-        return $this->getCart()->items->map(function ($item) {
-            return (object) (new CartItemResource($item))->toArray(request());
-        });
+        return $this->getCart()->items;
     }
 
     public function cartHaveStockableItems()
     {
-        return $this->getCart()?->haveStockableItems();
+        return $this->getCart()?->have_stockable_items;
     }
 
     public function updateCartItemQuantity($itemId, $quantity)

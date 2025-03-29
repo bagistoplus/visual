@@ -14,7 +14,7 @@ class ClearCompareList
     public function execute()
     {
         $response = $this->compareApi->destroyAll();
-        $responseData = $response->toArray(request());
+        $responseData = $response->resolve();
 
         session()->flash('success', $responseData['message']);
     }

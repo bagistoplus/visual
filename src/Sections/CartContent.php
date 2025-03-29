@@ -5,7 +5,6 @@ namespace BagistoPlus\Visual\Sections;
 use BagistoPlus\Visual\Enums\Events;
 use BagistoPlus\Visual\Support\InteractsWithCart;
 use Livewire\Attributes\On;
-use Webkul\Checkout\Facades\Cart;
 
 #[On(Events::SHIPPING_METHOD_SET)]
 #[On(Events::COUPON_APPLIED)]
@@ -47,9 +46,9 @@ class CartContent extends LivewireSection
         }
 
         return [
-            'items' => $this->getCartItems(),
-            'cartErrors' => Cart::getErrors(),
-            'cartResource' => $this->getCartResource(),
+            'cart' => $this->getCart(),
+            'cartErrors' => $this->cartHasErrors(),
+            'haveStockableItems' => $this->cartHaveStockableItems(),
         ];
     }
 }

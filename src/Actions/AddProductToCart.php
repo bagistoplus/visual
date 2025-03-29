@@ -16,18 +16,12 @@ class AddProductToCart
 
     public function execute(array $data)
     {
-        // We replace request body with $data to discard custom livewire inputs
-        $originalRequestData = request()->request->all();
-        request()->request->replace($data);
+        request()->request->add($data);
 
         $response = $this->cartApi->store();
 
-        // and then we restore livewire request data to prevent ignition crash
-        // we should probably move this logic to some livewire middleware
-        request()->request->replace($originalRequestData);
-
         if ($response instanceof JsonResource) {
-            $responseData = $response->toArray(request());
+            $responseData = $response->resolve();
 
             return [
                 'success' => true,

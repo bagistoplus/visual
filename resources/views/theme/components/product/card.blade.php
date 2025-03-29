@@ -1,15 +1,7 @@
 @props(['product', 'noCompare' => false])
 
-@inject('reviewHelper', \Webkul\Product\Helpers\Review::class)
-
 @php
-  $productResource = (new \Webkul\Shop\Http\Resources\ProductResource($product))->toArray(request());
-  $url = url($product->url_key);
-  $baseImage = product_image()->getProductBaseImage($product);
-  $previewImage = $baseImage['medium_image_url'];
-
-  $totalReviews = $reviewHelper->getTotalReviews($product);
-  $averageRating = $reviewHelper->getAverageRating($product);
+  $productResource = (new \Webkul\Shop\Http\Resources\ProductResource($product))->resolve();
 @endphp
 
 <div
@@ -26,12 +18,7 @@
       >
 
       <div class="absolute inset-0 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
-        <a
-          class="absolute inset-0"
-          href="{{ url($productResource['url_key']) }}"
-          aria-label="{{ $productResource['name'] }}"
-        ></a>
-        <div class="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 transform items-center justify-center gap-2">
+        <div class="absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 transform items-center justify-center gap-2">
           <livewire:add-to-cart-button
             :product-id="$productResource['id']"
             :key="str()->random(16)"
@@ -69,7 +56,7 @@
         @endif
       </div>
 
-      <a class="mb-1 line-clamp-2 text-base font-medium text-neutral-700 transition-colors" href="{{ url($productResource['url_key']) }}">
+      <a class="mb-1 line-clamp-2 text-base font-medium text-neutral-700 transition-colors before:absolute before:inset-0 before:z-10" href="{{ url($productResource['url_key']) }}">
         {{ $productResource['name'] }}
       </a>
       <div class="flex items-center justify-between">

@@ -1,7 +1,7 @@
 <section>
-  <div class="fixed inset-0 z-50 flex h-full w-full items-center justify-center bg-black/30">
+  {{-- <div class="fixed inset-0 z-50 flex h-full w-full items-center justify-center bg-black/30">
     <x-lucide-loader-2 class="h-16 w-16 animate-spin text-white" />
-  </div>
+  </div> --}}
   <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
 
@@ -18,7 +18,7 @@
         @endif
 
         @if (in_array($currentStep, ['shipping', 'payment', 'review']))
-          <x-shop::checkout.shipping :cart="$cartResource" :shipping-methods="$shippingMethods" />
+          <x-shop::checkout.shipping :cart="$cart" :shipping-methods="$shippingMethods" />
         @endif
 
         @if (in_array($currentStep, ['payment', 'review']))
@@ -26,7 +26,7 @@
         @endif
 
         @if ($currentStep === 'review')
-          <x-shop::checkout.buttons :cart="$cartResource" class="mobile lg:hidden" />
+          <x-shop::checkout.buttons :cart="$cart" class="mobile lg:hidden" />
         @endif
       </div>
 
@@ -37,28 +37,28 @@
               @lang('shop::app.checkout.onepage.summary.cart-summary')
             </h2>
             <div class="mb-6 space-y-4">
-              @foreach ($cartResource['items'] as $item)
+              @foreach ($cart->items as $item)
                 <div class="flex gap-4">
                   <div class="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
                     <img
-                      src="{{ $item['base_image']['small_image_url'] }}"
+                      src="{{ $item->base_image->small_image_url }}"
                       alt="Rose Quartz Face Serum"
                       class="h-full w-full object-cover"
                     >
                   </div>
                   <div class="flex-1">
-                    <h3 class="font-medium">{{ $item['name'] }}</h3>
-                    <p class="text-sm">Quantity: {{ $item['quantity'] }}</p>
-                    <p class="text-primary text-sm">{{ $item['formatted_price'] }}</p>
+                    <h3 class="font-medium">{{ $item->name }}</h3>
+                    <p class="text-sm">Quantity: {{ $item->quantity }}</p>
+                    <p class="text-primary text-sm">{{ $item->formatted_price }}</p>
                   </div>
                 </div>
               @endforeach
             </div>
 
-            <x-shop::cart.summary :cart="$cartResource" />
+            <x-shop::cart.summary :cart="$cart" />
 
             @if ($currentStep === 'review')
-              <x-shop::checkout.buttons :cart="$cartResource" class="desktop mt-4 hidden lg:block" />
+              <x-shop::checkout.buttons :cart="$cart" class="desktop mt-4 hidden lg:block" />
             @endif
           </div>
         </div>

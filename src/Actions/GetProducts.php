@@ -18,10 +18,6 @@ class GetProducts
         request()->query->add($params);
 
         $response = $this->productApi->index();
-        // $paginator = $response->resource;
-        // $paginator->setCollection(collect($response->response()->getData()->data));
-
-        // return $paginator;
 
         return $response->resource;
     }

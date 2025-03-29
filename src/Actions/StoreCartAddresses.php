@@ -40,6 +40,6 @@ class StoreCartAddresses
             $response = $this->addressController->store($request);
         }
 
-        return $response->toArray($request)['data']->resource->toArray();
+        return $response->resolve()['data']->resource->toArray();
     }
 }

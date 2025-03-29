@@ -3,11 +3,11 @@
     @lang('shop::app.checkout.coupon.apply')
   </label>
 
-  @if ($cart['coupon_code'])
+  @if ($cart->coupon_code)
     <div class="bg-success-50 flex items-center justify-between rounded-lg p-3">
       <div>
         <span class="text-success text-sm font-medium">
-          @lang('shop::app.checkout.coupon.applied'): {{ $cart['coupon_code'] }}
+          @lang('shop::app.checkout.coupon.applied'): {{ $cart->coupon_code }}
         </span>
       </div>
       <button

@@ -85,7 +85,7 @@ class Checkout extends LivewireSection
         if ($cart->billing_address) {
             $this->billingAddress = array_merge(
                 $this->billingAddress,
-                $cart->billing_address->only($this->addressFillable)
+                collect($cart->billing_address)->only($this->addressFillable)->all()
             );
 
             $this->normalizeAddressFormat($this->billingAddress);
@@ -94,7 +94,7 @@ class Checkout extends LivewireSection
         if ($cart->shipping_address) {
             $this->shippingAddress = array_merge(
                 $this->shippingAddress,
-                $cart->shipping_address->only($this->addressFillable)
+                collect($cart->shipping_address)->only($this->addressFillable)->all()
             );
 
             $this->normalizeAddressFormat($this->shippingAddress);
@@ -156,7 +156,7 @@ class Checkout extends LivewireSection
 
         $storeCartAddresses->execute($data);
 
-        return $this->getCart()->haveStockableItems()
+        return $this->cartHaveStockableItems()
             ? $this->moveToShippingStep()
             : $this->moveToPaymentStep();
     }
@@ -273,7 +273,7 @@ class Checkout extends LivewireSection
     public function getViewData(): array
     {
         $data = [
-            'cartResource' => $this->getCartResource(),
+            'cart' => $this->getCart(),
             'countries' => app('core')->countries(),
             'states' => app('core')->groupedStatesByCountries(),
             'savedAddresses' => [],

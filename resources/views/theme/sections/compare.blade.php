@@ -50,9 +50,7 @@
             @lang('shop::app.compare.empty-text')
           </p>
 
-          <a class="bg-primary inline-flex items-center rounded-full px-6 py-3 text-white transition-opacity hover:opacity-90"
-            href="{{ route('shop.search.index') }}"
-          >
+          <a class="bg-primary inline-flex items-center rounded-full px-6 py-3 text-white transition-opacity hover:opacity-90" href="{{ route('shop.search.index') }}">
             <x-lucide-arrow-left class="mr-2 h-5 w-5" />
             Continue Shopping
           </a>
@@ -76,10 +74,8 @@
                 <div class="w-[250px] flex-shrink-0 p-4">
                   <div class="relative">
                     <x-shop::product.card :product="$item" no-compare />
-                    <button
-                      class="hover:text-primary absolute -right-2 -top-2 rounded-full border border-gray-200 bg-white p-1 transition-colors"
-                      x-on:click="removeItem(@json($item->id))"
-                    >
+                    <button class="hover:text-primary absolute -right-2 -top-2 rounded-full border border-gray-200 bg-white p-1 transition-colors"
+                      x-on:click="removeItem(@json($item->id))">
                       <x-lucide-x class="h-4 w-4" />
                     </button>
                   </div>
@@ -95,7 +91,7 @@
                 @foreach ($items as $item)
                   <div class="w-[250px] flex-shrink-0 p-4">
                     <div class="prose prose-sm">
-                      {!! visual_clear_inline_styles($item[$attribute->code]) !!}
+                      {!! visual_clear_inline_styles($item->{$attribute->code}) !!}
                     </div>
                   </div>
                 @endforeach

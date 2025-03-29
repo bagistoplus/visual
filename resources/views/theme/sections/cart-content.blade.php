@@ -13,7 +13,7 @@
     <div class="grid grid-cols-1 gap-12 lg:grid-cols-3" x-data="{
         allSelected: false,
         selected: $wire.entangle('itemsSelected'),
-        items: @json($items->pluck('id')),
+        items: @json(collect($cart->items)->pluck('id')),
         toggleAll() {
             if (!this.allSelected) {
                 this.selected = this.items;
@@ -45,7 +45,7 @@
           </button>
         </div>
 
-        @foreach ($items as $item)
+        @foreach ($cart->items as $item)
           <div class="flex gap-6 border-b border-gray-200 pb-4">
             <input
               type="checkbox"
@@ -57,7 +57,7 @@
             >
             <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg">
               <img
-                src="{{ $item->base_image['small_image_url'] }}"
+                src="{{ $item->base_image->small_image_url }}"
                 alt="{{ $item->name }}"
                 class="h-full w-full object-cover"
               >
@@ -94,13 +94,12 @@
                 <button
                   class="text-neutral-400 hover:text-neutral-500"
                   title="Remove item"
-                  wire:click="removeItem({{ $item->id }})"
-                  wire:confirm="@lang('shop::app.components.modal.confirm.message')"
+                  x-on:click="$confirm(() => $wire.removeItem({{ $item->id }}))"
                 >
                   <x-lucide-trash-2 class="h-5 w-5" />
                 </button>
               </div>
-              <div class="mt-4 flex items-center">
+              <div class="mt-2 flex items-center">
                 <x-shop::quantity-selector
                   label=""
                   value="{{ $item->quantity }}"
@@ -119,15 +118,13 @@
           </h2>
 
           <!-- Estimate Tax and Shipping -->
-          @if (core()->getConfigData('sales.checkout.shopping_cart.estimate_shipping') && $cartResource['have_stockable_items'])
+          @if (core()->getConfigData('sales.checkout.shopping_cart.estimate_shipping') && $haveStockableItems)
             <livewire:estimate-shipping class="mb-6" />
           @endif
 
-          <x-shop::cart.summary :cart="$cartResource" />
+          <x-shop::cart.summary :cart="$cart" />
 
-          <a href="{{ route('shop.checkout.onepage.index') }}"
-            class="bg-primary hover:bg-primary/90 text-primary-50 mt-6 block w-full rounded-full px-6 py-3 text-center transition-colors"
-          >
+          <a href="{{ route('shop.checkout.onepage.index') }}" class="bg-primary hover:bg-primary/90 text-primary-50 mt-6 block w-full rounded-full px-6 py-3 text-center transition-colors">
             @lang('shop::app.checkout.cart.summary.proceed-to-checkout')
           </a>
         </div>

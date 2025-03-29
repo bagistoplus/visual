@@ -16,7 +16,7 @@
         @lang('shop::app.checkout.cart.summary.sub-total')
       </span>
       <span class="text-neutral-900">
-        {{ $cart['formatted_sub_total_incl_tax'] }}
+        {{ $cart->formatted_sub_total_incl_tax }}
       </span>
     </div>
   @elseif ($displayTax['subtotal'] === 'both')
@@ -34,7 +34,7 @@
         @lang('shop::app.checkout.cart.summary.sub-total-incl-tax')
       </span>
       <span class="text-neutral-900">
-        {{ $cart['formatted_sub_total_incl_tax'] }}
+        {{ $cart->formatted_sub_total_incl_tax }}
       </span>
     </div>
   @else
@@ -43,7 +43,7 @@
         @lang('shop::app.checkout.cart.summary.sub-total')
       </span>
       <span class="text-neutral-900">
-        {{ $cart['formatted_sub_total'] }}
+        {{ $cart->formatted_sub_total }}
       </span>
     </div>
   @endif
@@ -54,13 +54,13 @@
   </div>
 
   <!-- Discount amount -->
-  @if ($cart['discount_amount'])
+  @if ($cart->discount_amount)
     <div class="flex justify-between">
       <span class="text-neutral-600">
         @lang('shop::app.checkout.onepage.summary.discount-amount')
       </span>
       <span class="text-neutral-900">
-        {{ $cart['formatted_discount_amount'] }}
+        {{ $cart->formatted_discount_amount }}
       </span>
     </div>
   @endif
@@ -72,7 +72,7 @@
         @lang('shop::app.checkout.cart.summary.delivery-charges')
       </span>
       <span class="text-neutral-900">
-        {{ $cart['formatted_shipping_amount_incl_tax'] }}
+        {{ $cart->formatted_shipping_amount_incl_tax }}
       </span>
     </div>
   @elseif ($displayTax['shipping'] === 'both')
@@ -81,7 +81,7 @@
         @lang('shop::app.checkout.cart.summary.delivery-charges-excl-tax')
       </span>
       <span class="text-neutral-900">
-        {{ $cart['formatted_shipping_amount'] }}
+        {{ $cart->formatted_shipping_amount }}
       </span>
     </div>
 
@@ -90,7 +90,7 @@
         @lang('shop::app.checkout.cart.summary.delivery-charges-incl-tax')
       </span>
       <span class="text-neutral-900">
-        {{ $cart['formatted_shipping_amount_incl_tax'] }}
+        {{ $cart->formatted_shipping_amount_incl_tax }}
       </span>
     </div>
   @else
@@ -99,7 +99,7 @@
         @lang('shop::app.checkout.cart.summary.delivery-charges')
       </span>
       <span class="text-neutral-900">
-        {{ $cart['formatted_shipping_amount'] }}
+        {{ $cart->formatted_shipping_amount }}
       </span>
     </div>
   @endif
@@ -113,9 +113,9 @@
 
       <div class="space-x-1">
         <span class="text-neutral-900">
-          {{ $cart['formatted_tax_total'] }}
+          {{ $cart->formatted_tax_total }}
         </span>
-        @if ($cart['tax_total'])
+        @if ($cart->tax_total)
           <button type="button" x-on:click="showTaxes = !showTaxes">
             <x-lucide-chevron-down class="h-4 w-4" />
           </button>
@@ -123,9 +123,9 @@
       </div>
     </div>
 
-    @if ($cart['tax_total'])
+    @if ($cart->tax_total)
       <div x-show="showTaxes">
-        @foreach ($cart['applied_taxes'] as $tax => $amount)
+        @foreach ($cart->applied_taxes as $tax => $amount)
           <div class="mt-1 flex justify-between pr-6 text-xs">
             <span class="text-neutral-600">
               {{ $tax }}
@@ -146,7 +146,7 @@
         @lang('shop::app.checkout.cart.summary.grand-total')
       </span>
       <span class="text-lg font-medium text-neutral-900">
-        {{ $cart['formatted_grand_total'] }}
+        {{ $cart->formatted_grand_total }}
       </span>
     </div>
   </div>
