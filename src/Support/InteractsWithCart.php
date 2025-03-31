@@ -10,7 +10,12 @@ trait InteractsWithCart
     public function getCart()
     {
         // @phpstan-ignore-next-line
-        $cart = Cart::getCart();
+        return Cart::getCart();
+    }
+
+    public function getCartResource()
+    {
+        $cart = $this->getCart();
 
         return $cart
             ? (new CartResource($cart))->response()->getData()->data
@@ -25,7 +30,7 @@ trait InteractsWithCart
 
     public function getItemsCount()
     {
-        $cart = $this->getCart();
+        $cart = $this->getCartResource();
 
         if (! $cart) {
             return 0;
@@ -45,12 +50,12 @@ trait InteractsWithCart
 
     public function getCartItems()
     {
-        return $this->getCart()->items;
+        return $this->getCartResource()->items;
     }
 
     public function cartHaveStockableItems()
     {
-        return $this->getCart()?->have_stockable_items;
+        return $this->getCart()?->haveStockableItems();
     }
 
     public function updateCartItemQuantity($itemId, $quantity)

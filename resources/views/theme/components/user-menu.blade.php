@@ -14,7 +14,7 @@
     @click.outside="showUserMenu = false"
   >
     @guest('customer')
-      <div class="w-72">
+      <div class="w-max">
         <div class="border-surface-600 border-b px-4 py-3">
           <p class="text-lg font-semibold">
             @lang('shop::app.components.layouts.header.welcome-guest')
@@ -25,9 +25,7 @@
         </div>
         <div class="p-4">
           <div class="grid grid-cols-2 gap-2">
-            <a class="bg-primary text-primary-100 flex items-center justify-center gap-2 rounded-lg px-4 py-2 transition-opacity hover:opacity-90"
-              href="{{ route('shop.customer.session.create') }}"
-            >
+            <a class="bg-primary text-primary-100 flex items-center justify-center gap-2 rounded-lg px-4 py-2 transition-opacity hover:opacity-90" href="{{ route('shop.customer.session.create') }}">
               <x-lucide-log-in class="h-4 w-4" />
               @lang('shop::app.components.layouts.header.sign-in')
             </a>
@@ -84,9 +82,7 @@
         </div>
         <div class="py-2">
           @foreach ($menuItems as $item)
-            <a href="{{ route($item['route']) }}"
-              class="hover:text-primary hover:bg-surface-alt flex items-center gap-3 px-4 py-2 transition-colors"
-            >
+            <a href="{{ route($item['route']) }}" class="hover:text-primary hover:bg-surface-alt flex items-center gap-3 px-4 py-2 transition-colors">
               @svg($item['icon'], ['class' => 'h-5 w-5'])
               {{ $item['text'] }}
             </a>
@@ -96,9 +92,7 @@
           <form method="POST" action="{{ route('shop.customer.session.destroy') }}">
             @csrf
             @method('delete')
-            <button type="submit"
-              class="hover:text-danger hover:bg-surface-alt flex w-full items-center gap-3 px-4 py-2 transition-colors"
-            >
+            <button type="submit" class="hover:text-danger hover:bg-surface-alt flex w-full items-center gap-3 px-4 py-2 transition-colors">
               <x-lucide-log-out class="h-5 w-5" />
               @lang('shop::app.components.layouts.header.logout')
             </button>

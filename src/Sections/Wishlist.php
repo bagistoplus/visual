@@ -2,9 +2,9 @@
 
 namespace BagistoPlus\Visual\Sections;
 
+use BagistoPlus\Visual\Actions\Cart\MoveWishlistToCart;
 use BagistoPlus\Visual\Actions\ClearWishlist;
 use BagistoPlus\Visual\Actions\GetWishlistItems;
-use BagistoPlus\Visual\Actions\MoveWishlistToCart;
 use BagistoPlus\Visual\Actions\RemoveItemFromWishlist;
 use BagistoPlus\Visual\Enums\Events;
 

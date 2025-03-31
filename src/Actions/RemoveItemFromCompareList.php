@@ -15,9 +15,9 @@ class RemoveItemFromCompareList
     {
         request()->request->add(['product_id' => $productId]);
 
+        /** @var \Illuminate\Http\Resources\Json\JsonResource */
         $response = $this->compareApi->destroy();
-        $responseData = $response->resolve();
 
-        session()->flash('success', $responseData['message']);
+        return $response->resolve();
     }
 }

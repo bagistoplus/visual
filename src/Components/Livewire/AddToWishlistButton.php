@@ -2,7 +2,7 @@
 
 namespace BagistoPlus\Visual\Components\Livewire;
 
-use BagistoPlus\Visual\Actions\AddProductToWishlist;
+use BagistoPlus\Visual\Actions\Cart\AddProductToWishlist;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -16,7 +16,11 @@ class AddToWishlistButton extends Component
 
     public function handle()
     {
-        app(AddProductToWishlist::class)->execute($this->productId);
+        $response = app(AddProductToWishlist::class)->execute($this->productId);
+
+        if (isset($response['message'])) {
+            session()->flash('info', $response['message']);
+        }
 
         $this->inUserWishlist = auth('customer')
             ->user()?->wishlist_items

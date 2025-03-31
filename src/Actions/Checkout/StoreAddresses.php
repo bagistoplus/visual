@@ -1,17 +1,21 @@
 <?php
 
-namespace BagistoPlus\Visual\Actions;
+namespace BagistoPlus\Visual\Actions\Checkout;
 
-use Webkul\Checkout\Facades\Cart;
+use BagistoPlus\Visual\Requests\StoreCartAddressesRequest;
 use Webkul\Shop\Http\Controllers\API\AddressController;
+use Webkul\Shop\Http\Controllers\API\OnepageController;
 use Webkul\Shop\Http\Requests\Customer\AddressRequest;
 
-class StoreCartAddresses
+class StoreAddresses
 {
-    public function __construct(protected AddressController $addressController) {}
+    public function __construct(protected AddressController $addressController, protected OnepageController $checkoutApi) {}
 
     public function execute(array $data)
     {
+        request()->merge($data);
+        $request = app(StoreCartAddressesRequest::class);
+
         foreach ($data as $key => $address) {
             if ($address['save_address']) {
                 $address = array_merge($address, $this->saveCustomerAddress($address), ['use_for_shipping' => $address['use_for_shipping']]);
@@ -20,24 +24,22 @@ class StoreCartAddresses
             }
         }
 
-        Cart::saveAddresses($data);
-        Cart::collectTotals();
+        $request->merge($data);
+        $response = $this->checkoutApi->storeAddress($request);
 
-        return $data;
+        return $response->response()->getData(true);
     }
 
     protected function saveCustomerAddress(array $data): array
     {
-        $request = new AddressRequest;
-        $request->merge($data);
+        request()->merge($data);
 
-        // inside AddressController::update, request() is used instead of the form request
-        request()->merge($request->all());
+        $request = app(AddressRequest::class);
 
-        if (isset($data['id'])) {
-            $response = $this->addressController->update($request);
-        } else {
+        if (empty($data['id'])) {
             $response = $this->addressController->store($request);
+        } else {
+            $response = $this->addressController->update($request);
         }
 
         return $response->resolve()['data']->resource->toArray();

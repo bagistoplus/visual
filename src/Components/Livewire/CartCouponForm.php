@@ -2,10 +2,9 @@
 
 namespace BagistoPlus\Visual\Components\Livewire;
 
+use BagistoPlus\Visual\Actions\Cart\StoreCoupon;
 use BagistoPlus\Visual\Enums\Events;
 use BagistoPlus\Visual\Support\InteractsWithCart;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Livewire\Component;
 use Webkul\Shop\Http\Controllers\API\CartController;
 
@@ -15,17 +14,12 @@ class CartCouponForm extends Component
 
     public $couponCode;
 
-    public function applyCoupon()
+    public function applyCoupon(StoreCoupon $storeCoupon)
     {
-        request()->merge(['code' => $this->couponCode]);
-        $response = app(CartController::class)->storeCoupon();
+        $response = $storeCoupon->execute($this->couponCode);
 
-        if ($response instanceof JsonResponse) {
-            $data = $response->getData(true);
-            session()->flash('warning', $data['message']);
-        } elseif ($response instanceof JsonResource) {
-            $data = $response->toArray(request());
-            session()->flash('success', $data['message']);
+        if (isset($response['message'])) {
+            session()->flash($response['success'] ? 'success' : 'warning', $response['message']);
         }
 
         $this->dispatch(Events::COUPON_APPLIED);
@@ -44,7 +38,7 @@ class CartCouponForm extends Component
     public function render()
     {
         return view('shop::livewire.coupon-form', [
-            'cart' => $this->getCart(),
+            'cart' => $this->getCartResource(),
         ]);
     }
 }

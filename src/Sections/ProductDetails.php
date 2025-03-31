@@ -2,7 +2,7 @@
 
 namespace BagistoPlus\Visual\Sections;
 
-use BagistoPlus\Visual\Actions\AddProductToCart;
+use BagistoPlus\Visual\Actions\Cart\AddProductToCart;
 use BagistoPlus\Visual\Enums\Events;
 use Webkul\Product\Helpers\ProductType;
 use Webkul\Product\Helpers\Review;

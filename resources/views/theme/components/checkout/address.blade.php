@@ -15,8 +15,7 @@
   <form
     class="mt-2"
     wire:submit.prevent="handleAddressForm"
-    x-data="{ useBillingAddressForShipping: true }"
-    x-on:test.window="console.log($event)"
+    x-data="{ useBillingAddressForShipping: @js($billingAddress['use_for_shipping']) }"
   >
     @csrf
     <x-shop::checkout.address-fields

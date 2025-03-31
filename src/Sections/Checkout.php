@@ -2,17 +2,14 @@
 
 namespace BagistoPlus\Visual\Sections;
 
-use BagistoPlus\Visual\Actions\StoreCartAddresses;
+use BagistoPlus\Visual\Actions\Checkout\PlaceOrder;
+use BagistoPlus\Visual\Actions\Checkout\StoreAddresses;
+use BagistoPlus\Visual\Actions\Checkout\StorePaymentMethod;
+use BagistoPlus\Visual\Actions\Checkout\StoreShippingMethod;
 use BagistoPlus\Visual\Enums\Events;
 use BagistoPlus\Visual\Support\InteractsWithCart;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Livewire\Attributes\On;
-use Webkul\Shipping\Facades\Shipping;
-use Webkul\Shop\Http\Controllers\API\OnepageController;
-use Webkul\Shop\Http\Requests\CartAddressRequest;
 
 #[On(Events::COUPON_APPLIED)]
 #[On(Events::COUPON_REMOVED)]
@@ -47,6 +44,8 @@ class Checkout extends LivewireSection
      */
     public array $paymentMethods = [];
 
+    protected $savedAddresses = [];
+
     /**
      * Fillable address fields.
      */
@@ -62,14 +61,16 @@ class Checkout extends LivewireSection
         'city',
         'postcode',
         'phone',
+        'default_address',
     ];
 
     /**
      * Initialize the component state.
      */
-    public function mount(): void
+    public function mount()
     {
         $this->initializeAddresses();
+        $this->loadSavedAddresses();
     }
 
     /**
@@ -85,7 +86,7 @@ class Checkout extends LivewireSection
         if ($cart->billing_address) {
             $this->billingAddress = array_merge(
                 $this->billingAddress,
-                collect($cart->billing_address)->only($this->addressFillable)->all()
+                $cart->billing_address->only($this->addressFillable)
             );
 
             $this->normalizeAddressFormat($this->billingAddress);
@@ -94,11 +95,37 @@ class Checkout extends LivewireSection
         if ($cart->shipping_address) {
             $this->shippingAddress = array_merge(
                 $this->shippingAddress,
-                collect($cart->shipping_address)->only($this->addressFillable)->all()
+                $cart->shipping_address->only($this->addressFillable)
             );
 
             $this->normalizeAddressFormat($this->shippingAddress);
         }
+    }
+
+    protected function loadSavedAddresses()
+    {
+        if (! Auth::guard('customer')->check()) {
+            return;
+        }
+
+        $savedAddresses = Auth::guard('customer')
+            ->user()
+            ->addresses
+            ->map(function ($address) {
+                $address->address = explode(PHP_EOL, $address->address);
+
+                return $address->toArray();
+            });
+
+        $defaultAddress = $savedAddresses->where('default_address', true)->first();
+
+        if ($defaultAddress) {
+            $defaultAddress['save_address'] = true;
+            $this->billingAddress = $defaultAddress;
+            $this->shippingAddress = $defaultAddress;
+        }
+
+        $this->savedAddresses = $savedAddresses->toArray();
     }
 
     /**
@@ -136,7 +163,7 @@ class Checkout extends LivewireSection
     /**
      * Handle the address form submission.
      */
-    public function handleAddressForm(StoreCartAddresses $storeCartAddresses)
+    public function handleAddressForm(StoreAddresses $storeAddresses)
     {
         $data = ['billing' => $this->billingAddress];
 
@@ -144,53 +171,40 @@ class Checkout extends LivewireSection
             $data['shipping'] = $this->shippingAddress;
         }
 
-        $this->getAddressValidator($data)->validate();
+        $response = $storeAddresses->execute($data);
 
-        if (! auth()->guard('customer')->check() && ! $this->getCart()?->hasGuestCheckoutItems()) {
-            return $this->redirectRoute('shop.customer.session.index');
+        if (isset($response['redirect_url'])) {
+            return $this->redirect($response['redirect_url']);
         }
-
-        if ($this->cartHasErrors()) {
-            return $this->redirectRoute('shop.checkout.cart.index');
-        }
-
-        $storeCartAddresses->execute($data);
 
         return $this->cartHaveStockableItems()
-            ? $this->moveToShippingStep()
-            : $this->moveToPaymentStep();
+            ? $this->moveToShippingStep($response['data']['shippingMethods'])
+            : $this->moveToPaymentStep($response['data']['payment_methods']);
     }
 
     /**
      * Handle shipping method selection.
      */
-    public function handleShippingMethod(string $method)
+    public function handleShippingMethod(StoreShippingMethod $storeShippingMethod, string $method)
     {
-        request()->merge(['shipping_method' => $method]);
+        $response = $storeShippingMethod->execute($method);
 
-        $response = app(OnepageController::class)->storeShippingMethod();
-        $data = $response->getData(true);
-
-        if (isset($data['redirect_url'])) {
-            return $this->redirect($data['redirect_url']);
+        if (isset($response['redirect_url'])) {
+            return $this->redirect($response['redirect_url']);
         }
 
-        $this->paymentMethods = $data['payment_methods'];
-        $this->moveToPaymentStep();
+        $this->moveToPaymentStep($response['payment_methods']);
     }
 
     /**
      * Handle payment method selection.
      */
-    public function handlePaymentMethod(string $method)
+    public function handlePaymentMethod(StorePaymentMethod $storePaymentMethod, string $method)
     {
-        request()->merge(['payment' => ['method' => $method]]);
+        $response = $storePaymentMethod->execute($method);
 
-        $response = app(OnepageController::class)->storePaymentMethod();
-        $data = $response instanceof JsonResponse ? $response->getData(true) : $response;
-
-        if (isset($data['redirect_url'])) {
-            return $this->redirect($data['redirect_url']);
+        if (isset($response['redirect_url'])) {
+            return $this->redirect($response['redirect_url']);
         }
 
         $this->currentStep = 'review';
@@ -201,70 +215,35 @@ class Checkout extends LivewireSection
     /**
      * Place the order.
      */
-    public function placeOrder()
+    public function placeOrder(PlaceOrder $placeOrder)
     {
-        $response = app(OnepageController::class)->storeOrder();
+        $response = $placeOrder->execute();
 
-        $responseData = $response instanceof JsonResource
-            ? $response->toArray(request())
-            : $response->getData(true);
-
-        if (isset($responseData['message']) && $responseData['message']) {
-            session()->flash('info', $responseData['message']);
+        if (isset($response['message'])) {
+            session()->flash('info', $response['message']);
         }
 
-        if (isset($responseData['redirect_url'])) {
-            return $this->redirect($responseData['redirect_url']);
+        if (isset($response['redirect_url'])) {
+            $this->redirect($response['redirect_url']);
         }
     }
 
     /**
      * Move to the shipping method step.
      */
-    protected function moveToShippingStep()
+    protected function moveToShippingStep(array $shippingMethods)
     {
         $this->currentStep = 'shipping';
-
-        $this->shippingMethods = collect(Shipping::collectRates()['shippingMethods'])
-            ->map(function ($method) {
-                $method['rates'] = collect($method['rates'])->map->toArray()->toArray();
-
-                return $method;
-            })
-            ->toArray();
+        $this->shippingMethods = $shippingMethods;
     }
 
     /**
      * Move to the payment method step.
      */
-    protected function moveToPaymentStep()
+    protected function moveToPaymentStep(array $paymentMethods)
     {
         $this->currentStep = 'payment';
-    }
-
-    /**
-     * Get the address validator.
-     */
-    protected function getAddressValidator(array $data)
-    {
-        $request = new CartAddressRequest;
-        $request->merge($data);
-
-        $validator = Validator::make($data, $request->rules());
-
-        $validator->setAttributeNames(
-            collect($request->rules())
-                ->keys()
-                ->mapWithKeys(function ($key) {
-                    $parts = explode('.', $key);
-                    $field = str_replace('_', ' ', end($parts));
-
-                    return [$key => $field];
-                })
-                ->toArray()
-        );
-
-        return $validator;
+        $this->paymentMethods = $paymentMethods;
     }
 
     /**
@@ -273,23 +252,11 @@ class Checkout extends LivewireSection
     public function getViewData(): array
     {
         $data = [
-            'cart' => $this->getCart(),
+            'cart' => $this->getCartResource(),
             'countries' => app('core')->countries(),
             'states' => app('core')->groupedStatesByCountries(),
-            'savedAddresses' => [],
+            'savedAddresses' => $this->savedAddresses,
         ];
-
-        if (Auth::guard('customer')->check()) {
-            $data['savedAddresses'] = Auth::guard('customer')
-                ->user()
-                ->addresses
-                ->map(function ($address) {
-                    $address->address = explode(PHP_EOL, $address->address);
-
-                    return $address->toArray();
-                })
-                ->toArray();
-        }
 
         return $data;
     }

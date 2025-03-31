@@ -1,5 +1,4 @@
-@if (request()->routeIs('shop.checkout.onepage.index') &&
-        (bool) core()->getConfigData('sales.payment_methods.paypal_smart_button.active'))
+@if (request()->routeIs('shop.checkout.onepage.index') && (bool) core()->getConfigData('sales.payment_methods.paypal_smart_button.active'))
   <!-- PayPal Smart Button script -->
   @php
     $clientId = core()->getConfigData('sales.payment_methods.paypal_smart_button.client_id');
@@ -8,9 +7,7 @@
   @endphp
 
   @pushOnce('scripts')
-    <script src="https://www.paypal.com/sdk/js?client-id={{ $clientId }}&currency={{ $acceptedCurrency }}"
-      data-partner-attribution-id="Bagisto_Cart"
-    ></script>
+    <script src="https://www.paypal.com/sdk/js?client-id={{ $clientId }}&currency={{ $acceptedCurrency }}" data-partner-attribution-id="Bagisto_Cart"></script>
     <script>
       const messages = {
         invalidConfig: "@lang('paypal::app.errors.invalid-configs')",
@@ -44,7 +41,7 @@
               }));
             },
 
-            createOrder: function(data, actions) {
+            createOrder: async function(data, actions) {
               try {
                 const response = await fetch("{{ route('paypal.smart-button.create-order') }}", {
                   credentials: 'include'
@@ -61,7 +58,7 @@
               }
             },
 
-            onApprove: function(data, actions) {
+            onApprove: async function(data, actions) {
               // Optionally, show a loader here
               try {
                 const response = await fetch("{{ route('paypal.smart-button.capture-order') }}", {

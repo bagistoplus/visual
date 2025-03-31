@@ -21,7 +21,7 @@
     @visual_color_vars('neutral', $theme->settings->light_neutral_color ?? '#71717a')
 
     @if ($bg = $theme->settings->light_background_color)
-      --color-background: {{ $bg->red() }} {{ $bg->green() }} {{ $bg->blue() }};
+      --color-background: {{ $bg->toRgb()->red() }} {{ $bg->toRgb()->green() }} {{ $bg->toRgb()->blue() }};
     @else
       --color-background: 255 255 255;
     @endif

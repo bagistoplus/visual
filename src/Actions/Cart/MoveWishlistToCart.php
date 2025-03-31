@@ -1,6 +1,6 @@
 <?php
 
-namespace BagistoPlus\Visual\Actions;
+namespace BagistoPlus\Visual\Actions\Cart;
 
 use Webkul\Shop\Http\Controllers\API\WishlistController;
 

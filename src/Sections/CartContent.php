@@ -46,7 +46,7 @@ class CartContent extends LivewireSection
         }
 
         return [
-            'cart' => $this->getCart(),
+            'cart' => $this->getCartResource(),
             'cartErrors' => $this->cartHasErrors(),
             'haveStockableItems' => $this->cartHaveStockableItems(),
         ];

@@ -13,9 +13,9 @@ class ClearCompareList
      */
     public function execute()
     {
+        /** @var \Illuminate\Http\Resources\Json\JsonResource */
         $response = $this->compareApi->destroyAll();
-        $responseData = $response->resolve();
 
-        session()->flash('success', $responseData['message']);
+        return $response->resolve();
     }
 }

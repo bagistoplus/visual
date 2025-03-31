@@ -2,7 +2,7 @@
 
 namespace BagistoPlus\Visual\Components\Livewire;
 
-use BagistoPlus\Visual\Actions\AddProductToCompare;
+use BagistoPlus\Visual\Actions\Cart\AddProductToCompare;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -13,7 +13,11 @@ class AddToCompareButton extends Component
 
     public function handle()
     {
-        app(AddProductToCompare::class)->execute($this->productId);
+        $response = app(AddProductToCompare::class)->execute($this->productId);
+
+        if (isset($response['message'])) {
+            session()->flash('success', $response['message']);
+        }
     }
 
     public function render()

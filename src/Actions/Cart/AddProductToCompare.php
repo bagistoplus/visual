@@ -1,6 +1,6 @@
 <?php
 
-namespace BagistoPlus\Visual\Actions;
+namespace BagistoPlus\Visual\Actions\Cart;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -24,13 +24,11 @@ class AddProductToCompare
         $response = $this->compareApi->store();
 
         if ($response instanceof JsonResource) {
-            $responseData = $response->resolve();
-
-            session()->flash('success', $responseData['message']);
+            return $response->resolve();
         } elseif ($response instanceof JsonResponse) {
-            $responseData = $response->getData(true)['data'];
-
-            session()->flash('warning', $responseData['message']);
+            return $response->getData(true)['data'];
         }
+
+        return $response;
     }
 }

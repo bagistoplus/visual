@@ -1,27 +1,27 @@
-@props([
-    'name',
-    'title',
-    'countries' => [],
-    'states' => [],
-    'address' => [],
-    'savedAddresses' => [],
-    'showUseForShippingCheckbox' => false,
-    'heading',
-    'footer',
-])
+@props(['name', 'title', 'countries' => [], 'states' => [], 'address' => [], 'savedAddresses' => [], 'showUseForShippingCheckbox' => false, 'heading', 'footer'])
 
 <div x-data="{
     showAddressFields: {{ count($savedAddresses) > 0 ? 'false' : 'true' }},
     fillAddressFields(name, address) {
-        const fillable = ['id', 'company_name', 'email', 'first_name', 'last_name', 'address', 'country', 'state', 'city', 'postcode', 'phone'];
+        const fillable = ['company_name', 'email', 'first_name', 'last_name', 'address', 'country', 'state', 'city', 'postcode', 'phone'];
 
+        const obj = {}
         fillable.forEach(key => {
-            $wire.set(`${name}Address.${key}`, address[key], false);
+            obj[key] = address[key] || (key === 'address' ? [] : '');
         });
+
+        $wire.set(`${name}Address`, obj, false);
+    },
+
+    clearAddressFiels(name) {
+        this.fillAddressFields(name, {});
+        $wire.set(`${name}Address.id`, '', false);
+        $wire.set(`${name}Address.save_address`, false, false);
     },
 
     editAddress(name, address) {
         this.fillAddressFields(name, address);
+        $wire.set(`${name}Address.id`, address.id, false);
         $wire.set(`${name}Address.save_address`, true, false);
         this.showAddressFields = true;
     }
@@ -52,9 +52,7 @@
     <template x-if="!showAddressFields">
       <div class="space-y-4">
         @foreach ($savedAddresses as $address)
-          <div
-            class="has-[:checked]:border-primary has-[:checked]:bg-primary-50 rounded-lg border-2 border-neutral-200 p-4 transition-colors hover:border-neutral-300"
-          >
+          <div class="has-[:checked]:border-primary has-[:checked]:bg-primary-50 rounded-lg border-2 border-neutral-200 p-4 transition-colors hover:border-neutral-300">
             <div class="mb-2 flex items-center justify-between">
               <div class="flex items-center">
                 <input
@@ -102,7 +100,7 @@
         <button
           type="button"
           class="text-secondary flex w-full items-center gap-2 rounded-lg border-2 border-dashed border-gray-200 p-4 transition-colors hover:border-gray-300 hover:bg-gray-50"
-          x-on:click="showAddressFields = true"
+          x-on:click="clearAddressFiels('{{ $name }}'); showAddressFields = true"
         >
           <x-lucide-plus class="text-secondary h-5 w-5" />
           @lang('shop::app.checkout.onepage.address.add-new-address')

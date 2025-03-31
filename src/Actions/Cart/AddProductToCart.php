@@ -1,7 +1,8 @@
 <?php
 
-namespace BagistoPlus\Visual\Actions;
+namespace BagistoPlus\Visual\Actions\Cart;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Webkul\Shop\Http\Controllers\API\CartController;
 
@@ -28,15 +29,17 @@ class AddProductToCart
                 'message' => $responseData['message'],
                 'redirect_url' => $responseData['redirect'] ?? null,
             ];
+        } elseif ($response instanceof JsonResponse) {
+
+            $responseData = $response->getData(true);
+
+            return [
+                'success' => false,
+                'message' => $responseData['message'],
+                'redirect_url' => $responseData['redirect_uri'],
+            ];
         }
 
-        // If it's not a JsonResource, assume it's a JsonResponse (error)
-        $responseData = $response->getData(true);
-
-        return [
-            'success' => false,
-            'message' => $responseData['message'],
-            'redirect_url' => $responseData['redirect_uri'],
-        ];
+        return $response;
     }
 }

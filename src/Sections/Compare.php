@@ -20,13 +20,21 @@ class Compare extends LivewireSection
     public function removeAllItems()
     {
         $this->productIds = [];
-        app(ClearCompareList::class)->execute();
+        $response = app(ClearCompareList::class)->execute();
+
+        if (isset($response['message'])) {
+            session()->flash('success', $response['message']);
+        }
     }
 
     public function removeItem($id)
     {
         $this->productIds = array_diff($this->productIds, [$id]);
-        app(RemoveItemFromCompareList::class)->execute($id);
+        $response = app(RemoveItemFromCompareList::class)->execute($id);
+
+        if (isset($response['message'])) {
+            session()->flash('success', $response['message']);
+        }
     }
 
     public function getViewData(): array
