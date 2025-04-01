@@ -17,11 +17,11 @@ class StoreCartAddressesRequest extends CartAddressRequest
                 "$addressType.last_name" => trans('shop::app.checkout.onepage.address.last-name'),
                 "$addressType.email" => trans('shop::app.checkout.onepage.address.email'),
                 "$addressType.address" => trans('shop::app.checkout.onepage.address.street-address'),
-                "$addressType.city" => trans('shop::app.checkout.onepage.address.street-address'),
+                "$addressType.city" => trans('shop::app.checkout.onepage.address.city'),
                 "$addressType.country" => trans('shop::app.checkout.onepage.address.country'),
                 "$addressType.state" => trans('shop::app.checkout.onepage.address.state'),
-                "$addressType.postcode" => trans('shop::app.checkout.onepage.address.city'),
-                "$addressType.phone" => trans('shop::app.checkout.onepage.address.postcode'),
+                "$addressType.postcode" => trans('shop::app.checkout.onepage.address.postcode'),
+                "$addressType.phone" => trans('shop::app.checkout.onepage.address.telephone'),
             ]);
         }
 

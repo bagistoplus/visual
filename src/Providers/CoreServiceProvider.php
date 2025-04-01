@@ -10,6 +10,7 @@ use BagistoPlus\Visual\Components\Livewire\CartPreview;
 use BagistoPlus\Visual\Components\Livewire\EstimateShipping;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
+use BagistoPlus\Visual\LivewireFeatures\AddressDataSynth;
 use BagistoPlus\Visual\LivewireFeatures\SectionDataSynth;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
 use BagistoPlus\Visual\Sections;
@@ -211,6 +212,7 @@ class CoreServiceProvider extends ServiceProvider
     protected function bootLivewirePropertySynthesizer(): void
     {
         Livewire::propertySynthesizer(SectionDataSynth::class);
+        Livewire::propertySynthesizer(AddressDataSynth::class);
     }
 
     protected function bootPublishAssets(): void

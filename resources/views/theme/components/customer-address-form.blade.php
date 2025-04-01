@@ -6,7 +6,7 @@
   x-data="{
       selectedCountry: @js(old('country', optional($address)->country)),
       countryStates: @js(core()->groupedStatesByCountries()),
-  
+
       get haveStates() {
           return this.countryStates[this.selectedCountry] &&
               this.countryStates[this.selectedCountry].length > 0
@@ -75,8 +75,7 @@
       :placeholder="trans('shop::app.customers.account.addresses.create.street-address')"
     />
 
-    @if (core()->getConfigData('customer.address.information.street_lines') &&
-            core()->getConfigData('customer.address.information.street_lines') > 1)
+    @if (core()->getConfigData('customer.address.information.street_lines') && core()->getConfigData('customer.address.information.street_lines') > 1)
 
       @for ($i = 1; $i < core()->getConfigData('customer.address.information.street_lines'); $i++)
         <x-shop::ui.form.input
@@ -169,7 +168,11 @@
 
     <div>
       <label class="inline-flex items-center gap-2">
-        <input type="checkbox">
+        <input
+          type="checkbox"
+          name="default_address"
+          value="1"
+        >
         <span>
           @lang('shop::app.customers.account.addresses.create.set-as-default')
         </span>

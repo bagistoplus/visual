@@ -2,7 +2,19 @@
   {{-- <div class="fixed inset-0 z-50 flex h-full w-full items-center justify-center bg-black/30">
     <x-lucide-loader-2 class="h-16 w-16 animate-spin text-white" />
   </div> --}}
-  <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8" x-data="{
+      init() {
+          Livewire.hook('morph', () => {
+              this.$nextTick(() => {
+                  const element = document.querySelector('#' + this.$wire.currentStep);
+                  console.log(element);
+                  if (element) {
+                      element.scrollIntoView({ behavior: 'smooth' });
+                  }
+              });
+          });
+      }
+  }">
     <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
 
       <div class="space-y-4">
@@ -11,8 +23,6 @@
             :saved-addresses="$savedAddresses"
             :billing-address="$billingAddress"
             :shipping-address="$shippingAddress"
-            :countries="$countries"
-            :states="$states"
             :cart-have-stockable-items="$this->cartHaveStockableItems()"
           />
         @endif

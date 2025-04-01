@@ -1,5 +1,5 @@
 @props(['cart', 'shippingMethods' => []])
-<div>
+<div id="shipping">
   <h2 class="text-base font-semibold text-neutral-700 md:text-2xl">
     @lang('shop::app.checkout.onepage.shipping.shipping-method')
   </h2>
@@ -7,15 +7,15 @@
   <div class="mt-4 space-y-4">
     @foreach ($shippingMethods as $shippingMethod)
       @foreach ($shippingMethod['rates'] as $rate)
-        <label
-          class="has-[:checked]:border-primary has-[:checked]:bg-primary-50 block cursor-pointer rounded-lg border-2 border-neutral-200 p-4 transition-colors"
-        >
+        <label class="has-[:checked]:border-primary has-[:checked]:bg-primary-50 block cursor-pointer rounded-lg border-2 border-neutral-200 p-4 transition-colors">
           <div class="flex items-center justify-between">
             <div class="flex items-center">
               <input
                 type="radio"
                 name="shippingMethod"
                 class="text-primary h-4 w-4 border-gray-300"
+                value="{{ $rate['method'] }}"
+                wire:model="selectedShippingMethod"
                 wire:change="handleShippingMethod('{{ $rate['method'] }}')"
               >
               <div class="ml-2">

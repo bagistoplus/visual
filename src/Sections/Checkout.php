@@ -6,8 +6,10 @@ use BagistoPlus\Visual\Actions\Checkout\PlaceOrder;
 use BagistoPlus\Visual\Actions\Checkout\StoreAddresses;
 use BagistoPlus\Visual\Actions\Checkout\StorePaymentMethod;
 use BagistoPlus\Visual\Actions\Checkout\StoreShippingMethod;
+use BagistoPlus\Visual\Data\AddressData;
 use BagistoPlus\Visual\Enums\Events;
 use BagistoPlus\Visual\Support\InteractsWithCart;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 
@@ -19,145 +21,30 @@ class Checkout extends LivewireSection
 
     public static string $view = 'shop::sections.checkout';
 
-    /**
-     * Current checkout step.
-     */
     public string $currentStep = 'address';
 
-    /**
-     * The billing address data.
-     */
-    public array $billingAddress = [];
+    public AddressData $billingAddress;
 
-    /**
-     * The shipping address data.
-     */
-    public array $shippingAddress = [];
+    public AddressData $shippingAddress;
 
-    /**
-     * Available shipping methods.
-     */
     public array $shippingMethods = [];
 
-    /**
-     * Available payment methods.
-     */
     public array $paymentMethods = [];
 
-    protected $savedAddresses = [];
+    public string $selectedShippingMethod = '';
 
-    /**
-     * Fillable address fields.
-     */
-    protected array $addressFillable = [
-        'id',
-        'company_name',
-        'email',
-        'first_name',
-        'last_name',
-        'address',
-        'country',
-        'state',
-        'city',
-        'postcode',
-        'phone',
-        'default_address',
-    ];
+    public string $selectedPaymentMethod = '';
+
+    /** @var Collection<int, AddressData> */
+    protected Collection $savedAddresses;
 
     /**
      * Initialize the component state.
      */
-    public function mount()
+    public function boot()
     {
-        $this->initializeAddresses();
         $this->loadSavedAddresses();
-    }
-
-    /**
-     * Initialize the billing and shipping addresses.
-     */
-    protected function initializeAddresses(): void
-    {
-        $this->billingAddress = $this->addressDefaults();
-        $this->shippingAddress = $this->addressDefaults();
-
-        $cart = $this->getCart();
-
-        if ($cart->billing_address) {
-            $this->billingAddress = array_merge(
-                $this->billingAddress,
-                $cart->billing_address->only($this->addressFillable)
-            );
-
-            $this->normalizeAddressFormat($this->billingAddress);
-        }
-
-        if ($cart->shipping_address) {
-            $this->shippingAddress = array_merge(
-                $this->shippingAddress,
-                $cart->shipping_address->only($this->addressFillable)
-            );
-
-            $this->normalizeAddressFormat($this->shippingAddress);
-        }
-    }
-
-    protected function loadSavedAddresses()
-    {
-        if (! Auth::guard('customer')->check()) {
-            return;
-        }
-
-        $savedAddresses = Auth::guard('customer')
-            ->user()
-            ->addresses
-            ->map(function ($address) {
-                $address->address = explode(PHP_EOL, $address->address);
-
-                return $address->toArray();
-            });
-
-        $defaultAddress = $savedAddresses->where('default_address', true)->first();
-
-        if ($defaultAddress) {
-            $defaultAddress['save_address'] = true;
-            $this->billingAddress = $defaultAddress;
-            $this->shippingAddress = $defaultAddress;
-        }
-
-        $this->savedAddresses = $savedAddresses->toArray();
-    }
-
-    /**
-     * Normalize the address format.
-     */
-    protected function normalizeAddressFormat(array &$address): void
-    {
-        if (! is_array($address['address'])) {
-            $address['address'] = explode(PHP_EOL, $address['address']);
-        }
-    }
-
-    /**
-     * Get default address structure.
-     */
-    protected function addressDefaults(): array
-    {
-        return [
-            'id' => null,
-            'company_name' => '',
-            'email' => '',
-            'first_name' => '',
-            'last_name' => '',
-            'address' => [],
-            'country' => '',
-            'state' => '',
-            'city' => '',
-            'postcode' => '',
-            'phone' => '',
-            'use_for_shipping' => true,
-            'save_address' => false,
-        ];
+        $this->initializeAddresses();
     }
 
     /**
@@ -165,11 +52,13 @@ class Checkout extends LivewireSection
      */
     public function handleAddressForm(StoreAddresses $storeAddresses)
     {
-        $data = ['billing' => $this->billingAddress];
+        $data = ['billing' => $this->billingAddress->toArray()];
 
-        if (! $this->billingAddress['use_for_shipping']) {
-            $data['shipping'] = $this->shippingAddress;
+        if (! $this->billingAddress->use_for_shipping) {
+            $data['shipping'] = $this->shippingAddress->toArray();
         }
+
+        $response = $storeAddresses->execute($data);
 
         $response = $storeAddresses->execute($data);
 
@@ -235,6 +124,7 @@ class Checkout extends LivewireSection
     {
         $this->currentStep = 'shipping';
         $this->shippingMethods = $shippingMethods;
+        $this->selectedShippingMethod = '';
     }
 
     /**
@@ -244,6 +134,7 @@ class Checkout extends LivewireSection
     {
         $this->currentStep = 'payment';
         $this->paymentMethods = $paymentMethods;
+        $this->selectedPaymentMethod = '';
     }
 
     /**
@@ -253,11 +144,69 @@ class Checkout extends LivewireSection
     {
         $data = [
             'cart' => $this->getCartResource(),
-            'countries' => app('core')->countries(),
-            'states' => app('core')->groupedStatesByCountries(),
             'savedAddresses' => $this->savedAddresses,
         ];
 
         return $data;
+    }
+
+    /**
+     * Initialize the billing and shipping addresses.
+     */
+    protected function initializeAddresses(): void
+    {
+        $this->billingAddress = AddressData::empty();
+        $this->shippingAddress = AddressData::empty();
+        $cart = $this->getCart();
+
+        if ($cart->billing_address) {
+            $this->billingAddress = AddressData::fromArray($cart->billing_address->toArray());
+            $this->savedAddresses->prepend($this->billingAddress);
+        }
+
+        if ($cart->shipping_address) {
+            $this->shippingAddress = AddressData::fromArray($cart->shipping_address->toArray());
+            $this->savedAddresses->prepend($this->shippingAddress);
+        }
+
+        $this->applyDefaultAddress();
+    }
+
+    protected function loadSavedAddresses(): void
+    {
+        if (! Auth::guard('customer')->check()) {
+            $this->savedAddresses = collect();
+
+            return;
+        }
+
+        $this->savedAddresses = Auth::guard('customer')
+            ->user()
+            ->addresses
+            ->map(fn ($address): AddressData => AddressData::fromArray([...$address->toArray(), 'use_for_shipping' => true]));
+    }
+
+    protected function applyDefaultAddress(): void
+    {
+        $default = $this->savedAddresses->first(fn (AddressData $addr): bool => $addr->default_address);
+
+        if (! ($default instanceof AddressData)) {
+            return;
+        }
+
+        if (! $this->billingAddress->id) {
+            $this->billingAddress = AddressData::fromArray([
+                ...$default->toArray(),
+                'save_address' => true,
+                'use_for_shipping' => $this->billingAddress->use_for_shipping,
+            ]);
+        }
+
+        if (! $this->shippingAddress->id) {
+            $this->shippingAddress = AddressData::fromArray([
+                ...$default->toArray(),
+                'save_address' => true,
+            ]);
+        }
     }
 }

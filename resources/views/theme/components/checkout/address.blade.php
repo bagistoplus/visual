@@ -3,8 +3,6 @@
     'billingAddress' => [],
     'shippingAddress' => [],
     'cartHaveStockableItems' => false,
-    'countries' => [],
-    'states' => [],
 ])
 
 <div>
@@ -15,30 +13,28 @@
   <form
     class="mt-2"
     wire:submit.prevent="handleAddressForm"
-    x-data="{ useBillingAddressForShipping: @js($billingAddress['use_for_shipping']) }"
+    x-data="{ useBillingAddressForShipping: @js($billingAddress->use_for_shipping) }"
   >
     @csrf
     <x-shop::checkout.address-fields
       name="billing"
-      :saved-addresses="$savedAddresses"
+      :saved-addresses="$savedAddresses->whereNotIn('address_type', 'cart_shipping')"
       :address="$billingAddress"
-      :countries="$countries"
-      :states="$states"
       :show-use-for-shipping-checkbox="$cartHaveStockableItems"
       title="{{ trans('shop::app.checkout.onepage.address.billing-address') }}"
     />
 
-    <div x-show="!useBillingAddressForShipping">
-      <hr class="my-4">
-      <x-shop::checkout.address-fields
-        name="shipping"
-        :saved-addresses="$savedAddresses"
-        :address="$shippingAddress"
-        :countries="$countries"
-        :states="$states"
-        title="{{ trans('shop::app.checkout.onepage.address.shipping-address') }}"
-      />
-    </div>
+    <template x-if="!useBillingAddressForShipping">
+      <div>
+        <hr class="my-4">
+        <x-shop::checkout.address-fields
+          name="shipping"
+          :saved-addresses="$savedAddresses->whereNotIn('address_type', 'cart_billing')"
+          :address="$shippingAddress"
+          title="{{ trans('shop::app.checkout.onepage.address.shipping-address') }}"
+        />
+      </div>
+    </template>
 
     <div class="mt-4 text-right">
       <button
