@@ -1,9 +1,9 @@
-<div class="relative" x-data="{ showCartPreview: $wire.entangle('open') }">
+<div class="relative" x-dropdown="{ open: $wire.entangle('open') }">
   <!-- Cart Button -->
   <button
+    x-dropdown:trigger
     class="relative p-2"
     aria-label="cart preview"
-    x-on:click="showCartPreview = !showCartPreview"
   >
     <x-lucide-shopping-cart class="hover:text-primary h-5 w-5 transition-colors" />
     @if (!$this->isCartEmpty())
@@ -16,10 +16,8 @@
   <!-- Cart Preview -->
   <div
     x-cloak
-    x-show="showCartPreview"
-    x-transition
+    x-dropdown:content
     class="bg-surface border-surface-600 absolute right-0 mt-2 w-80 rounded-lg border py-4 shadow-lg"
-    @click.outside="showCartPreview = false"
   >
     <!-- Header -->
     <div class="px-4">

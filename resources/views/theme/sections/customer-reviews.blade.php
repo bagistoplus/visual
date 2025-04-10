@@ -1,4 +1,4 @@
-<div class="rounded-lg bg-white shadow-sm">
+<div class="bg-background rounded-lg shadow-sm">
   <div class="border-b border-neutral-100 p-4">
     <div class="flex items-center justify-between">
       <h1 class="font-serif text-2xl text-neutral-700">
@@ -21,7 +21,9 @@
           <!-- Content -->
           <div class="flex w-full flex-col">
             <div class="flex flex-col sm:justify-between md:flex-row md:items-center">
-              <a class="text-base font-medium text-neutral-700 before:absolute before:inset-0 sm:text-xl" href="{{ route('shop.product_or_category.index', $review->product->url_key) }}">
+              <a class="text-base font-medium text-neutral-700 before:absolute before:inset-0 sm:text-xl"
+                href="{{ route('shop.product_or_category.index', $review->product->url_key) }}"
+              >
                 {{ $review->title }}
               </a>
               <x-shop::star-rating :rating="$review->rating" />

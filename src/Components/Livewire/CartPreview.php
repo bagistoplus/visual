@@ -22,7 +22,9 @@ class CartPreview extends Component
     public function removeItem($itemId)
     {
         $this->removeCartItem($itemId);
-        $this->open = false;
+
+        $this->open = $this->getItemsCount() > 0;
+
         $this->dispatch(Events::CART_UPDATED);
     }
 

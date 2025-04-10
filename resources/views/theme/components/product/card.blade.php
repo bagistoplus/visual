@@ -9,7 +9,7 @@
   x-modelable="mode"
   {{ $attributes }}
 >
-  <div x-show="mode === 'grid' || isMobile" class="group relative h-full rounded-lg bg-white shadow-sm transition-shadow hover:shadow-md">
+  <div x-show="mode === 'grid' || isMobile" class="bg-background group relative h-full rounded-lg shadow-sm transition-shadow hover:shadow-md">
     <div class="relative aspect-square overflow-hidden rounded-t-lg">
       <img
         src="{{ $productResource['base_image']['medium_image_url'] }}"
@@ -56,11 +56,12 @@
         @endif
       </div>
 
-      <a class="mb-1 line-clamp-2 text-base font-medium text-neutral-700 transition-colors before:absolute before:inset-0 before:z-10" href="{{ url($productResource['url_key']) }}">
+      <a class="mb-1 line-clamp-2 text-base font-medium text-neutral-700 transition-colors before:absolute before:inset-0 before:z-10"
+        href="{{ url($productResource['url_key']) }}">
         {{ $productResource['name'] }}
       </a>
       <div class="flex items-center justify-between">
-        <div class="text-primary [&>div>p:nth-of-type(2)]:text-neutral flex items-center gap-2 text-lg font-medium [&_.line-through]:text-neutral-400">
+        <div class="text-primary ![&>div>p:nth-of-type(2)]:text-neutral flex items-center gap-2 text-lg font-medium [&_.line-through]:text-neutral-600">
           {!! $productResource['price_html'] !!}
         </div>
 

@@ -1,4 +1,4 @@
-<div x-data="CategoryPage">
+<div x-data="{ displayMode: $wire.entangle('displayMode') }">
   <div class="bg-surface-alt relative py-8">
     @if ($category->banner_url)
       <img
@@ -22,17 +22,6 @@
     <div class="flex flex-col gap-8 md:flex-row">
       <x-shop::product.filters class="hidden w-64 md:block" :maxPrice="$maxPrice" />
 
-      <!-- Mobile filter button -->
-      <div class="flex items-center justify-between gap-4 md:hidden">
-        <button x-on:click="showMobileFilters = true"
-          class="text-secondary flex flex-1 items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 hover:bg-gray-50"
-        >
-          <x-lucide-filter class="mr-2 h-5 w-5" />
-          Filters
-          <x-lucide-chevron-down class="ml-2 h-5 w-5" />
-        </button>
-      </div>
-
       <x-shop::product.mobile-filters
         :maxPrice="$maxPrice"
         :sortOptions="$this->availableSortOptions"
@@ -44,8 +33,7 @@
         <x-shop::product.toolbar :availableSortOptions="$this->availableSortOptions" :availablePaginationLimits="$this->availablePaginationLimits" />
 
         <!-- Products grid view -->
-        <div x-show="displayMode === 'grid'"
-          class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div x-show="displayMode === 'grid'" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           @foreach ($products as $product)
             <x-shop::product.card
               :key="$product->id"
@@ -73,12 +61,3 @@
     </div>
   </div>
 </div>
-
-@script
-  <script>
-    Alpine.data('CategoryPage', () => ({
-      showMobileFilters: false,
-      displayMode: $wire.entangle('displayMode')
-    }));
-  </script>
-@endscript

@@ -1,4 +1,4 @@
-<div x-data="VisualProductDetails" class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
   <form x-on:submit.prevent>
     <div class="relative flex flex-col items-start gap-12 md:flex-row">
       <x-shop::product.medias-gallery :medias="$medias" class="w-full flex-1 md:sticky md:top-4" />
@@ -19,11 +19,3 @@
     @endif
   </form>
 </div>
-
-@pushOnce('scripts')
-  <script>
-    document.addEventListener('alpine:init', function() {
-      Alpine.data('VisualProductDetails', () => ({}));
-    })
-  </script>
-@endpushOnce

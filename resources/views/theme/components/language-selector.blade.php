@@ -24,28 +24,21 @@
       @endforeach
     </select>
   @else
-    <div class="relative hidden sm:block" x-data="{ showLanguageMenu: false }"">
-      <button class="hover:text-primary flex items-center p-2 transition-colors"
-        @click="showLanguageMenu = !showLanguageMenu"
-      >
-        <x-heroicon-o-globe-alt class="h-5 w-5" />
-        <span class="ml-1 uppercase">{{ $currentLocale->code }}</span>
-      </button>
-      <div
-        x-cloak
-        x-show="showLanguageMenu"
-        x-transition
-        class="bg-surface absolute right-0 mt-2 w-48 rounded-lg py-2 shadow-lg"
-        @click.outside="showLanguageMenu = false"
-      >
+    <x-shop::ui.menu class="hidden sm:block">
+      <x-shop::ui.menu.trigger>
+        <button class="hover:text-primary flex items-center p-2 transition-colors">
+          <x-heroicon-o-globe-alt class="h-5 w-5" />
+          <span class="ml-1 uppercase">{{ $currentLocale->code }}</span>
+        </button>
+      </x-shop::ui.menu.trigger>
+
+      <x-shop::ui.menu.items>
         @foreach ($locales as $locale)
-          <a href="{{ request()->fullUrlWithQuery(['locale' => $locale->code]) }}"
-            class="hover:bg-surface-alt block w-full px-4 py-2 text-left transition-colors"
-          >
+          <x-shop::ui.menu.item href="{{ request()->fullUrlWithQuery(['locale' => $locale->code]) }}">
             {{ $locale->name }}
-          </a>
+          </x-shop::ui.menu.item>
         @endforeach
-      </div>
-    </div>
+      </x-shop::ui.menu.items>
+    </x-shop::ui.menu>
   @endisset
 @endif

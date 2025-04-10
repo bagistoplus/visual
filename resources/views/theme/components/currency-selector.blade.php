@@ -24,29 +24,21 @@
       @endforeach
     </select>
   @else
-    <div class="relative hidden sm:block" x-data="{ showCurrencyMenu: false }">
-      <button class="hover:text-primary flex items-center p-2 transition-colors"
-        @click="showCurrencyMenu = !showCurrencyMenu"
-      >
-        <span class="ml-1">
-          {{ $currentCurrency->symbol }} {{ $currentCurrency->code }}
-        </span>
-      </button>
-      <div
-        x-cloak
-        x-show="showCurrencyMenu"
-        x-transition
-        class="bg-surface absolute right-0 mt-2 w-48 rounded-lg py-2 shadow-lg"
-        @click.outside="showCurrencyMenu = false"
-      >
+    <x-shop::ui.menu class="hidden sm:block">
+      <x-shop::ui.menu.trigger>
+        <button class="hover:text-primary flex items-center p-2 transition-colors">
+          <span class="ml-1">
+            {{ $currentCurrency->symbol }} {{ $currentCurrency->code }}
+          </span>
+        </button>
+      </x-shop::ui.menu.trigger>
+      <x-shop::ui.menu.items>
         @foreach ($currencies as $currency)
-          <a href="{{ request()->fullUrlWithQuery(['currency' => $currency->code]) }}"
-            class="hover:bg-surface-alt hover:text-primary block w-full px-4 py-2 text-left transition-colors"
-          >
+          <x-shop::ui.menu.item href="{{ request()->fullUrlWithQuery(['currency' => $currency->code]) }}">
             {{ $currency['symbol'] }} {{ $currency['name'] }}
-          </a>
+          </x-shop::ui.menu.item>
         @endforeach
-      </div>
-    </div>
+      </x-shop::ui.menu.items>
+    </x-shop::ui.menu>
   @endisset
 @endif

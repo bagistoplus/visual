@@ -1,17 +1,15 @@
-<div class="relative" x-data="{ showUserMenu: false }">
+<div x-dropdown class="relative">
   <button
+    x-dropdown:trigger
     class="relative p-2"
     aria-label="user menu"
-    @click="showUserMenu = !showUserMenu"
   >
     <x-lucide-user class="hover:text-primary h-5 w-5 transition-colors" />
   </button>
   <div
     x-cloak
-    x-show="showUserMenu"
-    x-transition
+    x-dropdown:content
     class="bg-surface absolute right-0 mt-2 rounded-lg border py-2 text-neutral-600 shadow-lg"
-    @click.outside="showUserMenu = false"
   >
     @guest('customer')
       <div class="w-max">
@@ -63,6 +61,7 @@
             ],
         ])->filter(fn($item) => $item['show']);
       @endphp
+
       <div class="w-64">
         <div class="border-surface-600 border-b px-4 py-3">
           <div class="flex items-center gap-3">
@@ -80,6 +79,7 @@
             </div>
           </div>
         </div>
+
         <div class="py-2">
           @foreach ($menuItems as $item)
             <a href="{{ route($item['route']) }}" class="hover:text-primary hover:bg-surface-alt flex items-center gap-3 px-4 py-2 transition-colors">
@@ -88,6 +88,7 @@
             </a>
           @endforeach
         </div>
+
         <div class="border-surface-600 border-t pt-2">
           <form method="POST" action="{{ route('shop.customer.session.destroy') }}">
             @csrf

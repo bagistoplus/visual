@@ -17,10 +17,11 @@
             </p>
           </div>
           <x-shop::quantity-selector
-            label=''
-            value="{{ $groupedProduct->qty }}"
+            :min="1"
+            :value="$groupedProduct->qty"
             x-on:change="$wire.set('groupedProductQuantities.{{ $groupedProduct->associated_product->id }}', $event.detail, false)"
           />
+
         </div>
       @endif
     @endforeach

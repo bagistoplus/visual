@@ -1,4 +1,4 @@
-<div class="rounded-lg bg-white shadow-sm">
+<div class="bg-background rounded-lg shadow-sm">
   <div class="border-b border-neutral-100 p-4">
     <div class="flex items-center justify-between">
       <h1 class="font-serif text-2xl text-neutral-700">
@@ -18,9 +18,7 @@
   <div class="p-6">
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
       @foreach ($addresses as $address)
-        <div
-          class="@if ($address->default_address) border-primary @else border-neutral-200 @endif rounded-lg border-2 p-6"
-        >
+        <div class="@if ($address->default_address) border-primary @else border-neutral-200 @endif rounded-lg border-2 p-6">
           <div class="mb-4 flex items-start justify-between">
             <div class="flex items-center gap-2">
               <span class="text-secondary font-medium capitalize">

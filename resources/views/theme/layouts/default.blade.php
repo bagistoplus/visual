@@ -37,8 +37,8 @@
 
     {!! view_render_event('bagisto.shop.layout.body.after') !!}
 
-    @include('shop::partials.scripts')
-    @livewireScripts
+    @stack('scripts')
+    @livewireScriptConfig
   </body>
 
 </html>

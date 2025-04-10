@@ -2,93 +2,7 @@
   $config = app('Webkul\Product\Helpers\BundleOption')->getBundleConfig($product);
 @endphp
 
-@pushOnce('scripts')
-  <script>
-    document.addEventListener('alpine:init', function() {
-      Alpine.data('VisualProductBundle', () => ({
-        config: @json($config),
-        options: [],
-        selectedProducts: {},
-        quantities: {},
-
-        get totalPrice() {
-          let total = 0;
-
-          for (const option of this.options) {
-            const selectedProductIds = Array.isArray(this.selectedProducts[option.id]) ? this
-              .selectedProducts[option.id] : [this.selectedProducts[option.id]];
-
-            for (const product of option.products) {
-              if (selectedProductIds.includes(product.id)) {
-                total += product.qty * product.price.final.price;
-              }
-            }
-          }
-
-          return total;
-        },
-
-        get formattedTotalPrice() {
-          return this.$formatPrice(this.totalPrice);
-        },
-
-        init() {
-          this.options = this.config.options.slice(0);
-
-          this.options.forEach(option => {
-            const isMultiSelect = ['checkbox', 'multiselect'].includes(option.type);
-            this.selectedProducts[option.id] = isMultiSelect ? [] : '';
-
-            option.products.forEach(product => {
-              if (product.is_default) {
-                if (isMultiSelect) {
-                  this.selectedProducts[option.id].push(product.id);
-                } else {
-                  this.selectedProducts[option.id] = product.id;
-                }
-              }
-            });
-
-            if (['select', 'radio'].includes(option.type)) {
-              const selectedProduct = option.products.find(product => product.id === this.selectedProducts[
-                option.id]);
-
-              this.quantities[option.id] = selectedProduct ? selectedProduct.qty : 0;
-            }
-          });
-        },
-
-        productIsSelected(optionId, productId) {
-          return Array.isArray(this.selectedProducts[optionId]) ?
-            this.selectedProducts[optionId].includes(productId) :
-            this.selectedProducts[optionId] === productId;
-        },
-
-        onQuantityChange(optionId, quantity) {
-          this.quantities[optionId] = quantity;
-          const product = this.options.find(option => option.id === optionId).products
-            .find(product => product.id === this.selectedProducts[optionId]);
-
-          if (product) {
-            product.qty = quantity;
-          }
-
-          this.$wire.set('bundleProductQuantities', this.quantities, false);
-        },
-
-        onSelectionChange(optionId, value) {
-          const option = this.options.find(option => option.id === optionId);
-
-          if (option.type === 'checkbox') {
-            Alpine.store('ProductForm').disableButtons = this.selectedProducts[optionId].length <= 0;
-          }
-        }
-      }));
-    })
-  </script>
-@endpushOnce
-
-<div x-data="VisualProductBundle">
+<div x-data x-product-bundle="@js(['options' => $config['options']])">
   <div class="grid gap-2">
     @foreach ($config['options'] as $option)
       <div class="grid gap-4 border-b pb-3 last:border-b-0">
@@ -97,9 +11,8 @@
             <span class="text-sm font-semibold">{{ $option['label'] }}</span>
             <select
               class="mt-1 w-full"
-              x-model.number="selectedProducts[{{ $option['id'] }}]"
+              x-product-bundle:option="{{ $option['id'] }}"
               wire:model.number="bundleProductOptions.{{ $option['id'] }}"
-              x-on:change="onSelectionChange({{ $option['id'] }}, event.target.value)"
             >
               @if (!$option['is_required'])
                 <option value="">
@@ -120,9 +33,8 @@
             <select
               multiple
               class="mt-1 w-full"
-              x-model.number="selectedProducts[{{ $option['id'] }}]"
+              x-product-bundle:option="{{ $option['id'] }}"
               wire:model.number="bundleProductOptions.{{ $option['id'] }}"
-              x-on:change="onSelectionChange({{ $option['id'] }}, event.target.value)"
             >
               @if (!$option['is_required'])
                 <option value="">
@@ -159,9 +71,8 @@
                   type="radio"
                   name="bundle_options[{{ $option['id'] }}][]"
                   value="{{ $product['id'] }}"
-                  x-model.number="selectedProducts[{{ $option['id'] }}]"
+                  x-product-bundle:option="{{ $option['id'] }}"
                   wire:model.number="bundleProductOptions.{{ $option['id'] }}"
-                  x-on:change="onSelectionChange({{ $option['id'] }}, event.target.value)"
                 >
                 <span>{{ $product['name'] }} + {{ $product['price']['final']['formatted_price'] }}</span>
               </label>
@@ -177,8 +88,8 @@
                   type="checkbox"
                   name="bundle_options[{{ $option['id'] }}][]"
                   value="{{ $product['id'] }}"
-                  x-model.number="selectedProducts[{{ $option['id'] }}]"
-                  x-on:change="onSelectionChange({{ $option['id'] }})"
+                  x-product-bundle:option="{{ $option['id'] }}"
+                  wire:model.number="bundleProductOptions.{{ $option['id'] }}"
                 >
                 <span>{{ $product['name'] }} + {{ $product['price']['final']['formatted_price'] }}</span>
               </label>
@@ -197,7 +108,7 @@
         @endphp
         @if (in_array($option['type'], ['select', 'radio']))
           <x-shop::quantity-selector
-            not
+            :min="1"
             :value="$defaultProduct ? $defaultProduct['qty'] : 0"
             x-on:change="onQuantityChange({{ $option['id'] }}, $event.detail)"
           />
@@ -215,11 +126,11 @@
 
   <ul class="mt-2 space-y-3">
     <template x-for="(option) in options" x-bind:key="option.id">
-      <li>
+      <li x-product-bundle:summary-item="option.id">
         <span x-text="option.label" class="font-semibold text-neutral-700"></span>
         <div>
           <template x-for="product in option.products" x-bind:key="product.id">
-            <template x-if="productIsSelected(option.id, product.id)">
+            <template x-if="$summaryItem.isSelected(product.id)">
               <div>
                 <span x-text="product.qty"></span>
                 x

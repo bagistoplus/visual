@@ -3,26 +3,34 @@ export default {
   content: [
     './resources/views/theme/**/*',
     './resources/assets/shop/ts/**/*',
-    '../vendor/bagisto/bagisto/packages/Webkul/Shop/src/Resources/views/products/prices/**/*.blade.php'
+    '../vendor/bagisto/bagisto/packages/Webkul/Shop/src/Resources/views/products/prices/**/*.blade.php',
   ],
-  safelist: ['label-processing', 'label-active', 'label-canceled', 'label-closed', 'label-pending', 'label-canceled', 'icon-eye'],
+  safelist: [
+    'label-processing',
+    'label-active',
+    'label-canceled',
+    'label-closed',
+    'label-pending',
+    'label-canceled',
+    'icon-eye',
+  ],
   theme: {
     extend: {
       colors: {
         background: 'rgb(var(--color-background))',
         neutral: {
           DEFAULT: 'rgb(var(--color-neutral-500))',
-          '50': 'rgb(var(--color-neutral-50))',
-          '100': 'rgb(var(--color-neutral-100))',
-          '200': 'rgb(var(--color-neutral-200))',
-          '300': 'rgb(var(--color-neutral-300))',
-          '400': 'rgb(var(--color-neutral-400))',
-          '500': 'rgb(var(--color-neutral-500))',
-          '600': 'rgb(var(--color-neutral-600))',
-          '700': 'rgb(var(--color-neutral-700))',
-          '800': 'rgb(var(--color-neutral-800))',
-          '900': 'rgb(var(--color-neutral-900))',
-          '950': 'rgb(var(--color-neutral-950))',
+          50: 'rgb(var(--color-neutral-50))',
+          100: 'rgb(var(--color-neutral-100))',
+          200: 'rgb(var(--color-neutral-200))',
+          300: 'rgb(var(--color-neutral-300))',
+          400: 'rgb(var(--color-neutral-400))',
+          500: 'rgb(var(--color-neutral-500))',
+          600: 'rgb(var(--color-neutral-600))',
+          700: 'rgb(var(--color-neutral-700))',
+          800: 'rgb(var(--color-neutral-800))',
+          900: 'rgb(var(--color-neutral-900))',
+          950: 'rgb(var(--color-neutral-950))',
         },
         primary: {
           DEFAULT: 'rgb(var(--color-primary-500))',
@@ -151,7 +159,33 @@ export default {
           950: 'rgb(var(--color-success-950))',
         },
       },
-      typography: ({theme}) => ({
+      keyframes: {
+        slideInDown: {
+          from: { transform: 'translateY(-100%)', opacity: '0' },
+          to: { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideOutUp: {
+          from: { transform: 'translateY(0)', opacity: '1' },
+          to: { transform: 'translateY(-100%)', opacity: '0' },
+        },
+        slideInUp: {
+          from: { transform: 'translateY(100%)', opacity: '0' },
+          to: { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideOutDown: {
+          from: { transform: 'translateY(0)', opacity: '1' },
+          to: { transform: 'translateY(100%)', opacity: '0' },
+        },
+      },
+
+      animation: {
+        'slide-in-down': 'slideInDown 0.3s ease-out forwards',
+        'slide-out-up': 'slideOutUp 0.3s ease-in forwards',
+        'slide-in-up': 'slideInUp 0.3s ease-out forwards',
+        'slide-out-down': 'slideOutDown 0.3s ease-in forwards',
+      },
+
+      typography: ({ theme }) => ({
         DEFAULT: {
           css: {
             '--tw-prose-body': theme('colors.neutral.500'),
@@ -168,15 +202,13 @@ export default {
             '--tw-prose-kbd-shadows': theme('colors.neutral.900'),
             '--tw-prose-code': theme('colors.neutral.900'),
             '--tw-prose-pre-code': theme('colors.neutral.200'),
-            '--tw-prose-pre-bg' : theme('colors.neutral.800'),
+            '--tw-prose-pre-bg': theme('colors.neutral.800'),
             '--tw-prose-th-borders': theme('colors.neutral.300'),
             '--tw-prose-td-borders': theme('colors.neutral.200'),
-          }
-        }
-      })
+          },
+        },
+      }),
     },
   },
-  plugins: [
-    require('@tailwindcss/typography')
-  ]
-}
+  plugins: [require('@tailwindcss/typography')],
+};

@@ -51,13 +51,13 @@
         ['name' => 'refunds', 'title' => trans('shop::app.customers.account.orders.view.refunds.refunds'), 'enabled' => $order->refunds->isNotEmpty()],
     ];
   @endphp
-  <div class="mb-8" x-data="{ activeTab: 'information' }">
-    <div class="mb-6 flex border-b-2 border-neutral-100 max-sm:overflow-x-auto">
+  <div class="mb-8" x-tabs>
+    <div x-tabs:tablist class="mb-6 flex border-b-2 border-neutral-100 max-sm:overflow-x-auto">
       @foreach (collect($tabs)->where('enabled', true) as $tab)
         <button
-          class="hover:text-primary cursor-pointer px-5 py-3 font-medium"
-          x-bind:class="{ 'border-b-4 border-primary text-primary -mb-px font-semibold': activeTab === '{{ $tab['name'] }}' }"
-          x-on:click="activeTab = '{{ $tab['name'] }}'"
+          x-tabs:tab="'{{ $tab['name'] }}'"
+          class="hover:text-primary cursor-pointer px-5 py-3 font-medium focus:outline-none"
+          x-bind:class="{ 'border-b-4 border-primary text-primary -mb-px font-semibold': $tab.isSelected }"
         >
           {{ $tab['title'] }}
         </button>
@@ -65,7 +65,7 @@
     </div>
 
     <!-- Information Tab -->
-    <div id="information" x-show="activeTab === 'information'">
+    <div x-tabs:panel="'information'">
       <div class="my-4 flex gap-4 sm:hidden">
         @if ($order->canReorder() && core()->getConfigData('sales.order_settings.reorder.shop'))
           <x-shop::ui.button
@@ -288,7 +288,7 @@
 
     <!-- Invoices Tab -->
     @if ($order->invoices->count())
-      <div id="invoices" x-show="activeTab === 'invoices'">
+      <div x-tabs:panel="'invoices'">
         @foreach ($order->invoices as $invoice)
           <div class="bg-background mb-6 overflow-hidden rounded-lg shadow">
             <div class="flex items-center justify-between gap-4 border-b border-neutral-100 px-4 py-3">
@@ -491,7 +491,7 @@
 
     <!-- Shipments Tab -->
     @if ($order->shipments->count())
-      <div id="shipments" x-show="activeTab === 'shipments'">
+      <div x-tabs:panel="'shipments'">
         @foreach ($order->shipments as $shipment)
           <div class="bg-background mb-6 overflow-hidden rounded-lg shadow">
             <div class="flex items-center justify-between gap-4 border-b border-neutral-100 px-4 py-3">
@@ -577,7 +577,7 @@
 
     <!-- Refunds Tab -->
     @if ($order->refunds->count())
-      <div id="refunds" x-show="activeTab === 'refunds'">
+      <div x-tabs:panel="'refunds'">
         @foreach ($order->refunds as $refund)
           <div class="bg-background mb-6 overflow-hidden rounded-lg shadow">
             <div class="flex items-center justify-between gap-4 border-b border-neutral-100 px-4 py-3">

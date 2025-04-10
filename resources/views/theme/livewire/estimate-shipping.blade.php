@@ -1,5 +1,5 @@
-<x-shop::accordion :defaultOpen="[]" {{ $attributes }}>
-  <x-shop::accordion.item title="Estimate shipping" class="bg-surface border-surface-alt-600 rounded-lg border px-3 py-1">
+<x-shop::ui.accordion {{ $attributes }}>
+  <x-shop::ui.accordion.item title="Estimate shipping" class="bg-surface border-surface-alt-600 rounded-lg !border !border-solid !py-1 px-3">
     <form class="pb-2">
       @csrf
       <p class="mb-4 text-sm">
@@ -121,5 +121,5 @@
         @endif
       </div>
     </form>
-  </x-shop::accordion.item>
-</x-shop::accordion>
+  </x-shop::ui.accordion.item>
+</x-shop::ui.accordion>

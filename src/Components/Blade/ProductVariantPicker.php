@@ -24,7 +24,7 @@ class ProductVariantPicker extends Component
         $variantHelper = app(ConfigurableOption::class);
         $variantConfig = $variantHelper->getConfigurationConfig($this->product);
 
-        return view('shop::components.products.variant-picker', [
+        return view('shop::components.product.variant-picker', [
             'variantAttributes' => $variantConfig['attributes'],
             'variantPrices' => $variantConfig['variant_prices'],
             'variantImages' => $variantConfig['variant_images'],

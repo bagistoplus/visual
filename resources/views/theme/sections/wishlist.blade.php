@@ -1,4 +1,4 @@
-<div class="rounded-lg bg-white shadow-sm" x-data>
+<div class="bg-background rounded-lg shadow-sm" x-data>
   <div class="border-b border-neutral-100 p-4">
     <div class="flex items-center justify-between">
       <h1 class="font-serif text-2xl text-neutral-700">
@@ -60,7 +60,7 @@
             </div>
 
             <div class="mt-2 hidden items-center gap-4 sm:flex">
-              <x-shop::quantity-selector label="" x-on:change="quantity = $event.detail" />
+              <x-shop::quantity-selector :min="1" x-on:change="quantity = $event.detail" />
               @if (core()->getConfigData('sales.checkout.shopping_cart.cart_page'))
                 <x-shop::wishlist.move-to-cart-btn :id="$item->id" :product-id="$item->product->id" />
               @endif
@@ -68,7 +68,7 @@
           </div>
         </div>
         <div class="mt flex items-center gap-4 sm:hidden">
-          <x-shop::quantity-selector label="" x-on:change="quantity = $event.detail" />
+          <x-shop::quantity-selector :min="1" x-on:change="quantity = $event.detail" />
           @if (core()->getConfigData('sales.checkout.shopping_cart.cart_page'))
             <x-shop::wishlist.move-to-cart-btn :id="$item->id" :product-id="$item->product->id" />
           @endif

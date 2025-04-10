@@ -20,7 +20,7 @@
     {!! visual_clear_inline_styles($product->short_description) !!}
   </div>
 @elseif($block->type === 'quantity-selector' && $showQuantitySelector)
-  <x-shop::quantity-selector x-on:change="$wire.quantity = $event.detail" />
+  <x-shop::quantity-selector label="{{ trans('Quantity') }}" x-on:change="$wire.quantity = $event.detail" />
 @elseif($block->type === 'buy-buttons')
   <x-shop::product.buy-buttons :product="$product" :showBuyNowButton="$block->settings->enable_buy_now" />
 @elseif($block->type === 'description')

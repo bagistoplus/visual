@@ -7,7 +7,6 @@
           Livewire.hook('morph', () => {
               this.$nextTick(() => {
                   const element = document.querySelector('#' + this.$wire.currentStep);
-                  console.log(element);
                   if (element) {
                       element.scrollIntoView({ behavior: 'smooth' });
                   }

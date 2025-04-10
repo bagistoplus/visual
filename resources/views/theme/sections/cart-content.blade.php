@@ -28,6 +28,7 @@
         <div class="flex justify-between border-b pb-2">
           <div class="flex items-center gap-4">
             <input
+              name="allSelected"
               type="checkbox"
               x-model="allSelected"
               x-on:click="toggleAll"
@@ -51,6 +52,7 @@
               type="checkbox"
               value="{{ $item->id }}"
               class="mt-8"
+              name="selected[]"
               wire:model.number="itemsSelected"
               x-model.number="selected"
               @change="allSelected = (selected.length === items.length)"
@@ -101,7 +103,7 @@
               </div>
               <div class="mt-2 flex items-center">
                 <x-shop::quantity-selector
-                  label=""
+                  :min="1"
                   value="{{ $item->quantity }}"
                   x-on:change="$wire.updateItemQuantity({{ $item->id }}, $event.detail)"
                 />

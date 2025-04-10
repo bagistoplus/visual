@@ -1,17 +1,16 @@
 @props(['address' => null])
 
+@php
+  $props = [
+      'selectedCountry' => old('country', optional($address)->country),
+      'statesByCountry' => core()->groupedStatesByCountries(),
+  ];
+@endphp
 <form
   {{ $attributes }}
   method="POST"
-  x-data="{
-      selectedCountry: @js(old('country', optional($address)->country)),
-      countryStates: @js(core()->groupedStatesByCountries()),
-
-      get haveStates() {
-          return this.countryStates[this.selectedCountry] &&
-              this.countryStates[this.selectedCountry].length > 0
-      }
-  }"
+  x-data
+  x-address-form="@js($props)"
 >
   @csrf
   @isset($address)
@@ -97,9 +96,8 @@
     <x-shop::ui.form.select
       name="country"
       :required="core()->isCountryRequired()"
-      :value="$country"
       :label="trans('shop::app.customers.account.addresses.create.country')"
-      x-model="selectedCountry"
+      x-address-form:country=""
     >
       <option
         value=""
@@ -116,20 +114,20 @@
       @endforeach
     </x-shop::ui.form.select>
 
-    <template x-if="haveStates">
+    <template x-if="$addressForm.haveStates">
       <x-shop::ui.form.select
         name="state"
         :required="core()->isCountryRequired()"
         :value="$state"
         :label="trans('shop::app.customers.account.addresses.create.state')"
       >
-        <template x-for="(state, index) in countryStates[selectedCountry]">
+        <template x-for="(state, index) in $addressForm.states">
           <option x-bind:value="state.code" x-text="state.default_name"></option>
         </template>
       </x-shop::ui.form.select>
     </template>
 
-    <template x-if="!haveStates">
+    <template x-if="!$addressForm.haveStates">
       <x-shop::ui.form.input
         required
         type="text"

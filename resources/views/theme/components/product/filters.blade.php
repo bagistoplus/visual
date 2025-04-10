@@ -13,13 +13,16 @@
     </div>
   @endif
 
-  <x-shop::accordion :defaultOpen="$this->availableFilters->keys()">
+  <x-shop::ui.accordion :value="$this->availableFilters->pluck('id')" multiple>
     @foreach ($this->availableFilters as $filter)
-      <x-shop::accordion.item :title="$filter->name">
+      <x-shop::ui.accordion.item :id="$filter->id" :title="$filter->name">
         @if ($filter->type === 'price')
           <div class="py-3 pr-3">
-            <x-shop::range-input :max="number_format($maxPrice, 2)"
-              @range-change.debounce="$wire.setFilter('{{ $filter->code }}', $event.detail)"
+            <x-shop::range-input
+              :gap="16"
+              :max="intval($maxPrice)"
+              :value="[0, intval($maxPrice)]"
+              x-on:change.debounce="$wire.setFilter('{{ $filter->code }}', $event.detail)"
             />
           </div>
         @else
@@ -37,7 +40,7 @@
             @endforeach
           </div>
         @endif
-      </x-shop::accordion.item>
+      </x-shop::ui.accordion.item>
     @endforeach
-  </x-shop::accordion>
+  </x-shop::ui.accordion>
 </div>

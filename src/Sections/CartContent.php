@@ -19,9 +19,12 @@ class CartContent extends LivewireSection
 
     public function updateItemQuantity($itemId, $quantity)
     {
-        $this->updateCartItemQuantity($itemId, $quantity);
-
-        $this->dispatch(Events::CART_UPDATED);
+        try {
+            $this->updateCartItemQuantity($itemId, $quantity);
+            $this->dispatch(Events::CART_UPDATED);
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+        }
     }
 
     public function removeItem($itemId)
