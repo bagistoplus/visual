@@ -20,8 +20,8 @@ class InterceptSessionFlash extends ComponentHook
         $alreadyDispatched = request()->attributes->get(self::DISPATCHED_FLASH_KEY, []);
 
         $messages = collect($flashTypes)
-            ->filter(fn($type) => session()->has($type))
-            ->mapWithKeys(fn($type) => [$type => session()->get($type)]);
+            ->filter(fn ($type) => session()->has($type))
+            ->mapWithKeys(fn ($type) => [$type => session()->get($type)]);
 
         $messages->each(function ($message, $type) use (&$alreadyDispatched) {
             $toast = base64_encode(json_encode(compact('type', 'message')));

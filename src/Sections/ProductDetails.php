@@ -11,7 +11,7 @@ class ProductDetails extends LivewireSection
 {
     public static string $view = 'shop::sections.product-details';
 
-    public static string $schema = __DIR__ . '/../../resources/schemas/product-details.json';
+    public static string $schema = __DIR__.'/../../resources/schemas/product-details.json';
 
     public int $quantity = 1;
 
@@ -44,7 +44,7 @@ class ProductDetails extends LivewireSection
         }
 
         $this->groupedProductQuantities = $product->grouped_products
-            ->mapWithKeys(fn($groupedProduct) => [$groupedProduct->associated_product->id => $groupedProduct->qty])
+            ->mapWithKeys(fn ($groupedProduct) => [$groupedProduct->associated_product->id => $groupedProduct->qty])
             ->all();
     }
 
@@ -61,20 +61,20 @@ class ProductDetails extends LivewireSection
         $bundleConfig = app('Webkul\Product\Helpers\BundleOption')->getBundleConfig($product);
 
         $this->bundleProductOptions = collect($bundleConfig['options'])
-            ->mapWithKeys(fn($bundleOption) => [
+            ->mapWithKeys(fn ($bundleOption) => [
                 $bundleOption['id'] => collect($bundleOption['products'])
-                    ->filter(fn($p) => $p['is_default'])
-                    ->map(fn($p) => $p['id'])
+                    ->filter(fn ($p) => $p['is_default'])
+                    ->map(fn ($p) => $p['id'])
                     ->all(),
             ])
             ->all();
 
         $this->bundleProductQuantities = collect($bundleConfig['options'])
-            ->filter(fn($bundleOption) => in_array($bundleOption['type'], ['select', 'radio']))
-            ->mapWithKeys(fn($bundleOption) => [
+            ->filter(fn ($bundleOption) => in_array($bundleOption['type'], ['select', 'radio']))
+            ->mapWithKeys(fn ($bundleOption) => [
                 $bundleOption['id'] => collect($bundleOption['products'])
-                    ->filter(fn($p) => $p['is_default'])
-                    ->map(fn($p) => $p['qty'])
+                    ->filter(fn ($p) => $p['is_default'])
+                    ->map(fn ($p) => $p['qty'])
                     ->first(),
             ])
             ->all();
@@ -150,7 +150,7 @@ class ProductDetails extends LivewireSection
     {
         $images = product_image()->getGalleryImages($this->context['product']);
 
-        return array_map(fn($image) => array_merge($image, ['type' => 'image']), $images);
+        return array_map(fn ($image) => array_merge($image, ['type' => 'image']), $images);
     }
 
     /**
@@ -169,7 +169,7 @@ class ProductDetails extends LivewireSection
     public function getBlocksOnRight(): array
     {
         return collect($this->section->blocks)
-            ->reject(fn($block) => $block->settings->position === 'under_gallery')
+            ->reject(fn ($block) => $block->settings->position === 'under_gallery')
             ->all();
     }
 
@@ -181,7 +181,7 @@ class ProductDetails extends LivewireSection
     public function getBlocksOnBottom()
     {
         return collect($this->section->blocks)
-            ->filter(fn($block) => $block->settings->position === 'under_gallery');
+            ->filter(fn ($block) => $block->settings->position === 'under_gallery');
     }
 
     /**
