@@ -41,6 +41,7 @@ abstract class ThemeServiceProvider extends ServiceProvider
     protected function registerThemeConfig()
     {
         $config = require $this->getThemeConfigPath();
+
         $config['visual_theme'] = true;
         $config['settings_schema'] = $this->loadSettingsSchema();
 

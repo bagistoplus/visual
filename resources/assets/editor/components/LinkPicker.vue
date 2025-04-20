@@ -153,21 +153,21 @@
             @click.prevent="activePanel = 'categories'"
           >
             <i-bi-tags class="w-4 h-4 transform rotate-90" />
-            Categories
+            {{ $t('Categories') }}
           </button>
           <button
             class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-gray-200"
             @click.prevent="activePanel = 'products'"
           >
             <i-bi-tag class="w-4 h-4 transform rotate-90" />
-            Products
+            {{ $t('Products') }}
           </button>
           <button
             class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-gray-200"
             @click.prevent="activePanel = 'cms_pages'"
           >
             <i-mdi-file-document-outline class="w-4 h-4 flex-none text-gray-700" />
-            Cms Pages
+            {{ $t('Cms Pages') }}
           </button>
         </div>
         <div
@@ -179,7 +179,7 @@
             @click="activePanel = ''"
           >
             <i-heroicons-arrow-left class="w-4 h-4" />
-            Back
+            {{ $t('Back') }}
           </button>
           <CategoryListbox
             v-if="activePanel === 'categories'"

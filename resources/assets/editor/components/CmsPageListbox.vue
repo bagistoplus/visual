@@ -34,7 +34,7 @@
         v-model="search"
         type="text"
         class="focus:outline-none text-gray-600"
-        placeholder="Search page..."
+        :placeholder="$t('Search page')"
         @input="onSearch"
       >
     </div>
@@ -56,7 +56,7 @@
         >
           <i-mdi-file-document-outline class="w-4 h-4 flex-none text-gray-700" />
           <span class="truncate flex-1 w-0">
-            {{ page.id }} {{ page.page_title }}
+            {{ page.page_title }}
           </span>
         </a>
       </div>

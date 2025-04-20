@@ -29,7 +29,7 @@
         >
           <i-heroicons-arrow-left class="inline w-4" />
         </button>
-        <span class="ml-2 truncate">Theme settings</span>
+        <span class="ml-2 truncate">{{ $t('Theme settings') }}</span>
       </div>
     </header>
     <section class="flex-1 overflow-y-auto">

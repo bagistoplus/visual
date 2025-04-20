@@ -6,8 +6,9 @@ import debounce from "lodash/debounce";
 import { v4 as uuidv4 } from "uuid";
 import { History } from 'stateshot';
 
-import type { Block, Category, CmsPage, Image, Product, Section, Setting, SettingsSchema, ThemeData } from "./types";
+import type { Block, Category, CmsPage, Image, Product, Section, Setting, SettingsSchema, Template, ThemeData } from "./types";
 import { useFetchCategories, useFetchCmsPages, useFetchImages, useFetchProducts, usePublishTheme } from './api';
+import { get } from 'sortablejs';
 
 interface Models {
   categories: Record<number, Category>;
@@ -21,6 +22,7 @@ export const useStore = defineStore('main', () => {
   const nprogress = useNProgress();
   const history = new History();
 
+  const templates = ref<Template[]>([]);
   const settingsSchema = ref<SettingsSchema>([]);
   const usedColors = reactive<string[]>([]);
   const themeData = reactive<ThemeData>({
@@ -177,6 +179,10 @@ export const useStore = defineStore('main', () => {
 
     Object.assign(themeData, data);
     history.pushSync(JSON.parse(JSON.stringify(themeData)));
+  }
+
+  function setTemplates(tpls: Template[]) {
+    templates.value = tpls;
   }
 
   function setAvailableSections(sections: Record<string, Section>) {
@@ -431,6 +437,7 @@ export const useStore = defineStore('main', () => {
   return {
     images,
     themeData,
+    templates,
     usedColors,
     availableSections,
     settingsSchema,
@@ -451,6 +458,7 @@ export const useStore = defineStore('main', () => {
     publishTheme,
 
     setThemeData,
+    setTemplates,
     setAvailableSections,
     setPreviewIframe,
     setSettingsSchema,

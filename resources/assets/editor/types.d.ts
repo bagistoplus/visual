@@ -16,6 +16,8 @@ export interface WindowThemeEditor {
     listImages: string;
     getCmsPages: string;
   };
+  messages: Record<string, any>,
+  editorLocale: string;
 }
 
 interface Template {

@@ -50,7 +50,7 @@
             <i-heroicons-x-mark />
           </button>
         </template>
-        <span v-else>Select product</span>
+        <span v-else>{{ $t('Select product') }}</span>
       </div>
     </Popover.Trigger>
     <Popover.Positioner class="w-[var(--reference-width)] !z-10">

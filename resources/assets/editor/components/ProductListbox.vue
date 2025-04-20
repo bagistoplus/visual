@@ -26,7 +26,7 @@
       <i-heroicons-magnifying-glass class="w-4 h-4 flex-none" />
       <input
         class="flex-1 w-0 focus:outline-none text-gray-600 text-sm"
-        placeholder="Search product"
+        :placeholder="$t('Search product')"
         v-model="search"
         @input="onSearch"
       />

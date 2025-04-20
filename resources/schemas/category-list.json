@@ -1,0 +1,67 @@
+{
+  "$schema": "https://github.com/BagistoPlus/visual/blob/main/resources/schemas/section.schema.json",
+  "name": "visual::sections.category-list.name",
+  "description": "visual::sections.category-list.description",
+  "max_blocks": 15,
+  "settings": [
+    {
+      "id": "heading",
+      "type": "text",
+      "label": "visual::sections.category-list.settings.heading_label",
+      "default": "visual::sections.category-list.settings.heading_default"
+    },
+    {
+      "id": "heading_size",
+      "type": "select",
+      "label": "visual::sections.category-list.settings.heading_size_label",
+      "default": "medium",
+      "options": [
+        {
+          "label": "Small",
+          "value": "small"
+        },
+        {
+          "label": "Medium",
+          "value": "medium"
+        },
+        {
+          "label": "Large",
+          "value": "large"
+        }
+      ]
+    },
+    {
+      "id": "columns_desktop",
+      "type": "range",
+      "label": "visual::sections.category-list.settings.columns_desktop_label",
+      "default": 2,
+      "min": 1,
+      "max": 6
+    },
+    {
+      "id": "columns_mobile",
+      "type": "select",
+      "label": "visual::sections.category-list.settings.columns_mobile_label",
+      "default": 1,
+      "options": [
+        { "label": "1", "value": 1 },
+        { "label": "2", "value": 2 }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "visual::sections.category-list.blocks.category.name",
+      "limit": 15,
+      "settings": [
+        {
+          "id": "category",
+          "type": "category",
+          "label": "visual::sections.category-list.blocks.category.settings.category_label",
+          "default": null
+        }
+      ]
+    }
+  ]
+}

@@ -71,7 +71,7 @@
       v-if="static && sections.length === 0"
       class="text-sm px-3"
     >
-      No sections
+      {{ $t('No sections') }}
     </p>
 
     <div
@@ -83,7 +83,7 @@
         @click="($event: any) => emit('addSection', $event)"
       >
         <i-heroicons-plus-circle class="w-4 h-4 inline mr-1" />
-        Add Section
+        {{ $t('Add Section') }}
       </button>
     </div>
   </div>

@@ -3,10 +3,13 @@
 namespace BagistoPlus\Visual\Theme;
 
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
+use BagistoPlus\Visual\Sections\Concerns\SettingsValues;
 use Webkul\Theme\Theme as BagistoTheme;
 
 class Theme extends BagistoTheme
 {
+    public SettingsValues $settings;
+
     public static function make(array $attributes): self
     {
         return new self(

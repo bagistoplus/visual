@@ -72,8 +72,10 @@
       </button>
 
       <div class="flex-1 px-4 border-l border-r">
-        <h1 class="font-medium">App title</h1>
-        <h2 class="text-gray-700">Theme name</h2>
+        <h1 class="font-medium">{{ $t('title') }}</h1>
+        <h2 class="text-gray-700">
+          {{ store.themeData.theme }}
+        </h2>
       </div>
     </div>
     <div class="flex flex-1 items-center justify-between">
@@ -111,8 +113,8 @@
 
         <div class="flex items-center gap-1">
           <button
-            title="Undo"
-            aria-label="Undo"
+            :title="$t('Undo')"
+            :aria-label="$t('Undo')"
             type="button"
             class="rounded px-2 py-1 hover:bg-gray-200"
             :class="{ 'pointer-events-none text-gray-300': !canUndoHistory }"
@@ -121,8 +123,8 @@
             <i-heroicons-arrow-uturn-left class="inline w-4 h-4" />
           </button>
           <button
-            title="Redo"
-            aria-label="Redo"
+            :title="$t('Redo')"
+            :aria-label="$t('Redo')"
             type="button"
             class="rounded px-2 hover:bg-gray-200 py-1"
             :class="{ 'pointer-events-none text-gray-300': !canRedoHistory }"
@@ -137,7 +139,7 @@
           :disabled="!canUndoHistory"
           @click="onPublishClick"
         >
-          Publish
+          {{ $t('Publish') }}
         </button>
       </div>
     </div>
@@ -150,22 +152,24 @@
         <Dialog.Positioner class="flex fixed inset-0 items-center justify-center">
           <Dialog.Content class="bg-white shadow rounded-md flex flex-col w-full max-w-sm overflow-hidden">
             <div class="flex flex-col gap-8 p-6">
-              <Dialog.Title class="text-lg font-semibold">Publish edits ?</Dialog.Title>
+              <Dialog.Title class="text-lg font-semibold">
+                {{ $t('Publish edits ?') }}
+              </Dialog.Title>
               <Dialog.Description>
-                Your changes are being saved automatically, so you won't lose anything!<br><br>
-                Only publish when you're ready for your edits to go live on the storefront.
+                {{ $t('publish_warning_line1') }}<br><br>
+                {{ $t('publish_warning_line2') }}
               </Dialog.Description>
 
               <Checkbox
                 v-model="dontAskNextTime"
-                label="Don't ask next time"
+                :label="$t('Don\'t ask next time')"
               />
               <div class="flex gap-6">
                 <Dialog.CloseTrigger class="flex-1 border rounded py-1 outline-none hover:bg-gray-100 focus:ring focus:ring-gray-700">Cancel</Dialog.CloseTrigger>
                 <button
                   class="flex-1 border rounded bg-gray-900 hover:bg-gray-950 text-white"
                   @click="onConfirmPublish"
-                >Publish</button>
+                >{{ $t('Publish') }}</button>
               </div>
             </div>
           </Dialog.Content>

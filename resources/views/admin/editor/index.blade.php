@@ -9,9 +9,17 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @if ($favicon = core()->getConfigData('general.design.admin_logo.favicon', core()->getCurrentChannelCode()))
-      <link rel="icon" sizes="16x16" href="{{ \Illuminate\Support\Facades\Storage::url($favicon) }}" />
+      <link
+        rel="icon"
+        sizes="16x16"
+        href="{{ \Illuminate\Support\Facades\Storage::url($favicon) }}"
+      />
     @else
-      <link rel="icon" sizes="16x16" href="{{ asset('vendor/webkul/ui/assets/images/favicon.ico') }}" />
+      <link
+        rel="icon"
+        sizes="16x16"
+        href="{{ asset('vendor/webkul/ui/assets/images/favicon.ico') }}"
+      />
     @endif
 
     <script type="text/javascript">
@@ -22,8 +30,9 @@
         channels: @json($channels),
         defaultChannel: "{{ $defaultChannel }}",
         availableSections: @json($sections),
-        templates: @json($templates),
-        routes: @json($routes)
+        routes: @json($routes),
+        messages: @json($messages),
+        editorLocale: "{{ $editorLocale }}"
       }
     </script>
 

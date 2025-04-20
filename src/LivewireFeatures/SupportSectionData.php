@@ -5,16 +5,10 @@ namespace BagistoPlus\Visual\LivewireFeatures;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Sections\LivewireSection;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Cache;
 use Livewire\ComponentHook;
 
 class SupportSectionData extends ComponentHook
 {
-    protected function getSectionCacheKey(): string
-    {
-        return session()->getId().':'.$this->component->visualId;
-    }
-
     public function mount($params)
     {
         if (! ($this->component instanceof LivewireSection)) {
@@ -22,13 +16,10 @@ class SupportSectionData extends ComponentHook
         }
 
         $sectionData = Visual::themeDataCollector()->getSectionData($this->component->visualId);
-        $viewData = $params['viewData'] ?? [];
-        $viewData['section'] = $sectionData;
+        $context = collect($params['viewData'])->except(['errors', 'theme', 'cart'])->all();
+        $context['section'] = $sectionData;
 
-        $this->component->setContext($viewData);
-        $this->component->setSection($sectionData);
-
-        Cache::put($this->getSectionCacheKey(), $viewData, now()->addHours(1));
+        $this->component->setContext($context);
     }
 
     public function hydrate()
@@ -37,12 +28,7 @@ class SupportSectionData extends ComponentHook
             return;
         }
 
-        $viewData = Cache::get($this->getSectionCacheKey());
-
-        if ($viewData) {
-            $this->component->setContext($viewData);
-            $this->component->setSection($viewData['section']);
-        }
+        $this->component->setSection($this->component->context['section']);
     }
 
     public function render($view)

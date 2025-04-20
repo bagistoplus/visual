@@ -88,42 +88,42 @@
                     class="text-2xl flex items-center px-3 py-2 gap-2 cursor-pointer font-bold hover:bg-gray-100"
                     @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
                   >
-                    Heading 1
+                    {{ $t('Heading 1') }}
                   </Menu.Item>
                   <Menu.Item
                     value="h2"
                     class="text-xl flex items-center px-3 py-2 gap-2 font-semibold cursor-pointer hover:bg-gray-100"
                     @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
                   >
-                    Heading 2
+                    {{ $t('Heading 2') }}
                   </Menu.Item>
                   <Menu.Item
                     value="h2"
                     class="text-lg flex items-center px-3 py-2 gap-2 font-medium cursor-pointer hover:bg-gray-100"
                     @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
                   >
-                    Heading 3
+                    {{ $t('Heading 3') }}
                   </Menu.Item>
                   <Menu.Item
                     value="h2"
                     class="text-md flex items-center px-3 py-2 gap-2 font-medium cursor-pointer hover:bg-gray-100"
                     @click="editor.chain().focus().toggleHeading({ level: 4 }).run()"
                   >
-                    Heading 4
+                    {{ $t('Heading 4') }}
                   </Menu.Item>
                   <Menu.Item
                     value="h2"
                     class="text-sm flex items-center px-3 py-2 gap-2 font-medium cursor-pointer hover:bg-gray-100"
                     @click="editor.chain().focus().toggleHeading({ level: 5 }).run()"
                   >
-                    Heading 5
+                    {{ $t('Heading 5') }}
                   </Menu.Item>
                   <Menu.Item
                     value="h2"
                     class="text-xs flex items-center px-3 py-2 gap-2 font-medium cursor-pointer hover:bg-gray-100"
                     @click="editor.chain().focus().toggleHeading({ level: 6 }).run()"
                   >
-                    Heading 6
+                    {{ $t('Heading 6') }}
                   </Menu.Item>
                 </Menu.ItemGroup>
               </Menu.Content>

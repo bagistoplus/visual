@@ -110,7 +110,7 @@
           value="blocks"
         >
           <Accordion.ItemTrigger>
-            Blocks
+            {{ $t('Blocks') }}
             <Accordion.ItemIndicator>
               <i-heroicons-chevron-down />
             </Accordion.ItemIndicator>
@@ -133,7 +133,7 @@
                 class="w-full text-sm text-blue-600 rounded-lg cursor-pointer outline-0 inline-flex items-center gap-2 px-2 py-1 hover:bg-gray-200 focus:ring-1 focus:ring-gray-700"
               >
                 <i-heroicons-plus-circle class="w-4 h-4 inline mr-1" />
-                Add Block
+                {{ $t('Add Block') }}
               </Menu.Trigger>
               <Menu.Positioner class="w-[var(--reference-width)] !z-10">
                 <Menu.Content class="flex flex-col outline-0 gap-1 p-1 bg-white shadow border rounded-lg data-[state=open]:animate-fade-in">
@@ -175,7 +175,10 @@
       </Accordion.Root>
 
       <template v-if="section.settings.length > 0"></template>
-      <p v-else>{{ "This section has no configuration" }}</p>
+      <p
+        v-else
+        class="p-2 text-sm"
+      >{{ $t("This section has no configuration") }}</p>
     </section>
 
     <footer
@@ -187,7 +190,7 @@
         @click="onRemoveSection"
       >
         <i-heroicons-trash class="inline mr-2 w-4" />
-        Remove section
+        {{ $t('Remove section') }}
       </button>
     </footer>
   </div>

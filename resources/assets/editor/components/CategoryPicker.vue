@@ -45,7 +45,7 @@
             <i-heroicons-x-mark />
           </button>
         </template>
-        <span v-else>Select category</span>
+        <span v-else>{{ $t('Select category') }}</span>
       </div>
     </Popover.Trigger>
     <Popover.Positioner class="w-[var(--reference-width)] !z-10">

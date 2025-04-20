@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/BagistoPlus/visual/blob/main/resources/schemas/section.schema.json",
+  "name": "visual::sections.newsletter.name",
+  "description": "visual::sections.newsletter.description",
+  "settings": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "visual::sections.newsletter.settings.title_label",
+      "default": "visual::sections.newsletter.settings.title_default"
+    },
+    {
+      "id": "description",
+      "type": "richtext",
+      "label": "visual::sections.newsletter.settings.description_label",
+      "default": "visual::sections.newsletter.settings.description_default"
+    },
+    {
+      "type": "header",
+      "label": "visual::sections.newsletter.settings.custom_design_label"
+    },
+    {
+      "id": "background_color",
+      "type": "color",
+      "label": "visual::sections.newsletter.settings.background_color_label",
+      "default": "#4f46e5"
+    },
+    {
+      "id": "text_color",
+      "type": "color",
+      "label": "visual::sections.newsletter.settings.text_color_label",
+      "default": "#ffffff"
+    },
+    {
+      "id": "button_color",
+      "type": "color",
+      "label": "visual::sections.newsletter.settings.button_color_label",
+      "default": "#6366f1"
+    },
+    {
+      "id": "button_text_color",
+      "type": "color",
+      "label": "visual::sections.newsletter.settings.button_text_color_label",
+      "default": "#ffffff"
+    }
+  ]
+}

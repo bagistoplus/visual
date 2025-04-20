@@ -2,103 +2,170 @@
 
 namespace BagistoPlus\Visual\Providers;
 
+use BagistoPlus\Visual\Components\Livewire\AddToCartButton;
+use BagistoPlus\Visual\Components\Livewire\AddToCompareButton;
+use BagistoPlus\Visual\Components\Livewire\AddToWishlistButton;
+use BagistoPlus\Visual\Components\Livewire\CartCouponForm;
+use BagistoPlus\Visual\Components\Livewire\CartPreview;
+use BagistoPlus\Visual\Components\Livewire\EstimateShipping;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
+use BagistoPlus\Visual\LivewireFeatures\AddressDataSynth;
+use BagistoPlus\Visual\LivewireFeatures\SectionDataSynth;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
-use BagistoPlus\Visual\Sections\AnnouncementBar;
-use BagistoPlus\Visual\Sections\LiveCounter;
+use BagistoPlus\Visual\Sections;
 use BagistoPlus\Visual\Sections\SectionRepository;
-use BagistoPlus\Visual\Support\Template;
 use BagistoPlus\Visual\Support\UrlGenerator;
+use BagistoPlus\Visual\TemplateRegistrar;
 use BagistoPlus\Visual\ThemeDataCollector;
 use BagistoPlus\Visual\ThemePathsResolver;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\View\DynamicComponent;
 use Livewire\Livewire;
-use Webkul\Category\Repositories\CategoryRepository;
-use Webkul\CMS\Repositories\PageRepository;
+use Webkul\Category\Models\Category;
 use Webkul\Installer\Http\Middleware\Locale;
-use Webkul\Product\Repositories\ProductRepository;
+use Webkul\Product\Models\Product;
 use Webkul\Shop\Http\Middleware\Currency;
+use Webkul\Theme\ViewRenderEventManager;
 
 class CoreServiceProvider extends ServiceProvider
 {
-    public function boot()
+    /**
+     * The list of sections to be registered.
+     */
+    protected static array $sections = [
+        Sections\AnnouncementBar::class,
+        Sections\Header::class,
+        Sections\Footer::class,
+        Sections\Hero::class,
+        Sections\CategoryList::class,
+        Sections\FeaturedProducts::class,
+        Sections\Newsletter::class,
+        Sections\Breadcrumbs::class,
+        Sections\CategoryPage::class,
+        Sections\SearchResult::class,
+        Sections\ProductDetails::class,
+        Sections\CartContent::class,
+        Sections\Checkout::class,
+        Sections\CheckoutSuccess::class,
+        Sections\LoginForm::class,
+        Sections\RegisterForm::class,
+        Sections\ErrorPage::class,
+        Sections\ContactForm::class,
+        Sections\Compare::class,
+        Sections\CmsPage::class,
+
+        Sections\Profile::class,
+        Sections\ProfileForm::class,
+        Sections\CustomerAddresses::class,
+        Sections\CustomerAddAddress::class,
+        Sections\CustomerEditAddress::class,
+        Sections\CustomerOrders::class,
+        Sections\CustomerOrderDetails::class,
+        Sections\Downloadables::class,
+        Sections\CustomerReviews::class,
+        Sections\Wishlist::class,
+    ];
+
+    /**
+     * The list of Livewire components to be registered.
+     */
+    protected static array $livewireComponents = [
+        'cart-preview' => CartPreview::class,
+        'cart-coupon-form' => CartCouponForm::class,
+        'add-to-cart-button' => AddToCartButton::class,
+        'add-to-wishlist-button' => AddToWishlistButton::class,
+        'add-to-compare-button' => AddToCompareButton::class,
+        'estimate-shipping' => EstimateShipping::class,
+    ];
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
     {
-        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
-        $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'visual');
-
+        $this->bootViewsAndTranslations();
+        $this->bootViewEventListeners();
+        $this->bootBladeComponents();
         $this->bootMiddlewares();
-        $this->bootMiddlewaresForLivewire();
-
-        Visual::registerSection(AnnouncementBar::class, 'visual');
-        Visual::registerSection(LiveCounter::class, 'visual');
+        $this->bootLivewireMiddlewares();
+        $this->bootLivewireComponents();
+        $this->bootVisualSections();
+        $this->bootBladeIcons();
+        $this->bootMorphMap();
+        $this->bootLivewirePropertySynthesizer();
 
         $this->app->booted(function (Application $app) {
             if (! $app->runningInConsole()) {
                 Route::getRoutes()->refreshNameLookups();
-                $this->registerTemplates();
+                $this->bootTemplates();
             }
         });
 
         if ($this->app->runningInConsole()) {
-            $this->publishAssets();
+            $this->bootPublishAssets();
         }
     }
 
-    public function register()
+    /**
+     * Register any application services.
+     */
+    public function register(): void
     {
         $this->registerConfigs();
-
-        $this->app->singleton(SectionRepository::class, fn () => new SectionRepository);
-        $this->app->singleton(ThemeDataCollector::class, function (Application $app) {
-            return new ThemeDataCollector(
-                $app->get(ThemePathsResolver::class),
-                $app->get('files')
-            );
-        });
-
+        $this->registerSingletons();
         $this->registerCustomUrlGenerator();
     }
 
-    protected function registerConfigs()
-    {
-        $this->mergeConfigFrom(__DIR__.'/../../config/bagisto-visual.php', 'bagisto_visual');
-    }
+    /*
+     * ---------------------------------------------------------
+     * Boot Methods
+     * ---------------------------------------------------------
+     */
 
-    protected function registerCustomUrlGenerator()
+    protected function bootViewsAndTranslations(): void
     {
-        $this->app->bind('url', function ($app) {
-            $routes = $app['router']->getRoutes();
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
+        $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'visual');
 
-            return new UrlGenerator(
-                $routes,
-                $app->rebinding('request', function ($app, $request) {
-                    $app['url']->setRequest($request);
-                }),
-                $app['config']['app.asset_url']
-            );
+        $this->booted(function (Application $app) {
+            // should move to a before middleware that check that our theme is the active theme before adding the namespace
+            $app['view']->prependNamespace('paypal', __DIR__.'/../../resources/views/webkul/paypal');
         });
     }
 
-    protected function publishAssets()
+    protected function bootViewEventListeners()
     {
-        $this->publishes([
-            __DIR__.'/../../public' => public_path('vendor/bagistoplus/visual'),
-        ], ['public', 'bagistoplus-visual-assets']);
+        Event::listen('bagisto.shop.checkout.payment.paypal_smart_button', function (ViewRenderEventManager $event) {
+            if (app('themes')->current()->code !== 'visual-debut') {
+                return;
+            }
+
+            $event->addTemplate('paypal::checkout.onepage.payment-button');
+        });
     }
 
-    protected function bootMiddlewares()
+    protected function bootBladeComponents(): void
+    {
+        Blade::componentNamespace('BagistoPlus\\Visual\\Components\\Blade', 'visual');
+    }
+
+    protected function bootMiddlewares(): void
     {
         $this->app->booted(function () {
-            $router = $this->app[Router::class];
-            $router->aliasMiddleware('theme', UseShopThemeFromRequest::class);
+            $this->app->make(Router::class)
+                ->aliasMiddleware('theme', UseShopThemeFromRequest::class);
         });
     }
 
-    public function bootMiddlewaresForLivewire()
+    protected function bootLivewireMiddlewares(): void
     {
         Livewire::addPersistentMiddleware([
             Locale::class,
@@ -107,108 +174,95 @@ class CoreServiceProvider extends ServiceProvider
         ]);
     }
 
-    protected function registerTemplates()
+    protected function bootLivewireComponents(): void
     {
-        $templates = [
-            new Template(
-                template: 'index',
-                route: 'shop.home.index',
-                label: 'Home page',
-                icon: 'heroicon-o-home',
-                previewUrl: url()->to('/')
-            ),
+        foreach (self::$livewireComponents as $name => $component) {
+            Livewire::component($name, $component);
+        }
+    }
+
+    protected function bootVisualSections(): void
+    {
+        Visual::registerSections(static::$sections, 'visual');
+    }
+
+    protected function bootBladeIcons()
+    {
+        $icons = [
+            'icon-users' => 'lucide-chevron-right ',
         ];
 
-        // add category template if any category exists
+        Blade::component('dynamic-component', DynamicComponent::class);
 
-        $category = app(CategoryRepository::class)
-            ->where('parent_id', app('core')->getCurrentChannel()->root_category_id)
-            ->first();
+        $this->app->booted(function () use ($icons) {
+            foreach ($icons as $alias => $icon) {
+                Blade::component($icon, $alias);
+            }
+        });
+    }
 
-        if ($category !== null) {
-            $templates[] = new Template(
-                template: 'category',
-                route: 'shop.categories.index',
-                label: 'Category Page',
-                icon: 'fluentui-tag-multiple-24-o',
-                previewUrl: $category->url,
+    protected function bootMorphMap(): void
+    {
+        Relation::morphMap([
+            'product' => Product::class,
+            'category' => Category::class,
+        ]);
+    }
+
+    protected function bootLivewirePropertySynthesizer(): void
+    {
+        Livewire::propertySynthesizer(SectionDataSynth::class);
+        Livewire::propertySynthesizer(AddressDataSynth::class);
+    }
+
+    protected function bootPublishAssets(): void
+    {
+        $this->publishes([
+            __DIR__.'/../../public' => public_path('vendor/bagistoplus/visual'),
+        ], ['public', 'bagistoplus-visual-assets']);
+    }
+
+    protected function bootTemplates(): void
+    {
+        if (ThemeEditor::inDesignMode()) {
+            $this->app->make(TemplateRegistrar::class)->registerTemplates();
+        }
+    }
+
+    /*
+     * ---------------------------------------------------------
+     * Register Methods
+     * ---------------------------------------------------------
+     */
+
+    protected function registerConfigs(): void
+    {
+        $this->mergeConfigFrom(__DIR__.'/../../config/bagisto-visual.php', 'bagisto_visual');
+        $this->mergeConfigFrom(__DIR__.'/../../config/svg-iconmap.php', 'bagisto_visual_iconmap');
+    }
+
+    protected function registerSingletons(): void
+    {
+        $this->app->singleton(SectionRepository::class, fn () => new SectionRepository);
+
+        $this->app->singleton(ThemeDataCollector::class, function (Application $app) {
+            return new ThemeDataCollector(
+                $app->get(ThemePathsResolver::class),
+                $app->get('files')
             );
-        }
+        });
+    }
 
-        // add product template if any product exists
+    protected function registerCustomUrlGenerator(): void
+    {
+        $this->app->bind('url', function ($app) {
+            $routes = $app['router']->getRoutes();
 
-        $product = app(ProductRepository::class)->first();
-
-        if ($product !== null && $product->url_key) {
-            $templates[] = new Template(
-                template: 'product',
-                route: 'shop.products.index',
-                label: 'Product Page',
-                icon: 'fluentui-tag-24-o',
-                previewUrl: $category->url,
+            return new UrlGenerator(
+                $routes,
+                $app->rebinding('request', fn ($app, $request) => $app['url']->setRequest($request)),
+                $app['config']['app.asset_url']
             );
-        }
-
-        $templates[] = Template::separator();
-
-        $templates[] = new Template(
-            template: 'cart',
-            route: 'shop.checkout.cart.index',
-            label: 'Cart Page',
-            icon: 'fluentui-cart-24-o',
-            previewUrl: route('shop.checkout.cart.index')
-        );
-
-        $templates[] = new Template(
-            template: 'checkout',
-            route: 'shop.checkout.onepage.index',
-            label: 'Checkout Page',
-            icon: 'fluentui-cart-24-o',
-            previewUrl: route('shop.checkout.onepage.index')
-        );
-
-        $templates[] = new Template(
-            template: 'checkout-success',
-            route: 'shop.checkout.onepage.success',
-            label: 'Checkout success',
-            icon: 'fluentui-cart-24-o',
-            previewUrl: route('shop.checkout.onepage.success')
-        );
-
-        $templates[] = Template::separator();
-
-        $templates[] = new Template(
-            template: 'search',
-            route: 'shop.search.index',
-            label: 'Search results',
-            icon: 'heroicon-o-magnifying-glass',
-            previewUrl: route('shop.search.index')
-        );
-
-        // add cms page template if there is any page
-
-        $page = app(PageRepository::class)->first();
-
-        if ($page !== null) {
-            $templates[] = new Template(
-                template: 'page',
-                route: 'shop.cms.page',
-                label: 'CMS Page',
-                icon: 'heroicon-o-newspaper',
-                previewUrl: route('shop.cms.page', [$page->url_key])
-            );
-        }
-
-        $templates[] = new Template(
-            template: 'contact',
-            route: 'shop.home.contact_us',
-            label: 'Contact us ',
-            icon: 'heroicon-o-phone',
-            previewUrl: route('shop.home.contact_us')
-        );
-
-        foreach ($templates as $template) {
-            ThemeEditor::registerTemplate($template);
-        }
+        });
     }
 }

@@ -1,0 +1,97 @@
+{
+  "$schema": "https://github.com/BagistoPlus/visual/blob/main/resources/schemas/section.schema.json",
+  "name": "visual::sections.header.name",
+  "description": "visual::sections.header.description",
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "visual::sections.header.blocks.logo.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "image",
+          "id": "logo",
+          "label": "visual::sections.header.blocks.logo.settings.logo_image_label"
+        },
+        {
+          "type": "text",
+          "id": "logo_text",
+          "label": "visual::sections.header.blocks.logo.settings.logo_text_label"
+        }
+      ]
+    },
+    {
+      "type": "nav",
+      "name": "visual::sections.header.blocks.nav.name",
+      "limit": 1,
+      "settings": [
+        {"type": "checkbox", "id": "push_to_left", "label": "Push to left", "default": true},
+        {"type": "checkbox", "id": "push_to_right", "label": "Push to right", "default": false}
+      ]
+    },
+    {
+      "type": "currency",
+      "name": "visual::sections.header.blocks.currency.name",
+      "limit": 1,
+      "settings": []
+    },
+    {
+      "type": "locale",
+      "name": "visual::sections.header.blocks.locale.name",
+      "limit": 1,
+      "settings": []
+    },
+    {
+      "type": "search",
+      "name": "visual::sections.header.blocks.search.name",
+      "limit": 1,
+      "settings": []
+    },
+    {
+      "type": "compare",
+      "name": "visual::sections.header.blocks.compare.name",
+      "limit": 1,
+      "settings": []
+    },
+    {
+      "type": "user",
+      "name": "visual::sections.header.blocks.user.name",
+      "limit": 1,
+      "settings": []
+    },
+    {
+      "type": "cart",
+      "name": "visual::sections.header.blocks.cart.name",
+      "limit": 1,
+      "settings": []
+    }
+  ],
+  "default": {
+    "blocks": [
+      {
+        "type": "logo"
+      },
+      {
+        "type": "nav"
+      },
+      {
+        "type": "currency"
+      },
+      {
+        "type": "locale"
+      },
+      {
+        "type": "search"
+      },
+      {
+        "type": "compare"
+      },
+      {
+        "type": "user"
+      },
+      {
+        "type": "cart"
+      }
+    ]
+  }
+}

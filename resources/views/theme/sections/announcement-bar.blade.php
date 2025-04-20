@@ -1,62 +1,12 @@
-@php
-  $positionValues = [
-      'left' => 'text-left',
-      'center' => 'text-center',
-      'right' => 'text-right',
-  ];
-@endphp
-
-@if (true)
-  <div class="mb-4 bg-[var(--bg-color)] px-4 py-1 text-white" style="--bg-color: {{ $section->settings->color }}">
-    @forelse($section->blocks as $block)
-      <div>
-        {{ $block->settings->text }}
-      </div>
-    @empty
-      @if ($section->settings->announcement)
-        @for ($i = 0; $i < $section->settings->count; $i++)
-          <div>{{ $section->settings->announcement }} {{ $i }}</div>
-        @endfor
-      @endif
-    @endif
-
-    @if ($section->settings->image)
-      <img src={{ $section->settings->image }} class="w-24" />
-    @endif
-
-    @if ($section->settings->category)
-      <div>
-        category: {{ $section->settings->category->name }}
-      </div>
-    @endif
-
-    @if ($section->settings->product)
-      <div>
-        Product: {{ $section->settings->product->name }}
-      </div>
-    @endif
-
-    @if ($section->settings->page)
-      <div>
-        Page: {{ $section->settings->page->page_title }}
-      </div>
-    @endif
-
-    <div>
-      Link: {{ $section->settings->button_link }}
-    </div>
-
-    @if ($section->settings->content)
-      <div class="prose prose-md prose-stone">
-        {!! $section->settings->content !!}
-      </div>
-    @endif
-
-    <div x-data="{ count: 1 }">
-      <button @click="count++">+</button>
-      <span x-text="count"></span>
-      <button @click="count--">-</button>
-      <span x-text="'count'"></span>
-    </div>
-  </div>
-@endif
+<div x-data="{ show: true }" x-show="show"
+  class="bg-primary text-primary-200 relative truncate px-4 py-2 text-center text-sm">
+  @if ($section->settings->link)
+    <a href="{{ $section->settings->link }}" class="hover:underline">{{ $section->settings->text }}</a>
+    @svg('heroicon-o-arrow-right', ['class' => 'w-4 h-4 inline-block'])
+  @else
+    <p>{{ $section->settings->text }}</p>
+  @endif
+  <button class="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:opacity-75" aria-label="Close" @click="show = false">
+    @svg('heroicon-o-x-mark', ['class' => 'w-4 h-4'])
+  </button>
+</div>

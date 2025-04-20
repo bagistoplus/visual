@@ -10,7 +10,7 @@
       return parseColor(value)
     }
   });
-  const props = withDefaults(defineProps<{ usedColors?: string[] }>(), { usedColors: () => [] });
+  const props = withDefaults(defineProps<{ usedColors?: string[], label?: string }>(), { usedColors: () => [] });
   const usedColors = computed(() => props.usedColors.map(c => parseColor(c)));
   const selected = ref<any[]>([]);
 
@@ -34,7 +34,9 @@
     v-model="value"
     @update:model-value="onSelect"
   >
-    <ColorPicker.Label class="font-medium text-sm">Color</ColorPicker.Label>
+    <ColorPicker.Label class="font-medium text-sm">
+      {{ label }}
+    </ColorPicker.Label>
     <ColorPicker.Control class="flex gap-2">
       <ColorPicker.Trigger class="appearance-none rounded cursor-pointer inline-flex items-center justify-center outline-none h-10 min-w-10 gap-2 border border-zinc-300">
         <ColorPicker.TransparencyGrid class="rounded" />
@@ -97,7 +99,7 @@
         </ColorPicker.View>
 
         <div v-if="selected.length > 0">
-          <p class="text-xs font-medium">Recently selected</p>
+          <p class="text-xs font-medium">{{ $t('Recently selected') }}</p>
 
           <ColorPicker.SwatchGroup class="grid grid-cols-6 gap-2 mt-2">
             <ColorPicker.SwatchTrigger
@@ -114,7 +116,7 @@
         </div>
 
         <div>
-          <p class="text-xs font-medium">Currently used</p>
+          <p class="text-xs font-medium">{{ $t('Currently used') }}</p>
 
           <ColorPicker.SwatchGroup class="grid grid-cols-6 gap-2 mt-2">
             <ColorPicker.SwatchTrigger

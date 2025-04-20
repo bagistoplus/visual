@@ -1,0 +1,113 @@
+{
+  "$schema": "https://github.com/BagistoPlus/visual/blob/main/resources/schemas/section.schema.json",
+  "name": "visual::sections.hero.name",
+  "description": "visual::sections.hero.description",
+  "settings": [
+    {
+      "id": "image",
+      "type": "image",
+      "label": "visual::sections.hero.settings.image_label",
+      "default": "https://via.placeholder.com/600x400"
+    },
+    {
+      "id": "height",
+      "type": "select",
+      "label": "visual::sections.hero.settings.height_label",
+      "default": "medium",
+      "options": [
+        { "label": "visual::sections.hero.settings.height_small", "value": "small" },
+        { "label": "visual::sections.hero.settings.height_medium", "value": "medium" },
+        { "label": "visual::sections.hero.settings.height_large", "value": "large" }
+      ]
+    },
+    {
+      "type": "header",
+      "label": "visual::sections.hero.settings.header_content"
+    },
+    {
+      "id": "content_position",
+      "type": "select",
+      "label": "visual::sections.hero.settings.content_position_label",
+      "default": "middle",
+      "options": [
+        { "label": "visual::sections.hero.settings.content_position_top", "value": "top" },
+        { "label": "visual::sections.hero.settings.content_position_middle", "value": "middle" },
+        { "label": "visual::sections.hero.settings.content_position_bottom", "value": "bottom" }
+      ]
+    },
+    {
+      "id": "show_overlay",
+      "type": "checkbox",
+      "label": "visual::sections.hero.settings.show_overlay_label",
+      "default": true
+    },
+    {
+      "id": "overlay_opacity",
+      "type": "range",
+      "label": "visual::sections.hero.settings.overlay_opacity_label",
+      "default": 50,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "heading",
+      "name": "visual::sections.hero.blocks.heading.name",
+      "limit": 1,
+      "settings": [
+        {
+          "id": "heading",
+          "type": "text",
+          "label": "visual::sections.hero.blocks.heading.settings.heading_label",
+          "default": "visual::sections.hero.blocks.heading.settings.heading_default"
+        },
+        {
+          "id": "size",
+          "type": "select",
+          "label": "visual::sections.hero.blocks.heading.settings.heading_size_label",
+          "default": "medium",
+          "options": [
+            { "label": "visual::sections.hero.blocks.heading.settings.heading_size_small", "value": "small" },
+            { "label": "visual::sections.hero.blocks.heading.settings.heading_size_medium", "value": "medium" },
+            { "label": "visual::sections.hero.blocks.heading.settings.heading_size_large", "value": "large" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "subheading",
+      "name": "visual::sections.hero.blocks.subheading.name",
+      "limit": 1,
+      "settings": [
+        {
+          "id": "subheading",
+          "type": "text",
+          "label": "visual::sections.hero.blocks.subheading.settings.subheading_label",
+          "default": "visual::sections.hero.blocks.subheading.settings.subheading_default"
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "visual::sections.hero.blocks.button.name",
+      "limit": 1,
+      "settings": [
+        {
+          "id": "text",
+          "type": "text",
+          "label": "visual::sections.hero.blocks.button.settings.text_label",
+          "default": "visual::sections.hero.blocks.button.settings.text_default"
+        },
+        {
+          "id": "button_link",
+          "type": "link",
+          "label": "visual::sections.hero.blocks.button.settings.link_label",
+          "default": "/"
+        }
+      ]
+    }
+  ]
+}

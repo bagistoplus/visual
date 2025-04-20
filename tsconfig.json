@@ -15,12 +15,12 @@
     "jsx": "preserve",
     "allowJs": true,
     "types": [
+      "node",
       "vite/client",
       "unplugin-vue-macros/macros-global",
       "unplugin-vue-router/client",
-      "unplugin-icons/types/vue",
-      "@types/sortablejs"
-    ],
+      "unplugin-icons/types/vue"
+    ]
   },
   "vueCompilerOptions": {
     "target": 3
