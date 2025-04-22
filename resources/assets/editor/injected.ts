@@ -1,6 +1,6 @@
-import morphdom from "morphdom";
+import morphdom from 'morphdom';
 
-window.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', function () {
   const editor = new ThemeEditor();
   editor.init();
 });
@@ -19,10 +19,10 @@ class ThemeEditor {
       this.handleMessage(data);
     });
 
-    document.querySelectorAll('[data-section-type]').forEach(section => {
+    document.querySelectorAll('[data-section-type]').forEach((section) => {
       section.addEventListener('mouseover', this.onSectionHover.bind(this, section as HTMLElement));
 
-      section.addEventListener("mouseleave", ((event: Event) => {
+      section.addEventListener('mouseleave', ((event: Event) => {
         if ((event as any).toElement) {
           const isSectionOverlayChild = !!(event as any).toElement.closest('#section-overlay');
           if (isSectionOverlayChild) {
@@ -34,31 +34,21 @@ class ThemeEditor {
       }) as EventListener);
     });
 
-    this.sectionOverlay
-      .querySelector('#move-up')
-      ?.addEventListener('click', this.moveActiveSectionUp.bind(this));
+    this.sectionOverlay.querySelector('#move-up')?.addEventListener('click', this.moveActiveSectionUp.bind(this));
 
-    this.sectionOverlay
-      .querySelector('#move-down')
-      ?.addEventListener('click', this.moveActiveSectionDown.bind(this));
+    this.sectionOverlay.querySelector('#move-down')?.addEventListener('click', this.moveActiveSectionDown.bind(this));
 
-    this.sectionOverlay
-      .querySelector('#edit')
-      ?.addEventListener('click', this.editActiveSection.bind(this));
+    this.sectionOverlay.querySelector('#edit')?.addEventListener('click', this.editActiveSection.bind(this));
 
-    this.sectionOverlay
-      .querySelector('#disable')
-      ?.addEventListener('click', this.disableActiveSection.bind(this));
+    this.sectionOverlay.querySelector('#disable')?.addEventListener('click', this.disableActiveSection.bind(this));
 
-    this.sectionOverlay
-      .querySelector('#remove')
-      ?.addEventListener('click', this.removeActiveSection.bind(this));
+    this.sectionOverlay.querySelector('#remove')?.addEventListener('click', this.removeActiveSection.bind(this));
 
     this.postMessage('initialize', {
       themeData: window.themeData,
       templates: window.templates,
-      settingsSchema: window.settingsSchema
-    })
+      settingsSchema: window.settingsSchema,
+    });
 
     this.sectionsOrder = window.themeData.sectionsOrder;
 
@@ -69,10 +59,10 @@ class ThemeEditor {
     this.activeSectionId = section.dataset.sectionId as string;
 
     this.sectionOverlay.style.display = 'block';
-    this.sectionOverlay.style.width = section.offsetWidth + "px";
-    this.sectionOverlay.style.height = section.offsetHeight + "px";
-    this.sectionOverlay.style.left = section.offsetLeft + "px";
-    this.sectionOverlay.style.top = section.offsetTop + "px";
+    this.sectionOverlay.style.width = section.offsetWidth + 'px';
+    this.sectionOverlay.style.height = section.offsetHeight + 'px';
+    this.sectionOverlay.style.left = section.offsetLeft + 'px';
+    this.sectionOverlay.style.top = section.offsetTop + 'px';
 
     const sectionType = section.dataset.sectionType as string;
     this.sectionLabel.textContent = section.dataset.sectionName as string;
@@ -92,7 +82,7 @@ class ThemeEditor {
 
   clearActiveSection() {
     this.activeSectionId = null;
-    this.sectionOverlay.style.display = "none";
+    this.sectionOverlay.style.display = 'none';
   }
 
   onSectionHover(section: HTMLElement) {
@@ -130,54 +120,50 @@ class ThemeEditor {
   }
 
   refreshPreviewer(html: string) {
-    const htmlDocument = new DOMParser().parseFromString(html, "text/html");
+    const htmlDocument = new DOMParser().parseFromString(html, 'text/html');
 
-    morphdom(
-      document.querySelector("html") as HTMLElement,
-      htmlDocument.querySelector("html") as HTMLElement,
-      {
-        onBeforeElUpdated(fromEl, toEl) {
-          if (fromEl.hasAttribute('x-data') && window.Alpine) {
-            window.Alpine.morph(fromEl, toEl);
-            return false
-          } else if (fromEl.hasAttribute('wire:id') && window.Livewire) {
-            toEl.setAttribute('wire:id', fromEl.getAttribute('wire:id') as string);
-            toEl.removeAttribute('wire:snapshot');
+    morphdom(document.querySelector('html') as HTMLElement, htmlDocument.querySelector('html') as HTMLElement, {
+      onBeforeElUpdated(fromEl, toEl) {
+        if (fromEl.hasAttribute('x-data') && window.Alpine) {
+          window.Alpine.morph(fromEl, toEl);
+          return false;
+        } else if (fromEl.hasAttribute('wire:id') && window.Livewire) {
+          toEl.setAttribute('wire:id', fromEl.getAttribute('wire:id') as string);
+          toEl.removeAttribute('wire:snapshot');
 
-            window.Livewire.trigger('effect', {
-              // @ts-ignore
-              component: fromEl.__livewire,
-              effects: {html: toEl.outerHTML },
-              // @ts-ignore
-              cleanup: c => fromEl.__livewire.addCleanup(c)
-            })
-            return false;
-          }
-
-          return true;
+          window.Livewire.trigger('effect', {
+            // @ts-ignore
+            component: fromEl.__livewire,
+            effects: { html: toEl.outerHTML },
+            // @ts-ignore
+            cleanup: (c) => fromEl.__livewire.addCleanup(c),
+          });
+          return false;
         }
-      }
-    );
+
+        return true;
+      },
+    });
   }
 
   postMessage(type: string, data: any) {
     window.parent.postMessage({ type, data }, window.origin);
   }
 
-  handleMessage({type, data}: {type: string, data: unknown}) {
-    switch(type) {
+  handleMessage({ type, data }: { type: string; data: unknown }) {
+    switch (type) {
       case 'highlightSection':
         const section = document.querySelector(`[data-section-id="${data}"]`) as HTMLElement;
         if (section) {
           this.highlightSection(section);
           section.scrollIntoView({ behavior: 'smooth' });
         }
-      break;
+        break;
       case 'clearActiveSection':
         this.clearActiveSection();
         break;
       case 'sectionsOrder':
-        this.sectionsOrder = data as string [];
+        this.sectionsOrder = data as string[];
         break;
       case 'refresh':
         this.refreshPreviewer(data as string);
@@ -188,14 +174,14 @@ class ThemeEditor {
   extractUsedColors(limit = 6) {
     const colorCount = new Map<string, number>();
 
-    document.querySelectorAll('*').forEach(el => {
+    document.querySelectorAll('*').forEach((el) => {
       const styles = getComputedStyle(el);
 
       const backgroundColor = styles.backgroundColor;
       const textColor = styles.color;
 
       const countColor = (color: string) => {
-        if (color !== 'transparent' && color !== "rgba(0, 0, 0, 0)" && color !== '') {
+        if (color !== 'transparent' && color !== 'rgba(0, 0, 0, 0)' && color !== '') {
           colorCount.set(color, (colorCount.get(color) || 0) + 1);
         }
       };
@@ -206,10 +192,10 @@ class ThemeEditor {
 
     const sortedColors = Array.from(colorCount.entries())
       .sort((a, b) => b[1] - a[1])
-      .map(entry => entry[0]);
+      .map((entry) => entry[0]);
 
     const mostlyUsedColors = sortedColors.slice(0, limit);
 
-    this.postMessage('usedColors', mostlyUsedColors)
+    this.postMessage('usedColors', mostlyUsedColors);
   }
 }

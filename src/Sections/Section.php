@@ -138,96 +138,18 @@ final class Section implements JsonSerializable
 
     public static function createFromComponent(string $component)
     {
-        $schema = self::translateSchema($component::getSchema());
-
         return new self(
             slug: $component::slug(),
-            name: $schema['name'] ?? $component::name(),
-            wrapper: $schema['wrapper'] ?? 'div',
-            settings: $schema['settings'] ?? [],
-            blocks: $schema['blocks'] ?? [],
-            maxBlocks: $schema['maxBlocks'] ?? 16,
-            default: $schema['default'] ?? [],
-            description: $schema['description'] ?? '',
+            name: $component::name(),
+            wrapper: $component::wrapper(),
+            settings: array_map(fn ($setting) => $setting->toArray(), $component::settings()),
+            blocks: array_map(fn ($block) => $block->toArray(), $component::blocks()),
+            maxBlocks: $component::maxBlocks(),
+            description: $component::description(),
+            previewImageUrl: $component::previewImageUrl(),
+            previewDescription: $component::previewDescription(),
+            default: $component::default(),
             isLivewire: is_subclass_of($component, \Livewire\Component::class)
         );
-    }
-
-    protected static function translateSchema(array $schema): array
-    {
-        if (isset($schema['name'])) {
-            $schema['name'] = __($schema['name']);
-        }
-
-        if (isset($schema['description'])) {
-            $schema['description'] = __($schema['description']);
-        }
-
-        if (isset($schema['settings'])) {
-            $schema['settings'] = self::translateSettings($schema['settings']);
-        }
-
-        if (isset($schema['blocks'])) {
-            $schema['blocks'] = self::translateBlocks($schema['blocks']);
-        }
-
-        if (isset($schema['default'])) {
-            $schema['default'] = self::translateSectionDefaults($schema['default']);
-        }
-
-        return $schema;
-    }
-
-    protected static function translateBlocks(array $blocks): array
-    {
-        return array_map(function ($block) {
-            $block['name'] = __($block['name']);
-
-            if (isset($block['settings'])) {
-                $block['settings'] = self::translateSettings($block['settings']);
-            }
-
-            return $block;
-        }, $blocks);
-    }
-
-    protected static function translateSettings(array $settings): array
-    {
-        return array_map(function ($setting) {
-            $keys = ['label', 'default', 'info', 'placeholder'];
-
-            foreach ($keys as $key) {
-                if (isset($setting[$key])) {
-                    $setting[$key] = __($setting[$key]);
-                }
-            }
-
-            if (isset($setting['options']) && is_array($setting['options'])) {
-                $setting['options'] = array_map(function ($option) {
-                    $option['label'] = __($option['label']);
-
-                    return $option;
-                }, $setting['options']);
-            }
-
-            return $setting;
-        }, $settings);
-    }
-
-    protected static function translateSectionDefaults(array $default)
-    {
-        if (isset($default['settings'])) {
-            $default['settings'] = array_map(function ($value) {
-                return __($value);
-            }, $default['settings']);
-        }
-
-        if (isset($default['blocks'])) {
-            $default['blocks'] = array_map(function ($block) {
-                return self::translateSectionDefaults($block);
-            }, $default['blocks']);
-        }
-
-        return $default;
     }
 }

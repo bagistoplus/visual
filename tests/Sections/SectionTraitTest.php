@@ -20,28 +20,6 @@ it('it should generate the correct default slug', function () {
     expect(SectionTraitTest::slug())->toBe('section-trait-test');
 });
 
-it('returns the schema path from the static property', function () {
-    $reflection = new ReflectionClass(SectionTraitTest::class);
-    $schemaProp = $reflection->getProperty('schema');
-    $schemaProp->setAccessible(true);
-    $schemaProp->setValue('path/to/schema.json');
-
-    expect(SectionTraitTest::getSchemaPath())->toBe('path/to/schema.json');
-});
-
-it('returns the schema array when a valid schema path is provided', function () {
-    $schemaPath = tempnam(sys_get_temp_dir(), 'schema.json');
-    $reflection = new ReflectionClass(SectionTraitTest::class);
-    $schemaProp = $reflection->getProperty('schema');
-    $schemaProp->setAccessible(true);
-    $schemaProp->setValue($schemaPath);
-
-    $schema = ['key' => 'value'];
-    file_put_contents($schemaPath, json_encode($schema));
-
-    expect(SectionTraitTest::getSchema())->toBe($schema);
-});
-
 class SectionTraitTest
 {
     use SectionTrait;

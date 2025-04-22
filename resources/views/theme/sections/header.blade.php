@@ -28,7 +28,7 @@
                 <span class="sr-only">{{ config('app.name') }}</span>
                 <img src="{{ $logo }}" alt="{{ config('app.name') }}" />
               @else
-                {{ $block->settings->logo_text ?? config('app.name') }}
+                {{ $block->settings->logo_text ?: config('app.name') }}
               @endif
             </a>
           </div>

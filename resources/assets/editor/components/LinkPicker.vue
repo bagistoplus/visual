@@ -92,112 +92,114 @@
   }
 </script>
 <template>
-  <Combobox.RootProvider
-    :value="combobox"
-    class="gap-2 flex flex-col"
-  >
-    <div class="flex justify-between items-center">
-      <Combobox.Label
-        v-if="label"
-        class="text-sm font-medium"
-      >
-        {{ label }}
-      </Combobox.Label>
-      <a
-        v-if="realLink"
-        :href="realLink"
-        target="_blank"
-      >
-        <i-heroicons-arrow-top-right-on-square-solid class="w-4 h-4" />
-      </a>
-    </div>
-    <Combobox.Control
-      class="flex border px-3 h-10 gap-3 text-sm w-full cursor-pointer rounded outline-0 items-center appearance-none justify-between focus-within:shadow focus-within:ring focus-within:ring-gray-700"
+  <div>
+    <Combobox.RootProvider
+      :value="combobox"
+      class="gap-2 flex flex-col"
     >
-      <i-bi-tags
-        v-if="valueType === 'categories'"
-        class="w-4 h-4 flex-none transform rotate-90"
-      />
-      <i-bi-tag
-        v-else-if="valueType === 'products'"
-        class="w-4 h-4 flex-none transform rotate-90"
-      />
-      <i-mdi-file-document-outline
-        v-else-if="valueType === 'cms_pages'"
-        class="w-4 h-4 flex-none"
-      />
-      <i-heroicons-link
-        v-else
-        class="w-4 h-4 flex-none"
-      />
-
-      <Combobox.Input
-        class="outline-none flex-1 w-0"
-        @input="combobox.setOpen(false)"
-        @blur="onInput"
-      />
-      <button
-        v-if="model"
-        class="flex-none text-gray-700 hover:bg-gray-200 p-1 rounded-lg"
-        @click="onClear"
-      >
-        <i-heroicons-x-mark clip="w-4 h-4" />
-      </button>
-    </Combobox.Control>
-
-    <Combobox.Positioner class="w-[var(--reference-width)] !z-10">
-      <Combobox.Content class="bg-white rounded-lg shadow gap-1 flex flex-col max-h-96 border data-[state=open]:animate-fade-in">
-        <div v-if="!activePanel">
-          <button
-            class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-gray-200"
-            @click.prevent="activePanel = 'categories'"
-          >
-            <i-bi-tags class="w-4 h-4 transform rotate-90" />
-            {{ $t('Categories') }}
-          </button>
-          <button
-            class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-gray-200"
-            @click.prevent="activePanel = 'products'"
-          >
-            <i-bi-tag class="w-4 h-4 transform rotate-90" />
-            {{ $t('Products') }}
-          </button>
-          <button
-            class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-gray-200"
-            @click.prevent="activePanel = 'cms_pages'"
-          >
-            <i-mdi-file-document-outline class="w-4 h-4 flex-none text-gray-700" />
-            {{ $t('Cms Pages') }}
-          </button>
-        </div>
-        <div
-          v-else
-          class="flex flex-col h-full overflow-hidden"
+      <div class="flex justify-between items-center">
+        <Combobox.Label
+          v-if="label"
+          class="text-sm font-medium"
         >
-          <button
-            class="h-9 flex-none bg-gray-200 flex gap-3 w-full items-center rounded-t-lg text-left px-3"
-            @click="activePanel = ''"
+          {{ label }}
+        </Combobox.Label>
+        <a
+          v-if="realLink"
+          :href="realLink"
+          target="_blank"
+        >
+          <i-heroicons-arrow-top-right-on-square-solid class="w-4 h-4" />
+        </a>
+      </div>
+      <Combobox.Control
+        class="flex border px-3 h-10 gap-3 text-sm w-full cursor-pointer rounded outline-0 items-center appearance-none justify-between focus-within:shadow focus-within:ring focus-within:ring-gray-700"
+      >
+        <i-bi-tags
+          v-if="valueType === 'categories'"
+          class="w-4 h-4 flex-none transform rotate-90"
+        />
+        <i-bi-tag
+          v-else-if="valueType === 'products'"
+          class="w-4 h-4 flex-none transform rotate-90"
+        />
+        <i-mdi-file-document-outline
+          v-else-if="valueType === 'cms_pages'"
+          class="w-4 h-4 flex-none"
+        />
+        <i-heroicons-link
+          v-else
+          class="w-4 h-4 flex-none"
+        />
+
+        <Combobox.Input
+          class="outline-none flex-1 w-0"
+          @input="combobox.setOpen(false)"
+          @blur="onInput"
+        />
+        <button
+          v-if="model"
+          class="flex-none text-gray-700 hover:bg-gray-200 p-1 rounded-lg"
+          @click="onClear"
+        >
+          <i-heroicons-x-mark clip="w-4 h-4" />
+        </button>
+      </Combobox.Control>
+
+      <Combobox.Positioner class="w-[var(--reference-width)] !z-10">
+        <Combobox.Content class="bg-white rounded-lg shadow gap-1 flex flex-col max-h-96 border data-[state=open]:animate-fade-in">
+          <div v-if="!activePanel">
+            <button
+              class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-gray-200"
+              @click.prevent="activePanel = 'categories'"
+            >
+              <i-bi-tags class="w-4 h-4 transform rotate-90" />
+              {{ $t('Categories') }}
+            </button>
+            <button
+              class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-gray-200"
+              @click.prevent="activePanel = 'products'"
+            >
+              <i-bi-tag class="w-4 h-4 transform rotate-90" />
+              {{ $t('Products') }}
+            </button>
+            <button
+              class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-gray-200"
+              @click.prevent="activePanel = 'cms_pages'"
+            >
+              <i-mdi-file-document-outline class="w-4 h-4 flex-none text-gray-700" />
+              {{ $t('Cms Pages') }}
+            </button>
+          </div>
+          <div
+            v-else
+            class="flex flex-col h-full overflow-hidden"
           >
-            <i-heroicons-arrow-left class="w-4 h-4" />
-            {{ $t('Back') }}
-          </button>
-          <CategoryListbox
-            v-if="activePanel === 'categories'"
-            class="h-full flex-1"
-            @update:modelValue="onCategorySelected"
-          />
-          <ProductListbox
-            v-else-if="activePanel === 'products'"
-            class="h-full flex-1"
-            @update:modelValue="onProductSelected"
-          />
-          <CmsPageListbox
-            v-else-if="activePanel === 'cms_pages'"
-            class="h-full flex-1"
-            @update:modelValue="onPageSelected"
-          />
-        </div>
-      </Combobox.Content>
-    </Combobox.Positioner>
-  </Combobox.RootProvider>
+            <button
+              class="h-9 flex-none bg-gray-200 flex gap-3 w-full items-center rounded-t-lg text-left px-3"
+              @click="activePanel = ''"
+            >
+              <i-heroicons-arrow-left class="w-4 h-4" />
+              {{ $t('Back') }}
+            </button>
+            <CategoryListbox
+              v-if="activePanel === 'categories'"
+              class="h-full flex-1"
+              @update:modelValue="onCategorySelected"
+            />
+            <ProductListbox
+              v-else-if="activePanel === 'products'"
+              class="h-full flex-1"
+              @update:modelValue="onProductSelected"
+            />
+            <CmsPageListbox
+              v-else-if="activePanel === 'cms_pages'"
+              class="h-full flex-1"
+              @update:modelValue="onPageSelected"
+            />
+          </div>
+        </Combobox.Content>
+      </Combobox.Positioner>
+    </Combobox.RootProvider>
+  </div>
 </template>

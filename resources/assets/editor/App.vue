@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import type { Section, Setting, SettingsSchema, Template, ThemeData } from './types'
+  import type { SettingsSchema, Template, ThemeData } from './types'
   import { useStore } from './store';
   import { useNProgress } from '@vueuse/integrations/useNProgress.mjs';
 

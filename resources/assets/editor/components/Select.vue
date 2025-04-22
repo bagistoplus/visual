@@ -5,14 +5,15 @@
     label: string;
     options: {
       label: string;
-      value: string;
+      value: any;
     }[];
   };
 
   const props = defineProps<Props>();
-  const value = defineModel<string>()
+  const value = defineModel<any>()
   const collection = computed(() => createListCollection({ items: props.options }))
 </script>
+
 <template>
   <Select.Root
     :collection="collection"

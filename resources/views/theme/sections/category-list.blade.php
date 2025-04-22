@@ -27,22 +27,29 @@
     </h2>
   @endif
 
-  <div
-    class="{{ $mobileGridClass[$section->settings->columns_mobile] }} {{ $desktopGridClass[$section->settings->columns_desktop] }} grid gap-8">
+  <div class="{{ $mobileGridClass[$section->settings->columns_mobile] }} {{ $desktopGridClass[$section->settings->columns_desktop] }} grid gap-8">
     @foreach ($section->blocks as $block)
-      <div class="bg-surface-alt group relative h-64 cursor-pointer overflow-hidden rounded">
-        <div class="absolute inset-0 z-10 bg-black/20 transition-colors group-hover:bg-black/40"></div>
-        @php($image = $block->settings->category->banner_url ?? $block->settings->category->logo_url)
-        @if ($image)
-          <img src="{{ $image }}" alt="{{ $block->settings->category->name }}"
-            class="h-full w-full object-cover object-center" />
-        @endif
-        <div class="absolute inset-0 z-20 flex items-center justify-center">
-          <h3 class="text-2xl font-bold text-white">{{ $block->settings->category->name }}</h3>
+      @if ($block->settings->category)
+        <div class="bg-surface-alt group relative h-64 cursor-pointer overflow-hidden rounded">
+          <div class="absolute inset-0 z-10 bg-black/20 transition-colors group-hover:bg-black/40"></div>
+          @php($image = $block->settings->category->banner_url ?? $block->settings->category->logo_url)
+          @if ($image)
+            <img
+              src="{{ $image }}"
+              alt="{{ $block->settings->category->name }}"
+              class="h-full w-full object-cover object-center"
+            />
+          @endif
+          <div class="absolute inset-0 z-20 flex items-center justify-center">
+            <h3 class="text-2xl font-bold text-white">{{ $block->settings->category->name }}</h3>
+          </div>
+          <a
+            href="{{ $block->settings->category->url }}"
+            class="absolute inset-0 z-30"
+            aria-label="{{ $block->settings->category->name }}"
+          ></a>
         </div>
-        <a href="{{ $block->settings->category->url }}" class="absolute inset-0 z-30"
-          aria-label="{{ $block->settings->category->name }}"></a>
-      </div>
+      @endif
     @endforeach
   </div>
 </section>
