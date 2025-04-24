@@ -1,4 +1,8 @@
-<div class="relative" x-dropdown="{ open: $wire.entangle('open') }">
+<div
+  class="relative"
+  x-data
+  x-dropdown="{ open: false }"
+>
   <!-- Cart Button -->
   <button
     x-dropdown:trigger

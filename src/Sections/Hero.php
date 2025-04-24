@@ -10,7 +10,7 @@ class Hero extends BladeSection
     {
         return [
             Settings\Image::make('image', __('visual::sections.hero.settings.image_label'))
-                ->default('https://via.placeholder.com/600x400'),
+                ->default('https://placehold.co/1400x400'),
 
             Settings\Select::make('height', __('visual::sections.hero.settings.height_label'))
                 ->options([

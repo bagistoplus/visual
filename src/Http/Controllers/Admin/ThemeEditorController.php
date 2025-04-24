@@ -52,12 +52,15 @@ class ThemeEditorController extends Controller
 
     public function uploadImages(Request $request)
     {
-        return collect($request->file('image'))->map(function ($file) {
-            $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $extension = $file->guessExtension();
+        /** @var \Illuminate\Support\Collection<int, \Illuminate\Http\UploadedFile> $images */
+        $images = collect($request->file('image'));
+
+        return $images->map(function ($image) {
+            $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $image->guessExtension();
             $storedName = bin2hex($originalName).'_'.uniqid().'.'.$extension;
 
-            $path = $file->storeAs(
+            $path = $image->storeAs(
                 config('bagisto_visual.images_directory'),
                 $storedName,
                 config('bagisto_visual.images_storage'),

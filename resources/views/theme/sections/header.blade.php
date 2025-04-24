@@ -2,7 +2,7 @@
   $categories = $getCategories();
 @endphp
 
-<header class="bg-surface sticky top-0 z-20 w-full border-b" x-data="{ showSearch: false }">
+<header class="bg-surface sticky top-0 z-20 w-full border-b">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="flex h-16 items-center justify-between gap-x-6 text-neutral-700">
       <x-shop::ui.drawer placement="start" title="Menu">

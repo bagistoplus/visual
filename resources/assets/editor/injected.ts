@@ -1,4 +1,4 @@
-import morphdom from 'morphdom';
+import { Idiomorph } from 'idiomorph/dist/idiomorph.esm.js';
 
 window.addEventListener('DOMContentLoaded', function () {
   const editor = new ThemeEditor();
@@ -19,30 +19,13 @@ class ThemeEditor {
       this.handleMessage(data);
     });
 
-    document.querySelectorAll('[data-section-type]').forEach((section) => {
-      section.addEventListener('mouseover', this.onSectionHover.bind(this, section as HTMLElement));
-
-      section.addEventListener('mouseleave', ((event: Event) => {
-        if ((event as any).toElement) {
-          const isSectionOverlayChild = !!(event as any).toElement.closest('#section-overlay');
-          if (isSectionOverlayChild) {
-            return;
-          }
-        }
-
-        this.onSectionBlur.call(this, section as HTMLElement);
-      }) as EventListener);
-    });
-
     this.sectionOverlay.querySelector('#move-up')?.addEventListener('click', this.moveActiveSectionUp.bind(this));
-
     this.sectionOverlay.querySelector('#move-down')?.addEventListener('click', this.moveActiveSectionDown.bind(this));
-
     this.sectionOverlay.querySelector('#edit')?.addEventListener('click', this.editActiveSection.bind(this));
-
     this.sectionOverlay.querySelector('#disable')?.addEventListener('click', this.disableActiveSection.bind(this));
-
     this.sectionOverlay.querySelector('#remove')?.addEventListener('click', this.removeActiveSection.bind(this));
+
+    this.attachMouseEventsToSections();
 
     this.postMessage('initialize', {
       themeData: window.themeData,
@@ -53,6 +36,30 @@ class ThemeEditor {
     this.sectionsOrder = window.themeData.sectionsOrder;
 
     this.extractUsedColors();
+  }
+
+  attachMouseEventsToSections() {
+    document.querySelectorAll('[data-section-type]').forEach((section) => {
+      if (section.hasAttribute('data-visual-initialized')) {
+        return;
+      }
+
+      section.addEventListener('mouseover', this.onSectionHover.bind(this, section as HTMLElement));
+
+      section.addEventListener('mouseleave', ((event: Event) => {
+        if ((event as any).toElement) {
+          console.log(this.sectionOverlay.contains((event as any).toElement));
+          const isSectionOverlayChild = !!(event as any).toElement.closest('#section-overlay');
+          if (isSectionOverlayChild) {
+            return;
+          }
+        }
+
+        this.onSectionBlur.call(this, section as HTMLElement);
+      }) as EventListener);
+
+      section.setAttribute('data-visual-initialized', 'true');
+    });
   }
 
   highlightSection(section: HTMLElement) {
@@ -120,30 +127,29 @@ class ThemeEditor {
   }
 
   refreshPreviewer(html: string) {
-    const htmlDocument = new DOMParser().parseFromString(html, 'text/html');
+    const newDocument = new DOMParser().parseFromString(html, 'text/html');
 
-    morphdom(document.querySelector('html') as HTMLElement, htmlDocument.querySelector('html') as HTMLElement, {
-      onBeforeElUpdated(fromEl, toEl) {
-        if (fromEl.hasAttribute('x-data') && window.Alpine) {
-          window.Alpine.morph(fromEl, toEl);
-          return false;
-        } else if (fromEl.hasAttribute('wire:id') && window.Livewire) {
-          toEl.setAttribute('wire:id', fromEl.getAttribute('wire:id') as string);
-          toEl.removeAttribute('wire:snapshot');
+    // notify section unload
 
-          window.Livewire.trigger('effect', {
+    Idiomorph.morph(document.documentElement, newDocument.documentElement, {
+      callbacks: {
+        beforeNodeMorphed(fromEl: Element, toEl: Element) {
+          // @ts-ignore
+          if (typeof fromEl._x_dataStack !== 'undefined' && typeof window.Alpine.morph !== 'undefined') {
             // @ts-ignore
-            component: fromEl.__livewire,
-            effects: { html: toEl.outerHTML },
-            // @ts-ignore
-            cleanup: (c) => fromEl.__livewire.addCleanup(c),
-          });
-          return false;
-        }
+            window.Alpine.morph(fromEl, toEl);
 
-        return true;
+            return false;
+          }
+
+          return true;
+        },
       },
     });
+
+    this.attachMouseEventsToSections();
+
+    // notify section load
   }
 
   postMessage(type: string, data: any) {

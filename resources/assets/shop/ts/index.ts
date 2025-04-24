@@ -23,31 +23,23 @@ import navigation from './features/navigation';
 import productActions from './features/product-actions';
 
 // ui components as plugin
-Alpine.plugin(accordion);
-Alpine.plugin(collapsible);
-Alpine.plugin(dropdown);
-Alpine.plugin(modal);
-Alpine.plugin(numberInput);
-Alpine.plugin(slider);
-Alpine.plugin(tabs);
-Alpine.plugin(toasts);
+Alpine.plugin([accordion, collapsible, dropdown, modal, numberInput, slider, tabs, toasts]);
 
 // plugins
-Alpine.plugin(confirm);
-Alpine.plugin(modals);
-Alpine.plugin(toaster);
-Alpine.plugin(helpers);
+Alpine.plugin([confirm, helpers, modals, toaster]);
 
 // feature components as plugin
-Alpine.plugin(addressForm);
-Alpine.plugin(datagrid);
-Alpine.plugin(imageSearch);
-Alpine.plugin(mediaGallery);
-Alpine.plugin(navigation);
-Alpine.plugin(productForm);
-Alpine.plugin(productActions);
-Alpine.plugin(productBundle);
-Alpine.plugin(productsCompare);
-Alpine.plugin(variantPicker);
+Alpine.plugin([
+  addressForm,
+  datagrid,
+  imageSearch,
+  mediaGallery,
+  navigation,
+  productForm,
+  productActions,
+  productBundle,
+  productsCompare,
+  variantPicker,
+]);
 
 Livewire.start();
