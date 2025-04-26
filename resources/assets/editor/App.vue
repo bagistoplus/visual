@@ -24,7 +24,6 @@
       store.setThemeData(data.themeData);
       store.setSettingsSchema(data.settingsSchema);
       store.setTemplates(data.templates);
-
       store.setAvailableSections(window.ThemeEditor.availableSections);
 
       nprogress.done();

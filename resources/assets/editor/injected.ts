@@ -47,12 +47,9 @@ class ThemeEditor {
       section.addEventListener('mouseover', this.onSectionHover.bind(this, section as HTMLElement));
 
       section.addEventListener('mouseleave', ((event: Event) => {
-        if ((event as any).toElement) {
-          console.log(this.sectionOverlay.contains((event as any).toElement));
-          const isSectionOverlayChild = !!(event as any).toElement.closest('#section-overlay');
-          if (isSectionOverlayChild) {
-            return;
-          }
+        // @ts-ignore
+        if (event.toElement && this.sectionOverlay.contains(event.toElement)) {
+          return;
         }
 
         this.onSectionBlur.call(this, section as HTMLElement);
