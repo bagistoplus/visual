@@ -156,7 +156,12 @@ class ThemeEditor {
   handleMessage({ type, data }: { type: string; data: unknown }) {
     switch (type) {
       case 'highlightSection':
+        if (this.activeSectionId === data) {
+          return;
+        }
+
         const section = document.querySelector(`[data-section-id="${data}"]`) as HTMLElement;
+
         if (section) {
           this.highlightSection(section);
           section.scrollIntoView({ behavior: 'smooth' });

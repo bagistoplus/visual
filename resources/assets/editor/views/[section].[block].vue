@@ -12,6 +12,10 @@
   const block = computed(() => blockData.value ? store.getSectionBlockByType(route.params.section, blockData.value.type) : null);
   const groupedSettings = computed(() => groupSettings(block.value?.settings || []));
 
+  onMounted(() => {
+    store.activateSection(route.params.section);
+  });
+
   function goBack() {
     router.back();
   }

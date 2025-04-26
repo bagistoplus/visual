@@ -1,6 +1,6 @@
 {
   "resources/assets/editor/index.ts": {
-    "file": "assets/index-B6IGt0di.js",
+    "file": "assets/index-ClVMAoR5.js",
     "name": "index",
     "src": "resources/assets/editor/index.ts",
     "isEntry": true,
@@ -9,7 +9,7 @@
     ]
   },
   "resources/assets/editor/injected.ts": {
-    "file": "assets/injected-Ciy_FTZJ.js",
+    "file": "assets/injected-BahpUk1p.js",
     "name": "injected",
     "src": "resources/assets/editor/injected.ts",
     "isEntry": true

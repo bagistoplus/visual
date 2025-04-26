@@ -36,6 +36,10 @@
     });
   });
 
+  onMounted(() => {
+    store.activateSection(route.params.section);
+  });
+
   function goBack() {
     router.back();
   }
@@ -129,9 +133,7 @@
               v-if="availableBlocks.length > 0"
               @select="(details: SelectionDetails) => addBlock(details.value)"
             >
-              <Menu.Trigger
-                class="w-full text-sm text-blue-600 rounded-lg cursor-pointer outline-0 inline-flex items-center gap-2 px-2 py-1 hover:bg-gray-200 focus:ring-1 focus:ring-gray-700"
-              >
+              <Menu.Trigger class="w-full text-sm text-blue-600 rounded-lg cursor-pointer outline-0 inline-flex items-center gap-2 px-2 py-1 hover:bg-gray-200 focus:ring-1 focus:ring-gray-700">
                 <i-heroicons-plus-circle class="w-4 h-4 inline mr-1" />
                 {{ $t('Add Block') }}
               </Menu.Trigger>

@@ -25,6 +25,7 @@
       store.setSettingsSchema(data.settingsSchema);
       store.setTemplates(data.templates);
       store.setAvailableSections(window.ThemeEditor.availableSections);
+      store.setPreviewIframeReady()
 
       nprogress.done();
     },

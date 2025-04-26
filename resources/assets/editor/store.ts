@@ -1,12 +1,23 @@
-import { useNProgress } from '@vueuse/integrations/useNProgress'
-import { acceptHMRUpdate, defineStore } from "pinia";
-import setValue from "lodash/set";
-import getValue from "lodash/get";
-import debounce from "lodash/debounce";
-import { v4 as uuidv4 } from "uuid";
+import { useNProgress } from '@vueuse/integrations/useNProgress';
+import { acceptHMRUpdate, defineStore } from 'pinia';
+import setValue from 'lodash/set';
+import getValue from 'lodash/get';
+import debounce from 'lodash/debounce';
+import { v4 as uuidv4 } from 'uuid';
 import { History } from 'stateshot';
 
-import type { Block, Category, CmsPage, Image, Product, Section, Setting, SettingsSchema, Template, ThemeData } from "./types";
+import type {
+  Block,
+  Category,
+  CmsPage,
+  Image,
+  Product,
+  Section,
+  Setting,
+  SettingsSchema,
+  Template,
+  ThemeData,
+} from './types';
 import { useFetchCategories, useFetchCmsPages, useFetchImages, useFetchProducts, usePublishTheme } from './api';
 import { get } from 'sortablejs';
 
@@ -19,8 +30,11 @@ interface Models {
 export const useStore = defineStore('main', () => {
   let availableSections: Record<string, Section> = {};
   let previewIframe: HTMLIFrameElement | null = null;
+  let previewIframeLoaded = false;
+
   const nprogress = useNProgress();
   const history = new History();
+  const previewIframeMessageQueue: { type: string; data: any }[] = [];
 
   const templates = ref<Template[]>([]);
   const settingsSchema = ref<SettingsSchema>([]);
@@ -37,60 +51,58 @@ export const useStore = defineStore('main', () => {
     beforeContentSectionsOrder: [],
     afterContentSectionsOrder: [],
     sectionsData: {},
-    settings: {}
+    settings: {},
   });
   const activeSectionId = ref<string | null>(null);
   const images = reactive<Image[]>([]);
   const models = reactive<Models>({
     categories: {},
     products: {},
-    cmsPages: {}
-  })
+    cmsPages: {},
+  });
 
   const canUndoHistory = ref(false);
   const canRedoHistory = ref(false);
 
   const categories = computed(() => {
-    return Object.values(models.categories).map(c => ({
+    return Object.values(models.categories).map((c) => ({
       ...c,
-      ...c.translations.find(t => t.locale === themeData.locale)
-    }))
+      ...c.translations.find((t) => t.locale === themeData.locale),
+    }));
   });
 
   const products = computed(() => Object.values(models.products));
 
   const cmsPages = computed(() => {
-    return Object.values(models.cmsPages).map(page => {
-      const trans = page.translations.find(t => t.locale === themeData.locale);
+    return Object.values(models.cmsPages).map((page) => {
+      const trans = page.translations.find((t) => t.locale === themeData.locale);
+
       if (trans) {
-        page.url_key = trans.url_key;
-        page.page_title = trans.page_title;
+        return {
+          ...page,
+          url_key: trans.url_key,
+          page_title: trans.page_title,
+        };
       }
 
       return page;
     });
-  })
+  });
 
   const contentSectionsOrder = computed(() => themeData.sectionsOrder);
   const contentSections = computed(() => {
-    return contentSectionsOrder.value.map(
-      (id: string) => themeData.sectionsData[id]
-    );
+    return contentSectionsOrder.value.map((id: string) => themeData.sectionsData[id]);
   });
 
   const beforeContentSections = computed(() => {
-    return themeData.beforeContentSectionsOrder.map(
-      (id: string) => themeData.sectionsData[id]
-    );
+    return themeData.beforeContentSectionsOrder.map((id: string) => themeData.sectionsData[id]);
   });
 
   const afterContentSections = computed(() => {
-    return themeData.afterContentSectionsOrder.map(
-      (id: string) => themeData.sectionsData[id]
-    );
+    return themeData.afterContentSectionsOrder.map((id: string) => themeData.sectionsData[id]);
   });
 
-  const persistThemeData = debounce(({ skipHistory }: {skipHistory: boolean } = { skipHistory: false }) => {
+  const persistThemeData = debounce(({ skipHistory }: { skipHistory: boolean } = { skipHistory: false }) => {
     const headers = new Headers();
     headers.append('content-type', 'application/json');
     headers.append(
@@ -101,21 +113,21 @@ export const useStore = defineStore('main', () => {
     nprogress.start();
 
     if (!skipHistory) {
-      history.pushSync(JSON.parse(JSON.stringify(themeData)));
-      canUndoHistory.value = history.hasUndo
-      canRedoHistory.value = history.hasRedo
+      history.pushSync(structuredClone(toRaw(themeData)));
+      canUndoHistory.value = history.hasUndo;
+      canRedoHistory.value = history.hasRedo;
     }
 
     fetch(window.ThemeEditor.routes.persistTheme, {
       headers,
       method: 'post',
-      body: JSON.stringify(themeData)
-    }).then(res => res.text())
-      .then(html => {
-        nprogress.done();
+      body: JSON.stringify(themeData),
+    })
+      .then((res) => res.text())
+      .then((html) => {
         refreshPreviewer(html);
       })
-      .catch(e => {
+      .finally(() => {
         nprogress.done();
       });
   }, 500);
@@ -123,16 +135,16 @@ export const useStore = defineStore('main', () => {
   function publishTheme() {
     nprogress.start();
 
-    const { onFetchResponse } = usePublishTheme({theme: themeData.theme });
+    const { onFetchResponse } = usePublishTheme({ theme: themeData.theme });
 
     onFetchResponse(() => {
       nprogress.done();
       history.reset();
-      history.pushSync(JSON.parse(JSON.stringify(themeData)));
+      history.pushSync(structuredClone(toRaw(themeData)));
 
       canUndoHistory.value = history.hasUndo;
       canRedoHistory.value = history.hasRedo;
-    })
+    });
   }
 
   function undoHistory() {
@@ -155,15 +167,33 @@ export const useStore = defineStore('main', () => {
     canRedoHistory.value = history.hasRedo;
   }
 
+  function setPreviewIframeReady() {
+    previewIframeLoaded = true;
+
+    previewIframeMessageQueue.forEach(({ type, data }) => {
+      notifyPreviewIframe(type, data);
+    });
+
+    previewIframeMessageQueue.length = 0;
+  }
+
   function notifyPreviewIframe(type: string, data?: any) {
-    previewIframe?.contentWindow?.postMessage({
-      type,
-      data: JSON.parse(JSON.stringify(data))
-    }, window.origin);
+    if (!previewIframeLoaded) {
+      previewIframeMessageQueue.push({ type, data });
+      return;
+    }
+
+    previewIframe?.contentWindow?.postMessage(
+      {
+        type,
+        data: structuredClone(data),
+      },
+      window.origin
+    );
   }
 
   function refreshPreviewer(html: string) {
-    notifyPreviewIframe("refresh", html);
+    notifyPreviewIframe('refresh', html);
   }
 
   function setPreviewIframe(iframe: HTMLIFrameElement) {
@@ -173,12 +203,12 @@ export const useStore = defineStore('main', () => {
   function setThemeData(data: ThemeData) {
     for (const [id, section] of Object.entries(data.sectionsData)) {
       if (section.blocks_order.length === 0) {
-        section.blocks = {}
+        section.blocks = {};
       }
     }
 
     Object.assign(themeData, data);
-    history.pushSync(JSON.parse(JSON.stringify(themeData)));
+    history.pushSync(structuredClone(data));
   }
 
   function setTemplates(tpls: Template[]) {
@@ -254,9 +284,7 @@ export const useStore = defineStore('main', () => {
 
   function removeSection(sectionId: string) {
     delete themeData.sectionsData[sectionId];
-    themeData.sectionsOrder = themeData.sectionsOrder.filter(
-      id => id !== sectionId
-    );
+    themeData.sectionsOrder = themeData.sectionsOrder.filter((id) => id !== sectionId);
 
     notifyPreviewIframe('sectionsOrder', themeData.sectionsOrder);
     persistThemeData();
@@ -282,7 +310,7 @@ export const useStore = defineStore('main', () => {
     }
 
     const section = getSectionBySlug(sectionData.type);
-    return section.blocks.find(b => b.type === type);
+    return section.blocks.find((b) => b.type === type);
   }
 
   function canRemoveSection(sectionId: string) {
@@ -326,8 +354,8 @@ export const useStore = defineStore('main', () => {
       type: block.type,
       name: block.name,
       disabled: false,
-      settings
-    }
+      settings,
+    };
 
     sectionData.blocks_order.push(id);
 
@@ -346,13 +374,13 @@ export const useStore = defineStore('main', () => {
     const section = themeData.sectionsData[sectionId];
 
     delete section.blocks[blockId];
-    section.blocks_order = section.blocks_order.filter(id => id !== blockId);
+    section.blocks_order = section.blocks_order.filter((id) => id !== blockId);
 
     persistThemeData();
   }
 
   function searchCategories(search: string) {
-    return categories.value.filter(category => new RegExp(search, 'gi').test(category.name));
+    return categories.value.filter((category) => new RegExp(search, 'gi').test(category.name));
   }
 
   function getProduct(id: number) {
@@ -363,7 +391,7 @@ export const useStore = defineStore('main', () => {
     let page = models.cmsPages[id];
 
     if (page) {
-      const trans = page.translations.find(t => t.locale === themeData.locale);
+      const trans = page.translations.find((t) => t.locale === themeData.locale);
       if (trans) {
         page.url_key = trans.url_key;
         page.page_title = trans.page_title;
@@ -380,22 +408,19 @@ export const useStore = defineStore('main', () => {
       execute();
     }
 
-
     onFetchResponse(() => {
       data.value.forEach((item: any) => {
-        images.push({ ...item, uploading: false })
-      })
-    })
+        images.push({ ...item, uploading: false });
+      });
+    });
   }
-
-
 
   function fetchCategories() {
     const context = useFetchCategories();
 
     context.onFetchResponse(() => {
       context.data.value.data.forEach((item: Category) => {
-        models.categories[item.id] = item
+        models.categories[item.id] = item;
       });
     });
 
@@ -407,12 +432,12 @@ export const useStore = defineStore('main', () => {
 
     context.onFetchResponse(() => {
       context.data.value.data.forEach((item: Product) => {
-        models.products[item.id] = item
+        models.products[item.id] = item;
       });
     });
 
     function execute(params: any = {}) {
-      context.execute({ locale: themeData.locale, channel: themeData.channel, ...params })
+      context.execute({ locale: themeData.locale, channel: themeData.channel, ...params });
     }
 
     return { ...context, execute };
@@ -423,12 +448,12 @@ export const useStore = defineStore('main', () => {
 
     context.onFetchResponse(() => {
       context.data.value.forEach((item: CmsPage) => {
-        models.cmsPages[item.id] = item
+        models.cmsPages[item.id] = item;
       });
     });
 
     function execute(params: any = {}) {
-      context.execute({ locale: themeData.locale, channel: themeData.channel, ...params })
+      context.execute({ locale: themeData.locale, channel: themeData.channel, ...params });
     }
 
     return { ...context, execute };
@@ -456,6 +481,7 @@ export const useStore = defineStore('main', () => {
     redoHistory,
     resetHistory,
     publishTheme,
+    setPreviewIframeReady,
 
     setThemeData,
     setTemplates,
@@ -488,9 +514,8 @@ export const useStore = defineStore('main', () => {
     fetchImages,
     fetchCategories,
     fetchProducts,
-    fetchCmsPages
-  }
+    fetchCmsPages,
+  };
 });
 
-if (import.meta.hot)
-  import.meta.hot.accept(acceptHMRUpdate(useStore as any, import.meta.hot))
+if (import.meta.hot) import.meta.hot.accept(acceptHMRUpdate(useStore as any, import.meta.hot));
