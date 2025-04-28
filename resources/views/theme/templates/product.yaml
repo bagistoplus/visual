@@ -1,0 +1,6 @@
+sections:
+  breadcrumbs:
+    type: visual-breadcrumbs
+
+  product-details:
+    type: visual-product-details

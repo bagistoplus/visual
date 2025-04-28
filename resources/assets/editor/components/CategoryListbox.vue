@@ -3,7 +3,7 @@
   import { Category } from '../types';
 
   const store = useStore();
-  const model = defineModel<Category>();
+  const model = defineModel<Category | null>();
   const search = ref('');
 
   const { isFetching, execute } = store.fetchCategories();
@@ -29,7 +29,7 @@
         v-model="search"
         type="text"
         class="focus:outline-none text-gray-600"
-        placeholder="Search category"
+        :placeholder="$t('Search category')"
       >
     </div>
     <div class="flex-1 overflow-y-auto border-t">

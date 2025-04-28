@@ -10,6 +10,17 @@
     label: string;
   }
 
+  // @see https://stackoverflow.com/a/5717133
+  const isValidUrl = (str: string) => {
+    var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+      '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+    return !!pattern.test(str);
+  }
+
   const store = useStore();
   const props = defineProps<Props>();
   const model = defineModel({
@@ -22,7 +33,7 @@
         return null;
       }
 
-      return { path: v, url: window.ThemeEditor.imagesBaseUrl + v, name: v };
+      return { path: v, url: isValidUrl(v) ? v : window.ThemeEditor.imagesBaseUrl + v, name: v };
     }
   });
 
@@ -36,8 +47,6 @@
     maxFiles: 10,
     onFileAccept(details) {
       fileUpload.value.clearFiles();
-
-      console.log(details.files);
 
       uploadingImages.value = details.files.map(file => ({
         url: URL.createObjectURL(file),
@@ -100,13 +109,14 @@
         <button
           @click="openDialog"
           class="text-blue-600 text-sm bg-zinc-200 rounded px-2.5 py-1.5 hover:bg-zinc-100 hover:text-blue-800"
-        >Select image</button>
+        >{{ $t('Select image') }}</button>
       </div>
       <div v-else>
         <div class="rounded-t p-3 bg-neutral-100 relative">
           <img
             :src="model.url"
             alt=""
+            class="object-cover"
           >
           <button
             class="absolute top-4 right-4 bg-gray-700/30 text-gray-200 p-px rounded"
@@ -119,7 +129,7 @@
           <button
             @click="openDialog"
             class="text-sm w-full text-center bg-white border rounded py-1"
-          >Change image</button>
+          >{{ $t('Change image') }}</button>
         </div>
       </div>
     </div>
@@ -127,10 +137,10 @@
     <Dialog.Root v-model:open="opened">
       <Teleport to="body">
         <Dialog.Backdrop class="fixed h-screen w-screen inset-0" />
-        <Dialog.Positioner class="flex fixed top-14 left-14 bottom-0 w-[17.85rem] items-center justify-center">
+        <Dialog.Positioner class="flex fixed top-14 left-14 bottom-0 w-[19.9rem] items-center justify-center">
           <Dialog.Content class="bg-white shadow flex flex-col w-full h-full overflow-hidden">
             <header class="flex-none h-12 border-b border-neutral-200 flex gap-3 px-4 items-center justify-between">
-              <Dialog.Title>{{ label || 'Image Picker' }}</Dialog.Title>
+              <Dialog.Title>{{ label || $t('Image Picker') }}</Dialog.Title>
               <Dialog.CloseTrigger class="cursor-pointer rounded-lg p-0.5 text-neutral-700 hover:bg-neutral-300">
                 <i-heroicons-x-mark class="w-5 h-5" />
               </Dialog.CloseTrigger>
@@ -144,12 +154,12 @@
                   v-bind="fileUpload.getDropzoneProps()"
                   class="flex flex-col gap-3 items-center justify-center h-32 bg-zinc-50/50 border border-zinc-300 border-dashed rounded-lg"
                 >
-                  <p>Drop your images here</p>
+                  <p>{{ $t('Drop your images here') }}</p>
                   <button
                     v-bind="fileUpload.getTriggerProps()"
                     class="cursor-pointer bg-blue-500 text-white shadow-lg rounded border px-2.5 py-1.5 text-sm"
                   >
-                    Add images
+                    {{ $t('Add images') }}
                   </button>
                 </div>
                 <input v-bind="fileUpload.getHiddenInputProps()" />
@@ -174,7 +184,7 @@
               <button
                 @click="onCancel"
                 class="text-sm shadow px-3 py-1 rounded bg-neutral-100 border"
-              >Cancel</button>
+              >{{ $t('Cancel') }}</button>
               <Dialog.CloseTrigger class="text-sm shadow px-3 py-1 rounded bg-gray-800 text-white border hover:bg-gray-700">Select</Dialog.CloseTrigger>
             </footer>
           </Dialog.Content>

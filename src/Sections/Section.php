@@ -108,7 +108,7 @@ final class Section implements JsonSerializable
         $template = $this->wrapper ? SimpleEmmetParser::parse($this->wrapper.'{__section__}') : '<div>{__section__}</div>';
 
         preg_match('/(<\w+)([>|\s].*)/', $template, $matches);
-        $template = $matches[1].sprintf(' data-section-type="%s" data-section-id="%s"', $this->slug, $id).$matches[2];
+        $template = $matches[1].sprintf(' data-section-type="%s" data-section-id="%s" id="%s"', $this->slug, $id, $id).$matches[2];
         $template = str_replace('__section__', $component, $template);
 
         return $template;
@@ -138,16 +138,17 @@ final class Section implements JsonSerializable
 
     public static function createFromComponent(string $component)
     {
-        $schema = $component::getSchema();
-
         return new self(
             slug: $component::slug(),
-            name: $schema['name'],
-            wrapper: $schema['wrapper'] ?? 'div',
-            settings: $schema['settings'] ?? [],
-            blocks: $schema['blocks'] ?? [],
-            maxBlocks: $schema['maxBlocks'] ?? 16,
-            description: $schema['description'] ?? '',
+            name: $component::name(),
+            wrapper: $component::wrapper(),
+            settings: array_map(fn ($setting) => $setting->toArray(), $component::settings()),
+            blocks: array_map(fn ($block) => $block->toArray(), $component::blocks()),
+            maxBlocks: $component::maxBlocks(),
+            description: $component::description(),
+            previewImageUrl: $component::previewImageUrl(),
+            previewDescription: $component::previewDescription(),
+            default: $component::default(),
             isLivewire: is_subclass_of($component, \Livewire\Component::class)
         );
     }

@@ -1,106 +1,17 @@
 {
-  "_accordion-BrzFpUFw.js": {
-    "file": "assets/accordion-BrzFpUFw.js",
-    "name": "accordion",
-    "imports": [
-      "resources/assets/editor/index.ts",
-      "_x-mark-Cc4Fllx1.js"
-    ]
-  },
-  "_sortable.core.esm-DqsZJZW6.js": {
-    "file": "assets/sortable.core.esm-DqsZJZW6.js",
-    "name": "sortable.core.esm",
-    "imports": [
-      "resources/assets/editor/index.ts"
-    ]
-  },
-  "_trash-Dc-Bdxn4.js": {
-    "file": "assets/trash-Dc-Bdxn4.js",
-    "name": "trash",
-    "imports": [
-      "resources/assets/editor/index.ts"
-    ]
-  },
-  "_utils-BZao-1VW.js": {
-    "file": "assets/utils-BZao-1VW.js",
-    "name": "utils"
-  },
-  "_x-mark-Cc4Fllx1.js": {
-    "file": "assets/x-mark-Cc4Fllx1.js",
-    "name": "x-mark",
-    "imports": [
-      "resources/assets/editor/index.ts"
-    ]
-  },
   "resources/assets/editor/index.ts": {
-    "file": "assets/index-DBq8Y21G.js",
+    "file": "assets/index-DEOHfHXz.js",
     "name": "index",
     "src": "resources/assets/editor/index.ts",
     "isEntry": true,
-    "dynamicImports": [
-      "resources/assets/editor/views/index.vue",
-      "resources/assets/editor/views/[section].vue",
-      "resources/assets/editor/views/[section].[block].vue",
-      "resources/assets/editor/views/settings.vue"
-    ],
     "css": [
-      "assets/index-CDR1DeUX.css"
+      "assets/index-OJYNwkEq.css"
     ]
   },
   "resources/assets/editor/injected.ts": {
-    "file": "assets/injected-Dmu0maJw.js",
+    "file": "assets/injected-BE0QWUP3.js",
     "name": "injected",
     "src": "resources/assets/editor/injected.ts",
     "isEntry": true
-  },
-  "resources/assets/editor/views/[section].[block].vue": {
-    "file": "assets/_section_._block_-BajOiHOx.js",
-    "name": "_section_._block_",
-    "src": "resources/assets/editor/views/[section].[block].vue",
-    "isDynamicEntry": true,
-    "imports": [
-      "_trash-Dc-Bdxn4.js",
-      "_accordion-BrzFpUFw.js",
-      "resources/assets/editor/index.ts",
-      "_utils-BZao-1VW.js",
-      "_x-mark-Cc4Fllx1.js"
-    ]
-  },
-  "resources/assets/editor/views/[section].vue": {
-    "file": "assets/_section_-BlALSI_g.js",
-    "name": "_section_",
-    "src": "resources/assets/editor/views/[section].vue",
-    "isDynamicEntry": true,
-    "imports": [
-      "_trash-Dc-Bdxn4.js",
-      "_accordion-BrzFpUFw.js",
-      "_sortable.core.esm-DqsZJZW6.js",
-      "resources/assets/editor/index.ts",
-      "_utils-BZao-1VW.js",
-      "_x-mark-Cc4Fllx1.js"
-    ]
-  },
-  "resources/assets/editor/views/index.vue": {
-    "file": "assets/index-HXMenCMu.js",
-    "name": "index",
-    "src": "resources/assets/editor/views/index.vue",
-    "isDynamicEntry": true,
-    "imports": [
-      "_x-mark-Cc4Fllx1.js",
-      "_sortable.core.esm-DqsZJZW6.js",
-      "_trash-Dc-Bdxn4.js",
-      "resources/assets/editor/index.ts"
-    ]
-  },
-  "resources/assets/editor/views/settings.vue": {
-    "file": "assets/settings-CPEiOTri.js",
-    "name": "settings",
-    "src": "resources/assets/editor/views/settings.vue",
-    "isDynamicEntry": true,
-    "imports": [
-      "_accordion-BrzFpUFw.js",
-      "resources/assets/editor/index.ts",
-      "_x-mark-Cc4Fllx1.js"
-    ]
   }
 }

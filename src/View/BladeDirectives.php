@@ -2,6 +2,11 @@
 
 namespace BagistoPlus\Visual\View;
 
+/**
+ * Retrieves view information based on the current compiled blade view file.
+ *
+ * @return array{type: string, view: string, path: string, name: string}
+ */
 class BladeDirectives
 {
     public static function viewInfo()
@@ -57,5 +62,23 @@ class BladeDirectives
     public static function endVisualContent()
     {
         return '<?php $__env->stopSection(); ?>';
+    }
+
+    public static function visualColorVars($expression)
+    {
+        return "<?php echo \BagistoPlus\Visual\View\BladeDirectives::generateColorPalette($expression); ?>";
+    }
+
+    public static function generateColorPalette($name, $color, $isDarkScheme = false)
+    {
+        $shades = TailwindPaletteGenerator::generate($color, $isDarkScheme);
+
+        $palette = '';
+
+        foreach ($shades as $key => $c) {
+            $palette .= "--color-{$name}-{$key}: {$c->red()} {$c->green()} {$c->blue()};\n";
+        }
+
+        return $palette;
     }
 }

@@ -12,6 +12,14 @@ class ImageTransformer
             return null;
         }
 
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            return new Image(
+                name: '',
+                path: $path,
+                url: $path
+            );
+        }
+
         [$encodedName] = explode('_', pathinfo($path, PATHINFO_FILENAME));
 
         // check if it is hex string

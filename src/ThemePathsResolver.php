@@ -42,7 +42,7 @@ class ThemePathsResolver
     public function resolveThemeFallbackDataPath(string $themeCode, string $channel, string $locale, string $mode = 'live'): ?string
     {
         $defaultChannel = app('core')->getDefaultChannel();
-        $channelModel = Channel::query()->with(['default_locale'])->where('code', $channel)->first();
+        $channelModel = once(fn () => Channel::query()->with(['default_locale'])->where('code', $channel)->first());
         $pathsToCheck = [];
 
         if ($channel !== $defaultChannel->code) {

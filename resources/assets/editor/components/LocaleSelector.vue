@@ -45,7 +45,9 @@
     <Menu.Positioner class="w-56">
       <Menu.Content class="pointer-events-none border shadow flex gap-1 p-1 flex-col outline-none rounded bg-white data-[state=open]:animate-fade-in">
         <Menu.ItemGroup class="flex flex-col">
-          <Menu.ItemGroupLabel class="px-2.5 mb-1 text-gray-700">Locales</Menu.ItemGroupLabel>
+          <Menu.ItemGroupLabel class="px-2.5 mb-1 text-gray-700">
+            {{ $t('Locales') }}
+          </Menu.ItemGroupLabel>
           <Menu.Item
             v-for="l in locales"
             :key="l.code"

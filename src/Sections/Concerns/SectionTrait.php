@@ -8,7 +8,23 @@ trait SectionTrait
 {
     protected static string $slug = '';
 
-    protected static string $schema = '';
+    protected static string $name = '';
+
+    protected static string $wrapper = 'div';
+
+    protected static array $settings = [];
+
+    protected static array $blocks = [];
+
+    protected static int $maxBlocks = 16;
+
+    protected static string $description = '';
+
+    protected static string $previewImageUrl = '';
+
+    protected static string $previewDescription = '';
+
+    protected static array $default = [];
 
     protected static string $view = '';
 
@@ -36,15 +52,52 @@ trait SectionTrait
         return Str::kebab(self::className());
     }
 
-    public static function getSchemaPath(): string
+    public static function name(): string
     {
-        return static::$schema;
+        return Str::of(self::slug())->replace('-', ' ')->title();
     }
 
-    public static function getSchema(): array
+    public static function wrapper(): string
     {
-        $schemaPath = self::getSchemaPath();
+        if (! empty(static::$wrapper)) {
+            return static::$wrapper;
+        }
 
-        return json_decode(file_get_contents($schemaPath), true);
+        return 'div';
+    }
+
+    public static function settings(): array
+    {
+        return static::$settings;
+    }
+
+    public static function blocks(): array
+    {
+        return static::$blocks;
+    }
+
+    public static function maxBlocks(): int
+    {
+        return static::$maxBlocks;
+    }
+
+    public static function description(): string
+    {
+        return static::$description;
+    }
+
+    public static function previewImageUrl(): string
+    {
+        return static::$previewImageUrl;
+    }
+
+    public static function previewDescription(): string
+    {
+        return static::$previewDescription;
+    }
+
+    public static function default(): array
+    {
+        return static::$default;
     }
 }

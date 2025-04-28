@@ -1,4 +1,4 @@
-export type ViewMode = "desktop" | "mobile" | "fullscreen";
+export type ViewMode = 'desktop' | 'mobile' | 'fullscreen';
 
 export interface WindowThemeEditor {
   baseUrl: string;
@@ -16,10 +16,12 @@ export interface WindowThemeEditor {
     listImages: string;
     getCmsPages: string;
   };
+  messages: Record<string, any>;
+  editorLocale: string;
 }
 
 interface Template {
-  template: string,
+  template: string;
   label: string;
   icon: string;
   previewUrl: string;
@@ -43,6 +45,7 @@ export interface Setting {
   label: string;
   default?: unknown;
   info?: string;
+  component: string;
   [key: string]: any;
 }
 
@@ -91,7 +94,7 @@ export interface ThemeData {
   beforeContentSectionsOrder: string[];
   afterContentSectionsOrder: string[];
   sectionsData: Record<string, SectionData>;
-  settings: Record<string, any>
+  settings: Record<string, any>;
 }
 
 export type SettingsSchema = {
@@ -103,7 +106,7 @@ interface Image {
   name: string;
   path: string;
   url: string;
-  uploading?: boolean
+  uploading?: boolean;
 }
 
 interface Category {
@@ -115,8 +118,8 @@ interface Category {
     medium_image_url: string;
     original_image_url: string;
     small_image_url: string;
-  },
-  translations: any[]
+  };
+  translations: any[];
 }
 
 interface Product {
@@ -129,12 +132,12 @@ interface Product {
     medium_image_url: string;
     original_image_url: string;
     small_image_url: string;
-  },
+  };
   images: {
     large_image_url: string;
     medium_image_url: string;
     original_image_url: string;
-    small_image_url: string
+    small_image_url: string;
   }[];
 }
 

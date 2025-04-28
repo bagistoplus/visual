@@ -19,11 +19,11 @@ class BlockData implements JsonSerializable
         return new self(
             id: $id,
             type: $data['type'] ?? $blockSchema['type'],
-            name: $data['name'] ?? $data['type'],
+            name: $data['name'] ?? $blockSchema['name'] ?? $data['type'],
             disabled: $data['disabled'] ?? false,
             settings: new SettingsValues(
-                self::prepareSettings($data['settings'], $blockSchema['settings']),
-                collect($blockSchema['settings'])->keyBy('id')->toArray()
+                self::prepareSettings($data['settings'] ?? [], $blockSchema['settings'] ?? []),
+                collect($blockSchema['settings'] ?? [])->keyBy('id')->toArray()
             )
         );
     }

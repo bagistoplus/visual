@@ -74,12 +74,13 @@
 <template>
   <div class="w-full h-full flex flex-col">
     <header class="flex none px-4 py-3 border-b font-medium">
+      <!-- todo: translate -->
       <h1>Page title</h1>
     </header>
     <div class="flex-1 overflow-y-auto">
       <SectionsGroup
         static
-        title="Layout Header Sections"
+        :title="$t('Layout Header Sections')"
         :sections="store.beforeContentSections"
         @toggleSection="onToggleSection"
         @activateSection="onActivateSection"
@@ -88,7 +89,7 @@
       <hr>
 
       <SectionsGroup
-        title="Template Sections"
+        :title="$t('Template Sections')"
         :order="store.contentSectionsOrder"
         :sections="store.contentSections"
         @reorder="onContentSectionsReorder"
@@ -101,7 +102,7 @@
       <hr>
       <SectionsGroup
         static
-        title="Layout Footer Sections"
+        :title="$t('Layout Footer Sections')"
         :sections="store.afterContentSections"
         @toggleSection="onToggleSection"
         @activateSection="onActivateSection"
@@ -119,7 +120,7 @@
       <Dialog.Positioner class="flex fixed inset-0 items-center justify-center">
         <Dialog.Content class="bg-white shadow rounded-md flex flex-col w-full max-w-2xl h-3/4 overflow-hidden">
           <header class="flex-none h-12 border-b border-gray-200 bg-gray-100 flex gap-3 px-4 items-center justify-between">
-            <Dialog.Title>Add new section</Dialog.Title>
+            <Dialog.Title>{{ $t('Add new section') }}</Dialog.Title>
             <Dialog.CloseTrigger class="cursor-pointer rounded-lg p-0.5 text-neutral-700 hover:bg-neutral-300">
               <i-heroicons-x-mark class="w-5 h-5" />
             </Dialog.CloseTrigger>
@@ -132,7 +133,7 @@
                 type="text"
                 name="search"
                 class="appearance-none block w-full outline-none"
-                placeholder="Search a section..."
+                :placeholder="$t('Search a section')"
               />
             </div>
             <div class="flex-1 p-6 overflow-y-auto">
@@ -141,7 +142,7 @@
                 :key="vendor"
                 class="mb-4"
               >
-                <h4 class="sticky capitalize mb-2 font-medium">From {{ vendor }}</h4>
+                <h4 class="sticky capitalize mb-2 font-medium">{{ $t('From') }} {{ vendor }}</h4>
                 <div class="grid grid-cols-2 gap-6">
                   <div
                     v-for="section in sections"

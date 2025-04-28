@@ -2,7 +2,11 @@
 
 namespace BagistoPlus\Visual\Providers;
 
+use BagistoPlus\Visual\Facades\Visual;
+use BagistoPlus\Visual\LivewireFeatures\InterceptSessionFlash;
+use BagistoPlus\Visual\LivewireFeatures\SupportComponentAttributes;
 use BagistoPlus\Visual\LivewireFeatures\SupportSectionData;
+use BagistoPlus\Visual\Theme\Theme;
 use BagistoPlus\Visual\Theme\Themes;
 use BagistoPlus\Visual\ThemePathsResolver;
 use BagistoPlus\Visual\View\BladeDirectives;
@@ -12,7 +16,6 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Engines\CompilerEngine;
-use Webkul\Core\Repositories\ChannelRepository;
 
 class ViewServiceProvider extends ServiceProvider
 {
@@ -20,10 +23,6 @@ class ViewServiceProvider extends ServiceProvider
     {
         $this->registerJsonViewCompiler();
         $this->registerEngineResolver();
-
-        $this->app->singleton('tets', function (Application $app) {
-            return $app->make(ChannelRepository::class);
-        });
     }
 
     public function boot()
@@ -33,6 +32,7 @@ class ViewServiceProvider extends ServiceProvider
         $this->registerViewExtensions();
 
         $this->bootLivewireFeatures();
+        $this->bootViewComposers();
 
         $this->app->singleton('themes', fn () => new Themes);
         $this->app->singleton(ThemePathsResolver::class, function (Application $app) {
@@ -84,10 +84,32 @@ class ViewServiceProvider extends ServiceProvider
         Blade::directive('visual_layout_content', [BladeDirectives::class, 'visualLayoutContent']);
         Blade::directive('visual_content', [BladeDirectives::class, 'visualContent']);
         Blade::directive('end_visual_content', [BladeDirectives::class, 'endVisualContent']);
+
+        Blade::directive('visual_color_vars', [BladeDirectives::class, 'visualColorVars']);
     }
 
     protected function bootLivewireFeatures()
     {
         app('livewire')->componentHook(SupportSectionData::class);
+        app('livewire')->componentHook(SupportComponentAttributes::class);
+        app('livewire')->componentHook(InterceptSessionFlash::class);
+    }
+
+    protected function bootViewComposers()
+    {
+        view()->composer('shop::*', function ($view) {
+            $theme = app('themes')->current();
+
+            if ($theme instanceof Theme && $theme->isVisualTheme) {
+                $theme->settings = Visual::themeDataCollector()->getThemeSettings();
+                $view->with('theme', $theme);
+            }
+        });
+
+        view()->composer('shop::layouts.account', function ($view) {
+            if (auth('customer')->check()) {
+                $view->with('customer', auth('customer')->user());
+            }
+        });
     }
 }

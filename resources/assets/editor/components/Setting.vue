@@ -1,3 +1,42 @@
+<script lang="ts">
+  import TextSetting from './TextInput.vue';
+  import TextareaSetting from './Textarea.vue';
+  import CheckboxSetting from './Checkbox.vue';
+  import NumberSetting from './NumberInput.vue';
+  import RadioSetting from './RadioGroup.vue';
+  import RangeSetting from './RangeInput.vue';
+  import SelectSetting from './Select.vue';
+  import ColorSetting from './ColorPicker.vue';
+  import ImageSetting from './ImagePicker.vue';
+  import CategorySetting from './CategoryPicker.vue';
+  import ProductSetting from './ProductPicker.vue';
+  import CmsPageSetting from './CmsPagePicker.vue';
+  import LinkSetting from './LinkPicker.vue';
+  import RichtextSetting from './RichtextEditor.vue';
+
+  const InlineRichtextSetting = RichtextSetting;
+
+  export default {
+    components: {
+      TextSetting,
+      TextareaSetting,
+      CheckboxSetting,
+      NumberSetting,
+      RadioSetting,
+      RangeSetting,
+      SelectSetting,
+      ColorSetting,
+      ImageSetting,
+      CategorySetting,
+      ProductSetting,
+      CmsPageSetting,
+      LinkSetting,
+      RichtextSetting,
+      InlineRichtextSetting,
+    },
+  };
+</script>
+
 <script setup lang="ts">
   import { useStore } from '../store';
   import { Setting } from '../types';
@@ -15,8 +54,14 @@
 </script>
 
 <template>
-  <div class="mb-6 last:mb-0">
-    <TextInput
+  <div class="mb-4 last:mb-0">
+    <component
+      :is="setting.component"
+      v-bind="setting"
+      :model-value="props.value"
+      @update:modelValue="(val: string) => emit('input', val)"
+    />
+    <!-- <TextInput
       v-if="setting.type === 'text'"
       :id="setting.id"
       :label="setting.label"
@@ -69,7 +114,7 @@
       v-else-if="setting.type === 'select'"
       :label="setting.label"
       :options="setting.options"
-      :model-value="value"
+      :model-value="String(value)"
       @update:model-value="(v: string) => emit('input', v)"
     />
 
@@ -129,8 +174,11 @@
       :label="setting.label"
       :model-value="value"
       @update:model-value="(v: string) => emit('input', v)"
-    />
+    /> -->
 
-    <small v-if="setting.info">{{ setting.info }}</small>
+    <small
+      v-if="setting.info"
+      class="text-xs leading-3"
+    >{{ setting.info }}</small>
   </div>
 </template>

@@ -3,11 +3,11 @@
 namespace BagistoPlus\Visual\Http\Controllers\Admin;
 
 use BagistoPlus\Visual\Facades\Sections;
-use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Http\Controllers\Controller;
 use BagistoPlus\Visual\Sections\Concerns\ImageTransformer;
 use BagistoPlus\Visual\ThemePersister;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Storage;
 use Webkul\CMS\Models\Page;
 use Webkul\CMS\Repositories\PageRepository;
@@ -25,7 +25,6 @@ class ThemeEditorController extends Controller
             'channels' => $this->getChannels(),
             'defaultChannel' => app('core')->getDefaultChannelCode(),
             'sections' => Sections::all(),
-            'templates' => ThemeEditor::getTemplates(),
             'routes' => [
                 'themesIndex' => route('visual.admin.themes.index'),
                 'persistTheme' => route('visual.admin.editor.api.persist'),
@@ -34,6 +33,8 @@ class ThemeEditorController extends Controller
                 'listImages' => route('visual.admin.editor.api.images'),
                 'getCmsPages' => route('visual.admin.editor.api.cms_pages'),
             ],
+            'messages' => Lang::get('visual::theme-editor'),
+            'editorLocale' => app()->getLocale(),
         ]);
     }
 
@@ -51,12 +52,15 @@ class ThemeEditorController extends Controller
 
     public function uploadImages(Request $request)
     {
-        return collect($request->file('image'))->map(function ($file) {
-            $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $extension = $file->guessExtension();
+        /** @var \Illuminate\Support\Collection<int, \Illuminate\Http\UploadedFile> $images */
+        $images = collect($request->file('image'));
+
+        return $images->map(function ($image) {
+            $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $image->guessExtension();
             $storedName = bin2hex($originalName).'_'.uniqid().'.'.$extension;
 
-            $path = $file->storeAs(
+            $path = $image->storeAs(
                 config('bagisto_visual.images_directory'),
                 $storedName,
                 config('bagisto_visual.images_storage'),

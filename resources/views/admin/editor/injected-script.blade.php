@@ -1,7 +1,7 @@
 @if (ThemeEditor::inDesignMode())
   <style type="text/css">
     #section-overlay {
-      border: 1px solid #0041ff;
+      border: 2px solid #0041ff;
       position: absolute;
       width: 0;
       height: 0;
@@ -16,17 +16,23 @@
       position: absolute;
       top: 100%;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translate(-50%, -50%);
       background-color: #0041ff;
-      padding: 2px 4px;
-      border-radius: 0 0 4px 4px;
+      padding: 8px;
+      border-radius: 4px;
       display: flex;
+      gap: 8px;
     }
 
     #section-overlay .btn {
       pointer-events: auto;
       color: #fff;
-      padding: 2px;
+      padding: 4px;
+      border-radius: 4px;
+    }
+
+    #section-overlay .btn:hover {
+      background-color: #151f8c;
     }
 
     .move-up,
@@ -35,7 +41,7 @@
     }
 
     #section-overlay .btn svg {
-      width: 14px;
+      width: 20px;
     }
 
     #label {
@@ -51,21 +57,52 @@
   </style>
 
   <div id="section-overlay">
-    <span id="label">section name</span>
+    <span id="label"></span>
     <div id="buttons">
-      <button id="move-down" class="btn move-down" title="Move down"><x-heroicon-o-arrow-down /></button>
-      <button id="move-up" class="btn move-up" title="Move up"
-        style="margin-right: 8px;"><x-heroicon-o-arrow-up /></button>
-      <button id="edit" class="btn" title="Edit"><x-heroicon-o-pencil /></button>
-      <button id="disable" class="btn" title="Hide"
-        style="margin-right: 8px;"><x-heroicon-o-eye-slash /></button>
-      <button id="remove" class="btn" title="Remove"><x-heroicon-o-trash /></button>
+      <button
+        id="move-down"
+        class="btn move-down"
+        title="Move down"
+      ><x-heroicon-o-arrow-down /></button>
+      <button
+        id="move-up"
+        class="btn move-up"
+        title="Move up"
+        style="margin-right: 8px;"
+      ><x-heroicon-o-arrow-up /></button>
+      <button
+        id="edit"
+        class="btn"
+        title="Edit"
+      ><x-heroicon-o-pencil /></button>
+      <button
+        id="disable"
+        class="btn"
+        title="Hide"
+        style="margin-right: 8px;"
+      ><x-heroicon-o-eye-slash /></button>
+      <button
+        id="remove"
+        class="btn"
+        title="Remove"
+      ><x-heroicon-o-trash /></button>
     </div>
   </div>
+@endif
 
+<script type="text/javascript">
+  window.Visual = {
+    inPreviewMode: true,
+    inDesignMode: false,
+    theme: @json($theme)
+  }
+</script>
+
+@if (ThemeEditor::inDesignMode())
   <script type="text/javascript">
     window.themeData = @json($themeData);
     window.settingsSchema = @json($settingsSchema);
+    window.templates = @json($templates);
   </script>
   {{-- blade-formatter-disable --}}
   {{
@@ -75,11 +112,3 @@
   }}
 {{-- blade-formatter-enable --}}
 @endif
-
-<script type="text/javascript">
-  // if (window.Livewire) {
-  //   window.Livewire.addHeaders({
-  //     'x-visual-editor-theme': '{{ $theme }}'
-  //   });
-  // }
-</script>

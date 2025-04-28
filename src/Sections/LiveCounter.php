@@ -2,10 +2,10 @@
 
 namespace BagistoPlus\Visual\Sections;
 
+use BagistoPlus\Visual\Sections\Settings\Number;
+
 class LiveCounter extends LivewireSection
 {
-    protected static string $schema = __DIR__.'/../../resources/schemas/live-counter.json';
-
     protected static string $view = 'shop::sections.live-counter';
 
     public $count = 0;
@@ -18,5 +18,15 @@ class LiveCounter extends LivewireSection
     public function decrement()
     {
         $this->count -= $this->section->settings->increment;
+    }
+
+    public static function settings(): array
+    {
+        return [
+            Number::make('increment', 'Live counter increment')
+                ->default(1)
+                ->min(1)
+                ->max(3),
+        ];
     }
 }

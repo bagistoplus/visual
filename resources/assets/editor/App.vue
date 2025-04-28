@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import type { Section, Setting, SettingsSchema, Template, ThemeData } from './types'
+  import type { SettingsSchema, Template, ThemeData } from './types'
   import { useStore } from './store';
   import { useNProgress } from '@vueuse/integrations/useNProgress.mjs';
 
@@ -20,11 +20,18 @@
   });
 
   const messageHandlers: Record<string, Function> = {
-    initialize(data: { themeData: ThemeData, settingsSchema: SettingsSchema }) {
+    initialize(data: { themeData: ThemeData, templates: Template[], settingsSchema: SettingsSchema }) {
+      const templateChanged = store.themeData.template !== data.themeData.template;
+
       store.setThemeData(data.themeData);
       store.setSettingsSchema(data.settingsSchema);
-
+      store.setTemplates(data.templates);
       store.setAvailableSections(window.ThemeEditor.availableSections);
+      store.setPreviewIframeReady()
+
+      if (templateChanged) {
+        router.replace('/');
+      }
 
       nprogress.done();
     },
@@ -33,10 +40,10 @@
       Object.assign(store.usedColors, colors);
     },
 
-    'moveSectionUp': store.moveSectionUp,
-    'moveSectionDown': store.moveSectionDown,
-    'toggleSection': store.toggleSection,
-    'removeSection': store.removeSection,
+    'section:move-up': store.moveSectionUp,
+    'section:move-down': store.moveSectionDown,
+    'section:toggle': store.toggleSection,
+    'section:remove': store.removeSection,
   };
 
   window.addEventListener('message', (event) => {

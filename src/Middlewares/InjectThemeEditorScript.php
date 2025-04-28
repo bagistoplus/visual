@@ -7,14 +7,17 @@ use BagistoPlus\Visual\ThemeEditor;
 use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
+use Webkul\Category\Repositories\CategoryRepository;
+use Webkul\Product\Repositories\ProductRepository;
 
 class InjectThemeEditorScript
 {
     public function __construct(
         protected ThemeEditor $themeEditor,
-        protected ThemeDataCollector $themeDataCollector
+        protected ThemeDataCollector $themeDataCollector,
+        protected CategoryRepository $categoryRepository,
+        protected ProductRepository $productRepository
     ) {}
 
     /**
@@ -50,7 +53,9 @@ class InjectThemeEditorScript
 
                 'locale' => app('core')->getRequestedLocaleCode(),
 
-                'template' => $this->themeEditor->getTemplateForRoute(Route::currentRouteName()),
+                'template' => $this->themeEditor->getTemplateForRoute(
+                    $this->fixCategoryOrProductRoute(Route::currentRouteName())
+                ),
 
                 'hasStaticContent' => $renderedSections->filter(function ($item) {
                     return in_array($item['group'], ['beforeContent', 'afterContent']);
@@ -76,13 +81,14 @@ class InjectThemeEditorScript
             ];
 
             $editorScript = view('visual::admin.editor.injected-script', [
-                'theme' => $this->themeEditor->activeTheme(),
+                'theme' => $this->getCurrentTheme(),
                 'themeData' => $themeData,
+                'templates' => $this->themeEditor->getTemplates(),
                 'settingsSchema' => app('themes')->current()->settingsSchema,
             ]);
         } else {
             $editorScript = view('visual::admin.editor.injected-script', [
-                'theme' => $this->themeEditor->activeTheme(),
+                'theme' => $this->getCurrentTheme(),
             ]);
         }
 
@@ -92,6 +98,18 @@ class InjectThemeEditorScript
         return $response;
     }
 
+    protected function getCurrentTheme()
+    {
+        /** @var \BagistoPlus\Visual\Theme\Theme */
+        $theme = app('themes')->current();
+
+        return [
+            'code' => $theme->code,
+            'name' => $theme->name,
+            'version' => $theme->version,
+        ];
+    }
+
     protected function isHtmlResponse($response)
     {
         if ($response instanceof JsonResponse) {
@@ -99,5 +117,22 @@ class InjectThemeEditorScript
         }
 
         return str_contains($response->headers->get('Content-Type'), 'text/html');
+    }
+
+    protected function fixCategoryOrProductRoute($routeName)
+    {
+        if ($routeName === 'shop.product_or_category.index') {
+            $slug = urldecode(trim(request()->getPathInfo(), '/'));
+
+            if ($this->categoryRepository->findBySlug($slug) !== null) {
+                return 'shop.categories.index';
+            } elseif ($this->productRepository->findBySlug($slug) !== null) {
+                return 'shop.products.index';
+            } else {
+                return 'shop.error.index';
+            }
+        }
+
+        return $routeName;
     }
 }

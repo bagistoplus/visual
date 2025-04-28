@@ -12,6 +12,10 @@
   const block = computed(() => blockData.value ? store.getSectionBlockByType(route.params.section, blockData.value.type) : null);
   const groupedSettings = computed(() => groupSettings(block.value?.settings || []));
 
+  onMounted(() => {
+    store.selectSection(route.params.section);
+  });
+
   function goBack() {
     router.back();
   }
@@ -103,7 +107,10 @@
       </Accordion.Root>
 
       <template v-if="block.settings.length > 0"></template>
-      <p v-else>{{ "This section has no configuration" }}</p>
+      <p
+        v-else
+        class="p-2 text-sm"
+      >{{ $t("This block has no configuration") }}</p>
     </section>
 
     <footer class="flex-none border-t">
@@ -112,7 +119,7 @@
         @click="onRemoveBlock"
       >
         <i-heroicons-trash class="inline mr-2 w-4" />
-        Remove block
+        {{ $t('Remove block') }}
       </button>
     </footer>
   </div>

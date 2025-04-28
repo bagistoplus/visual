@@ -47,6 +47,11 @@ class ThemeDataCollector
         return $this->sectionsData;
     }
 
+    public function setSectionData($id, SectionData $data)
+    {
+        $this->sectionsData->put($id, $data);
+    }
+
     /**
      * Get data for a specific section by ID.
      *
@@ -73,6 +78,7 @@ class ThemeDataCollector
             ->map(fn ($group) => $group['settings'])
             ->flatten(1)
             ->reject(fn ($schema) => $schema['type'] === 'header')
+            ->keyBy('id')
             ->toArray();
 
         $settings = collect($settingsSchema)->mapWithKeys(function ($schema) use ($data) {
@@ -101,7 +107,26 @@ class ThemeDataCollector
         $data['id'] = $sectionId;
         $data['name'] = $section->name;
 
-        $this->sectionsData->put($sectionId, SectionData::make($sectionId, $data, $section));
+        if (! isset($data['settings']) && isset($section->default)) {
+            $data['settings'] = $section->default['settings'] ?? [];
+        }
+
+        if (! isset($data['blocks']) && isset($section->default)) {
+            $data['blocks'] = collect($section->default['blocks'] ?? [])
+                ->mapWithKeys(function ($block) {
+                    return [$block['type'] => $block];
+                })
+                ->toArray();
+
+            $data['blocks_order'] = array_keys($data['blocks']);
+        }
+
+        $this->sectionsData->put($sectionId, SectionData::make(
+            id: $sectionId,
+            data: $data,
+            section: $section,
+            sourceFile: $dataFilePath
+        ));
     }
 
     /**
@@ -115,11 +140,7 @@ class ThemeDataCollector
     {
         $data = $this->loadFileContent($path);
 
-        return Arr::get($data, "sections.$sectionId", [
-            'settings' => [],
-            'blocks' => [],
-            'block_order' => [],
-        ]);
+        return Arr::get($data, "sections.$sectionId");
     }
 
     /**

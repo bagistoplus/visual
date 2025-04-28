@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Sections;
 
 use BagistoPlus\Visual\Facades\Visual;
+use BagistoPlus\Visual\Sections\Concerns\SectionData;
 use BagistoPlus\Visual\Sections\Concerns\SectionTrait;
 use Illuminate\View\Component;
 
@@ -10,7 +11,15 @@ abstract class BladeSection extends Component implements SectionInterface
 {
     use SectionTrait;
 
-    public function __construct(public string $visualId, protected array $viewData) {}
+    public SectionData $section;
+
+    public array $context;
+
+    public function __construct(public string $visualId, protected array $viewData)
+    {
+        $this->section = Visual::themeDataCollector()->getSectionData($visualId);
+        $this->context = $viewData;
+    }
 
     public function data()
     {
@@ -33,15 +42,17 @@ abstract class BladeSection extends Component implements SectionInterface
     {
         return array_merge(parent::ignoredMethods(), [
             'slug',
+            'name',
             'getSchemaPath',
             'getSchema',
+            'getViewData',
         ]);
     }
 
     protected function getVisualSectionData()
     {
         return [
-            'section' => Visual::themeDataCollector()->getSectionData($this->visualId),
+            'section' => $this->section,
         ];
     }
 }

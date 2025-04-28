@@ -1,5 +1,5 @@
-import { createFetch } from "@vueuse/core";
-import { ThemeData } from "./types";
+import { createFetch } from '@vueuse/core';
+import { ThemeData } from './types';
 
 const routes = window.ThemeEditor.routes;
 
@@ -8,9 +8,10 @@ const useFetch = createFetch({
     beforeFetch({ options }) {
       const headers = new Headers(options.headers || []);
 
-      headers.append('X-CSRF-Token',
-        document.querySelector('meta[name="csrf-token"]')!.getAttribute("content") as string
-      )
+      headers.append(
+        'X-CSRF-Token',
+        document.querySelector('meta[name="csrf-token"]')!.getAttribute('content') as string
+      );
 
       options.headers = headers;
 
@@ -18,7 +19,7 @@ const useFetch = createFetch({
     },
   },
   fetchOptions: {
-    mode: "cors",
+    mode: 'cors',
   },
 });
 
@@ -35,7 +36,7 @@ export function useFetchCategories() {
 }
 
 export function useFetchProducts() {
-  const url = ref('/api/products')
+  const url = ref('/api/products');
   const context = useFetch(url, { refetch: true, immediate: false }).get().json();
 
   function execute(params: Record<string, any>) {
@@ -45,6 +46,8 @@ export function useFetchProducts() {
       newUrl.searchParams.append(key, value);
     }
 
+    newUrl.searchParams.append('limit', '10');
+
     url.value = newUrl.href;
   }
 
@@ -52,7 +55,7 @@ export function useFetchProducts() {
 }
 
 export function useFetchCmsPages() {
-  const url = ref(window.ThemeEditor.routes.getCmsPages)
+  const url = ref(window.ThemeEditor.routes.getCmsPages);
   const context = useFetch(url, { refetch: true, immediate: false }).get().json();
 
   function execute(params: Record<string, any>) {
