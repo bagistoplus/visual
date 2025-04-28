@@ -81,14 +81,14 @@ class InjectThemeEditorScript
             ];
 
             $editorScript = view('visual::admin.editor.injected-script', [
-                'theme' => $this->themeEditor->activeTheme(),
+                'theme' => $this->getCurrentTheme(),
                 'themeData' => $themeData,
                 'templates' => $this->themeEditor->getTemplates(),
                 'settingsSchema' => app('themes')->current()->settingsSchema,
             ]);
         } else {
             $editorScript = view('visual::admin.editor.injected-script', [
-                'theme' => $this->themeEditor->activeTheme(),
+                'theme' => $this->getCurrentTheme(),
             ]);
         }
 
@@ -96,6 +96,18 @@ class InjectThemeEditorScript
         $response->setContent($content);
 
         return $response;
+    }
+
+    protected function getCurrentTheme()
+    {
+        /** @var \BagistoPlus\Visual\Theme\Theme */
+        $theme = app('themes')->current();
+
+        return [
+            'code' => $theme->code,
+            'name' => $theme->name,
+            'version' => $theme->version,
+        ];
     }
 
     protected function isHtmlResponse($response)

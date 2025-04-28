@@ -1,5 +1,5 @@
-import { Section, Setting, Template, ThemeData, WindowThemeEditor } from "./types";
-export {}
+import type { Setting, Template, ThemeData, WindowThemeEditor } from './types';
+export {};
 
 declare global {
   interface Window {

@@ -19,12 +19,9 @@ export default defineConfig({
   },
   plugins: [
     laravel({
-      input: [
-        'resources/assets/editor/index.ts',
-        'resources/assets/editor/injected.ts'
-      ],
+      input: ['resources/assets/editor/index.ts', 'resources/assets/editor/injected.ts'],
       buildDirectory: 'editor',
-      hotFile: 'public/editor.hot'
+      hotFile: 'public/editor.hot',
     }),
 
     VueMacros({
@@ -45,12 +42,13 @@ export default defineConfig({
       dts: 'resources/assets/editor/typed-routes.d.ts',
       routesFolder: [
         {
-          src: 'resources/assets/editor/views'
-        }
-      ]
+          src: 'resources/assets/editor/views',
+        },
+      ],
+      importMode: 'sync',
     }),
 
-     // https://github.com/antfu/unplugin-auto-import
+    // https://github.com/antfu/unplugin-auto-import
     AutoImport({
       imports: [
         'vue',
@@ -62,9 +60,7 @@ export default defineConfig({
         },
       ],
       dts: './resources/assets/editor/auto-imports.d.ts',
-      dirs: [
-        './resources/assets/editor/composables',
-      ],
+      dirs: ['./resources/assets/editor/composables'],
       vueTemplate: true,
       viteOptimizeDeps: true,
     }),
@@ -73,9 +69,7 @@ export default defineConfig({
     Components({
       dts: './resources/assets/editor/components.d.ts',
       dirs: ['resources/assets/editor/components'],
-      resolvers: [
-        IconsResolver()
-      ]
+      resolvers: [IconsResolver()],
     }),
 
     Icons({
@@ -87,9 +81,9 @@ export default defineConfig({
     postcss: {
       plugins: [
         tailwindcss({
-          config: './tailwind.editor.config.js'
-        })
-      ]
-    }
-  }
+          config: './tailwind.editor.config.js',
+        }),
+      ],
+    },
+  },
 });

@@ -1,4 +1,8 @@
-<div x-dropdown class="relative">
+<div
+  x-data
+  x-dropdown
+  class="relative"
+>
   <button
     x-dropdown:trigger
     class="relative p-2"
@@ -23,7 +27,9 @@
         </div>
         <div class="p-4">
           <div class="grid grid-cols-2 gap-2">
-            <a class="bg-primary text-primary-100 flex items-center justify-center gap-2 rounded-lg px-4 py-2 transition-opacity hover:opacity-90" href="{{ route('shop.customer.session.create') }}">
+            <a class="bg-primary text-primary-100 flex items-center justify-center gap-2 rounded-lg px-4 py-2 transition-opacity hover:opacity-90"
+              href="{{ route('shop.customer.session.create') }}"
+            >
               <x-lucide-log-in class="h-4 w-4" />
               @lang('shop::app.components.layouts.header.sign-in')
             </a>

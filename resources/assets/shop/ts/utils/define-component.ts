@@ -46,60 +46,61 @@ export function defineComponent<RootApi>({ name, setup, parts }: ComponentConfig
   return (Alpine: AlpineType) => {
     Alpine.magic(toCamelCase(name), (el) => Alpine.$data(el));
 
-    Alpine.directive(name, (el, { value: partName, expression, modifiers }, { evaluate, cleanup }) => {
-      if (!partName) {
-        const instanceId = useId(name);
-        const userConfig = expression ? evaluate(expression) : ({} as any);
-        const generateId = (part: string) => `${instanceId}:${part}`;
+    Alpine.directive(name, (el, { value: partName, expression, modifiers }, { evaluateLater, cleanup }) => {
+      const safeEvaluate = expression.trim() ? evaluateLater(expression) : (cb: (arg0: any) => any) => cb(null);
 
-        const api = Alpine.reactive(setup(userConfig, { generateId }));
-        (api as any)._generateId = generateId;
+      safeEvaluate((value: any) => {
+        if (!partName) {
+          const instanceId = useId(name);
+          const generateId = (part: string) => `${instanceId}:${part}`;
 
-        Alpine.bind(el, {
-          'x-id': () => [name],
-          'x-data': () => api,
-        });
+          const api = Alpine.reactive(setup(value || {}, { generateId }));
+          (api as any)._generateId = generateId;
 
-        if (typeof parts?.root === 'function') {
-          const bindings = parts.root.call(api as any, api as any, el, {
-            value: undefined,
-            modifiers,
-            Alpine,
-            cleanup,
-            generateId,
+          Alpine.bind(el, {
+            'x-id': () => [name],
+            'x-data': () => api,
           });
 
-          if (bindings) {
-            Alpine.bind(el, bindings);
+          if (typeof parts?.root === 'function') {
+            const bindings = parts.root.call(api as any, api as any, el, {
+              value: undefined,
+              modifiers,
+              Alpine,
+              cleanup,
+              generateId,
+            });
+
+            if (bindings) {
+              Alpine.bind(el, bindings);
+            }
           }
+
+          return;
         }
 
-        return;
-      }
+        const camelPartName = toCamelCase(partName);
+        const handler = parts ? parts[camelPartName] : null;
 
-      const camelPartName = toCamelCase(partName);
-      const handler = parts ? parts[camelPartName] : null;
+        if (!handler) return;
 
-      if (!handler) return;
+        const api = Alpine.$data(el);
+        const generateId = (api as any)._generateId;
 
-      const api = Alpine.$data(el);
-      const value = expression ? evaluate(expression) : undefined;
+        const context: PartContext = {
+          value,
+          modifiers,
+          Alpine,
+          cleanup,
+          generateId,
+        };
 
-      const generateId = (api as any)._generateId;
+        const bindings = handler.call(api as any, api as any, el, context) ?? {};
 
-      const context: PartContext = {
-        value,
-        modifiers,
-        Alpine,
-        cleanup,
-        generateId,
-      };
-
-      const bindings = handler.call(api as any, api as any, el, context) ?? {};
-
-      Alpine.bind(el, {
-        'data-part': partName,
-        ...bindings,
+        Alpine.bind(el, {
+          'data-part': partName,
+          ...bindings,
+        });
       });
     }).before('bind');
   };

@@ -2,6 +2,11 @@
 
 namespace BagistoPlus\Visual\Sections;
 
+use BagistoPlus\Visual\Sections\Settings\Checkbox;
+use BagistoPlus\Visual\Sections\Settings\Link;
+use BagistoPlus\Visual\Sections\Settings\Text;
+use BagistoPlus\Visual\Sections\Settings\Textarea;
+
 class Footer extends BladeSection
 {
     protected static string $view = 'shop::sections.footer';
@@ -61,6 +66,41 @@ class Footer extends BladeSection
                     ['text' => 'Forget Password', 'url' => route('shop.customers.forgot_password.create')],
                 ],
             ],
+        ];
+    }
+
+    public static function settings(): array
+    {
+        return [
+            Text::make('heading', __('visual::sections.footer.settings.heading_label'))
+                ->default(__('visual::sections.footer.settings.heading_default')),
+
+            Textarea::make('description', __('visual::sections.footer.settings.description_label'))
+                ->default(__('visual::sections.footer.settings.description_default')),
+
+            Checkbox::make('show_social_links', __('visual::sections.footer.settings.show_social_links_label'))
+                ->default(true)
+                ->info(__('visual::sections.footer.settings.show_social_links_info')),
+        ];
+    }
+
+    public static function blocks(): array
+    {
+        return [
+            Block::make('group', __('visual::sections.footer.blocks.group.name'))
+                ->settings([
+                    Text::make('title', __('visual::sections.footer.blocks.group.settings.title_label'))
+                        ->default(__('visual::sections.footer.blocks.group.settings.title_default')),
+                ]),
+
+            Block::make('link', __('visual::sections.footer.blocks.link.name'))
+                ->settings([
+                    Text::make('text', 'Text')
+                        ->default('Link text'),
+
+                    Link::make('link', __('visual::sections.footer.blocks.link.settings.link_label'))
+                        ->default('/'),
+                ]),
         ];
     }
 }

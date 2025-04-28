@@ -1,1 +1,0 @@
-function g(n){const e=[];let t={name:"Settings",settings:[]};return n.forEach(s=>{if(s.type==="header"){t.settings.length>0&&e.push({...t}),t={name:s.label,settings:[]};return}t.settings.push(s)}),t.settings.length>0&&e.push({...t}),e}export{g};

@@ -11,8 +11,6 @@ class ProductDetails extends LivewireSection
 {
     public static string $view = 'shop::sections.product-details';
 
-    public static string $schema = __DIR__.'/../../resources/schemas/product-details.json';
-
     public int $quantity = 1;
 
     public array $variantAttributes = [];
@@ -204,6 +202,96 @@ class ProductDetails extends LivewireSection
             'showQuantitySelector' => $product->getTypeInstance()->showQuantityBox(),
             'blocksOnRight' => $this->getBlocksOnRight(),
             'blocksOnBottom' => $this->getBlocksOnBottom(),
+        ];
+    }
+
+    public static function blocks(): array
+    {
+        $positionSelect = Settings\Select::make('position', __('visual::sections.product-details.settings.position_label'))
+            ->options([
+                'right' => __('visual::sections.product-details.settings.position_right'),
+                'under_gallery' => __('visual::sections.product-details.settings.position_under_gallery'),
+            ])
+            ->default('right');
+
+        return [
+            Block::make('text', __('visual::sections.product-details.blocks.text.name'))
+                ->settings([
+                    clone $positionSelect,
+                    Settings\RichText::make('text', __('visual::sections.product-details.blocks.text.settings.text_label')),
+                ]),
+
+            Block::make('title', __('visual::sections.product-details.blocks.title.name'))
+                ->limit(1)
+                ->settings([clone $positionSelect]),
+
+            Block::make('price', __('visual::sections.product-details.blocks.price.name'))
+                ->limit(1)
+                ->settings([clone $positionSelect]),
+
+            Block::make('rating', __('visual::sections.product-details.blocks.rating.name'))
+                ->limit(1)
+                ->settings([clone $positionSelect]),
+
+            Block::make('short-description', __('visual::sections.product-details.blocks.short-description.name'))
+                ->limit(1)
+                ->settings([clone $positionSelect]),
+
+            Block::make('quantity-selector', __('visual::sections.product-details.blocks.quantity-selector.name'))
+                ->limit(1)
+                ->settings([clone $positionSelect]),
+
+            Block::make('buy-buttons', __('visual::sections.product-details.blocks.buy-buttons.name'))
+                ->limit(2)
+                ->settings([
+                    clone $positionSelect,
+                    Settings\Checkbox::make('enable_buy_now', __('visual::sections.product-details.blocks.buy-buttons.settings.enable_buy_now_label'))
+                        ->info(__('visual::sections.product-details.blocks.buy-buttons.settings.enable_buy_now_info'))
+                        ->default(true),
+                ]),
+
+            Block::make('description', __('visual::sections.product-details.blocks.description.name'))
+                ->limit(2)
+                ->settings([clone $positionSelect]),
+
+            Block::make('variant-picker', __('visual::sections.product-details.blocks.variant-picker.name'))
+                ->limit(1)
+                ->settings([clone $positionSelect]),
+
+            Block::make('grouped-options', __('visual::sections.product-details.blocks.grouped-options.name'))
+                ->limit(1)
+                ->settings([clone $positionSelect]),
+
+            Block::make('bundle-options', __('visual::sections.product-details.blocks.bundle-options.name'))
+                ->limit(1)
+                ->settings([clone $positionSelect]),
+
+            Block::make('downloadable-options', __('visual::sections.product-details.blocks.downloadable-options.name'))
+                ->limit(1)
+                ->settings([clone $positionSelect]),
+
+            Block::make('separator', __('visual::sections.product-details.blocks.separator.name'))
+                ->settings([clone $positionSelect]),
+        ];
+    }
+
+    public static function default(): array
+    {
+        return [
+            'blocks' => [
+                ['type' => 'title'],
+                ['type' => 'price'],
+                ['type' => 'rating'],
+                ['type' => 'short-description'],
+                ['type' => 'variant-picker'],
+                ['type' => 'grouped-options'],
+                ['type' => 'bundle-options'],
+                ['type' => 'downloadable-options'],
+                ['type' => 'quantity-selector'],
+                ['type' => 'buy-buttons'],
+                ['type' => 'separator'],
+                ['type' => 'description'],
+            ],
         ];
     }
 }

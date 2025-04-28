@@ -3,6 +3,7 @@
   import { useStore } from '../store';
 
   const store = useStore();
+  const router = useRouter();
 
   const emit = defineEmits<{
     (e: 'select', value: any): void;
@@ -12,11 +13,17 @@
   const selected = computed(() => store.templates.find(t => t.template === model.value));
 
 
-  watch(() => store.templates, (templates) => {
-    if (!model.value && templates.length) {
-      model.value = templates[0].template;
-    }
-  });
+  watch(
+    [store.templates, () => store.themeData.template],
+    ([templates, activeTemplate]) => {
+      if (activeTemplate && model.value !== activeTemplate) {
+        model.value = activeTemplate;
+      } else if (!model.value && templates.length) {
+        model.value = templates[0].template;
+      }
+    },
+    { immediate: true }
+  );
 
   function onSelect({ value }: { value: string }) {
     model.value = value;
@@ -26,10 +33,10 @@
 
 <template>
   <Menu.Root @select="onSelect">
-    <Menu.Trigger class="min-w-44 py-2 appearance-none rounded-lg cursor-pointer inline-flex gap-3 outline-none relative select-none items-center justify-center hover:bg-gray-200">
+    <Menu.Trigger class="min-w-44 px-4 py-2 appearance-none rounded-lg cursor-pointer inline-flex gap-3 outline-none relative select-none items-center justify-center hover:bg-gray-200">
       <template v-if="selected">
-        <span v-html="selected!.icon"></span>
-        {{ selected!.label }}
+        <span v-html="selected.icon"></span>
+        {{ selected.label }}
       </template>
       <Menu.Indicator>
         <i-heroicons-chevron-down class="inline w-4" />

@@ -16,6 +16,8 @@ class LinkTransformer
 
         if (preg_match('/^visual:\/\/([^:]+):([^\/]+)\/(.*)?$/', $url, $matches)) {
             return match ($matches[1]) {
+                'categories' => url($matches[3]),
+                'products' => url($matches[3]),
                 'cms_pages' => route('shop.cms.page', ['slug' => $matches[3]]),
                 default => url($matches[3]),
             };

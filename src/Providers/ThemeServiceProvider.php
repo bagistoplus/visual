@@ -2,7 +2,6 @@
 
 namespace BagistoPlus\Visual\Providers;
 
-use BagistoPlus\Visual\JsonSchemaValidator;
 use Illuminate\Contracts\Foundation\CachesConfiguration;
 use Illuminate\Support\ServiceProvider;
 use ReflectionClass;
@@ -58,9 +57,13 @@ abstract class ThemeServiceProvider extends ServiceProvider
             return [];
         }
 
-        JsonSchemaValidator::validateThemeSettingsSchema($schemaPath);
+        $settings = require $schemaPath;
 
-        return json_decode(file_get_contents($schemaPath), true);
+        return collect($settings)->map(function ($group) {
+            $group['settings'] = collect($group['settings'])->toArray();
+
+            return $group;
+        })->toArray();
     }
 
     /**
@@ -105,7 +108,7 @@ abstract class ThemeServiceProvider extends ServiceProvider
      */
     public function getThemeSettingsPath(): string
     {
-        return $this->getBasePath().'/config/settings.json';
+        return $this->getBasePath().'/config/settings.php';
     }
 
     /**
