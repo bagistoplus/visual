@@ -106,7 +106,7 @@ class InjectThemeEditorScript
         return [
             'code' => $theme->code,
             'name' => $theme->name,
-            'version' => $theme->version
+            'version' => $theme->version,
         ];
     }
 
