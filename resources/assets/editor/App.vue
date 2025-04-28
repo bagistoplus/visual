@@ -21,11 +21,17 @@
 
   const messageHandlers: Record<string, Function> = {
     initialize(data: { themeData: ThemeData, templates: Template[], settingsSchema: SettingsSchema }) {
+      const templateChanged = store.themeData.template !== data.themeData.template;
+
       store.setThemeData(data.themeData);
       store.setSettingsSchema(data.settingsSchema);
       store.setTemplates(data.templates);
       store.setAvailableSections(window.ThemeEditor.availableSections);
       store.setPreviewIframeReady()
+
+      if (templateChanged) {
+        router.replace('/');
+      }
 
       nprogress.done();
     },
@@ -34,10 +40,10 @@
       Object.assign(store.usedColors, colors);
     },
 
-    'moveSectionUp': store.moveSectionUp,
-    'moveSectionDown': store.moveSectionDown,
-    'toggleSection': store.toggleSection,
-    'removeSection': store.removeSection,
+    'section:move-up': store.moveSectionUp,
+    'section:move-down': store.moveSectionDown,
+    'section:toggle': store.toggleSection,
+    'section:remove': store.removeSection,
   };
 
   window.addEventListener('message', (event) => {

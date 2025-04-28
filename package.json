@@ -39,6 +39,7 @@
     "@zag-js/file-upload": "^0.74.2",
     "@zag-js/vue": "^0.74.2",
     "autoprefixer": "^10.4.20",
+    "debounce-async": "^0.0.2",
     "idiomorph": "^0.7.3",
     "laravel-vite-plugin": "^1.0.5",
     "lodash": "^4.17.21",

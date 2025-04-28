@@ -57,7 +57,7 @@
   </style>
 
   <div id="section-overlay">
-    <span id="label">section name</span>
+    <span id="label"></span>
     <div id="buttons">
       <button
         id="move-down"
@@ -88,7 +88,17 @@
       ><x-heroicon-o-trash /></button>
     </div>
   </div>
+@endif
 
+<script type="text/javascript">
+  window.Visual = {
+    inPreviewMode: true,
+    inDesignMode: false,
+    theme: @json($theme)
+  }
+</script>
+
+@if (ThemeEditor::inDesignMode())
   <script type="text/javascript">
     window.themeData = @json($themeData);
     window.settingsSchema = @json($settingsSchema);
@@ -102,11 +112,3 @@
   }}
 {{-- blade-formatter-enable --}}
 @endif
-
-<script type="text/javascript">
-  // if (window.Livewire) {
-  //   window.Livewire.addHeaders({
-  //     'x-visual-editor-theme': '{{ $theme }}'
-  //   });
-  // }
-</script>

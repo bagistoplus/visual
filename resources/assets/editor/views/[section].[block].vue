@@ -13,7 +13,7 @@
   const groupedSettings = computed(() => groupSettings(block.value?.settings || []));
 
   onMounted(() => {
-    store.activateSection(route.params.section);
+    store.selectSection(route.params.section);
   });
 
   function goBack() {

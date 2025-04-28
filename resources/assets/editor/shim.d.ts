@@ -6,3 +6,4 @@ declare module '*.vue' {
 }
 
 declare module 'idiomorph/dist/idiomorph.esm.js';
+declare module 'debounce-async';

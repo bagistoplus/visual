@@ -37,7 +37,7 @@
   });
 
   onMounted(() => {
-    store.activateSection(route.params.section);
+    store.selectSection(route.params.section);
   });
 
   function goBack() {

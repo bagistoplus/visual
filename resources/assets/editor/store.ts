@@ -2,7 +2,7 @@ import { useNProgress } from '@vueuse/integrations/useNProgress';
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import setValue from 'lodash/set';
 import getValue from 'lodash/get';
-import debounce from 'lodash/debounce';
+import debounce from 'debounce-async';
 import { v4 as uuidv4 } from 'uuid';
 import { History } from 'stateshot';
 
@@ -19,7 +19,6 @@ import type {
   ThemeData,
 } from './types';
 import { useFetchCategories, useFetchCmsPages, useFetchImages, useFetchProducts, usePublishTheme } from './api';
-import { get } from 'sortablejs';
 
 interface Models {
   categories: Record<number, Category>;
@@ -27,14 +26,13 @@ interface Models {
   cmsPages: Record<number, CmsPage>;
 }
 
+const previewIframe = useIframeRpc();
+
 export const useStore = defineStore('main', () => {
   let availableSections: Record<string, Section> = {};
-  let previewIframe: HTMLIFrameElement | null = null;
-  let previewIframeLoaded = false;
 
   const nprogress = useNProgress();
   const history = new History();
-  const previewIframeMessageQueue: { type: string; data: any }[] = [];
 
   const templates = ref<Template[]>([]);
   const settingsSchema = ref<SettingsSchema>([]);
@@ -53,13 +51,10 @@ export const useStore = defineStore('main', () => {
     sectionsData: {},
     settings: {},
   });
+
   const activeSectionId = ref<string | null>(null);
   const images = reactive<Image[]>([]);
-  const models = reactive<Models>({
-    categories: {},
-    products: {},
-    cmsPages: {},
-  });
+  const models = reactive<Models>({ categories: {}, products: {}, cmsPages: {} });
 
   const canUndoHistory = ref(false);
   const canRedoHistory = ref(false);
@@ -91,26 +86,26 @@ export const useStore = defineStore('main', () => {
 
   const contentSectionsOrder = computed(() => themeData.sectionsOrder);
   const contentSections = computed(() => {
-    return contentSectionsOrder.value.map((id: string) => themeData.sectionsData[id]);
+    return contentSectionsOrder.value.map((id) => themeData.sectionsData[id]);
   });
 
   const beforeContentSections = computed(() => {
-    return themeData.beforeContentSectionsOrder.map((id: string) => themeData.sectionsData[id]);
+    return themeData.beforeContentSectionsOrder.map((id) => themeData.sectionsData[id]);
   });
 
   const afterContentSections = computed(() => {
-    return themeData.afterContentSectionsOrder.map((id: string) => themeData.sectionsData[id]);
+    return themeData.afterContentSectionsOrder.map((id) => themeData.sectionsData[id]);
   });
 
-  const persistThemeData = debounce(({ skipHistory }: { skipHistory: boolean } = { skipHistory: false }) => {
-    const headers = new Headers();
-    headers.append('content-type', 'application/json');
-    headers.append(
-      'X-CSRF-Token',
-      document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') as string
-    );
+  const persistThemeData = debounce(async ({ skipHistory = false, skipPreviewRefresh = false } = {}) => {
+    const headers = new Headers({
+      'content-type': 'application/json',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') as string,
+    });
 
-    nprogress.start();
+    if (!skipPreviewRefresh) {
+      nprogress.start();
+    }
 
     if (!skipHistory) {
       history.pushSync(structuredClone(toRaw(themeData)));
@@ -118,18 +113,24 @@ export const useStore = defineStore('main', () => {
       canRedoHistory.value = history.hasRedo;
     }
 
-    fetch(window.ThemeEditor.routes.persistTheme, {
-      headers,
-      method: 'post',
-      body: JSON.stringify(themeData),
-    })
-      .then((res) => res.text())
-      .then((html) => {
-        refreshPreviewer(html);
-      })
-      .finally(() => {
-        nprogress.done();
+    try {
+      const res = await fetch(window.ThemeEditor.routes.persistTheme, {
+        headers,
+        method: 'post',
+        body: JSON.stringify(themeData),
       });
+
+      if (!skipPreviewRefresh) {
+        const html = await res.text();
+        await previewIframe.call('refresh', html);
+      }
+    } catch (error) {
+      console.error('Failed to persistThemeData: ' + error);
+    } finally {
+      if (!skipPreviewRefresh) {
+        nprogress.done();
+      }
+    }
   }, 500);
 
   function publishTheme() {
@@ -145,6 +146,14 @@ export const useStore = defineStore('main', () => {
       canUndoHistory.value = history.hasUndo;
       canRedoHistory.value = history.hasRedo;
     });
+  }
+
+  function setPreviewIframe(iframe: HTMLIFrameElement) {
+    previewIframe.setIframe(iframe);
+  }
+
+  function setPreviewIframeReady() {
+    previewIframe.markReady();
   }
 
   function undoHistory() {
@@ -167,39 +176,30 @@ export const useStore = defineStore('main', () => {
     canRedoHistory.value = history.hasRedo;
   }
 
-  function setPreviewIframeReady() {
-    previewIframeLoaded = true;
-
-    previewIframeMessageQueue.forEach(({ type, data }) => {
-      notifyPreviewIframe(type, data);
-    });
-
-    previewIframeMessageQueue.length = 0;
+  // Getters
+  function searchCategories(search: string) {
+    return categories.value.filter((category) => new RegExp(search, 'gi').test(category.name));
   }
 
-  function notifyPreviewIframe(type: string, data?: any) {
-    if (!previewIframeLoaded) {
-      previewIframeMessageQueue.push({ type, data });
-      return;
+  function getProduct(id: number) {
+    return models.products[id];
+  }
+
+  function getCmsPage(id: number) {
+    let page = models.cmsPages[id];
+
+    if (page) {
+      const trans = page.translations.find((t) => t.locale === themeData.locale);
+      if (trans) {
+        page.url_key = trans.url_key;
+        page.page_title = trans.page_title;
+      }
     }
 
-    previewIframe?.contentWindow?.postMessage(
-      {
-        type,
-        data: structuredClone(data),
-      },
-      window.origin
-    );
+    return page;
   }
 
-  function refreshPreviewer(html: string) {
-    notifyPreviewIframe('refresh', html);
-  }
-
-  function setPreviewIframe(iframe: HTMLIFrameElement) {
-    previewIframe = iframe;
-  }
-
+  // Setters
   function setThemeData(data: ThemeData) {
     for (const [id, section] of Object.entries(data.sectionsData)) {
       if (section.blocks_order.length === 0) {
@@ -223,70 +223,102 @@ export const useStore = defineStore('main', () => {
     settingsSchema.value = schema;
   }
 
+  // Settings update
+  function _parseSettingPath(path: string[] | string) {
+    const parts = Array.isArray(path) ? path : path.split('.');
+
+    if (parts[0] === 'sectionsData') {
+      const sectionId = parts[1];
+      const section = toRaw(themeData.sectionsData?.[sectionId]) || null;
+
+      if (!section) {
+        return { section: null, block: null, settingId: null };
+      }
+
+      if (parts[2] === 'blocks') {
+        const blockId = parts[3];
+        const block = toRaw(section.blocks?.[blockId]) || null;
+        const settingId = parts.slice(5).join('.');
+
+        return { section, block, settingId };
+      }
+
+      const settingId = parts.slice(3).join('.');
+
+      return { section, block: null, settingId };
+    }
+
+    if (parts[0] === 'settings') {
+      const settingId = parts.slice(1).join('.');
+      return { section: null, block: null, settingId };
+    }
+
+    return { section: null, block: null, settingId: null };
+  }
+
+  async function updateThemeDataValue(keyPath: string | string[], value: unknown) {
+    setValue(themeData, keyPath, value);
+
+    const context = _parseSettingPath(keyPath);
+    let skipPreviewRefresh = false;
+
+    if (context.settingId) {
+      const response = await previewIframe.call('setting:update', {
+        ...context,
+        settingValue: value,
+      });
+
+      if (response?.skipRefresh) {
+        skipPreviewRefresh = true;
+      }
+    }
+
+    if (context.section && !skipPreviewRefresh) {
+      await previewIframe.call('section:updating', { section: context.section }, 0);
+    }
+
+    const res = await persistThemeData({ skipPreviewRefresh });
+
+    if (context.section && !skipPreviewRefresh) {
+      await previewIframe.call('section:updated', { section: context.section });
+    }
+  }
+
   function getThemeDataValue(keyPath: string | string[]): unknown {
     return getValue(themeData, keyPath);
   }
 
-  function updateThemeDataValue(keyPath: string | string[], value: unknown) {
-    setValue(themeData, keyPath, value);
-    persistThemeData();
-  }
-
-  function activateSection(sectionId: string) {
-    activeSectionId.value = sectionId;
-    notifyPreviewIframe('highlightSection', sectionId);
-  }
-
-  function deactivateSection(sectionId: string) {
-    activeSectionId.value = null;
-    notifyPreviewIframe('clearActiveSection', sectionId);
-  }
-
-  function setContentSectionsOrder(order: string[]) {
-    updateThemeDataValue('sectionsOrder', order);
-    notifyPreviewIframe('sectionsOrder', order);
-    persistThemeData();
-  }
-
+  // Section operations
   function moveSectionUp(sectionId: string) {
-    const index = themeData.sectionsOrder.indexOf(sectionId);
+    const idx = themeData.sectionsOrder.indexOf(sectionId);
 
-    if (index === 0) {
+    if (idx === 0) {
       return;
     }
+    themeData.sectionsOrder.splice(idx, 1);
+    themeData.sectionsOrder.splice(idx - 1, 0, sectionId);
 
-    themeData.sectionsOrder.splice(index, 1);
-    themeData.sectionsOrder.splice(index - 1, 0, sectionId);
-
-    notifyPreviewIframe('sectionsOrder', themeData.sectionsOrder);
+    previewIframe.call('sectionsOrder', toRaw(themeData.sectionsOrder));
     persistThemeData();
   }
 
   function moveSectionDown(sectionId: string) {
-    const index = themeData.sectionsOrder.indexOf(sectionId);
+    const idx = themeData.sectionsOrder.indexOf(sectionId);
 
-    if (index === themeData.sectionsOrder.length - 1) {
+    if (idx === themeData.sectionsOrder.length - 1) {
       return;
     }
 
-    themeData.sectionsOrder.splice(index, 1);
-    themeData.sectionsOrder.splice(index + 1, 0, sectionId);
+    themeData.sectionsOrder.splice(idx, 1);
+    themeData.sectionsOrder.splice(idx + 1, 0, sectionId);
 
-    notifyPreviewIframe('sectionsOrder', themeData.sectionsOrder);
+    previewIframe.call('sectionsOrder', toRaw(themeData.sectionsOrder));
     persistThemeData();
   }
 
   function toggleSection(sectionId: string) {
     themeData.sectionsData[sectionId].disabled = !themeData.sectionsData[sectionId].disabled;
 
-    persistThemeData();
-  }
-
-  function removeSection(sectionId: string) {
-    delete themeData.sectionsData[sectionId];
-    themeData.sectionsOrder = themeData.sectionsOrder.filter((id) => id !== sectionId);
-
-    notifyPreviewIframe('sectionsOrder', themeData.sectionsOrder);
     persistThemeData();
   }
 
@@ -298,26 +330,19 @@ export const useStore = defineStore('main', () => {
     return availableSections[slug];
   }
 
-  function getSectionBlockData(sectionId: string, blockId: string) {
-    const sectionData = getSectionData(sectionId);
-    return sectionData ? sectionData.blocks[blockId] : null;
+  function removeSection(sectionId: string) {
+    const section = themeData.sectionsData[sectionId];
+
+    delete themeData.sectionsData[sectionId];
+    themeData.sectionsOrder = themeData.sectionsOrder.filter((id) => id !== sectionId);
+
+    previewIframe.call('sectionsOrder', toRaw(themeData.sectionsOrder));
+    previewIframe.call('section:removed', { section: toRaw(section) });
+
+    persistThemeData();
   }
 
-  function getSectionBlockByType(sectionId: string, type: string) {
-    const sectionData = getSectionData(sectionId);
-    if (!sectionData) {
-      return null;
-    }
-
-    const section = getSectionBySlug(sectionData.type);
-    return section.blocks.find((b) => b.type === type);
-  }
-
-  function canRemoveSection(sectionId: string) {
-    return themeData.sectionsOrder.includes(sectionId);
-  }
-
-  function addNewSection(section: Section) {
+  async function addNewSection(section: Section) {
     const settings: Record<string, unknown> = {};
     const id = uuidv4();
 
@@ -337,10 +362,11 @@ export const useStore = defineStore('main', () => {
 
     themeData.sectionsOrder.push(id);
 
-    persistThemeData();
+    await persistThemeData();
+    previewIframe.call('section:added', { section: toRaw(themeData.sectionsData[id]) });
   }
 
-  function addBlockToSection(sectionId: string, block: Block) {
+  async function addBlockToSection(sectionId: string, block: Block) {
     const sectionData = themeData.sectionsData[sectionId];
     const settings: Record<string, any> = {};
     const id = uuidv4();
@@ -359,7 +385,9 @@ export const useStore = defineStore('main', () => {
 
     sectionData.blocks_order.push(id);
 
-    persistThemeData();
+    await previewIframe.call('section:updating', { section: sectionData }, 0);
+    await persistThemeData();
+    await previewIframe.call('section:updated', { section: sectionData }, 0);
   }
 
   function toggleSectionBlock(sectionId: string, blockId: string) {
@@ -379,28 +407,48 @@ export const useStore = defineStore('main', () => {
     persistThemeData();
   }
 
-  function searchCategories(search: string) {
-    return categories.value.filter((category) => new RegExp(search, 'gi').test(category.name));
+  function activateSection(sectionId: string) {
+    activeSectionId.value = sectionId;
+    previewIframe.call('section:highlight', sectionId);
   }
 
-  function getProduct(id: number) {
-    return models.products[id];
+  function deactivateSection(sectionId: string) {
+    activeSectionId.value = null;
+    previewIframe.call('clearActiveSection', sectionId);
   }
 
-  function getCmsPage(id: number) {
-    let page = models.cmsPages[id];
+  function selectSection(sectionId: string) {
+    activeSectionId.value = sectionId;
+    previewIframe.call('section:select', sectionId);
+  }
 
-    if (page) {
-      const trans = page.translations.find((t) => t.locale === themeData.locale);
-      if (trans) {
-        page.url_key = trans.url_key;
-        page.page_title = trans.page_title;
-      }
+  function setContentSectionsOrder(order: string[]) {
+    updateThemeDataValue('sectionsOrder', order);
+    previewIframe.call('sectionsOrder', order);
+  }
+
+  // Helpers
+  function getSectionBlockData(sectionId: string, blockId: string) {
+    const sectionData = getSectionData(sectionId);
+    return sectionData ? sectionData.blocks[blockId] : null;
+  }
+
+  function getSectionBlockByType(sectionId: string, type: string) {
+    const sectionData = getSectionData(sectionId);
+
+    if (!sectionData) {
+      return null;
     }
 
-    return page;
+    const section = getSectionBySlug(sectionData.type);
+    return section.blocks.find((b) => b.type === type);
   }
 
+  function canRemoveSection(sectionId: string) {
+    return themeData.sectionsOrder.includes(sectionId);
+  }
+
+  // Data fetchers
   function fetchImages() {
     const { data, execute, onFetchResponse } = useFetchImages();
 
@@ -492,6 +540,7 @@ export const useStore = defineStore('main', () => {
     updateThemeDataValue,
     activateSection,
     deactivateSection,
+    selectSection,
     setContentSectionsOrder,
     moveSectionUp,
     moveSectionDown,

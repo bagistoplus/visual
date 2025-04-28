@@ -3,6 +3,7 @@
   import { useStore } from '../store';
 
   const store = useStore();
+  const router = useRouter();
 
   const emit = defineEmits<{
     (e: 'select', value: any): void;
