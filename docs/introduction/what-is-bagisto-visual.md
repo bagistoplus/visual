@@ -1,17 +1,34 @@
 # What is Bagisto Visual?
 
-**Bagisto Visual** is a theme framework built specifically for **Bagisto**, the open-source e-commerce platform. It provides a simple, flexible, and powerful system for creating, managing, and customizing themes for Bagisto stores, with a special focus on ease of use for both developers and merchants.
+**Bagisto Visual** is the missing piece in the Bagisto ecosystem: a modern theme framework and visual editor that makes building and customizing storefronts simple, flexible, and powerful.
 
-Bagisto Visual comes with a **visual theme editor**, allowing users to manage themes without any coding knowledge, making theme customization accessible to everyone. The framework supports **JSON-based templates**, giving developers the flexibility to create customized themes with minimal effort.
+Inspired by the best systems in the e-commerce world, Bagisto Visual transforms theme development from a tedious, technical task into an intuitive experience — empowering both developers and merchants to create beautiful, high-performing stores without complexity.
 
-Whether you're a **merchant** who wants to tweak the look of your store or a **developer** looking to build custom themes, Bagisto Visual streamlines the process and eliminates the complexities traditionally associated with theme development.
+## Why Bagisto Visual?
 
-## Why I Built Bagisto Visual
+Building and maintaining Bagisto themes traditionally comes with real pain points:
 
-As a developer working on Bagisto for e-commerce stores, I encountered a significant challenge when tasked with creating a custom theme for a merchant. The process of building a theme from scratch was tedious and time-consuming. I had to dive deep into the Bagisto source code to figure out how themes worked, and there was no clear documentation on how to build a theme from the ground up.
+- Developers must dive deep into Bagisto's internals with little documentation.
+- There is no standardized, structured way to create custom themes.
+- Every small change or update requires developer intervention.
+- Merchants are often stuck, unable to tweak their store without costly and time-consuming help.
 
-Moreover, there was no standard approach or structure for building themes, which made it even harder to maintain or update the themes in the future. This posed a big problem for both developers and merchants. Whenever a merchant needed an update to their theme, they had to call the developer for help—leading to unnecessary delays, costs, and frustration.
+Whenever a merchant needed even a small visual update — a color change, a new section, a layout adjustment — they had to call a developer, causing unnecessary delays, frustration, and added costs.
 
-This experience motivated me to create **Bagisto Visual**—a solution that simplifies the process of building and managing Bagisto themes. Bagisto Visual provides a standardized, intuitive framework that not only makes the theme creation process faster and easier but also empowers merchants to take control of their store’s design without relying on developers for every update.
+**Bagisto Visual solves this problem.**
+It introduces a modern theme architecture and a visual editor that empower merchants to take control of their storefronts, while giving developers a faster, cleaner way to build flexible, maintainable themes.
 
-By offering a **visual theme editor** and **JSON-based templates**, Bagisto Visual aims to fill the gaps in Bagisto’s theme system and create a seamless experience for everyone involved.
+## Who Is Bagisto Visual For?
+
+Bagisto Visual is designed to serve multiple audiences:
+
+- **Merchants:**
+  Easily customize the look and feel of your store without writing a single line of code. Control sections, templates, content, and layout visually.
+
+- **Developers:**
+  Build themes faster with a standardized, modular structure. Create powerful, flexible sections and templates without reinventing the wheel each time.
+
+- **Agencies and Freelancers:**
+  Deliver projects faster, empower clients to manage their storefronts independently, and reduce post-launch maintenance workload.
+
+Bagisto Visual democratizes storefront customization — no matter if you're a store owner, a developer, or a full agency team.

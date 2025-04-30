@@ -10,7 +10,8 @@ phpstan.neon
 testbench.yaml
 vendor
 node_modules
-public/shop.hot
-public/editor.hot
-public/admin.hot
-!public/
+
+public/vendor/bagistoplus/visual/shop.hot
+public/vendor/bagistoplus/visual/editor.hot
+public/vendor/bagistoplus/visual/admin.hot
+!public/vendor/

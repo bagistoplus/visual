@@ -20,8 +20,8 @@ export default defineConfig({
   plugins: [
     laravel({
       input: ['resources/assets/editor/index.ts', 'resources/assets/editor/injected.ts'],
-      buildDirectory: 'editor',
-      hotFile: 'public/editor.hot',
+      buildDirectory: 'vendor/bagistoplus/visual/editor',
+      hotFile: 'public/vendor/bagistoplus/visual/editor.hot',
     }),
 
     VueMacros({
@@ -45,7 +45,7 @@ export default defineConfig({
           src: 'resources/assets/editor/views',
         },
       ],
-      importMode: 'sync',
+      // importMode: 'sync',
     }),
 
     // https://github.com/antfu/unplugin-auto-import

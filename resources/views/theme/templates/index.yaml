@@ -41,6 +41,5 @@ sections:
       nb_products: 4
   newsletter:
     type: visual-newsletter
-
 # order:
 #   - announcement-bar

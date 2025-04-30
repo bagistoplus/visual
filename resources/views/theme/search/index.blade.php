@@ -1,9 +1,7 @@
 @extends('shop::layouts.default')
 
 @php
-  $title = request()->has('query')
-      ? trans('shop::app.search.title', ['query' => request()->query('query')])
-      : trans('shop::app.search.results');
+  $title = request()->has('query') ? trans('shop::app.search.title', ['query' => request()->query('query')]) : trans('shop::app.search.results');
 @endphp
 
 @push('meta')

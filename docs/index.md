@@ -1,28 +1,29 @@
 ---
-# https://vitepress.dev/reference/default-theme-home-page
 layout: home
 
 hero:
-  name: "Bagisto Visual"
-  text: "A theme framework for bagisto"
-  tagline: Comes with a visual theme editor for merchants
+  name: 'Bagisto Visual'
+  text: 'The modern way to build and customize Bagisto storefronts'
+  tagline: 'A developer-first theme framework with a visual editor built for merchants'
+  image:
+    src: /bagistoplus-visual-logo.png
+    alt: VitePress
   actions:
     - theme: brand
-      text: "What is Bagisto Visual?"
+      text: 'Get Started'
+      link: /introduction/getting-started
+    - theme: alt
+      text: 'What is Bagisto Visual?'
       link: /introduction/what-is-bagisto-visual
     - theme: alt
-      text: "Get Started"
-      link: /getting-started/installation
-    - theme: alt
-      text: "GitHub"
-      link: https://github.com/your-repo
+      text: 'GitHub'
+      link: https://github.com/bagistoplus/visual
 
 features:
-  - title: "Simple Theme Framework"
-    details: "Bagisto Visual provides a straightforward theme framework, making it easy to create and customize your Bagisto store."
-  - title: "JSON-Based Templates"
-    details: "Leverage flexible, JSON-based templates that enable quick customizations and theme configuration."
-  - title: "Visual Theme Editor"
-    details: "The visual theme editor allows both developers and merchants to easily modify store themes without writing code."
-
+  - title: 'Standardized Theme Framework'
+    details: 'Develop themes using a clean, modular structure designed for clarity, reusability, and long-term maintainability.'
+  - title: 'Customizable Templates'
+    details: 'Create flexible templates using Blade or JSON/YAML — easily connected to visual sections.'
+  - title: 'Visual Theme Editor'
+    details: 'Let non-technical users control design, content, and layout — without relying on a developer for every update.'
 ---

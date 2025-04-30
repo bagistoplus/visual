@@ -19,5 +19,7 @@
 @stop
 
 @visual_content
+
 @include('shop::templates.category')
+
 @end_visual_content
