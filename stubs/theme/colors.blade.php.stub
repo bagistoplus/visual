@@ -1,0 +1,7 @@
+<style>
+  @foreach ($theme->color_schemes as $scheme)
+    [data-color-scheme="{ {$scheme->id }}"] {
+      {!! $scheme->outputCssVars() !!}
+    }
+  @endforeach
+</style>

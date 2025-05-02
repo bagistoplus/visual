@@ -1,0 +1,20 @@
+<?php
+
+namespace {{ namespace }};
+
+use BagistoPlus\Visual\Providers\ThemeServiceProvider;
+
+class ServiceProvider extends ThemeServiceProvider
+{
+    public function register(): void
+    {
+        parent::register();
+    }
+
+    public function boot(): void
+    {
+        parent::boot();
+
+        // Add your custom theme boot logic here
+    }
+}

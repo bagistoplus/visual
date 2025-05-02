@@ -1,0 +1,5 @@
+# {{ title }} Theme
+
+This is a custom Bagisto Visual theme scaffolded using the visual:make-theme command.
+
+Author: {{ author }}

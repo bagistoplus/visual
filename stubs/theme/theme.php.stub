@@ -1,0 +1,18 @@
+<?php
+
+return [
+    'code' => '{{ slug }}',
+    'name' => '{{ title }}',
+    'version' => '1.0.0',
+    'author' => '{{ author }}',
+    'assets_path' => 'public/themes/shop/{{ slug }}',
+    'views_path' => 'resources/themes/{{ slug }}/views',
+    'preview_image' => 'themes/shop/{{ slug }}/preview.png',
+    'documentation_url' => 'https://yourdomain.com/docs/themes/{{ slug }}',
+
+    'vite' => [
+        'hot_file' => 'themes/shop/{{ slug }}/{{ slug }}-vite.hot',
+        'build_directory' => 'themes/shop/{{ slug }}',
+        'package_assets_directory' => 'resources/assets'
+    ]
+];

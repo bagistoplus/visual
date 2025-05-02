@@ -1,0 +1,9 @@
+.idea
+.phpunit.cache
+build
+coverage
+vendor
+node_modules
+
+public/themes/shop/{{ slug }}/{{ slug }}-vite.hot
+!public/themes/shop/{{ slug }}

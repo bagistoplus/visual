@@ -1,0 +1,15 @@
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+import tailwindcss from '@tailwindcss/vite';
+
+export default defineConfig({
+  plugins: [
+    tailwindcss(),
+    laravel({
+      input: ['resources/assets/css/theme.css'],
+      refresh: true,
+      buildDirectory: 'themes/shop/{{ slug }}',
+      hotFile: 'public/themes/shop/{{ slug }}/{{ slug }}-vite.hot',
+    }),
+  ],
+});

@@ -1,0 +1,30 @@
+@import "tailwindcss";
+@source "../../views";
+
+/* Define color scheme tokens */
+@theme inline {
+    --color-background: var(--color-background);
+    --color-on-background: var(--color-on-background);
+    --color-primary: var(--color-primary);
+    --color-on-primary: var(--color-on-primary);
+    --color-secondary: var(--color-secondary);
+    --color-on-secondary: var(--color-on-secondary);
+    --color-accent: var(--color-accent);
+    --color-on-accent: var(--color-on-accent);
+    --color-neutral: var(--color-neutral);
+    --color-on-neutral: var(--color-on-neutral);
+    --color-surface: var(--color-surface);
+    --color-on-surface: var(--color-on-surface);
+    --color-surface-alt: var(--color-surface-alt);
+    --color-on-surface-alt: var(--color-on-surface-alt);
+    --color-success: var(--color-success);
+    --color-on-success: var(--color-on-success);
+    --color-warning: var(--color-warning);
+    --color-on-warning: var(--color-on-warning);
+    --color-error: var(--color-error);
+    --color-on-error: var(--color-on-error);
+    --color-info: var(--color-info);
+    --color-on-info: var(--color-on-info);
+}
+
+/* You can add additional custom styles here */

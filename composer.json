@@ -1,7 +1,7 @@
 {
   "name": "bagistoplus/visual",
   "description": "Bagisto theme framework and visual theme editor",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "keywords": [
     "bagisto",
     "BagistoPlus",
@@ -58,8 +58,7 @@
       "src/helpers.php"
     ],
     "psr-4": {
-      "BagistoPlus\\Visual\\": "src/",
-      "BagistoPlus\\Visual\\Database\\Factories\\": "database/factories/"
+      "BagistoPlus\\Visual\\": "src/"
     }
   },
   "autoload-dev": {

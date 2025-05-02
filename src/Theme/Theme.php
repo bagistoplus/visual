@@ -15,8 +15,9 @@ class Theme extends BagistoTheme
         return new self(
             code: $attributes['code'],
             name: $attributes['name'],
+            basePath: $attributes['base_path'] ?? $attributes['code'],
             assetsPath: $attributes['assets_path'] ?? $attributes['code'],
-            viewsPath: $attributes['view_path'] ?? $attributes['code'],
+            viewsPath: $attributes['views_path'] ?? $attributes['code'],
             vite: $attributes['vite'] ?? [],
             version: $attributes['version'] ?? '1.0.0',
             author: $attributes['author'] ?? '',
@@ -30,6 +31,7 @@ class Theme extends BagistoTheme
     public function __construct(
         public $code,
         public $name,
+        public $basePath,
         public $assetsPath = null,
         public $viewsPath = null,
         public $vite = [],

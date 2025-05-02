@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Theme;
 
+use BagistoPlus\Visual\Events\ThemeActivated;
 use Illuminate\Support\Str;
 use Webkul\Theme\Themes as BagistoThemes;
 
@@ -51,10 +52,14 @@ class Themes extends BagistoThemes
      */
     public function set($themeName)
     {
+        /** @var Theme */
         $theme = parent::set($themeName);
 
         if ($this->activeTheme instanceof Theme && $this->activeTheme->isVisualTheme()) {
             app('view')->prependNamespace('shop', __DIR__.'/../../resources/views/theme');
+            app('view')->prependNamespace('shop', $this->activeTheme->basePath.'/resources/views');
+
+            event(new ThemeActivated($theme));
         }
 
         return $theme;

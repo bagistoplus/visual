@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Providers;
 
+use BagistoPlus\Visual\Commands;
 use BagistoPlus\Visual\Components\Livewire\AddToCartButton;
 use BagistoPlus\Visual\Components\Livewire\AddToCompareButton;
 use BagistoPlus\Visual\Components\Livewire\AddToWishlistButton;
@@ -21,7 +22,6 @@ use BagistoPlus\Visual\ThemeDataCollector;
 use BagistoPlus\Visual\ThemePathsResolver;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
@@ -36,6 +36,10 @@ use Webkul\Theme\ViewRenderEventManager;
 
 class CoreServiceProvider extends ServiceProvider
 {
+    protected static $commands = [
+        Commands\MakeThemeCommand::class,
+    ];
+
     /**
      * The list of sections to be registered.
      */
@@ -109,6 +113,7 @@ class CoreServiceProvider extends ServiceProvider
         });
 
         if ($this->app->runningInConsole()) {
+            $this->bootCommands();
             $this->bootPublishAssets();
         }
     }
@@ -131,13 +136,12 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function bootViewsAndTranslations(): void
     {
-        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
-        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
-        $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'visual');
+        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'visual');
+        $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'visual');
 
         $this->booted(function (Application $app) {
             // should move to a before middleware that check that our theme is the active theme before adding the namespace
-            $app['view']->prependNamespace('paypal', __DIR__.'/../../resources/views/webkul/paypal');
+            $app['view']->prependNamespace('paypal', __DIR__ . '/../../resources/views/webkul/paypal');
         });
     }
 
@@ -159,10 +163,7 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function bootMiddlewares(): void
     {
-        $this->app->booted(function () {
-            $this->app->make(Router::class)
-                ->aliasMiddleware('theme', UseShopThemeFromRequest::class);
-        });
+        $this->app->bind(\Webkul\Shop\Http\Middleware\Theme::class, UseShopThemeFromRequest::class);
     }
 
     protected function bootLivewireMiddlewares(): void
@@ -215,10 +216,15 @@ class CoreServiceProvider extends ServiceProvider
         Livewire::propertySynthesizer(AddressDataSynth::class);
     }
 
+    protected function bootCommands(): void
+    {
+        $this->commands(static::$commands);
+    }
+
     protected function bootPublishAssets(): void
     {
         $this->publishes([
-            __DIR__.'/../../public/vendor/bagistoplus' => public_path('vendor/bagistoplus'),
+            __DIR__ . '/../../public/vendor/bagistoplus' => public_path('vendor/bagistoplus'),
         ], ['public', 'bagistoplus-visual-assets']);
     }
 
@@ -237,13 +243,13 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function registerConfigs(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../../config/bagisto-visual.php', 'bagisto_visual');
-        $this->mergeConfigFrom(__DIR__.'/../../config/svg-iconmap.php', 'bagisto_visual_iconmap');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/bagisto-visual.php', 'bagisto_visual');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/svg-iconmap.php', 'bagisto_visual_iconmap');
     }
 
     protected function registerSingletons(): void
     {
-        $this->app->singleton(SectionRepository::class, fn () => new SectionRepository);
+        $this->app->singleton(SectionRepository::class, fn() => new SectionRepository);
 
         $this->app->singleton(ThemeDataCollector::class, function (Application $app) {
             return new ThemeDataCollector(
@@ -260,7 +266,7 @@ class CoreServiceProvider extends ServiceProvider
 
             return new UrlGenerator(
                 $routes,
-                $app->rebinding('request', fn ($app, $request) => $app['url']->setRequest($request)),
+                $app->rebinding('request', fn($app, $request) => $app['url']->setRequest($request)),
                 $app['config']['app.asset_url']
             );
         });

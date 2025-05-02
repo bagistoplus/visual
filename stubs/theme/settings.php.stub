@@ -1,0 +1,52 @@
+<?php
+
+use BagistoPlus\Visual\Sections\Settings\ColorScheme;
+use BagistoPlus\Visual\Sections\Settings\ColorSchemeGroup;
+
+return [
+    [
+        'name' => 'Colors',
+        'settings' => [
+            ColorScheme::make('default_scheme', 'Default Scheme')
+                ->default('default'),
+
+            ColorSchemeGroup::make('color_schemes', 'Color Schemes')
+                ->schemes([
+                    'default' => [
+                        'background' => '#ffffff',
+                        'on-background' => '#000000',
+
+                        'primary' => '#2563eb',
+                        'on-primary' => '#ffffff',
+
+                        'secondary' => '#64748b',
+                        'on-secondary' => '#ffffff',
+
+                        'accent' => '#fbbf24',
+                        'on-accent' => '#000000',
+
+                        'neutral' => '#374151',
+                        'on-neutral' => '#ffffff',
+
+                        'surface' => '#f3f4f6',
+                        'on-surface' => '#000000',
+
+                        'surface-alt' => '#ffffff',
+                        'on-surface-alt' => '#000000',
+
+                        'success' => '#22c55e',
+                        'on-success' => '#ffffff',
+
+                        'warning' => '#f59e0b',
+                        'on-warning' => '#000000',
+
+                        'error' => '#ef4444',
+                        'on-error' => '#ffffff',
+
+                        'info' => '#3b82f6',
+                        'on-info' => '#ffffff',
+                    ]
+                ])
+        ]
+    ]
+];

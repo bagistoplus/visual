@@ -1,0 +1,15 @@
+{
+  "name": "@{{ vendor_slug }}/{{ slug }}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.5",
+    "laravel-vite-plugin": "^1.2.0",
+    "tailwindcss": "^4.1.5",
+    "vite": "^6.3.4"
+  }
+}
