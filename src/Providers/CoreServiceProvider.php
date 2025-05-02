@@ -131,13 +131,13 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function bootViewsAndTranslations(): void
     {
-        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'visual');
-        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'visual');
-        $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'visual');
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
+        $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'visual');
 
         $this->booted(function (Application $app) {
             // should move to a before middleware that check that our theme is the active theme before adding the namespace
-            $app['view']->prependNamespace('paypal', __DIR__ . '/../../resources/views/webkul/paypal');
+            $app['view']->prependNamespace('paypal', __DIR__.'/../../resources/views/webkul/paypal');
         });
     }
 
@@ -218,7 +218,7 @@ class CoreServiceProvider extends ServiceProvider
     protected function bootPublishAssets(): void
     {
         $this->publishes([
-            __DIR__ . '/../../public/vendor/bagistoplus' => public_path('vendor/bagistoplus'),
+            __DIR__.'/../../public/vendor/bagistoplus' => public_path('vendor/bagistoplus'),
         ], ['public', 'bagistoplus-visual-assets']);
     }
 
@@ -237,13 +237,13 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function registerConfigs(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../../config/bagisto-visual.php', 'bagisto_visual');
-        $this->mergeConfigFrom(__DIR__ . '/../../config/svg-iconmap.php', 'bagisto_visual_iconmap');
+        $this->mergeConfigFrom(__DIR__.'/../../config/bagisto-visual.php', 'bagisto_visual');
+        $this->mergeConfigFrom(__DIR__.'/../../config/svg-iconmap.php', 'bagisto_visual_iconmap');
     }
 
     protected function registerSingletons(): void
     {
-        $this->app->singleton(SectionRepository::class, fn() => new SectionRepository);
+        $this->app->singleton(SectionRepository::class, fn () => new SectionRepository);
 
         $this->app->singleton(ThemeDataCollector::class, function (Application $app) {
             return new ThemeDataCollector(
@@ -260,7 +260,7 @@ class CoreServiceProvider extends ServiceProvider
 
             return new UrlGenerator(
                 $routes,
-                $app->rebinding('request', fn($app, $request) => $app['url']->setRequest($request)),
+                $app->rebinding('request', fn ($app, $request) => $app['url']->setRequest($request)),
                 $app['config']['app.asset_url']
             );
         });
