@@ -24,6 +24,10 @@ A JSON (or YAML) template contains:
 
 Example basic structure:
 
+:::: tabs
+
+::: tab JSON
+
 ```json
 {
   "sections": {
@@ -38,6 +42,25 @@ Example basic structure:
   "order": ["hero"]
 }
 ```
+
+:::
+
+::: tab YAML
+
+```yaml
+sections:
+  hero:
+    type: visul-hero
+    settings:
+      image: https://example.com/banner.jpg
+      size: medium
+
+order:
+  - hero
+```
+
+:::
+::::
 
 ## Example: Full Home Page Template
 
@@ -183,19 +206,20 @@ Each section object inside a template follows this structure:
 
 ```json
 {
-  "<section-key>": {
-    "type": "<section-type>",
+  <section-id>: {
+    "type": <section-type>,
     "settings": {
-      "<setting-key>": "<value>"
+      <setting-id>: <setting-value>
     },
     "blocks": {
-      "<block-key>": {
-        "type": "<block-type>",
+      <block-id>: {
+        "type": <block-type>,
         "settings": {
-          "<setting-key>": "<value>"
+          <setting-key>: <setting-value>
         }
       }
-    }
+    },
+    "blocks_order" <blocks-order>
   }
 }
 ```
@@ -205,17 +229,18 @@ Each section object inside a template follows this structure:
 ::: tab YAML
 
 ```yaml
-<section-key>:
-  type: <section-type>
+<section-id>:
+  type: <section-id>
   settings:
-    <setting-key>: <value>
+    <setting-id>: <setting-value>
     ...
   blocks:
-    <block-key>:
+    <block-id>:
       type: <block-type>
       settings:
-        <setting-key>: <value>
+        <setting-id>: <setting-value>
         ...
+  blocks_order: <blocks-order>
 ```
 
 :::
@@ -224,12 +249,15 @@ Each section object inside a template follows this structure:
 
 ### Description of fields:
 
-| Field           | Required | Description                                                                                                                                                |
-| --------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **section-key** | Yes      | Unique ID or handle used in the template (e.g., `hero`, `category-list`).                                                                                  |
-| **type**        | Yes      | Defines which section component to render (e.g., `visual-hero`, `visual-featured-products`).                                                               |
-| **settings**    | Optional | Key-value pairs that configure how the section looks or behaves (e.g., text, images, colors).                                                              |
-| **blocks**      | Optional | Sub-elements that can be repeated inside a section (e.g., items inside a list or slides inside a carousel). Each block can have its own type and settings. |
+| <div style="width: 110px">Field</div> | Required | Description                                                                                          |
+| ------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------- |
+| **&lt;section-id&gt;**                | -        | Unique ID or handle used in the template (e.g., `hero`, `category-list`).                            |
+| **&lt;section-type&gt;**              | Yes      | Slug of the section to render (e.g., `visual-hero`, `visual-featured-products`).                     |
+| **&lt;block-id&gt;**                  | -        | Unique ID of the block                                                                               |
+| **&lt;block-type&gt;**                | Yes      | Type of the block to render as defined in the section blocks() config                                |
+| **&lt;blocks-order&gt;**              | No       | An array of block IDs, ordered as they should be rendered. The IDs must exist in the `blocks` object |
+| **&lt;setting-id&gt;**                | -        | ID of the settings defined in the section/block settings config                                      |
+| **&lt;setting-value&gt;**             | -        | Value of the setting                                                                                 |
 
 > **Note:**
 > Blocks are optional — not all sections need to have blocks.
@@ -241,7 +269,7 @@ Each section object inside a template follows this structure:
 The `order` array defines **in which sequence** sections are displayed on the page.
 
 - If a section is missing from the `order`, it **won't be rendered**.
-- If `order` is not defined, Bagisto Visual will automatically use the default order of the sections as they appear in the sections object.
+- If `order` is not defined, Bagisto Visual will automatically use the default order of the sections as they appear in the `sections` object.
 - If `order` is defined, it strictly controls the rendering sequence
 
 > **Tip:**

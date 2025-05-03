@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Providers;
 
+use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\LivewireFeatures\InterceptSessionFlash;
 use BagistoPlus\Visual\LivewireFeatures\SupportComponentAttributes;
@@ -34,7 +35,7 @@ class ViewServiceProvider extends ServiceProvider
         $this->bootLivewireFeatures();
         $this->bootViewComposers();
 
-        $this->app->singleton('themes', fn () => new Themes);
+        $this->app->singleton('themes', fn() => new Themes);
         $this->app->singleton(ThemePathsResolver::class, function (Application $app) {
             return new ThemePathsResolver;
         });
@@ -87,6 +88,9 @@ class ViewServiceProvider extends ServiceProvider
 
         Blade::directive('visual_design_mode', [BladeDirectives::class, 'visualDesignMode']);
         Blade::directive('end_visual_design_mode', [BladeDirectives::class, 'endVisualDesignMode']);
+        Blade::if('visualdesignmode', function () {
+            return ThemeEditor::inDesignMode();
+        });
 
         Blade::directive('visual_color_vars', [BladeDirectives::class, 'visualColorVars']);
     }

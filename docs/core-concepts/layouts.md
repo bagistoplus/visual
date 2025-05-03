@@ -33,7 +33,7 @@ default.blade.php
 
 At minimum, every layout must include:
 
-- `@stacks('styles')` inside `<head>` — to inject page-specific styles.
+- `@stack('styles')` inside `<head>` — to inject page-specific styles.
 - `@visual_layout_content` inside `<body>` — where template and section content is rendered.
 - `@stack('scripts')` at the bottom of `<body>` — to inject page-specific scripts.
 
@@ -43,7 +43,7 @@ Here’s a minimal working example:
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
 <head>
-  @stacks('styles')
+  @stack('styles')
 </head>
 <body>
 
@@ -56,14 +56,14 @@ Here’s a minimal working example:
 </html>
 ```
 
-### `@stacks('styles')`
+### `@stack('styles')`
 
-The `@stacks('styles')` directive is used to inject **page-specific CSS styles** into the `<head>` section of your layout.
+The `@stack('styles')` directive is used to inject **page-specific CSS styles** into the `<head>` section of your layout.
 
 - Templates and sections can push additional styles to this stack using `@push('styles')`.
 - This allows different pages to include their own CSS without modifying the layout manually.
 
-### `@stacks('scripts')`
+### `@stack('scripts')`
 
 The `@stack('scripts')` directive is used to inject page-specific JavaScript at the end of the `<body>` tag.
 

@@ -61,10 +61,3 @@ Example:
 > **Tip:**
 > JSON and YAML templates are ideal for pages where **merchant customization and flexibility** are important (like the homepage, landing pages, etc.).
 > Blade templates are better suited for pages with **strict structure** or **advanced dynamic functionality**.
-
-## Template Behavior
-
-- **Blade templates** contain Blade code and manually control section rendering.
-- **JSON/YAML templates** define sections declaratively. Merchants can easily reorder, add, or remove sections through the Theme Editor.
-
-In both cases, **sections** are responsible for the actual content.
