@@ -1,0 +1,22 @@
+<?php
+
+namespace {{ namespace }};
+
+use BagistoPlus\Visual\Sections\BladeSection;
+
+class {{ class }} extends BladeSection
+{
+    protected static string $view = '{{ view }}';
+
+    public static function settings(): array
+    {
+        // section settings
+        return [];
+    }
+
+    public static function blocks(): array
+    {
+        // section blocks
+        return [];
+    }
+}
