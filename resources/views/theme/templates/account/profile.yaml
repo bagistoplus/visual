@@ -1,3 +1,3 @@
 sections:
   profile:
-    type: visual-profile
+    type: visual::profile

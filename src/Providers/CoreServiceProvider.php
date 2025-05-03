@@ -186,6 +186,7 @@ class CoreServiceProvider extends ServiceProvider
     protected function bootVisualSections(): void
     {
         Visual::registerSections(static::$sections, 'visual');
+        Visual::discoverSectionsIn(base_path(('Visual/Sections')));
     }
 
     protected function bootBladeIcons()

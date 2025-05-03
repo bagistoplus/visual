@@ -29,7 +29,11 @@
     const grouped: Record<string, Section[]> = {};
 
     filteredSections.value.forEach((section) => {
-      const vendor = section.slug.split("-")[0];
+      let vendor = 'default';
+
+      if (section.slug.includes('::')) {
+        vendor = section.slug.split('::')[0];
+      }
 
       if (!grouped[vendor]) {
         grouped[vendor] = [];
@@ -142,7 +146,7 @@
                 :key="vendor"
                 class="mb-4"
               >
-                <h4 class="sticky capitalize mb-2 font-medium">{{ $t('From') }} {{ vendor }}</h4>
+                <h4 class="sticky capitalize mb-2 font-medium">{{ $t('From') }} {{ vendor.replace('-', ' ') }}</h4>
                 <div class="grid grid-cols-2 gap-6">
                   <div
                     v-for="section in sections"

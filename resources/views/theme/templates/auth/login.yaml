@@ -1,3 +1,3 @@
 sections:
   login-form:
-    type: visual-login-form
+    type: visual::login-form

@@ -1,6 +1,6 @@
 <?php
 
-use BagistoPlus\Visual\Visual;
+use BagistoPlus\Visual\VisualManager;
 use Illuminate\Support\Facades\Blade;
 
 it('registers a section and adds it to the Sections facade', function () {
@@ -11,6 +11,6 @@ it('registers a section and adds it to the Sections facade', function () {
         ->with('TestSection', 'prefix-test-section', 'visual-section');
 
     // Instantiate Visual class and register the section
-    $visual = app()->make(Visual::class);
+    $visual = app()->make(VisualManager::class);
     $visual->registerSection(TestSection::class, 'prefix');
 })->todo();

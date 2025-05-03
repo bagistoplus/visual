@@ -99,10 +99,12 @@ final class Section implements JsonSerializable
     {
         $viewData = "collect(get_defined_vars()['__data'] ?: [])->except(['__env', 'app'])->all()";
 
+        $slug = str_replace('::', '-', $this->slug);
+
         if ($this->isLivewire) {
-            $component = sprintf("@livewire('visual-section-%s', ['visualId' => '%s', 'viewData' => %s])", $this->slug, $id, $viewData);
+            $component = sprintf("@livewire('visual-section-%s', ['visualId' => '%s', 'viewData' => %s])", $slug, $id, $viewData);
         } else {
-            $component = sprintf('<x-visual-section-%s visualId="%s" :viewData="%s" />', $this->slug, $id, $viewData);
+            $component = sprintf('<x-visual-section-%s visualId="%s" :viewData="%s" />', $slug, $id, $viewData);
         }
 
         $template = $this->wrapper ? SimpleEmmetParser::parse($this->wrapper.'{__section__}') : '<div>{__section__}</div>';

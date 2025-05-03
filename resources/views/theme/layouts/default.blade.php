@@ -23,14 +23,14 @@
     {!! view_render_event('bagisto.shop.layout.content.before') !!}
 
     <main role="main" tabindex="-1">
-      <visual:section name="visual-announcement-bar" />
-      <visual:section name="visual-header" />
+      <visual:section name="visual::announcement-bar" />
+      <visual:section name="visual::header" />
 
       @section('body')
         @visual_layout_content
       @show
 
-      <visual:section name="visual-footer" />
+      <visual:section name="visual::footer" />
     </main>
 
     {!! view_render_event('bagisto.shop.layout.content.after') !!}

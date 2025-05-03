@@ -3,6 +3,8 @@
 namespace BagistoPlus\Visual\Providers;
 
 use BagistoPlus\Visual\Events\ThemeActivated;
+use BagistoPlus\Visual\Facades\Visual;
+use BagistoPlus\Visual\Theme\Theme;
 use Illuminate\Contracts\Foundation\CachesConfiguration;
 use Illuminate\Support\ServiceProvider;
 use ReflectionClass;
@@ -39,6 +41,7 @@ abstract class ThemeServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->bootViews();
+        $this->bootSections();
 
         if ($this->app->runningInConsole()) {
             $this->bootPublishAssets();
@@ -62,6 +65,20 @@ abstract class ThemeServiceProvider extends ServiceProvider
                 $this->getBasePath().'/resources/views' => resource_path("themes/{$theme['code']}/views"),
             ], [$theme['code'], $theme['code'].'-views']);
         }
+    }
+
+    protected function bootSections()
+    {
+        if (request()->is('*/visual/editor/*')) {
+            $theme = $this->loadThemeConfig();
+            Visual::discoverSectionsIn("{$theme['base_path']}/src/Sections", $theme['code']);
+
+            return;
+        }
+
+        $this->whenActive(function (Theme $theme) {
+            Visual::discoverSectionsIn("{$theme->basePath}/src/Sections", $theme->code);
+        });
     }
 
     /**

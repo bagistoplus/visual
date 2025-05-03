@@ -350,6 +350,7 @@ export const useStore = defineStore('main', () => {
       settings[setting.id] = setting.default;
     });
 
+    console.log('Adding new section', id, section);
     themeData.sectionsData[id] = {
       id,
       name: section.name,
