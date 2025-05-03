@@ -35,7 +35,7 @@ class ViewServiceProvider extends ServiceProvider
         $this->bootLivewireFeatures();
         $this->bootViewComposers();
 
-        $this->app->singleton('themes', fn() => new Themes);
+        $this->app->singleton('themes', fn () => new Themes);
         $this->app->singleton(ThemePathsResolver::class, function (Application $app) {
             return new ThemePathsResolver;
         });
