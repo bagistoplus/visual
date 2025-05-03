@@ -64,6 +64,16 @@ class BladeDirectives
         return '<?php $__env->stopSection(); ?>';
     }
 
+    public static function visualDesignMode()
+    {
+        return '<?php if (ThemeEditor::inDesignMode()): ?>';
+    }
+
+    public static function endVisualDesignMode()
+    {
+        return '<?php endif; ?>';
+    }
+
     public static function visualColorVars($expression)
     {
         return "<?php echo \BagistoPlus\Visual\View\BladeDirectives::generateColorPalette($expression); ?>";

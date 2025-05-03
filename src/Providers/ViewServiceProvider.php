@@ -85,6 +85,9 @@ class ViewServiceProvider extends ServiceProvider
         Blade::directive('visual_content', [BladeDirectives::class, 'visualContent']);
         Blade::directive('end_visual_content', [BladeDirectives::class, 'endVisualContent']);
 
+        Blade::directive('visual_design_mode', [BladeDirectives::class, 'visualDesignMode']);
+        Blade::directive('end_visual_design_mode', [BladeDirectives::class, 'endVisualDesignMode']);
+
         Blade::directive('visual_color_vars', [BladeDirectives::class, 'visualColorVars']);
     }
 

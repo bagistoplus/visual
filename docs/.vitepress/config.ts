@@ -11,7 +11,7 @@ export default defineConfig({
     nav: [
       { text: 'Guide', link: '/introduction/getting-started' },
       { text: 'Theme Editor', link: '/theme-editor/' },
-      { text: 'Sections Pack', link: 'https://cheerful-cocada-13e68c.netlify.app/' },
+      { text: 'Sections Pack', link: 'https://bagistosectionspro.com/' },
       // { text: 'GitHub', link: 'https://github.com/bagistoplus/visual' },
     ],
 
