@@ -15,6 +15,7 @@
   import RichtextSetting from './RichtextEditor.vue';
   import FontSetting from './FontPicker.vue';
   import IconSetting from './IconPicker.vue';
+  import ColorSchemeGroupSetting from './ColorSchemeGroup.vue';
 
   const InlineRichtextSetting = RichtextSetting;
 
@@ -36,7 +37,8 @@
       RichtextSetting,
       InlineRichtextSetting,
       FontSetting,
-      IconSetting
+      IconSetting,
+      ColorSchemeGroupSetting
     },
   };
 </script>
@@ -68,7 +70,7 @@
       :is="setting.component"
       v-bind="{ ...setting, label: null }"
       :model-value="props.value"
-      @update:modelValue="(val: string) => emit('input', val)"
+      @update:modelValue="(val: any) => emit('input', val)"
     />
     <!-- <TextInput
       v-if="setting.type === 'text'"

@@ -2,16 +2,16 @@
   import { ColorPicker, parseColor } from '@ark-ui/vue/color-picker'
 
   const value = defineModel({
-    set(value: any) {
-      return value.toString('hexa');
+    set(val: any) {
+      return val.toString('hex');
     },
 
-    get(value: string) {
+    get(val: string) {
       try {
-        return parseColor(value);
+        return parseColor(val);
       } catch (e) {
         // Fallback to default color if parsing fails
-        console.error('Invalid color value:', value, e);
+        console.error('Invalid color value:', val, e);
         return parseColor('#000000');
       }
     }
@@ -20,7 +20,9 @@
   const usedColors = computed(() => props.usedColors.map(c => parseColor(c)));
   const selected = ref<any[]>([]);
 
-  function onSelect(color: any) {
+  function onSelect({ value: color }: any) {
+    value.value = color.toString('hex');
+
     if (usedColors.value.some(c => c.toHexInt() === color.toHexInt())) {
       return;
     }
@@ -37,8 +39,8 @@
   <ColorPicker.Root
     format="rgba"
     class="flex flex-col gap-1.5"
-    v-model="value"
-    @update:model-value="onSelect"
+    :model-value="value"
+    @value-change-end="onSelect"
   >
     <ColorPicker.Label class="font-medium text-sm">
       {{ label }}

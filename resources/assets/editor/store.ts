@@ -2,7 +2,7 @@ import { useNProgress } from '@vueuse/integrations/useNProgress';
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import setValue from 'lodash/set';
 import getValue from 'lodash/get';
-import debounce from 'debounce-async';
+import { debounce } from 'perfect-debounce';
 import { v4 as uuidv4 } from 'uuid';
 import { History } from 'stateshot';
 
@@ -97,41 +97,45 @@ export const useStore = defineStore('main', () => {
     return themeData.afterContentSectionsOrder.map((id) => themeData.sectionsData[id]);
   });
 
-  const persistThemeData = debounce(async ({ skipHistory = false, skipPreviewRefresh = false } = {}) => {
-    const headers = new Headers({
-      'content-type': 'application/json',
-      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') as string,
-    });
-
-    if (!skipPreviewRefresh) {
-      nprogress.start();
-    }
-
-    if (!skipHistory) {
-      history.pushSync(structuredClone(toRaw(themeData)));
-      canUndoHistory.value = history.hasUndo;
-      canRedoHistory.value = history.hasRedo;
-    }
-
-    try {
-      const res = await fetch(window.ThemeEditor.routes.persistTheme, {
-        headers,
-        method: 'post',
-        body: JSON.stringify(themeData),
+  const persistThemeData = debounce(
+    async ({ skipHistory = false, skipPreviewRefresh = false } = {}) => {
+      const headers = new Headers({
+        'content-type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') as string,
       });
 
       if (!skipPreviewRefresh) {
-        const html = await res.text();
-        await previewIframe.call('refresh', html);
+        nprogress.start();
       }
-    } catch (error) {
-      console.error('Failed to persistThemeData: ' + error);
-    } finally {
-      if (!skipPreviewRefresh) {
-        nprogress.done();
+
+      if (!skipHistory) {
+        history.pushSync(structuredClone(toRaw(themeData)));
+        canUndoHistory.value = history.hasUndo;
+        canRedoHistory.value = history.hasRedo;
       }
-    }
-  }, 500);
+
+      try {
+        const res = await fetch(window.ThemeEditor.routes.persistTheme, {
+          headers,
+          method: 'post',
+          body: JSON.stringify(themeData),
+        });
+
+        if (!skipPreviewRefresh) {
+          const html = await res.text();
+          await previewIframe.call('refresh', html);
+        }
+      } catch (error) {
+        console.error('Failed to persistThemeData: ' + error);
+      } finally {
+        if (!skipPreviewRefresh) {
+          nprogress.done();
+        }
+      }
+    },
+    500,
+    { cancelObject: '' }
+  );
 
   function publishTheme() {
     nprogress.start();
@@ -273,15 +277,15 @@ export const useStore = defineStore('main', () => {
       }
     }
 
-    if (context.section && !skipPreviewRefresh) {
-      await previewIframe.call('section:updating', { section: context.section }, 0);
-    }
+    // if (context.section && !skipPreviewRefresh) {
+    //   await previewIframe.call('section:updating', { section: context.section }, 0);
+    // }
 
     const res = await persistThemeData({ skipPreviewRefresh });
 
-    if (context.section && !skipPreviewRefresh) {
-      await previewIframe.call('section:updated', { section: context.section });
-    }
+    // if (context.section && !skipPreviewRefresh) {
+    //   await previewIframe.call('section:updated', { section: context.section }, 0);
+    // }
   }
 
   function getThemeDataValue(keyPath: string | string[]): unknown {

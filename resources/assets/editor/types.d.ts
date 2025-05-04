@@ -153,3 +153,29 @@ interface CmsPage {
     locale: string;
   }[];
 }
+
+type ColorSchemeDefintion = {
+  [K in
+    | 'background'
+    | 'on-background'
+    | 'primary'
+    | 'on-primary'
+    | 'secondary'
+    | 'on-secondary'
+    | 'accent'
+    | 'on-accent'
+    | 'neutral'
+    | 'on-neutral'
+    | 'surface'
+    | 'on-surface'
+    | 'surface-alt'
+    | 'on-surface-alt'
+    | 'success'
+    | 'on-success'
+    | 'warning'
+    | 'on-warning'
+    | 'error'
+    | 'on-error'
+    | 'info'
+    | 'on-info']: string;
+};
