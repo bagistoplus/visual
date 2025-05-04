@@ -13,7 +13,7 @@ type IframeMessage =
   | { type: 'section:added'; data: any };
 
 export function useIframeRpc() {
-  const queue = ref<IframeMessage[]>([]);
+  let queue: IframeMessage[] = [];
   const resolvers = new Map<string, { resolve: (value: any) => void; timer: number }>();
   const ready = ref(false);
   const iframeRef = ref<HTMLIFrameElement | null>(null);
@@ -38,11 +38,12 @@ export function useIframeRpc() {
 
   function markReady() {
     ready.value = true;
-    queue.value.forEach(post);
-    queue.value = [];
+    queue.forEach(post);
+    queue = [];
   }
 
   function post(msg: any) {
+    console.log(msg);
     iframeRef.value?.contentWindow?.postMessage(msg, window.origin);
   }
 
@@ -54,7 +55,6 @@ export function useIframeRpc() {
     const msg = { type, data } as IframeMessage;
 
     if (!ready.value) {
-      queue.value.push(msg);
       return Promise.resolve(null);
     }
 

@@ -14,6 +14,7 @@
   import LinkSetting from './LinkPicker.vue';
   import RichtextSetting from './RichtextEditor.vue';
   import FontSetting from './FontPicker.vue';
+  import IconSetting from './IconPicker.vue';
 
   const InlineRichtextSetting = RichtextSetting;
 

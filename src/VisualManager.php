@@ -31,6 +31,7 @@ class VisualManager
 
         $finder = new Finder;
         $finder->files()->in($path)->name('*.php');
+
         foreach ($finder as $file) {
             $class = $this->extractFullyQualifiedClassName($file->getRealPath());
 
@@ -58,7 +59,7 @@ class VisualManager
         $slug = $section->slug;
 
         if ($vendorPrefix) {
-            $section->slug = $vendorPrefix.'::'.$section->slug;
+            $section->slug = $vendorPrefix . '::' . $section->slug;
         }
 
         Sections::add($section);
@@ -85,9 +86,9 @@ class VisualManager
      *
      * @param  string|null  $renderPath  path to the  json view file
      */
-    public function collectSectionData(string $sectionId, ?string $renderPath = null): void
+    public function collectSectionData(string $sectionId, ?string $renderPath = null, ?string $type = null): void
     {
-        $this->themeDataCollector->collectSectionData($sectionId, $renderPath);
+        $this->themeDataCollector->collectSectionData($sectionId, $renderPath, $type);
     }
 
     /**
@@ -112,6 +113,6 @@ class VisualManager
             return null;
         }
 
-        return trim($nsMatch[1]).'\\'.trim($classMatch[1]);
+        return trim($nsMatch[1]) . '\\' . trim($classMatch[1]);
     }
 }

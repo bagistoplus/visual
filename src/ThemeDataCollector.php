@@ -75,9 +75,9 @@ class ThemeDataCollector
         $data = $this->loadFileContent($dataPath);
 
         $settingsSchema = collect($theme->settingsSchema)
-            ->map(fn ($group) => $group['settings'])
+            ->map(fn($group) => $group['settings'])
             ->flatten(1)
-            ->reject(fn ($schema) => $schema['type'] === 'header')
+            ->reject(fn($schema) => $schema['type'] === 'header')
             ->keyBy('id')
             ->toArray();
 
@@ -95,15 +95,17 @@ class ThemeDataCollector
      *
      * @param  string  $sectionId  The ID of the section.
      * @param  string|null  $dataFilePath  Optional path to the data file.
+     * @param  string|null  $type  Optional type of the section.
      */
-    public function collectSectionData(string $sectionId, ?string $dataFilePath = null): void
+    public function collectSectionData(string $sectionId, ?string $dataFilePath = null, ?string $type = null): void
     {
         if ($dataFilePath === null) {
             $dataFilePath = $this->getDefaultDataFilePath();
         }
 
         $data = $this->collectSectionDataFromPath($sectionId, $dataFilePath);
-        $section = Sections::get($data['type'] ?? $sectionId);
+
+        $section = Sections::get($type ?? $data['type']);
         $data['id'] = $sectionId;
         $data['name'] = $section->name;
 
@@ -140,7 +142,7 @@ class ThemeDataCollector
     {
         $data = $this->loadFileContent($path);
 
-        return Arr::get($data, "sections.$sectionId");
+        return Arr::get($data, "sections.$sectionId", []);
     }
 
     /**
@@ -173,7 +175,7 @@ class ThemeDataCollector
         $data = json_decode($this->files->get($path), true);
 
         if (isset($data['parent']) && ! empty($data['parent'])) {
-            $parentPath = config('bagisto_visual.data_path').DIRECTORY_SEPARATOR.$data['parent'];
+            $parentPath = config('bagisto_visual.data_path') . DIRECTORY_SEPARATOR . $data['parent'];
             $parentData = $this->loadFileContent($parentPath);
             unset($data['parent']);
 

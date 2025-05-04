@@ -29,6 +29,7 @@ class VisualTagsCompiler extends ComponentTagCompiler
             $pattern,
             function (array $matches) use ($viewInfos) {
                 $sectionName = $matches['name'];
+
                 if (! Sections::has($sectionName)) {
                     throw new \Exception(sprintf(
                         "Can not found section '%s'.",
@@ -36,16 +37,17 @@ class VisualTagsCompiler extends ComponentTagCompiler
                     ));
                 }
 
+                $id = str_replace('::', '-', $sectionName);
                 $section = Sections::get($sectionName);
-                $template = $section->renderToBlade($section->slug);
+                $template = $section->renderToBlade($id);
                 $template = <<<PHP
                 <?php
-                Visual::collectSectionData("{$section->slug}");
+                Visual::collectSectionData("{$id}", null, "{$section->slug}");
                 if (ThemeEditor::inDesignMode()) {
-                    ThemeEditor::collectRenderedSection('{$section->slug}', '{$viewInfos['type']}', '{$viewInfos['view']}');
+                    ThemeEditor::collectRenderedSection('{$section->slug}', '{$viewInfos['type']}', '{$viewInfos['view']}', "{$id}");
                 }
                 ?>
-                <?php if (Visual::isSectionEnabled('{$section->slug}')): ?>
+                <?php if (Visual::isSectionEnabled('{$id}')): ?>
                 {$template}
                 <? endif; ?>
                 PHP;
