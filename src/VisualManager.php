@@ -59,7 +59,7 @@ class VisualManager
         $slug = $section->slug;
 
         if ($vendorPrefix) {
-            $section->slug = $vendorPrefix . '::' . $section->slug;
+            $section->slug = $vendorPrefix.'::'.$section->slug;
         }
 
         Sections::add($section);
@@ -113,6 +113,6 @@ class VisualManager
             return null;
         }
 
-        return trim($nsMatch[1]) . '\\' . trim($classMatch[1]);
+        return trim($nsMatch[1]).'\\'.trim($classMatch[1]);
     }
 }

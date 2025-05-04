@@ -3,7 +3,6 @@
 namespace BagistoPlus\Visual\Sections;
 
 use BagistoPlus\Visual\Sections\Settings\Color;
-use BagistoPlus\Visual\Sections\Settings\Icon;
 use BagistoPlus\Visual\Sections\Settings\Link;
 use BagistoPlus\Visual\Sections\Settings\Text;
 
@@ -14,7 +13,6 @@ class AnnouncementBar extends BladeSection
     public static function settings(): array
     {
         return [
-            Icon::make('icon', 'Icon')->defautl('lucide-x'),
             Text::make('text', __('visual::sections.announcement-bar.settings.text_label'))
                 ->default(__('visual::sections.announcement-bar.settings.default_text')),
 

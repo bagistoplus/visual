@@ -35,7 +35,8 @@
       LinkSetting,
       RichtextSetting,
       InlineRichtextSetting,
-      FontSetting
+      FontSetting,
+      IconSetting
     },
   };
 </script>
@@ -58,9 +59,14 @@
 
 <template>
   <div class="mb-4 last:mb-0">
+    <label
+      v-if="setting.label"
+      class="text-sm font-medium"
+    >{{ setting.label }}</label>
+
     <component
       :is="setting.component"
-      v-bind="setting"
+      v-bind="{ ...setting, label: null }"
       :model-value="props.value"
       @update:modelValue="(val: string) => emit('input', val)"
     />

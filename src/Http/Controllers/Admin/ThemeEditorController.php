@@ -6,9 +6,13 @@ use BagistoPlus\Visual\Facades\Sections;
 use BagistoPlus\Visual\Http\Controllers\Controller;
 use BagistoPlus\Visual\Sections\Concerns\ImageTransformer;
 use BagistoPlus\Visual\ThemePersister;
+use BladeUI\Icons\Factory;
+use BladeUI\Icons\IconsManifest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Webkul\CMS\Models\Page;
 use Webkul\CMS\Repositories\PageRepository;
 
@@ -32,6 +36,7 @@ class ThemeEditorController extends Controller
                 'uploadImage' => route('visual.admin.editor.api.upload'),
                 'listImages' => route('visual.admin.editor.api.images'),
                 'getCmsPages' => route('visual.admin.editor.api.cms_pages'),
+                'getIcons' => route('visual.admin.editor.api.icons'),
             ],
             'messages' => Lang::get('visual::theme-editor'),
             'editorLocale' => app()->getLocale(),
@@ -109,6 +114,45 @@ class ThemeEditorController extends Controller
                 $query->where('cms_page_translations.page_title', 'LIKE', "%{$request->query('query')}%");
             })
             ->get();
+    }
+
+    public function icons(Request $request, Factory $factory, IconsManifest $iconsManifest)
+    {
+        $sets = $factory->all();
+        $selectedSet = $request->input('set', 'lucide');
+
+        if (isset($sets['default'])) {
+            unset($sets['default']);
+        }
+
+        $set = $sets[$selectedSet];
+        $icons = collect();
+
+        foreach ($set['paths'] as $path) {
+            if (! File::isDirectory(($path))) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if ($file->getExtension() !== 'svg') {
+                    continue;
+                }
+
+                $name = $file->getFilenameWithoutExtension();
+
+                $icons->push([
+                    'name' => $name,
+                    'id' => $set['prefix'].'-'.$name,
+                    'svg' => File::get($file->getRealPath()),
+                ]);
+            }
+        }
+
+        return [
+            'currentSet' => $selectedSet,
+            'sets' => collect($sets)->map(fn ($set, $key) => ['id' => $key, 'prefix' => $set['prefix'], 'name' => Str::headline($key)])->values(),
+            'icons' => $icons->values(),
+        ];
     }
 
     protected function getChannels()

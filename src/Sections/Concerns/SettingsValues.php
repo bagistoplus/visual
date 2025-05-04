@@ -130,6 +130,7 @@ final class SettingsValues implements Arrayable, IteratorAggregate, JsonSerializ
             'cms_page' => (new CmsPageTransformer)($value),
             'link' => (new LinkTransformer)($value),
             'font' => (new FontTransformer)($value),
+            'icon' => (new IconTransformer)($value),
             default => $value,
         };
     }

@@ -8,7 +8,7 @@
       <x-shop::ui.drawer placement="start" title="Menu">
         <x-slot:trigger>
           <button class="-ml-2 p-2 transition-colors sm:hidden" aria-label="Open menu">
-            <x-heroicon-s-bars-3 class="h-6 w-6" />
+            <x-lucide-menu class="h-6 w-6" />
           </button>
         </x-slot:trigger>
         <div>

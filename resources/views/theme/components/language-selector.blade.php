@@ -27,7 +27,7 @@
     <x-shop::ui.menu class="hidden sm:block">
       <x-shop::ui.menu.trigger>
         <button class="hover:text-primary flex items-center p-2 transition-colors">
-          <x-heroicon-o-globe-alt class="h-5 w-5" />
+          <x-lucide-globe class="h-5 w-5" />
           <span class="ml-1 uppercase">{{ $currentLocale->code }}</span>
         </button>
       </x-shop::ui.menu.trigger>

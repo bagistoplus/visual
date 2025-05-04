@@ -75,9 +75,9 @@ class ThemeDataCollector
         $data = $this->loadFileContent($dataPath);
 
         $settingsSchema = collect($theme->settingsSchema)
-            ->map(fn($group) => $group['settings'])
+            ->map(fn ($group) => $group['settings'])
             ->flatten(1)
-            ->reject(fn($schema) => $schema['type'] === 'header')
+            ->reject(fn ($schema) => $schema['type'] === 'header')
             ->keyBy('id')
             ->toArray();
 
@@ -175,7 +175,7 @@ class ThemeDataCollector
         $data = json_decode($this->files->get($path), true);
 
         if (isset($data['parent']) && ! empty($data['parent'])) {
-            $parentPath = config('bagisto_visual.data_path') . DIRECTORY_SEPARATOR . $data['parent'];
+            $parentPath = config('bagisto_visual.data_path').DIRECTORY_SEPARATOR.$data['parent'];
             $parentData = $this->loadFileContent($parentPath);
             unset($data['parent']);
 

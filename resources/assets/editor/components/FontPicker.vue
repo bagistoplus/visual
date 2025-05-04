@@ -5,7 +5,7 @@
   import { useIntersectionObserver } from '@vueuse/core';
 
   interface Props {
-    label: string;
+    label?: string;
   }
 
   interface Font {
@@ -107,6 +107,7 @@
   function onCancel() {
     opened.value = false;
     model.value = initialValue.value;
+    isDirty.value = false;
   }
 </script>
 
@@ -128,7 +129,6 @@
         <span class="flex-1 text-left capitalize">{{ model?.name }}</span>
         <i-heroicons-chevron-up-down class="flex-none w-4 h-4 text-gray-500" />
       </Dialog.Trigger>
-      <Dialog.Backdrop class="fixed h-screen w-screen inset-0" />
       <Dialog.Positioner class="flex fixed z-50 top-14 left-14 bottom-0 w-[19.9rem] items-center justify-center">
         <Dialog.Content class="bg-white shadow flex flex-col w-full h-full overflow-hidden">
           <header class="flex-none h-12 border-b border-neutral-200 flex gap-3 px-4 items-center justify-between">
@@ -140,10 +140,10 @@
           <div class="flex-1 flex flex-col  min-h-0  overflow-y-auto">
             <div class="p-3">
               <Field.Root class="relative">
-                <i-heroicons-magnifying-glass class="absolute left-2 top-1.5 text-gray-500" />
+                <i-heroicons-magnifying-glass class="absolute left-3 top-2.5 text-gray-500" />
                 <Field.Input
                   v-model="search"
-                  class="w-full pr-3 pl-8 h-8 text-surface-500 rounded border border-gray-300 focus:outline-none focus:ring focus:ring-gray-700"
+                  class="w-full pr-3 pl-9 h-10 text-surface-500 rounded border border-gray-300 focus:outline-none focus:ring focus:ring-gray-700"
                   placeholder="Search"
                 />
               </Field.Root>

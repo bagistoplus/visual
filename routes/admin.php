@@ -21,6 +21,9 @@ Route::group(['middleware' => ['web', 'admin'], 'prefix' => config('app.admin_ur
         Route::get('api/cms-pages', [ThemeEditorController::class, 'cmsPages'])
             ->name('visual.admin.editor.api.cms_pages');
 
+        Route::get('api/icons', [ThemeEditorController::class, 'icons'])
+            ->name('visual.admin.editor.api.icons');
+
         Route::get('{theme}/{path?}', [ThemeEditorController::class, 'index'])
             ->where('path', '.*')
             ->name('visual.admin.editor');

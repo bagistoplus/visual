@@ -43,7 +43,6 @@ export function useIframeRpc() {
   }
 
   function post(msg: any) {
-    console.log(msg);
     iframeRef.value?.contentWindow?.postMessage(msg, window.origin);
   }
 

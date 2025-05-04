@@ -71,6 +71,25 @@ export function useFetchCmsPages() {
   return { ...context, execute };
 }
 
+export function useFetchIcons(options = { immediate: false }) {
+  const url = ref(window.ThemeEditor.routes.getIcons);
+  const context = useFetch(url, { refetch: true, ...options })
+    .get()
+    .json();
+
+  function execute(params: Record<string, any>) {
+    const newUrl = new URL(window.ThemeEditor.routes.getIcons, window.location.origin);
+
+    for (const [key, value] of Object.entries(params)) {
+      newUrl.searchParams.append(key, value);
+    }
+
+    url.value = newUrl.href;
+  }
+
+  return { ...context, execute };
+}
+
 export function usePublishTheme(data: any) {
   return useFetch(window.ThemeEditor.routes.publishTheme).post(data);
 }

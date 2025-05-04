@@ -15,6 +15,7 @@ export interface WindowThemeEditor {
     uploadImage: string;
     listImages: string;
     getCmsPages: string;
+    getIcons: string;
   };
   messages: Record<string, any>;
   editorLocale: string;

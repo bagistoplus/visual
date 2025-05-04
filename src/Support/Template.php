@@ -28,7 +28,7 @@ class Template implements Arrayable, JsonSerializable
 
     public static function separator()
     {
-        return new self('__separator__', '', '', 'heroicon-o-home', '');
+        return new self('__separator__', '', '', 'lucide-x', '');
     }
 
     public function toArray()

@@ -135,7 +135,7 @@ class JsonViewCompiler extends Compiler implements CompilerInterface
             $contents .= ' ?>';
         }
 
-        return $contents . "<?php /**PATH {$path} ENDPATH**/ ?>";
+        return $contents."<?php /**PATH {$path} ENDPATH**/ ?>";
     }
 
     /**

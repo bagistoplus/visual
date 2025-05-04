@@ -62,6 +62,7 @@ return [
     'Heading 6' => 'Heading 6',
 
     'Font Picker' => 'Font Picker',
+    'Icon Picker' => 'Icon Picker',
 
     'templates' => [
         'homepage' => 'Home page',

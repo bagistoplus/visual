@@ -63,29 +63,29 @@
         id="move-down"
         class="btn move-down"
         title="Move down"
-      ><x-heroicon-o-arrow-down /></button>
+      ><x-lucide-arrow-down /></button>
       <button
         id="move-up"
         class="btn move-up"
         title="Move up"
         style="margin-right: 8px;"
-      ><x-heroicon-o-arrow-up /></button>
+      ><x-lucide-arrow-up /></button>
       <button
         id="edit"
         class="btn"
         title="Edit"
-      ><x-heroicon-o-pencil /></button>
+      ><x-lucide-pencil /></button>
       <button
         id="disable"
         class="btn"
         title="Hide"
         style="margin-right: 8px;"
-      ><x-heroicon-o-eye-slash /></button>
+      ><x-lucide-eye-off /></button>
       <button
         id="remove"
         class="btn"
         title="Remove"
-      ><x-heroicon-o-trash /></button>
+      ><x-lucide-trash-2 /></button>
     </div>
   </div>
 @endif
