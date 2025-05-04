@@ -1,6 +1,6 @@
 <section class="bg-surface-alt py-16">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <h2 class="mb-4 text-center font-serif text-3xl text-neutral-700">
+    <h2 class="mb-4 text-center text-3xl text-neutral-700">
       {{ $section->settings->title }}
     </h2>
     <p class="mx-auto mb-8 max-w-2xl text-center text-neutral-600">

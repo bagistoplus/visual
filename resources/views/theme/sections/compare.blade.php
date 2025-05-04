@@ -16,7 +16,7 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       @if ($items->isEmpty())
         <div class="text-center">
-          <h1 class="text-secondary-700 mb-4 font-serif text-3xl font-medium">
+          <h1 class="text-secondary-700 mb-4 text-3xl font-medium">
             @lang('shop::app.compare.title')
           </h1>
           <p class="mb-8">
@@ -30,7 +30,7 @@
         </div>
       @else
         <div class="mb-8 flex items-center justify-between">
-          <h1 class="text-secondary-700 mb-4 font-serif text-3xl font-medium">
+          <h1 class="text-secondary-700 mb-4 text-3xl font-medium">
             @lang('shop::app.compare.title')
           </h1>
           <button class="hover:text-primary transition-colors" x-products-compare:remove-all>

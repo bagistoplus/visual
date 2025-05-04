@@ -61,6 +61,8 @@ return [
     'Heading 5' => 'Heading 5',
     'Heading 6' => 'Heading 6',
 
+    'Font Picker' => 'Font Picker',
+
     'templates' => [
         'homepage' => 'Home page',
         'category' => 'Category Page',

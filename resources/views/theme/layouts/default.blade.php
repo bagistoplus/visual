@@ -10,6 +10,13 @@
 
     @include('shop::partials.head')
 
+    {!! $theme->settings->font->toHtml() !!}
+    <style>
+      body {
+        font-family: {{ $theme->settings->font }};
+      }
+    </style>
+
     {!! view_render_event('bagisto.shop.layout.head.after') !!}
   </head>
 

@@ -580,7 +580,7 @@ use BagistoPlus\Visual\Sections\Settings\Font;
 public static function settings(): array
 {
     return [
-        Font::make('heading_font', 'Heading Font'),
+        Font::make('heading_font', 'Heading Font')->default('roboto'),
     ];
 }
 ```
@@ -589,10 +589,33 @@ In Blade:
 
 ```blade
 @if ($section->settings->heading_font)
-    <div style="font-family: '{{ $section->settings->heading_font }}', sans-serif;">
+    <h1 style="font-family: '{{ $section->settings->heading_font }}', sans-serif;">
         <!-- Content with dynamic font -->
-    </div>
+    </h1>
 @endif
+```
+
+This will render as:
+
+```html
+<h1 style="font-family: 'Roboto', sans-serif;">
+  <!-- Content with dynamic font -->
+</h1>
+```
+
+Additionally, you may use the following snippet to render any resources necessary to load the font
+
+```blade
+@pushOnce('styles')
+  {!! $section->settings->heading_font->toHtml() !!}
+@endPushOnce
+```
+
+Will render:
+
+```html
+<link rel="preconnect" href="https://fonts.bunny.net" />
+<link href="https://fonts.bunny.net/css?family=roboto:" rel="stylesheet" />
 ```
 
 ![Font Setting Example](https://placehold.co/800x80?text=Font+Setting)

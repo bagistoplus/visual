@@ -1,7 +1,7 @@
 <div class="bg-background rounded-lg shadow-sm">
   <div class="border-b border-neutral-200 p-4">
     <div class="flex items-center justify-between">
-      <h1 class="text-secondary font-serif text-2xl">
+      <h1 class="text-secondary text-2xl">
         @lang('shop::app.customers.account.orders.title')
       </h1>
     </div>

@@ -5,7 +5,7 @@
 @elseif ($block->type === 'separator')
   <hr>
 @elseif ($block->type === 'title')
-  <h1 class="text-secondary font-serif text-3xl">
+  <h1 class="text-secondary text-3xl">
     {{ $product->name }}
   </h1>
 @elseif ($block->type === 'price')

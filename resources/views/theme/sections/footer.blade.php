@@ -13,7 +13,7 @@
   <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 gap-8 md:grid-cols-4">
       <div>
-        <h3 class="mb-4 font-serif text-lg">
+        <h3 class="mb-4 text-lg">
           {{ $section->settings->heading ?? config('app.name') }}
         </h3>
         <p class="text-sm text-neutral-300">
@@ -43,8 +43,11 @@
           <div class="flex space-x-4">
             @foreach ($socials as $key => $icon)
               @if ($theme->settings->get($key))
-                <a href="{{ $theme->settings->get($key) }}" aria-label="{{ $key }}"
-                  class="text-neutral-300 hover:text-neutral-400">
+                <a
+                  href="{{ $theme->settings->get($key) }}"
+                  aria-label="{{ $key }}"
+                  class="text-neutral-300 hover:text-neutral-400"
+                >
                   @svg($icon, ['class' => 'h-5 w-5'])
                 </a>
               @endif

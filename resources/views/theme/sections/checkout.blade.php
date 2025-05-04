@@ -42,7 +42,7 @@
       <div class="order-first lg:order-last">
         <div id="test" class="lg:sticky lg:top-8">
           <div class="bg-surface-alt rounded-lg p-6 shadow-sm">
-            <h2 class="mb-6 font-serif text-xl text-neutral-700">
+            <h2 class="mb-6 text-xl text-neutral-700">
               @lang('shop::app.checkout.onepage.summary.cart-summary')
             </h2>
             <div class="mb-6 space-y-4">

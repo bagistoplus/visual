@@ -4,7 +4,7 @@
       <div class="bg-success/10 mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full">
         <x-lucide-check-circle class="text-success h-8 w-8" />
       </div>
-      <h1 class="text-secondary mb-4 font-serif text-3xl">
+      <h1 class="text-secondary mb-4 text-3xl">
         @lang('shop::app.checkout.success.thanks')
       </h1>
 
@@ -109,9 +109,7 @@
       </div>
 
       <div class="flex flex-col justify-center gap-4 pb-4 lg:flex-row">
-        <a class="bg-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-white transition-opacity hover:opacity-90"
-          href="{{ route('shop.home.index') }}"
-        >
+        <a class="bg-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-white transition-opacity hover:opacity-90" href="{{ route('shop.home.index') }}">
           Continue Shopping
           <x-lucide-arrow-right class="ml-2 h-5 w-5" />
         </a>

@@ -13,6 +13,7 @@
   import CmsPageSetting from './CmsPagePicker.vue';
   import LinkSetting from './LinkPicker.vue';
   import RichtextSetting from './RichtextEditor.vue';
+  import FontSetting from './FontPicker.vue';
 
   const InlineRichtextSetting = RichtextSetting;
 
@@ -33,6 +34,7 @@
       LinkSetting,
       RichtextSetting,
       InlineRichtextSetting,
+      FontSetting
     },
   };
 </script>

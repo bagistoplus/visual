@@ -137,7 +137,7 @@
     <Dialog.Root v-model:open="opened">
       <Teleport to="body">
         <Dialog.Backdrop class="fixed h-screen w-screen inset-0" />
-        <Dialog.Positioner class="flex fixed top-14 left-14 bottom-0 w-[19.9rem] items-center justify-center">
+        <Dialog.Positioner class="flex fixed top-14 z-50 left-14 bottom-0 w-[19.9rem] items-center justify-center">
           <Dialog.Content class="bg-white shadow flex flex-col w-full h-full overflow-hidden">
             <header class="flex-none h-12 border-b border-neutral-200 flex gap-3 px-4 items-center justify-between">
               <Dialog.Title>{{ label || $t('Image Picker') }}</Dialog.Title>

@@ -9,7 +9,7 @@
     @endif
     <div class="absolute inset-0 bg-black/50"></div>
     <div class="relative mx-auto max-w-7xl px-4 text-neutral-200 sm:px-6 lg:px-8">
-      <h1 class="font-serif text-3xl font-semibold">
+      <h1 class="text-3xl font-semibold">
         {{ $category->name }}
       </h1>
       <div class="mt-2">

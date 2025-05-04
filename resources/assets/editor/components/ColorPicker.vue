@@ -7,7 +7,13 @@
     },
 
     get(value: string) {
-      return parseColor(value)
+      try {
+        return parseColor(value);
+      } catch (e) {
+        // Fallback to default color if parsing fails
+        console.error('Invalid color value:', value, e);
+        return parseColor('#000000');
+      }
     }
   });
   const props = withDefaults(defineProps<{ usedColors?: string[], label?: string }>(), { usedColors: () => [] });
@@ -52,17 +58,14 @@
     </ColorPicker.Control>
 
     <ColorPicker.Positioner class="w-60 !z-20 pl-1">
-      <ColorPicker.Content
-        class="flex flex-col p-4 gap-3 rounded bg-white border shadow-sm data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out data-[state=closed]:hidden"
-      >
+      <ColorPicker.Content class="flex flex-col p-4 gap-3 rounded bg-white border shadow-sm data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out data-[state=closed]:hidden">
         <ColorPicker.Area class="rounded overflow-hidden h-36 touch-none forced-color-adjust-none">
           <ColorPicker.AreaBackground class="h-full rounded" />
           <ColorPicker.AreaThumb class="rounded-full w-2.5 h-2.5 outline-none border-2 border-white" />
         </ColorPicker.Area>
 
         <div class="flex gap-2">
-          <ColorPicker.EyeDropperTrigger
-            class="appearance-none rounded cursor-pointer inline-flex outline-none relative select-none items-center justify-center border h-8 min-w-8">
+          <ColorPicker.EyeDropperTrigger class="appearance-none rounded cursor-pointer inline-flex outline-none relative select-none items-center justify-center border h-8 min-w-8">
             <i-heroicons-eye-dropper class="w-4 h-4" />
           </ColorPicker.EyeDropperTrigger>
           <div class="flex flex-col gap-2 w-full">

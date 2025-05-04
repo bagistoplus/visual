@@ -265,7 +265,7 @@ export const useStore = defineStore('main', () => {
     if (context.settingId) {
       const response = await previewIframe.call('setting:update', {
         ...context,
-        settingValue: value,
+        settingValue: toRaw(value),
       });
 
       if (response?.skipRefresh) {
