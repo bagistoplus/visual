@@ -12,6 +12,6 @@
 
 @visual_content
 
-@include('shop::templates.cart')
+@includeIf('shop::templates.cart')
 
 @end_visual_content

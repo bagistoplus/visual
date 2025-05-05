@@ -12,6 +12,6 @@
 
 @visual_content
 
-@include('shop::templates.auth.forgot-password')
+@includeIf('shop::templates.auth.forgot-password')
 
 @end_visual_content

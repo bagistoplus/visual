@@ -40,7 +40,7 @@ abstract class ThemeServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->bootViews();
+        $this->bootViewsAndTranslations();
         $this->bootSections();
 
         if ($this->app->runningInConsole()) {
@@ -49,16 +49,12 @@ abstract class ThemeServiceProvider extends ServiceProvider
         }
     }
 
-    protected function bootViews()
+    protected function bootViewsAndTranslations()
     {
         $theme = $this->loadThemeConfig();
 
         $this->loadViewsFrom($this->getBasePath().'/resources/views', $theme['code']);
-
-        $this->whenActive(function ($theme) {
-            // this is useful to register templates for view_render_event
-            // only when the theme is active
-        });
+        $this->loadTranslationsFrom($this->getBasePath().'/resources/lang', $theme['code']);
 
         if ($this->app->runningInConsole()) {
             $this->publishes([

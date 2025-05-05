@@ -2,6 +2,7 @@
 .phpunit.cache
 build
 composer.lock
+package-lock.json
 coverage
 docs/.vitepress/dist
 docs/.vitepress/cache
@@ -11,7 +12,6 @@ testbench.yaml
 vendor
 node_modules
 
-public/vendor/bagistoplus/visual/shop.hot
 public/vendor/bagistoplus/visual/editor.hot
 public/vendor/bagistoplus/visual/admin.hot
 !public/vendor/

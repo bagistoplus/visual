@@ -12,6 +12,6 @@
 
 @visual_content
 
-@include('shop::templates.auth.reset-password')
+@includeIf('shop::templates.auth.reset-password')
 
 @end_visual_content

@@ -3,8 +3,8 @@
 namespace BagistoPlus\Visual\Sections;
 
 use BagistoPlus\Visual\Facades\Visual;
-use BagistoPlus\Visual\Sections\Concerns\SectionData;
 use BagistoPlus\Visual\Sections\Concerns\SectionTrait;
+use BagistoPlus\Visual\Sections\Support\SectionData;
 use Illuminate\View\Component;
 
 abstract class BladeSection extends Component implements SectionInterface

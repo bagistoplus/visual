@@ -30,8 +30,8 @@ Each color has a **semantic role** that defines its purpose in the interface. Th
 | `on-success`     | Foreground on `success`                   | Text/icons on success backgrounds    |
 | `warning`        | Attention or caution                      | Notices, validation warnings         |
 | `on-warning`     | Foreground on `warning`                   | Text/icons on warning backgrounds    |
-| `error`          | Critical or destructive state             | Errors, danger zones                 |
-| `on-error`       | Foreground on `error`                     | Text/icons on error messages         |
+| `danger`         | Critical or destructive state             | Errors, danger zones                 |
+| `on-danger`      | Foreground on `error`                     | Text/icons on error messages         |
 | `info`           | Informational messages                    | Tooltips, banners, guidance          |
 | `on-info`        | Foreground on `info`                      | Text/icons on info sections          |
 

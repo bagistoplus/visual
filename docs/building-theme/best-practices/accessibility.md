@@ -95,7 +95,7 @@ Color should enhance meaning — not carry it entirely.
 Include icons, labels, or text to indicate purpose:
 
 ```blade
-<div class="bg-error text-on-error flex items-center gap-2">
+<div class="bg-danger text-on-danger flex items-center gap-2">
   <svg ... aria-hidden="true" />
   <span>Error: Please enter your email address</span>
 </div>

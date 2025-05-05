@@ -1,7 +1,7 @@
 <?php
 
-use BagistoPlus\Visual\Sections\Concerns\BlockData;
-use BagistoPlus\Visual\Sections\Concerns\SettingsValues;
+use BagistoPlus\Visual\Sections\Support\BlockData;
+use BagistoPlus\Visual\Settings\Support\SettingsValues;
 
 it('can create a BlockData instance', function () {
     $blockId = 'block-1';

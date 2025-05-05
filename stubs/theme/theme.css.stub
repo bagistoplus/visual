@@ -130,19 +130,19 @@
     --color-warning-900: var(--color-warning-900);
     --color-warning-950: var(--color-warning-950);
 
-    --color-on-error: var(--color-on-error);
-    --color-error: var(--color-error);
-    --color-error-50: var(--color-error-50);
-    --color-error-100: var(--color-error-100);
-    --color-error-200: var(--color-error-200);
-    --color-error-300: var(--color-error-300);
-    --color-error-400: var(--color-error-400);
-    --color-error-500: var(--color-error-500);
-    --color-error-600: var(--color-error-600);
-    --color-error-700: var(--color-error-700);
-    --color-error-800: var(--color-error-800);
-    --color-error-900: var(--color-error-900);
-    --color-error-950: var(--color-error-950);
+    --color-on-danger: var(--color-on-danger);
+    --color-danger: var(--color-danger);
+    --color-danger-50: var(--color-danger-50);
+    --color-danger-100: var(--color-danger-100);
+    --color-danger-200: var(--color-danger-200);
+    --color-danger-300: var(--color-danger-300);
+    --color-danger-400: var(--color-danger-400);
+    --color-danger-500: var(--color-danger-500);
+    --color-danger-600: var(--color-danger-600);
+    --color-danger-700: var(--color-danger-700);
+    --color-danger-800: var(--color-danger-800);
+    --color-danger-900: var(--color-danger-900);
+    --color-danger-950: var(--color-danger-950);
 
     --color-on-info: var(--color-on-info);
     --color-info: var(--color-info);

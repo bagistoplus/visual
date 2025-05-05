@@ -4,7 +4,7 @@ namespace BagistoPlus\Visual\Http\Controllers\Admin;
 
 use BagistoPlus\Visual\Facades\Sections;
 use BagistoPlus\Visual\Http\Controllers\Controller;
-use BagistoPlus\Visual\Sections\Concerns\ImageTransformer;
+use BagistoPlus\Visual\Settings\Support\ImageTransformer;
 use BagistoPlus\Visual\ThemePersister;
 use BladeUI\Icons\Factory;
 use BladeUI\Icons\IconsManifest;

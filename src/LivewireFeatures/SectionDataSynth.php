@@ -3,7 +3,7 @@
 namespace BagistoPlus\Visual\LivewireFeatures;
 
 use BagistoPlus\Visual\Facades\Visual;
-use BagistoPlus\Visual\Sections\Concerns\SectionData;
+use BagistoPlus\Visual\Sections\Support\SectionData;
 use Livewire\Mechanisms\HandleComponents\Synthesizers\Synth;
 use Symfony\Component\Filesystem\Path;
 

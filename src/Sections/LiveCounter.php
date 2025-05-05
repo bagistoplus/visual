@@ -2,7 +2,7 @@
 
 namespace BagistoPlus\Visual\Sections;
 
-use BagistoPlus\Visual\Sections\Settings\Number;
+use BagistoPlus\Visual\Settings\Number;
 
 class LiveCounter extends LivewireSection
 {

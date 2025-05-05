@@ -16,6 +16,8 @@ class SupportSectionData extends ComponentHook
         }
 
         $sectionData = Visual::themeDataCollector()->getSectionData($this->component->visualId);
+        $params['viewData']['comparableAttributes'] = collect();
+
         $context = collect($params['viewData'])->except(['errors', 'theme', 'cart'])->all();
         $context['section'] = $sectionData;
 

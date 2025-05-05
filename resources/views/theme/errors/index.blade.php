@@ -5,5 +5,7 @@
 @stop
 
 @visual_content
-@include('shop::templates.error')
+
+@includeIf('shop::templates.error')
+
 @end_visual_content

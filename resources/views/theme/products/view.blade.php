@@ -34,5 +34,7 @@
 @endPush
 
 @visual_content
-@include('shop::templates.product')
+
+@includeIf('shop::templates.product')
+
 @end_visual_content

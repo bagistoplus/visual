@@ -10,5 +10,7 @@
 @stop
 
 @visual_content
-@include('shop::templates.compare')
+
+@includeIf('shop::templates.compare')
+
 @end_visual_content

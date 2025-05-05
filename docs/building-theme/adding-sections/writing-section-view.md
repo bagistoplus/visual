@@ -20,8 +20,8 @@ Let's consider the following section:
 ```php
 use BagistoPlus\Visual\Sections\BladeSection;
 use BagistoPlus\Visual\Sections\Block;
-use BagistoPlus\Visual\Sections\Settings\Color;
-use BagistoPlus\Visual\Sections\Settings\Text;
+use BagistoPlus\Visual\Settings\Color;
+use BagistoPlus\Visual\Settings\Text;
 
 class AnnouncementBar extends BladeSection
 {

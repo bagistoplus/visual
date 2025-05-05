@@ -2,8 +2,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "shop:dev": "vite --config vite.shop.config.ts",
-    "shop:build": "vite build --config vite.shop.config.ts",
     "editor:dev": "vite --config vite.editor.config.ts",
     "editor:build": "vite build --config vite.editor.config.ts",
     "admin:dev": "vite --config vite.admin.config.ts",
@@ -33,7 +31,6 @@
     "@tiptap/extension-underline": "^2.8.0",
     "@tiptap/pm": "^2.8.0",
     "@tiptap/vue-3": "^2.8.0",
-    "@types/alpinejs": "^3.13.11",
     "@types/lodash": "^4.17.10",
     "@types/node": "^22.13.17",
     "@types/sortablejs": "^1.15.8",

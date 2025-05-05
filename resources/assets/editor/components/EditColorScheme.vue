@@ -28,8 +28,8 @@
     'surface-alt': 'Alternative surface color. For hover states, dropdowns',
     'on-surface-alt': 'Text/icons on alternative surface',
 
-    'error': 'Errors, danger zones',
-    'on-error': 'Text/icons on error messages',
+    'danger': 'Errors, danger zones',
+    'on-danger': 'Text/icons on error messages',
     'warning': 'Notices, validation warnings',
     'on-warning': 'Text/icons on warning backgrounds',
     'success': 'Alerts, tags, confirmations',

@@ -1,7 +1,7 @@
 <?php
 
-use BagistoPlus\Visual\Sections\Settings\ColorScheme;
-use BagistoPlus\Visual\Sections\Settings\ColorSchemeGroup;
+use BagistoPlus\Visual\Settings\ColorScheme;
+use BagistoPlus\Visual\Settings\ColorSchemeGroup;
 
 return [
     [
@@ -40,8 +40,8 @@ return [
                         'warning' => '#fbc700',
                         'on-warning' => '#000000',
 
-                        'error' => '#ff6266',
-                        'on-error' => '#000000',
+                        'danger' => '#ff6266',
+                        'on-danger' => '#000000',
 
                         'info' => '#0090b5',
                         'on-info' => '#ffffff',

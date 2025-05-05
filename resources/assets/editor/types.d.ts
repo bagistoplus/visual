@@ -176,8 +176,8 @@ type ColorSchemeDefintion = {
     | 'on-success'
     | 'warning'
     | 'on-warning'
-    | 'error'
-    | 'on-error'
+    | 'danger'
+    | 'on-danger'
     | 'info'
     | 'on-info']: string;
 };

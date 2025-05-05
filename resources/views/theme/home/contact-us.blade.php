@@ -5,5 +5,7 @@
 @stop
 
 @visual_content
-@include('shop::templates.contact')
+
+@includeIf('shop::templates.contact')
+
 @end_visual_content

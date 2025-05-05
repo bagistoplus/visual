@@ -35,7 +35,7 @@
           Success
         </button>
 
-        <button class="bg-error text-on-error hover:bg-error-600 rounded px-3 py-2 active:translate-y-[0.5px] active:transform">
+        <button class="bg-danger text-on-danger hover:bg-error-600 rounded px-3 py-2 active:translate-y-[0.5px] active:transform">
           Error
         </button>
 

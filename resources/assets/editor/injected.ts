@@ -347,7 +347,7 @@ class ThemeEditor {
     settingValue: any;
   }) {
     const { section, block, settingId, settingValue } = data;
-    const liveUpdateKey = [section.id, block?.id, settingId].filter(Boolean).join(':');
+    const liveUpdateKey = [section?.id, block?.id, settingId].filter(Boolean).join(':');
 
     const targetEl = document.querySelector(`[data-live-update-key="${liveUpdateKey}"]`) as HTMLElement;
 

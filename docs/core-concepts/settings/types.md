@@ -31,7 +31,7 @@ In addition to the standard attributes, Text type settings have the following at
 | `placeholder` | A placeholder value for the input. | No       |
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\Text;
+use BagistoPlus\Visual\Settings\Text;
 
 public static function settings(): array
 {
@@ -66,7 +66,7 @@ In addition to the standard attributes, Textarea type settings have the followin
 | `placeholder` | A placeholder value for the textarea. | No       |
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\Textarea;
+use BagistoPlus\Visual\Settings\Textarea;
 
 public static function settings(): array
 {
@@ -97,7 +97,7 @@ Simple true/false toggle. Useful for enabling or disabling features.
 Checkbox settings do not have any additional attributes beyond the standard attributes.
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\Checkbox;
+use BagistoPlus\Visual\Settings\Checkbox;
 
 public static function settings(): array
 {
@@ -137,7 +137,7 @@ In addition to the standard attributes, Radio type settings have the following a
 | `options` | Array of options formatted as `'value' => 'Label'` or `[ 'value' => ..., 'label' => ... ]` | Yes      |
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\Radio;
+use BagistoPlus\Visual\Settings\Radio;
 
 public static function settings(): array
 {
@@ -192,7 +192,7 @@ In addition to the standard attributes, Select type settings have the following 
 | `options` | Array of options formatted as `'value' => 'Label'` or `[ 'value' => ..., 'label' => ... ]` | Yes      |
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\Select;
+use BagistoPlus\Visual\Settings\Select;
 
 public static function settings(): array
 {
@@ -248,7 +248,7 @@ In addition to the standard attributes, Range type settings have the following a
 | `unit`    | Optional label for unit display | No       |
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\Range;
+use BagistoPlus\Visual\Settings\Range;
 
 public static function settings(): array
 {
@@ -290,7 +290,7 @@ In addition to the standard attributes, Number type settings have the following 
 | `placeholder` | A placeholder value for the input. | No       |
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\Number;
+use BagistoPlus\Visual\Settings\Number;
 
 public static function settings(): array
 {
@@ -324,7 +324,7 @@ When accessing a color setting inside Blade, the value is either:
 - an instance of [`matthieumastadenis\couleur\Color`](https://github.com/matthieumastadenis/couleur)
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\Color;
+use BagistoPlus\Visual\Settings\Color;
 
 public static function settings(): array
 {
@@ -359,7 +359,7 @@ The Link setting allows the merchant to either:
 - **Select a resource** (like a Product, Category, or CMS Page) directly from the store
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\Link;
+use BagistoPlus\Visual\Settings\Link;
 
 public static function settings(): array
 {
@@ -394,7 +394,7 @@ The merchant can:
 - Pick an existing image from the media library
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\Image;
+use BagistoPlus\Visual\Settings\Image;
 
 public static function settings(): array
 {
@@ -426,7 +426,7 @@ When accessing a category setting inside Blade, the value is either:
 - an instance of the `Webkul\Category\Models\Category` model
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\Category;
+use BagistoPlus\Visual\Settings\Category;
 
 public static function settings(): array
 {
@@ -458,7 +458,7 @@ When accessing a product setting inside Blade, the value is either:
 - an instance of the `Webkul\Product\Models\Product` model
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\Product;
+use BagistoPlus\Visual\Settings\Product;
 
 public static function settings(): array
 {
@@ -490,7 +490,7 @@ When accessing a CMS page setting inside Blade, the value is either:
 - an instance of the `Webkul\CMS\Models\CmsPage` model
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\CmsPage;
+use BagistoPlus\Visual\Settings\CmsPage;
 
 public static function settings(): array
 {
@@ -535,7 +535,7 @@ In addition to the standard attributes, RichText type settings have the followin
 | `inline`  | Whether the editor should be rendered inline. | No       |
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\RichText;
+use BagistoPlus\Visual\Settings\RichText;
 
 public static function settings(): array
 {
@@ -575,7 +575,7 @@ Font picker input. Useful for allowing merchants to select fonts from the [Bunny
 Font settings allow the merchant to select a web-safe font that is automatically loaded from Bunny Fonts.
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\Font;
+use BagistoPlus\Visual\Settings\Font;
 
 public static function settings(): array
 {
@@ -630,7 +630,7 @@ The merchant must provide a valid video URL.
 No file upload — the video will be embedded dynamically.
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\Video;
+use BagistoPlus\Visual\Settings\Video;
 
 public static function settings(): array
 {
@@ -664,7 +664,7 @@ Bagisto Visual ships with the [Lucide](https://lucide.dev/) icon set pre-install
 Developers can manually install and configure additional Blade Icons (like Heroicons, Tabler Icons, etc.) if needed.
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\Icon;
+use BagistoPlus\Visual\Settings\Icon;
 
 public static function settings(): array
 {
@@ -701,7 +701,7 @@ The merchant provides:
 - (Optional) Gradient direction (angle or predefined choices)
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\Gradient;
+use BagistoPlus\Visual\Settings\Gradient;
 
 public static function settings(): array
 {
@@ -739,7 +739,7 @@ This setting is typically used in **section settings** to let the merchant apply
 ---
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\ColorScheme;
+use BagistoPlus\Visual\Settings\ColorScheme;
 
 public static function settings(): array
 {
@@ -790,7 +790,7 @@ This is typically defined once in your theme’s `config/settings.php` and is **
 #### Usage in `config/settings.php`
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\ColorSchemeGroup;
+use BagistoPlus\Visual\Settings\ColorSchemeGroup;
 
 return [
     ColorSchemeGroup::make('color_schemes', 'Color Schemes')
@@ -933,9 +933,9 @@ Unlike other settings, the Header type:
 - **Does not produce any setting data** (not available inside Blade)
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\Header;
-use BagistoPlus\Visual\Sections\Settings\Color;
-use BagistoPlus\Visual\Sections\Settings\Text;
+use BagistoPlus\Visual\Settings\Header;
+use BagistoPlus\Visual\Settings\Color;
+use BagistoPlus\Visual\Settings\Text;
 
 public static function settings(): array
 {

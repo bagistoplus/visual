@@ -1,5 +1,0 @@
-sections:
-  breadcrumbs:
-    type: visual::breadcrumbs
-  compare:
-    type: visual::compare

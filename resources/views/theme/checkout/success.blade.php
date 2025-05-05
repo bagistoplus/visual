@@ -6,6 +6,6 @@
 
 @visual_content
 
-@include('shop::templates.checkout-success')
+@includeIf('shop::templates.checkout-success')
 
 @end_visual_content

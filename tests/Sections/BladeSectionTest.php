@@ -2,9 +2,9 @@
 
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Sections\BladeSection;
-use BagistoPlus\Visual\Sections\Concerns\SectionData;
 use BagistoPlus\Visual\Sections\Section;
 use BagistoPlus\Visual\Sections\SectionInterface;
+use BagistoPlus\Visual\Sections\Support\SectionData;
 
 it('should implements SectionInterface', function () {
     $mock = Mockery::mock(BladeSection::class)->makePartial();

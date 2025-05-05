@@ -15,5 +15,7 @@
 @stop
 
 @visual_content
-@include('shop::templates.search')
+
+@includeIf('shop::templates.search')
+
 @end_visual_content

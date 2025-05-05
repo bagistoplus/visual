@@ -1,6 +1,0 @@
-sections:
-  breadcrumbs:
-    type: visual::breadcrumbs
-
-  cart:
-    type: visual::cart-content

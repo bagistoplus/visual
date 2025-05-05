@@ -6,7 +6,6 @@ parameters:
     paths:
         - src
         - config
-        - database
     bootstrapFiles:
         - vendor/bagisto/bagisto/packages/Webkul/Product/src/Http/helpers.php
     tmpDir: build/phpstan
@@ -22,6 +21,3 @@ parameters:
         -
             message: '#Parameter \#1 \$column of method #'
             path: src/Http/Controllers/Admin/ThemeEditorController.php
-        - '#Call to an undefined static method Webkul\\Checkout\\Facades\\Cart::[a-zA-Z0-9\\_]+#'
-        - '#Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable::\$addresses#'
-        - '#Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable::\$wishlist_items#'

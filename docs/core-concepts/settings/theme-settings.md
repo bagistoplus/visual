@@ -31,7 +31,7 @@ Example file:
 ```php
 <?php
 
-use BagistoPlus\Visual\Sections\Settings;
+use BagistoPlus\Visual\Settings;
 
 return [
   [

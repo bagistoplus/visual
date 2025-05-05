@@ -3,7 +3,7 @@
 namespace BagistoPlus\Visual\Theme;
 
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
-use BagistoPlus\Visual\Sections\Concerns\SettingsValues;
+use BagistoPlus\Visual\Settings\Support\SettingsValues;
 use Webkul\Theme\Theme as BagistoTheme;
 
 class Theme extends BagistoTheme

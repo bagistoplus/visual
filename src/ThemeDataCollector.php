@@ -4,8 +4,8 @@ namespace BagistoPlus\Visual;
 
 use BagistoPlus\Visual\Facades\Sections;
 use BagistoPlus\Visual\Facades\ThemeEditor;
-use BagistoPlus\Visual\Sections\Concerns\SectionData;
-use BagistoPlus\Visual\Sections\Concerns\SettingsValues;
+use BagistoPlus\Visual\Sections\Support\SectionData;
+use BagistoPlus\Visual\Settings\Support\SettingsValues;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;

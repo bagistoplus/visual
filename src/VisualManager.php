@@ -66,6 +66,9 @@ class VisualManager
 
         if ($section->isLivewire) {
             Livewire::component("visual-section-{$vendorPrefix}-$slug", $componentClass);
+            if ($componentClass === 'BagistoPlus\VisualDebut\Sections\Compare') {
+                // dd($section, "visual-section-{$vendorPrefix}-$slug");
+            }
         } else {
             Blade::component($componentClass, $slug, "visual-section-{$vendorPrefix}");
         }

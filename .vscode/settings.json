@@ -1,6 +1,5 @@
 {
   "tailwindCSS.experimental.configFile": {
-    "tailwind.shop.config.js": "resources/views/theme/**",
     "tailwind.admin.config.js": "resources/views/admin/**",
     "tailwind.editor.config.js": "resources/assets/editor/**"
   }

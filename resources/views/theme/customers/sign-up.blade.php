@@ -12,6 +12,6 @@
 
 @visual_content
 
-@include('shop::templates.auth.register')
+@includeIf('shop::templates.auth.register')
 
 @end_visual_content

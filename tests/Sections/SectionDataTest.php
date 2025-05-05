@@ -1,9 +1,9 @@
 <?php
 
-use BagistoPlus\Visual\Sections\Concerns\BlockData;
-use BagistoPlus\Visual\Sections\Concerns\SectionData;
-use BagistoPlus\Visual\Sections\Concerns\SettingsValues;
 use BagistoPlus\Visual\Sections\Section;
+use BagistoPlus\Visual\Sections\Support\BlockData;
+use BagistoPlus\Visual\Sections\Support\SectionData;
+use BagistoPlus\Visual\Settings\Support\SettingsValues;
 
 it('can create a SectionData instance', function () {
     $sectionId = 'section-1';

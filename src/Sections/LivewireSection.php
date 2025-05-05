@@ -2,8 +2,8 @@
 
 namespace BagistoPlus\Visual\Sections;
 
-use BagistoPlus\Visual\Sections\Concerns\SectionData;
 use BagistoPlus\Visual\Sections\Concerns\SectionTrait;
+use BagistoPlus\Visual\Sections\Support\SectionData;
 use Livewire\Component;
 
 class LivewireSection extends Component implements SectionInterface

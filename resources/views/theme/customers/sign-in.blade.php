@@ -12,6 +12,6 @@
 
 @visual_content
 
-@include('shop::templates.auth.login')
+@includeIf('shop::templates.auth.login')
 
 @end_visual_content

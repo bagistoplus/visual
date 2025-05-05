@@ -3,18 +3,10 @@
 namespace BagistoPlus\Visual\Providers;
 
 use BagistoPlus\Visual\Commands;
-use BagistoPlus\Visual\Components\Livewire\AddToCartButton;
-use BagistoPlus\Visual\Components\Livewire\AddToCompareButton;
-use BagistoPlus\Visual\Components\Livewire\AddToWishlistButton;
-use BagistoPlus\Visual\Components\Livewire\CartCouponForm;
-use BagistoPlus\Visual\Components\Livewire\CartPreview;
-use BagistoPlus\Visual\Components\Livewire\EstimateShipping;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
-use BagistoPlus\Visual\LivewireFeatures\AddressDataSynth;
 use BagistoPlus\Visual\LivewireFeatures\SectionDataSynth;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
-use BagistoPlus\Visual\Sections;
 use BagistoPlus\Visual\Sections\SectionRepository;
 use BagistoPlus\Visual\Support\UrlGenerator;
 use BagistoPlus\Visual\TemplateRegistrar;
@@ -28,10 +20,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\DynamicComponent;
 use Livewire\Livewire;
-use Webkul\Category\Models\Category;
-use Webkul\Installer\Http\Middleware\Locale;
-use Webkul\Product\Models\Product;
 use Webkul\Shop\Http\Middleware\Currency;
+use Webkul\Shop\Http\Middleware\Locale;
 use Webkul\Theme\ViewRenderEventManager;
 
 class CoreServiceProvider extends ServiceProvider
@@ -42,65 +32,14 @@ class CoreServiceProvider extends ServiceProvider
     ];
 
     /**
-     * The list of sections to be registered.
-     */
-    protected static array $sections = [
-        Sections\AnnouncementBar::class,
-        Sections\Header::class,
-        Sections\Footer::class,
-        Sections\Hero::class,
-        Sections\CategoryList::class,
-        Sections\FeaturedProducts::class,
-        Sections\Newsletter::class,
-        Sections\Breadcrumbs::class,
-        Sections\CategoryPage::class,
-        Sections\SearchResult::class,
-        Sections\ProductDetails::class,
-        Sections\CartContent::class,
-        Sections\Checkout::class,
-        Sections\CheckoutSuccess::class,
-        Sections\LoginForm::class,
-        Sections\RegisterForm::class,
-        Sections\ErrorPage::class,
-        Sections\ContactForm::class,
-        Sections\Compare::class,
-        Sections\CmsPage::class,
-
-        Sections\Profile::class,
-        Sections\ProfileForm::class,
-        Sections\CustomerAddresses::class,
-        Sections\CustomerAddAddress::class,
-        Sections\CustomerEditAddress::class,
-        Sections\CustomerOrders::class,
-        Sections\CustomerOrderDetails::class,
-        Sections\Downloadables::class,
-        Sections\CustomerReviews::class,
-        Sections\Wishlist::class,
-    ];
-
-    /**
-     * The list of Livewire components to be registered.
-     */
-    protected static array $livewireComponents = [
-        'cart-preview' => CartPreview::class,
-        'cart-coupon-form' => CartCouponForm::class,
-        'add-to-cart-button' => AddToCartButton::class,
-        'add-to-wishlist-button' => AddToWishlistButton::class,
-        'add-to-compare-button' => AddToCompareButton::class,
-        'estimate-shipping' => EstimateShipping::class,
-    ];
-
-    /**
      * Bootstrap any application services.
      */
     public function boot(): void
     {
         $this->bootViewsAndTranslations();
         $this->bootViewEventListeners();
-        $this->bootBladeComponents();
         $this->bootMiddlewares();
         $this->bootLivewireMiddlewares();
-        $this->bootLivewireComponents();
         $this->bootVisualSections();
         $this->bootBladeIcons();
         $this->bootMorphMap();
@@ -139,11 +78,6 @@ class CoreServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
         $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'visual');
-
-        $this->booted(function (Application $app) {
-            // should move to a before middleware that check that our theme is the active theme before adding the namespace
-            $app['view']->prependNamespace('paypal', __DIR__.'/../../resources/views/webkul/paypal');
-        });
     }
 
     protected function bootViewEventListeners()
@@ -157,14 +91,11 @@ class CoreServiceProvider extends ServiceProvider
         });
     }
 
-    protected function bootBladeComponents(): void
-    {
-        Blade::componentNamespace('BagistoPlus\\Visual\\Components\\Blade', 'visual');
-    }
-
     protected function bootMiddlewares(): void
     {
+        // $this->app->booted(function ($app) {
         $this->app->bind(\Webkul\Shop\Http\Middleware\Theme::class, UseShopThemeFromRequest::class);
+        // });
     }
 
     protected function bootLivewireMiddlewares(): void
@@ -172,20 +103,12 @@ class CoreServiceProvider extends ServiceProvider
         Livewire::addPersistentMiddleware([
             Locale::class,
             Currency::class,
-            UseShopThemeFromRequest::class,
+            \Webkul\Shop\Http\Middleware\Theme::class,
         ]);
-    }
-
-    protected function bootLivewireComponents(): void
-    {
-        foreach (self::$livewireComponents as $name => $component) {
-            Livewire::component($name, $component);
-        }
     }
 
     protected function bootVisualSections(): void
     {
-        Visual::registerSections(static::$sections, 'visual');
         Visual::discoverSectionsIn(base_path(('Visual/Sections')));
     }
 
@@ -207,15 +130,15 @@ class CoreServiceProvider extends ServiceProvider
     protected function bootMorphMap(): void
     {
         Relation::morphMap([
-            'product' => Product::class,
-            'category' => Category::class,
+            'product' => \Webkul\Product\Models\Product::class,
+            'category' => \Webkul\Category\Models\Category::class,
+            'attribute' => \Webkul\Attribute\Models\Attribute::class,
         ]);
     }
 
     protected function bootLivewirePropertySynthesizer(): void
     {
         Livewire::propertySynthesizer(SectionDataSynth::class);
-        Livewire::propertySynthesizer(AddressDataSynth::class);
     }
 
     protected function bootCommands(): void

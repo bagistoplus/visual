@@ -12,5 +12,7 @@
 @stop
 
 @visual_content
-@include('shop::templates.page')
+
+@includeIf('shop::templates.page')
+
 @end_visual_content

@@ -14,6 +14,7 @@ class StoreAddresses
     public function execute(array $data)
     {
         request()->merge($data);
+
         $request = app(StoreCartAddressesRequest::class);
 
         foreach ($data as $key => $address) {
@@ -25,6 +26,7 @@ class StoreAddresses
         }
 
         $request->merge($data);
+
         $response = $this->checkoutApi->storeAddress($request);
 
         return $response->response()->getData(true);

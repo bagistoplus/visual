@@ -12,6 +12,6 @@
 
 @visual_content
 
-@include('shop::templates.checkout')
+@includeIf('shop::templates.checkout')
 
 @end_visual_content

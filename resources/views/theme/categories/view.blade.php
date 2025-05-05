@@ -20,6 +20,6 @@
 
 @visual_content
 
-@include('shop::templates.category')
+@includeIf('shop::templates.category')
 
 @end_visual_content

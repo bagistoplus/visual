@@ -7,9 +7,9 @@ To make a section configurable in the Visual Editor, you need to define its sett
 Define settings in the `settings()` method. These fields appear in the section's configuration panel in the editor.
 
 ```php
-use BagistoPlus\Visual\Sections\Settings\Color;
-use BagistoPlus\Visual\Sections\Settings\Link;
-use BagistoPlus\Visual\Sections\Settings\Text;
+use BagistoPlus\Visual\Settings\Color;
+use BagistoPlus\Visual\Settings\Link;
+use BagistoPlus\Visual\Settings\Text;
 
 public static function settings(): array
 {
@@ -32,7 +32,7 @@ Define blocks using the `Block` class:
 
 ```php
 use BagistoPlus\Visual\Sections\Block;
-use BagistoPlus\Visual\Sections\Settings\Text;
+use BagistoPlus\Visual\Settings\Text;
 
 Block::make('announcement')
     ->settings([
