@@ -23,12 +23,19 @@
             <a href="{{ url('') }}" class="truncate text-2xl font-medium">
               @if ($block->settings->logo)
                 <span class="sr-only">{{ $block->settings->logo_text ?? config('app.name') }}</span>
-                <img src="{{ $block->settings->logo }}" alt="{{ $block->settings->logo_text ?? config('app.name') }}" />
+                <img
+                  {{ $block->liveUpdate('logo', 'src') }}
+                  src="{{ $block->settings->logo }}"
+                  alt="{{ $block->settings->logo_text ?? config('app.name') }}"
+                  class="h-8 w-auto"
+                />
               @elseif ($logo = core()->getCurrentChannel()->logo_url)
                 <span class="sr-only">{{ config('app.name') }}</span>
                 <img src="{{ $logo }}" alt="{{ config('app.name') }}" />
               @else
-                {{ $block->settings->logo_text ?: config('app.name') }}
+                <span {{ $block->liveUpdate('logo_text') }}>
+                  {{ $block->settings->logo_text ?: config('app.name') }}
+                </span>
               @endif
             </a>
           </div>

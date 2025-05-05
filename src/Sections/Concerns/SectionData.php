@@ -30,7 +30,7 @@ class SectionData implements JsonSerializable
 
     public static function make(string $id, array $data, Section $section, ?string $sourceFile = null): self
     {
-        $blocks = self::prepareBlocks($data['blocks'] ?? [], $section->blocks);
+        $blocks = self::prepareBlocks($data['blocks'] ?? [], $section->blocks, $id);
 
         return new self(
             id: $id,
@@ -57,12 +57,17 @@ class SectionData implements JsonSerializable
             ->all();
     }
 
-    protected static function prepareBlocks(array $blocks, array $blocksSchemas): array
+    protected static function prepareBlocks(array $blocks, array $blocksSchemas, string $sectionId): array
     {
-        return collect($blocks)->map(function ($block, $id) use ($blocksSchemas) {
+        return collect($blocks)->map(function ($block, $id) use ($blocksSchemas, $sectionId) {
             $blockSchema = collect($blocksSchemas)->firstWhere('type', $block['type']);
 
-            return BlockData::make($id, $block, $blockSchema);
+            return BlockData::make(
+                id: $id,
+                data: $block,
+                sectionId: $sectionId,
+                blockSchema: $blockSchema
+            );
         })->all();
     }
 
@@ -77,5 +82,14 @@ class SectionData implements JsonSerializable
             'blocks' => array_map(fn ($block) => $block->jsonSerialize(), $this->allBlocks),
             'blocks_order' => $this->blocks_order,
         ];
+    }
+
+    public function liveUpdate(string $settingId, ?string $attribute = null): LiveUpdateData
+    {
+        return new LiveUpdateData(
+            settingId: $settingId,
+            attribute: $attribute,
+            sectionId: $this->id,
+        );
     }
 }

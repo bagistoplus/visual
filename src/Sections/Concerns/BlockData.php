@@ -11,13 +11,15 @@ class BlockData implements JsonSerializable
         public string $type,
         public string $name,
         public SettingsValues $settings,
-        public bool $disabled
+        public bool $disabled,
+        public string $sectionId
     ) {}
 
-    public static function make(string $id, array $data, array $blockSchema): self
+    public static function make(string $id, array $data, array $blockSchema, string $sectionId): self
     {
         return new self(
             id: $id,
+            sectionId: $sectionId,
             type: $data['type'] ?? $blockSchema['type'],
             name: $data['name'] ?? $blockSchema['name'] ?? $data['type'],
             disabled: $data['disabled'] ?? false,
@@ -47,5 +49,15 @@ class BlockData implements JsonSerializable
             'disabled' => $this->disabled,
             'settings' => $this->settings->toArray(),
         ];
+    }
+
+    public function liveUpdate(string $settingId, ?string $attribute = null): LiveUpdateData
+    {
+        return new LiveUpdateData(
+            settingId: $settingId,
+            attribute: $attribute,
+            sectionId: $this->sectionId,
+            blockId: $this->id,
+        );
     }
 }

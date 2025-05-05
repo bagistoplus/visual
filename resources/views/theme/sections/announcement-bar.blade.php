@@ -11,7 +11,7 @@
     </a>
     @svg('lucide-arrow-right', ['class' => 'w-4 h-4 inline-block'])
   @else
-    <p class="announcement-text">
+    <p class="announcement-text" {{ $section->liveUpdate('text') }}>
       {{ $section->settings->text }}
     </p>
   @endif

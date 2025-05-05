@@ -324,10 +324,14 @@ class ThemeEditor {
       case EVENTS.settingUpdate:
         let skipRefresh = false;
 
-        window.Visual._dispatch(EVENTS.settingUpdate, {
-          data,
-          skipRefresh: () => (skipRefresh = true),
-        });
+        if (this.autoHandleLiveUpdate(data)) {
+          skipRefresh = true;
+        } else {
+          window.Visual._dispatch(EVENTS.settingUpdate, {
+            data,
+            skipRefresh: () => (skipRefresh = true),
+          });
+        }
 
         if (this.activeSectionId) {
           this.highlightSection(document.querySelector(`[${Attr.SectionId}="${this.activeSectionId}"]`) as HTMLElement);
@@ -341,6 +345,30 @@ class ThemeEditor {
       default:
         window.Visual._dispatch(type, data);
     }
+  }
+
+  private autoHandleLiveUpdate(data: {
+    section: SectionData;
+    block?: BlockData;
+    settingId: string;
+    settingValue: any;
+  }) {
+    const { section, block, settingId, settingValue } = data;
+    const liveUpdateKey = [section.id, block?.id, settingId].filter(Boolean).join(':');
+
+    const targetEl = document.querySelector(`[data-live-update-key="${liveUpdateKey}"]`) as HTMLElement;
+
+    if (targetEl) {
+      if (targetEl.dataset.liveUpdateAttr) {
+        targetEl.setAttribute(targetEl.dataset.liveUpdateAttr, settingValue);
+      } else {
+        targetEl.innerHTML = settingValue;
+      }
+
+      return true;
+    }
+
+    return false;
   }
 
   private refreshPreviewer(html: string) {
