@@ -1,3 +1,4 @@
+import { debounce } from 'perfect-debounce';
 import { Idiomorph } from 'idiomorph/dist/idiomorph.esm.js';
 import { BlockData, SectionData } from './types';
 
@@ -130,16 +131,17 @@ class ThemeEditor {
   private editBtn!: HTMLButtonElement;
   private disableBtn!: HTMLButtonElement;
   private removeBtn!: HTMLButtonElement;
+  private buttonsContainer!: HTMLDivElement;
 
   private activeSectionId: string | null = null;
   private sectionsOrder: string[] = [];
   private hoverDebounce = 0;
-  private resizeObserver?: ResizeObserver;
 
   init() {
     this.sectionOverlay = document.querySelector('#section-overlay') as HTMLDivElement;
     this.sectionLabel = document.querySelector('#label') as HTMLElement;
 
+    this.buttonsContainer = document.querySelector('#buttons') as HTMLDivElement;
     this.moveUpBtn = this.sectionOverlay.querySelector('#move-up') as HTMLButtonElement;
     this.moveDownBtn = this.sectionOverlay.querySelector('#move-down') as HTMLButtonElement;
     this.editBtn = this.sectionOverlay.querySelector('#edit') as HTMLButtonElement;
@@ -182,6 +184,7 @@ class ThemeEditor {
         }
 
         if (section.dataset.sectionId !== this.activeSectionId) {
+          this.buttonsContainer.style.display = 'flex';
           this.debounceHighlight(section);
         }
       },
@@ -192,6 +195,8 @@ class ThemeEditor {
       'mouseleave',
       (e) => {
         if (!(e.target instanceof Element)) {
+          this.buttonsContainer.style.display = 'none';
+          this.clearActiveSection();
           return;
         }
 
@@ -201,12 +206,10 @@ class ThemeEditor {
           return;
         }
 
-        const toEl = (e as MouseEvent).relatedTarget;
+        const toEl = e.relatedTarget;
 
-        if (
-          section.dataset.sectionId === this.activeSectionId &&
-          (!toEl || !this.sectionOverlay.contains(toEl as Node))
-        ) {
+        if (!toEl || !this.sectionOverlay.contains(toEl as Node)) {
+          this.buttonsContainer.style.display = 'none';
           this.clearActiveSection();
         }
       },
@@ -257,24 +260,12 @@ class ThemeEditor {
       } else {
         this.moveDownBtn.style.display = 'none';
       }
-
-      if (this.resizeObserver) {
-        this.resizeObserver.disconnect();
-      }
-
-      this.resizeObserver = new ResizeObserver(() => this.highlightSection(section));
-      this.resizeObserver.observe(section);
     });
   }
 
   private clearActiveSection() {
     this.activeSectionId = null;
     this.sectionOverlay.style.display = 'none';
-
-    if (this.resizeObserver) {
-      this.resizeObserver.disconnect();
-      this.resizeObserver = undefined;
-    }
   }
 
   private postMessage(type: string, data: any) {
@@ -288,6 +279,7 @@ class ThemeEditor {
 
         if (sectionToHighlight) {
           this.highlightSection(sectionToHighlight);
+          sectionToHighlight.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
         break;
 
@@ -300,6 +292,7 @@ class ThemeEditor {
 
         if (sectionToSelect) {
           this.highlightSection(sectionToSelect);
+          sectionToSelect.scrollIntoView({ behavior: 'smooth', block: 'start' });
           window.Visual._dispatch(EVENTS.sectionSelect, {
             section: {
               id: sectionToSelect.dataset.sectionId,

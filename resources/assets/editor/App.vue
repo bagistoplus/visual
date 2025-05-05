@@ -21,6 +21,7 @@
 
   const messageHandlers: Record<string, Function> = {
     initialize(data: { themeData: ThemeData, templates: Template[], settingsSchema: SettingsSchema }) {
+
       const templateChanged = store.themeData.template !== data.themeData.template;
 
       store.setThemeData(data.themeData);

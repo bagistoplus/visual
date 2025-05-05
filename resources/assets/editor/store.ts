@@ -38,11 +38,11 @@ export const useStore = defineStore('main', () => {
   const settingsSchema = ref<SettingsSchema>([]);
   const usedColors = reactive<string[]>([]);
   const themeData = reactive<ThemeData>({
-    url: '',
-    theme: '',
-    channel: '',
-    locale: '',
-    template: '',
+    url: '/',
+    theme: 'default',
+    channel: 'default',
+    locale: 'en',
+    template: 'index',
     templateDataPath: '',
     hasStaticContent: false,
     sectionsOrder: [],

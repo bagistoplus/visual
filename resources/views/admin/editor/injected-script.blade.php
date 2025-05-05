@@ -20,7 +20,7 @@
       background-color: #0041ff;
       padding: 8px;
       border-radius: 4px;
-      display: flex;
+      display: none;
       gap: 8px;
     }
 
