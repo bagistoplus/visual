@@ -25,10 +25,10 @@ resources/views/templates/index.blade.php
 
 2. Add the following example content:
 
-```php
+```blade
 <div class="text-center py-12">
-    <h1 class="text-4xl font-bold">Welcome to Awesome Theme</h1>
-    <p class="mt-4 text-lg text-gray-600">Your new store is ready to be customized.</p>
+  <h1 class="text-4xl font-bold">Welcome to Awesome Theme</h1>
+  <p class="mt-4 text-lg text-gray-600">Your new store is ready to be customized.</p>
 </div>
 ```
 

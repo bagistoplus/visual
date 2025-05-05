@@ -98,6 +98,15 @@ For other locations, you can manually register sections in a service provider:
 Visual::discoverSectionsIn(base_path('modules/Shared/Sections'));
 ```
 
+Packages: use a vendor prefix
+
+```php
+Visual::discoverSectionsIn(
+    base_path('modules/Shared/Sections'),
+    'vendor-prefix'
+);
+```
+
 ### Register a single class
 
 ```php

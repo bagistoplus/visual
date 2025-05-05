@@ -52,15 +52,6 @@ Blade view used to render the section.
 protected static string $view = 'shop::sections.announcement-bar';
 ```
 
-or
-
-```php
-public static function view(): string
-{
-    return 'shop::sections.announcement-bar';
-}
-```
-
 **Default:**
 
 - For theme sections: `shop::sections.{slug}`
@@ -84,7 +75,7 @@ Results in:
 </section>
 ```
 
-**Default:** `div`
+**Default:** `section`
 
 ## description
 
@@ -195,6 +186,8 @@ You may use `*` as a wildcard to match a group of templates:
 - `'auth/*'` matches auth/login, auth/register, etc.
 - `'account/*'` matches account/profile, account/addresses, etc.
 
+**Default:** ['*']
+
 → [See available template types](../../core-concepts/templates/available.md)
 
 ## disabledOn
@@ -207,6 +200,8 @@ If a template is listed in `disabledOn`, the section will be **excluded from tha
 ```php
 protected static array $disabledOn = ['checkout', 'auth/*', 'account/*'];
 ```
+
+**Default:** []
 
 Use this to prevent a section from being added where it doesn’t make sense (like checkout or account pages)
 

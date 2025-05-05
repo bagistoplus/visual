@@ -10,7 +10,7 @@ trait SectionTrait
 
     protected static string $name = '';
 
-    protected static string $wrapper = 'div';
+    protected static string $wrapper = 'section';
 
     protected static array $settings = [];
 
@@ -25,6 +25,10 @@ trait SectionTrait
     protected static string $previewDescription = '';
 
     protected static array $default = [];
+
+    protected static array $enabledOn = ['*'];
+
+    protected static array $disabledOn = [];
 
     protected static string $view = '';
 
@@ -54,7 +58,11 @@ trait SectionTrait
 
     public static function name(): string
     {
-        return Str::of(self::slug())->replace('-', ' ')->title();
+        if (! empty(static::$name)) {
+            return static::$name;
+        }
+
+        return Str::of(self::slug())->headline();
     }
 
     public static function wrapper(): string

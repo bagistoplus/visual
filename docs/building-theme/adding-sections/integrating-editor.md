@@ -54,7 +54,7 @@ event.detail = {
 @end_visual_design_mode
 ```
 
-`@visual_design_mode` ensure that this code is only inject when the section is rendered in the editor live preview
+`@visual_design_mode` ensure that this code is only injected when the section is rendered in the editor live preview
 
 If you are using `Alpine.js` or `Livewire`, your state will automatically persist between updates—no additional setup is needed. However, if you rely on vanilla JS or third-party libraries, you should reinitialize them after every update.
 
@@ -94,13 +94,13 @@ Use `$section->liveUpdate()` or `$block->liveUpdate()` to wire an element to a s
 @endforeach
 ```
 
-These helpers inject the metadata to help the editor to update content without server side re-render.
+These helpers inject metadata to enable the editor to update content without requiring a server-side re-render.
 
 ---
 
-### Option 2: JavaScript API (`handleLiveUpdate()`)
+### Option 2: JavaScript API (`Visual.handleLiveUpdate()`)
 
-For more complex cases (e.g. multiple targets, transform logic, or styling), use `handleLiveUpdate()`:
+For more complex cases (e.g. multiple targets, transform logic, or styling), use `Visual.handleLiveUpdate()`:
 
 ```blade
 @visual_design_mode

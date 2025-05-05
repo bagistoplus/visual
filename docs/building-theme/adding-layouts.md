@@ -62,21 +62,21 @@ resources/views/components/footer.blade.php
 
 Basic `header.blade.php` example:
 
-```php
+```blade
 <header>
-    <nav>
-        <a href="/">Home</a>
-        <a href="/products">Products</a>
-        <a href="/contact">Contact</a>
-    </nav>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/products">Products</a>
+    <a href="/contact">Contact</a>
+  </nav>
 </header>
 ```
 
 Basic `footer.blade.php` example:
 
-```php
+```blade
 <footer>
-    <p>&copy; {{ date('Y') }} Your Company Name</p>
+  <p>&copy; {{ date('Y') }} Your Company Name</p>
 </footer>
 ```
 
@@ -97,7 +97,7 @@ For example:
 
 Components must be included using **Blade component syntax**:
 
-```php
+```blade
 <x-shop::header />
 <x-shop::footer />
 ```
