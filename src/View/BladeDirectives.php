@@ -20,7 +20,7 @@ class BladeDirectives
             'type' => $folder,
             'view' => $viewName,
             'path' => $path,
-            'name' => $folder . '/' . $viewName,
+            'name' => $folder.'/'.$viewName,
         ];
     }
 
@@ -49,9 +49,9 @@ class BladeDirectives
         ?>
         PHP;
 
-        return $themeEditorBefore .
+        return $themeEditorBefore.
             '<?php echo $__env->yieldContent("layout_content"); ?>'
-            . $themeEditorAfter;
+            .$themeEditorAfter;
     }
 
     public static function visualContent()

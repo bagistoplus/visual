@@ -4,7 +4,6 @@ namespace BagistoPlus\Visual\Sections\Concerns;
 
 use BagistoPlus\Visual\View\TailwindPaletteGenerator;
 use matthieumastadenis\couleur\ColorFactory;
-use matthieumastadenis\couleur\colors\OkLch;
 use matthieumastadenis\couleur\ColorSpace;
 
 class ColorScheme
@@ -16,10 +15,10 @@ class ColorScheme
             $theme = app('themes')->current();
 
             $schemesSetting = collect($theme->settingsSchema)
-                ->flatMap(fn($group) => $group['settings'])
-                ->first(fn($setting) => $setting['type'] === 'color_scheme_group');
+                ->flatMap(fn ($group) => $group['settings'])
+                ->first(fn ($setting) => $setting['type'] === 'color_scheme_group');
 
-            if (!$schemesSetting) {
+            if (! $schemesSetting) {
                 return;
             }
 
@@ -36,7 +35,7 @@ class ColorScheme
 
     public function attributes(): string
     {
-        return 'data-color-scheme="' . $this->id . '"';
+        return 'data-color-scheme="'.$this->id.'"';
     }
 
     public function outputCssVars()
@@ -47,10 +46,10 @@ class ColorScheme
             $oklchColor = ColorFactory::new($value, ColorSpace::OkLch);
             $output .= "  --color-$key: {$oklchColor->stringify()};\n";
 
-            if (!str_starts_with($key, 'on-')) {
+            if (! str_starts_with($key, 'on-')) {
                 $shades = $this->generateOklchShades($key, $value);
                 foreach ($shades as $shade) {
-                    $output .= $shade . "\n";
+                    $output .= $shade."\n";
                 }
             }
         }
