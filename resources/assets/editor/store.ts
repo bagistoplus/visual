@@ -97,45 +97,53 @@ export const useStore = defineStore('main', () => {
     return themeData.afterContentSectionsOrder.map((id) => themeData.sectionsData[id]);
   });
 
-  const persistThemeData = debounce(
-    async ({ skipHistory = false, skipPreviewRefresh = false } = {}) => {
-      const headers = new Headers({
-        'content-type': 'application/json',
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') as string,
+  const colorSchemes = computed(() => {
+    const settingId = settingsSchema.value
+      .flatMap((obj) => obj.settings)
+      .find((setting) => setting.type === 'color_scheme_group')?.id;
+
+    if (!settingId) {
+      return {};
+    }
+
+    return themeData.settings[settingId];
+  });
+
+  const persistThemeData = debounce(async ({ skipHistory = false, skipPreviewRefresh = false } = {}) => {
+    const headers = new Headers({
+      'content-type': 'application/json',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') as string,
+    });
+
+    if (!skipPreviewRefresh) {
+      nprogress.start();
+    }
+
+    if (!skipHistory) {
+      history.pushSync(structuredClone(toRaw(themeData)));
+      canUndoHistory.value = history.hasUndo;
+      canRedoHistory.value = history.hasRedo;
+    }
+
+    try {
+      const res = await fetch(window.ThemeEditor.routes.persistTheme, {
+        headers,
+        method: 'post',
+        body: JSON.stringify(themeData),
       });
 
       if (!skipPreviewRefresh) {
-        nprogress.start();
+        const html = await res.text();
+        await previewIframe.call('refresh', html);
       }
-
-      if (!skipHistory) {
-        history.pushSync(structuredClone(toRaw(themeData)));
-        canUndoHistory.value = history.hasUndo;
-        canRedoHistory.value = history.hasRedo;
+    } catch (error) {
+      console.error('Failed to persistThemeData: ' + error);
+    } finally {
+      if (!skipPreviewRefresh) {
+        nprogress.done();
       }
-
-      try {
-        const res = await fetch(window.ThemeEditor.routes.persistTheme, {
-          headers,
-          method: 'post',
-          body: JSON.stringify(themeData),
-        });
-
-        if (!skipPreviewRefresh) {
-          const html = await res.text();
-          await previewIframe.call('refresh', html);
-        }
-      } catch (error) {
-        console.error('Failed to persistThemeData: ' + error);
-      } finally {
-        if (!skipPreviewRefresh) {
-          nprogress.done();
-        }
-      }
-    },
-    500,
-    { cancelObject: '' }
-  );
+    }
+  }, 500);
 
   function publishTheme() {
     nprogress.start();
@@ -277,15 +285,15 @@ export const useStore = defineStore('main', () => {
       }
     }
 
-    // if (context.section && !skipPreviewRefresh) {
-    //   await previewIframe.call('section:updating', { section: context.section }, 0);
-    // }
+    if (context.section && !skipPreviewRefresh) {
+      await previewIframe.call('section:updating', { section: context.section }, 0);
+    }
 
     const res = await persistThemeData({ skipPreviewRefresh });
 
-    // if (context.section && !skipPreviewRefresh) {
-    //   await previewIframe.call('section:updated', { section: context.section }, 0);
-    // }
+    if (context.section && !skipPreviewRefresh) {
+      await previewIframe.call('section:updated', { section: context.section }, 0);
+    }
   }
 
   function getThemeDataValue(keyPath: string | string[]): unknown {
@@ -354,7 +362,6 @@ export const useStore = defineStore('main', () => {
       settings[setting.id] = setting.default;
     });
 
-    console.log('Adding new section', id, section);
     themeData.sectionsData[id] = {
       id,
       name: section.name,
@@ -527,6 +534,7 @@ export const useStore = defineStore('main', () => {
     contentSectionsOrder,
     beforeContentSections,
     afterContentSections,
+    colorSchemes,
 
     canUndoHistory,
     canRedoHistory,

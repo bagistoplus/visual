@@ -44,7 +44,7 @@
         >
           <div
             :title="role + ' color'"
-            class="h-6 rounded flex items-center justify-center"
+            class="rounded flex items-center justify-center"
             :style="{ backgroundColor: scheme[role as Role], color: scheme[`on-${role}` as `on-${Role}`] }"
           >
             <span class="font-semibold">A</span>

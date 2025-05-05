@@ -18,6 +18,7 @@ declare module 'vue' {
     CmsPagePicker: typeof import('./components/CmsPagePicker.vue')['default']
     ColorPicker: typeof import('./components/ColorPicker.vue')['default']
     ColorSchemeGroup: typeof import('./components/ColorSchemeGroup.vue')['default']
+    ColorSchemePicker: typeof import('./components/ColorSchemePicker.vue')['default']
     ColorSchemePreview: typeof import('./components/ColorSchemePreview.vue')['default']
     EditColorScheme: typeof import('./components/EditColorScheme.vue')['default']
     FontPicker: typeof import('./components/FontPicker.vue')['default']

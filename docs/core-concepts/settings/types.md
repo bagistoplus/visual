@@ -321,7 +321,7 @@ Color picker input. Useful for background colors, text colors, or brand-related 
 When accessing a color setting inside Blade, the value is either:
 
 - `null` (if no color selected)
-- an instance of [`Spatie\Color\Color`](https://github.com/spatie/color)
+- an instance of [`matthieumastadenis\couleur\Color`](https://github.com/matthieumastadenis/couleur)
 
 ```php
 use BagistoPlus\Visual\Sections\Settings\Color;
@@ -757,7 +757,7 @@ This creates a dropdown in the visual editor populated with all color schemes de
 The recommended way to use the selected color scheme in your view is:
 
 ```blade
-<div {{ $section->settings->color_scheme->attributes() }}>
+<div {!! $section->settings->color_scheme->attributes() !!}>
     <!-- Section content -->
 </div>
 ```

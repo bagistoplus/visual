@@ -30,7 +30,7 @@
 
 <template>
   <div>
-    <div class="grid grid-cols-2 gap-2 items-stretch">
+    <div class="grid grid-cols-2 gap-2 items-stretch mt-1">
       <template
         v-for="(scheme, id) in model"
         :key="id"

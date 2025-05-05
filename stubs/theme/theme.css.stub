@@ -3,28 +3,160 @@
 
 /* Define color scheme tokens */
 @theme inline {
-    --color-background: var(--color-background);
     --color-on-background: var(--color-on-background);
-    --color-primary: var(--color-primary);
+    --color-background: var(--color-background);
+    --color-background-50: var(--color-background-50);
+    --color-background-100: var(--color-background-100);
+    --color-background-200: var(--color-background-200);
+    --color-background-300: var(--color-background-300);
+    --color-background-400: var(--color-background-400);
+    --color-background-500: var(--color-background-500);
+    --color-background-600: var(--color-background-600);
+    --color-background-700: var(--color-background-700);
+    --color-background-800: var(--color-background-800);
+    --color-background-900: var(--color-background-900);
+    --color-background-950: var(--color-background-950);
+
     --color-on-primary: var(--color-on-primary);
-    --color-secondary: var(--color-secondary);
+    --color-primary: var(--color-primary);
+    --color-primary-50: var(--color-primary-50);
+    --color-primary-100: var(--color-primary-100);
+    --color-primary-200: var(--color-primary-200);
+    --color-primary-300: var(--color-primary-300);
+    --color-primary-400: var(--color-primary-400);
+    --color-primary-500: var(--color-primary-500);
+    --color-primary-600: var(--color-primary-600);
+    --color-primary-700: var(--color-primary-700);
+    --color-primary-800: var(--color-primary-800);
+    --color-primary-900: var(--color-primary-900);
+    --color-primary-950: var(--color-primary-950);
+
+
     --color-on-secondary: var(--color-on-secondary);
-    --color-accent: var(--color-accent);
+    --color-secondary: var(--color-secondary);
+    --color-secondary-50: var(--color-secondary-50);
+    --color-secondary-100: var(--color-secondary-100);
+    --color-secondary-200: var(--color-secondary-200);
+    --color-secondary-300: var(--color-secondary-300);
+    --color-secondary-400: var(--color-secondary-400);
+    --color-secondary-500: var(--color-secondary-500);
+    --color-secondary-600: var(--color-secondary-600);
+    --color-secondary-700: var(--color-secondary-700);
+    --color-secondary-800: var(--color-secondary-800);
+    --color-secondary-900: var(--color-secondary-900);
+    --color-secondary-950: var(--color-secondary-950);
+
     --color-on-accent: var(--color-on-accent);
-    --color-neutral: var(--color-neutral);
+    --color-accent: var(--color-accent);
+    --color-accent-50: var(--color-accent-50);
+    --color-accent-100: var(--color-accent-100);
+    --color-accent-200: var(--color-accent-200);
+    --color-accent-300: var(--color-accent-300);
+    --color-accent-400: var(--color-accent-400);
+    --color-accent-500: var(--color-accent-500);
+    --color-accent-600: var(--color-accent-600);
+    --color-accent-700: var(--color-accent-700);
+    --color-accent-800: var(--color-accent-800);
+    --color-accent-900: var(--color-accent-900);
+    --color-accent-950: var(--color-accent-950);
+
     --color-on-neutral: var(--color-on-neutral);
-    --color-surface: var(--color-surface);
+    --color-neutral: var(--color-neutral);
+    --color-neutral-50: var(--color-neutral-50);
+    --color-neutral-100: var(--color-neutral-100);
+    --color-neutral-200: var(--color-neutral-200);
+    --color-neutral-300: var(--color-neutral-300);
+    --color-neutral-400: var(--color-neutral-400);
+    --color-neutral-500: var(--color-neutral-500);
+    --color-neutral-600: var(--color-neutral-600);
+    --color-neutral-700: var(--color-neutral-700);
+    --color-neutral-800: var(--color-neutral-800);
+    --color-neutral-900: var(--color-neutral-900);
+    --color-neutral-950: var(--color-neutral-950);
+
     --color-on-surface: var(--color-on-surface);
-    --color-surface-alt: var(--color-surface-alt);
+    --color-surface: var(--color-surface);
+    --color-surface-50: var(--color-surface-50);
+    --color-surface-100: var(--color-surface-100);
+    --color-surface-200: var(--color-surface-200);
+    --color-surface-300: var(--color-surface-300);
+    --color-surface-400: var(--color-surface-400);
+    --color-surface-500: var(--color-surface-500);
+    --color-surface-600: var(--color-surface-600);
+    --color-surface-700: var(--color-surface-700);
+    --color-surface-800: var(--color-surface-800);
+    --color-surface-900: var(--color-surface-900);
+    --color-surface-950: var(--color-surface-950);
+
     --color-on-surface-alt: var(--color-on-surface-alt);
-    --color-success: var(--color-success);
+    --color-surface-alt: var(--color-surface-alt);
+    --color-surface-alt-50: var(--color-surface-alt-50);
+    --color-surface-alt-100: var(--color-surface-alt-100);
+    --color-surface-alt-200: var(--color-surface-alt-200);
+    --color-surface-alt-300: var(--color-surface-alt-300);
+    --color-surface-alt-400: var(--color-surface-alt-400);
+    --color-surface-alt-500: var(--color-surface-alt-500);
+    --color-surface-alt-600: var(--color-surface-alt-600);
+    --color-surface-alt-700: var(--color-surface-alt-700);
+    --color-surface-alt-800: var(--color-surface-alt-800);
+    --color-surface-alt-900: var(--color-surface-alt-900);
+    --color-surface-alt-950: var(--color-surface-alt-950);
+
     --color-on-success: var(--color-on-success);
-    --color-warning: var(--color-warning);
+    --color-success: var(--color-success);
+    --color-success-50: var(--color-success-50);
+    --color-success-100: var(--color-success-100);
+    --color-success-200: var(--color-success-200);
+    --color-success-300: var(--color-success-300);
+    --color-success-400: var(--color-success-400);
+    --color-success-500: var(--color-success-500);
+    --color-success-600: var(--color-success-600);
+    --color-success-700: var(--color-success-700);
+    --color-success-800: var(--color-success-800);
+    --color-success-900: var(--color-success-900);
+    --color-success-950: var(--color-success-950);
+
     --color-on-warning: var(--color-on-warning);
-    --color-error: var(--color-error);
+    --color-warning: var(--color-warning);
+    --color-warning-50: var(--color-warning-50);
+    --color-warning-100: var(--color-warning-100);
+    --color-warning-200: var(--color-warning-200);
+    --color-warning-300: var(--color-warning-300);
+    --color-warning-400: var(--color-warning-400);
+    --color-warning-500: var(--color-warning-500);
+    --color-warning-600: var(--color-warning-600);
+    --color-warning-700: var(--color-warning-700);
+    --color-warning-800: var(--color-warning-800);
+    --color-warning-900: var(--color-warning-900);
+    --color-warning-950: var(--color-warning-950);
+
     --color-on-error: var(--color-on-error);
-    --color-info: var(--color-info);
+    --color-error: var(--color-error);
+    --color-error-50: var(--color-error-50);
+    --color-error-100: var(--color-error-100);
+    --color-error-200: var(--color-error-200);
+    --color-error-300: var(--color-error-300);
+    --color-error-400: var(--color-error-400);
+    --color-error-500: var(--color-error-500);
+    --color-error-600: var(--color-error-600);
+    --color-error-700: var(--color-error-700);
+    --color-error-800: var(--color-error-800);
+    --color-error-900: var(--color-error-900);
+    --color-error-950: var(--color-error-950);
+
     --color-on-info: var(--color-on-info);
+    --color-info: var(--color-info);
+    --color-info-50: var(--color-info-50);
+    --color-info-100: var(--color-info-100);
+    --color-info-200: var(--color-info-200);
+    --color-info-300: var(--color-info-300);
+    --color-info-400: var(--color-info-400);
+    --color-info-500: var(--color-info-500);
+    --color-info-600: var(--color-info-600);
+    --color-info-700: var(--color-info-700);
+    --color-info-800: var(--color-info-800);
+    --color-info-900: var(--color-info-900);
+    --color-info-950: var(--color-info-950);
 }
 
 /* You can add additional custom styles here */

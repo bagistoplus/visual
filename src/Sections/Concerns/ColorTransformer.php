@@ -2,12 +2,12 @@
 
 namespace BagistoPlus\Visual\Sections\Concerns;
 
-use Spatie\Color\Factory;
+use matthieumastadenis\couleur\ColorFactory;
 
 class ColorTransformer
 {
     public function __invoke(string $color)
     {
-        return Factory::fromString($color);
+        return ColorFactory::new($color);
     }
 }

@@ -14,36 +14,36 @@ return [
                 ->schemes([
                     'default' => [
                         'background' => '#ffffff',
-                        'on-background' => '#000000',
+                        'on-background' => '#181a2a',
 
-                        'primary' => '#2563eb',
+                        'primary' => '#0082ce',
                         'on-primary' => '#ffffff',
 
-                        'secondary' => '#64748b',
+                        'secondary' => '#61738d',
                         'on-secondary' => '#ffffff',
 
-                        'accent' => '#fbbf24',
-                        'on-accent' => '#000000',
+                        'accent' => '#009689',
+                        'on-accent' => '#ffffff',
 
-                        'neutral' => '#374151',
+                        'neutral' => '#000000',
                         'on-neutral' => '#ffffff',
 
-                        'surface' => '#f3f4f6',
-                        'on-surface' => '#000000',
+                        'surface' => '#e8e8e8',
+                        'on-surface' => '#181a2a',
 
-                        'surface-alt' => '#ffffff',
-                        'on-surface-alt' => '#000000',
+                        'surface-alt' => '#d1d1d1',
+                        'on-surface-alt' => '#181a2a',
 
-                        'success' => '#22c55e',
+                        'success' => '#00a43b',
                         'on-success' => '#ffffff',
 
-                        'warning' => '#f59e0b',
+                        'warning' => '#fbc700',
                         'on-warning' => '#000000',
 
-                        'error' => '#ef4444',
-                        'on-error' => '#ffffff',
+                        'error' => '#ff6266',
+                        'on-error' => '#000000',
 
-                        'info' => '#3b82f6',
+                        'info' => '#0090b5',
                         'on-info' => '#ffffff',
                     ]
                 ])

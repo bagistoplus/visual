@@ -131,6 +131,8 @@ final class SettingsValues implements Arrayable, IteratorAggregate, JsonSerializ
             'link' => (new LinkTransformer)($value),
             'font' => (new FontTransformer)($value),
             'icon' => (new IconTransformer)($value),
+            'color_scheme' => (new ColorSchemeTransformer)($value),
+            'color_scheme_group' => (new ColorSchemeGroupTransformer)($value),
             default => $value,
         };
     }

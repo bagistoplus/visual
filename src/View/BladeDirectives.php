@@ -20,7 +20,7 @@ class BladeDirectives
             'type' => $folder,
             'view' => $viewName,
             'path' => $path,
-            'name' => $folder.'/'.$viewName,
+            'name' => $folder . '/' . $viewName,
         ];
     }
 
@@ -49,9 +49,9 @@ class BladeDirectives
         ?>
         PHP;
 
-        return $themeEditorBefore.
+        return $themeEditorBefore .
             '<?php echo $__env->yieldContent("layout_content"); ?>'
-            .$themeEditorAfter;
+            . $themeEditorAfter;
     }
 
     public static function visualContent()
@@ -79,14 +79,14 @@ class BladeDirectives
         return "<?php echo \BagistoPlus\Visual\View\BladeDirectives::generateColorPalette($expression); ?>";
     }
 
-    public static function generateColorPalette($name, $color, $isDarkScheme = false)
+    public static function generateColorPalette($name, $color)
     {
-        $shades = TailwindPaletteGenerator::generate($color, $isDarkScheme);
+        $shades = TailwindPaletteGenerator::generate($color->toRgb());
 
         $palette = '';
 
         foreach ($shades as $key => $c) {
-            $palette .= "--color-{$name}-{$key}: {$c->red()} {$c->green()} {$c->blue()};\n";
+            $palette .= "--color-{$name}-{$key}: {$c->red} {$c->green} {$c->blue};\n";
         }
 
         return $palette;

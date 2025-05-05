@@ -16,6 +16,7 @@
   import FontSetting from './FontPicker.vue';
   import IconSetting from './IconPicker.vue';
   import ColorSchemeGroupSetting from './ColorSchemeGroup.vue';
+  import ColorSchemeSetting from './ColorSchemePicker.vue';
 
   const InlineRichtextSetting = RichtextSetting;
 
@@ -38,7 +39,8 @@
       InlineRichtextSetting,
       FontSetting,
       IconSetting,
-      ColorSchemeGroupSetting
+      ColorSchemeGroupSetting,
+      ColorSchemeSetting
     },
   };
 </script>

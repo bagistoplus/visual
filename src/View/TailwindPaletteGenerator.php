@@ -2,15 +2,13 @@
 
 namespace BagistoPlus\Visual\View;
 
-use Spatie\Color\Color;
-use Spatie\Color\Factory;
-use Spatie\Color\Rgb;
+use matthieumastadenis\couleur\colors\Rgb;
 
 class TailwindPaletteGenerator
 {
-    public static Color $white;
+    public static Rgb $white;
 
-    public static Color $black;
+    public static Rgb $black;
 
     public static $lightWeights = [
         50 => 0.95,
@@ -31,7 +29,7 @@ class TailwindPaletteGenerator
     public static function white()
     {
         if (! isset(self::$white)) {
-            self::$white = Rgb::fromString('rgb(255,255,255)');
+            self::$white = new Rgb(255, 255, 255);
         }
 
         return self::$white;
@@ -40,43 +38,30 @@ class TailwindPaletteGenerator
     public static function black()
     {
         if (! isset(self::$black)) {
-            self::$black = Rgb::fromString('rgb(0,0,0)');
+            self::$black = new Rgb(0, 0, 0);
         }
 
         return self::$black;
     }
 
-    public static function generate(Color|string $color, bool $isDarkScheme = false)
+    public static function generate(Rgb $color): array
     {
-        if (is_string($color)) {
-            $color = Factory::fromString($color);
-        }
-
-        $rgbColor = $color->toRgb();
-
         $colors = [];
 
         foreach (self::$lightWeights as $key => $weight) {
-            $colors[$key] = self::lighten($rgbColor, $weight);
+            $colors[$key] = self::lighten($color, $weight);
         }
 
-        $colors[500] = $rgbColor;
+        $colors[500] = $color;
 
         foreach (self::$darkWeights as $key => $weight) {
-            $colors[$key] = self::darken($rgbColor, $weight);
-        }
-
-        if ($isDarkScheme) {
-            $colors = array_combine(
-                array_keys($colors),
-                array_reverse(array_values($colors))
-            );
+            $colors[$key] = self::darken($color, $weight);
         }
 
         return $colors;
     }
 
-    public static function mixColor(Color $color1, Color $color2, $weight = 0.5)
+    public static function mixColor(Rgb $color1, Rgb $color2, $weight = 0.5): Rgb
     {
         $f = function ($x) use ($weight) {
             return (1 - $weight) * $x;
@@ -92,19 +77,19 @@ class TailwindPaletteGenerator
 
         $channels = array_map(
             $h,
-            array_map($f, [$color1->red(), $color1->green(), $color1->blue()]),
-            array_map($g, [$color2->red(), $color2->green(), $color2->blue()]),
+            array_map($f, [$color1->red, $color1->green, $color1->blue]),
+            array_map($g, [$color2->red, $color2->green, $color2->blue]),
         );
 
         return new Rgb($channels[0], $channels[1], $channels[2]);
     }
 
-    public static function lighten(Color $color, $weight = 0.5)
+    public static function lighten(Rgb $color, $weight = 0.5): Rgb
     {
         return self::mixColor($color, self::white(), $weight);
     }
 
-    public static function darken(Color $color, $weight = 0.5)
+    public static function darken(Rgb $color, $weight = 0.5): Rgb
     {
         return self::mixColor($color, self::black(), $weight);
     }
