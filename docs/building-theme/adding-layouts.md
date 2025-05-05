@@ -17,7 +17,7 @@ resources/views/layouts/default.blade.php
 
 Example content for a basic `default.blade.php`:
 
-```php
+```blade
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
 <head>

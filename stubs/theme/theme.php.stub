@@ -7,7 +7,7 @@ return [
     'author' => '{{ author }}',
     'assets_path' => 'public/themes/shop/{{ slug }}',
     'views_path' => 'resources/themes/{{ slug }}/views',
-    'preview_image' => 'themes/shop/{{ slug }}/preview.png',
+    'preview_image' => 'images/theme-preview.png',
     'documentation_url' => 'https://yourdomain.com/docs/themes/{{ slug }}',
 
     'vite' => [

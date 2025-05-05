@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [
     tailwindcss(),
     laravel({
-      input: ['resources/assets/css/theme.css'],
+      input: ['resources/assets/css/theme.css', 'resources/assets/js/theme.js'],
       refresh: true,
       buildDirectory: 'themes/shop/{{ slug }}',
       hotFile: 'public/themes/shop/{{ slug }}/{{ slug }}-vite.hot',

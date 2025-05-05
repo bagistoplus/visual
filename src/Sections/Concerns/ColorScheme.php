@@ -57,14 +57,14 @@ class ColorScheme
         return $output;
     }
 
-    private function generateOklchShades($name, $color)
+    private function generateOklchShades(string $name, string $color)
     {
-        return collect(TailwindPaletteGenerator::generate($color))
+        return collect(TailwindPaletteGenerator::generate(ColorFactory::newRgb($color)))
             ->map(function ($color) {
                 return ColorFactory::newOkLch($color->__toString(), ColorSpace::Rgb)
                     ->stringify();
             })->map(function ($color, $shade) use ($name) {
-                return "    -color-{$name}-{$shade}: {$color};";
+                return "    --color-{$name}-{$shade}: {$color};";
             });
     }
 }

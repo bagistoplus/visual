@@ -159,18 +159,18 @@ No need to publish the theme package to Packagist or any remote server.
 
 You only need to publish the package if you intend to distribute or share it outside your current project.
 
-## Step 4: Activate the Theme in Admin
+## Step 4: Preview the Theme in Admin
 
 After installation, activate your theme in the admin panel:
 
 1. Log into the Bagisto admin panel.
-2. Go to **Settings → Channels**.
-3. Select the channel (e.g., `default`).
-4. Under the **Design** section, choose **Awesome Theme** from the **Theme** dropdown.
-5. Click **Save Channel**.
+2. Go to **Bagisto Visual → Themes**.
+3. You should see the newly installed theme listed.
+4. Click on the **Preview** button to see a preview of the theme.
+5. Optional: click of the **Customize** button to open the theme in visual editor.
 
 ✅
-Your storefront is now using the new theme.
+You can start working on your theme now.
 
 ## Next Steps
 

@@ -83,6 +83,8 @@ class MakeThemeCommand extends Command
             File::put($targetPath, $rendered);
         }
 
+        File::copy(__DIR__.'/../../stubs/theme/theme-preview.png.stub', "{$basePath}/resources/assets/images/theme-preview.png");
+
         $this->ensureComposerPathRepository();
 
         info("✅ Theme '{$name}' created successfully at: packages/{$vendor}/{$name}");

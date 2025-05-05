@@ -8,7 +8,7 @@
 
     @stack('meta')
 
-    @includeIf('shop::partials.colors)
+    @includeIf('shop::partials.colors')
 
     @bagistoVite(['resources/assets/css/theme.css'])
     @stack('styles')
@@ -19,31 +19,31 @@
       @visual_layout_content
 
       <div class="bg-surface text-on-surface flex justify-center gap-4 px-4 py-8">
-        <button class="bg-primary text-on-primary hover:bg-primary-600 active:bg-primary-700 rounded px-3 py-2">
+        <button class="bg-primary text-on-primary hover:bg-primary-600 rounded px-3 py-2 active:translate-y-[0.5px] active:transform">
           Primary
         </button>
 
-        <button class="bg-secondary text-on-secondary hover:bg-secondary-600 active:bg-secondary-700 rounded px-3 py-2">
+        <button class="bg-secondary text-on-secondary hover:bg-secondary-600 rounded px-3 py-2 active:translate-y-[0.5px] active:transform">
           Secondary
         </button>
 
-        <button class="bg-accent text-on-accent hover:bg-accent-600 active:bg-accent-700 rounded px-3 py-2">
+        <button class="bg-accent text-on-accent hover:bg-accent-600 rounded px-3 py-2 active:translate-y-[0.5px] active:transform">
           Accent
         </button>
 
-        <button class="bg-success text-on-success hover:bg-success-600 active:bg-success-700 rounded px-3 py-2">
+        <button class="bg-success text-on-success hover:bg-success-600 rounded px-3 py-2 active:translate-y-[0.5px] active:transform">
           Success
         </button>
 
-        <button class="bg-error text-on-error hover:bg-error-600 active:bg-error-700 rounded px-3 py-2">
+        <button class="bg-error text-on-error hover:bg-error-600 rounded px-3 py-2 active:translate-y-[0.5px] active:transform">
           Error
         </button>
 
-        <button class="bg-info text-on-info hover:bg-info-600 active:bg-info-700 rounded px-3 py-2">
+        <button class="bg-info text-on-info hover:bg-info-600 rounded px-3 py-2 active:translate-y-[0.5px] active:transform">
           Info
         </button>
 
-        <button class="bg-neutral text-on-neutral rounded px-3 py-2 hover:bg-neutral-600 active:bg-neutral-700">
+        <button class="bg-neutral text-on-neutral rounded px-3 py-2 hover:bg-neutral-600 active:translate-y-[0.5px] active:transform">
           Neutral
         </button>
       </div>
