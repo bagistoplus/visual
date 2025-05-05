@@ -13,7 +13,9 @@ class SearchResult extends LivewireSection
     use HandlesProductListing;
     use WithPagination;
 
-    public static string $view = 'shop::sections.search-result';
+    protected static array $enabledOn = ['search'];
+
+    protected static string $view = 'shop::sections.search-result';
 
     public function paginationView()
     {

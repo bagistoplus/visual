@@ -19,7 +19,9 @@ class Checkout extends LivewireSection
 {
     use InteractsWithCart;
 
-    public static string $view = 'shop::sections.checkout';
+    protected static array $enabledOn = ['checkout'];
+
+    protected static string $view = 'shop::sections.checkout';
 
     public string $currentStep = 'address';
 

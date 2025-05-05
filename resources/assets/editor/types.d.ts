@@ -67,6 +67,8 @@ export interface Section {
   settings: Setting[];
   blocks: Block[];
   maxBlocks: number;
+  enabledOn: string[];
+  disabledOn: string[];
 }
 
 export interface BlockData {

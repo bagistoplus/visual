@@ -10,7 +10,9 @@ use BagistoPlus\Visual\Enums\Events;
 
 class Wishlist extends LivewireSection
 {
-    public static string $view = 'shop::sections.wishlist';
+    protected static array $enabledOn = ['account/wishlist'];
+
+    protected static string $view = 'shop::sections.wishlist';
 
     public function loader($id) {}
 

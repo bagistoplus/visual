@@ -4,5 +4,7 @@ namespace BagistoPlus\Visual\Sections;
 
 class Downloadables extends BladeSection
 {
-    public static string $view = 'shop::sections.downloadables';
+    protected static array $enabledOn = ['account/downloadables'];
+
+    protected static string $view = 'shop::sections.downloadables';
 }

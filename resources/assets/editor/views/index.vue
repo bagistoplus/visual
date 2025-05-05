@@ -9,13 +9,24 @@
   const search = ref('');
   const sections = sortBy(window.ThemeEditor.availableSections, ['name'], ['asc']);
 
+  const availableSections = computed(() => {
+    return sections.filter((section) => {
+      const disabled = section.disabledOn.some(pattern => matchPattern(pattern, store.themeData.template));
+      if (disabled) {
+        return false;
+      }
+
+      return section.enabledOn.some(pattern => matchPattern(pattern, store.themeData.template));
+    });
+  });
+
   const filteredSections = computed(() => {
     if (!search.value) {
-      return sections;
+      return availableSections.value;
     }
 
     const regex = new RegExp(search.value, "gi");
-    return sections.filter((section) => {
+    return availableSections.value.filter((section) => {
       return (
         regex.test(section.slug) ||
         regex.test(section.name) ||
@@ -44,6 +55,11 @@
 
     return grouped;
   });
+
+  function matchPattern(pattern: string, value: string) {
+    const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
+    return regex.test(value);
+  }
 
   function toggleSectionsDialog() {
     sectionsDialogOpened.value = !sectionsDialogOpened.value;

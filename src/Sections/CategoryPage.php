@@ -13,7 +13,9 @@ class CategoryPage extends LivewireSection
     use HandlesProductListing;
     use WithPagination;
 
-    public static string $view = 'shop::sections.category-page';
+    protected static array $enabledOn = ['category'];
+
+    protected static string $view = 'shop::sections.category-page';
 
     public function paginationView()
     {

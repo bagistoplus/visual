@@ -13,7 +13,9 @@ class CartContent extends LivewireSection
 {
     use InteractsWithCart;
 
-    public static string $view = 'shop::sections.cart-content';
+    protected static array $enabledOn = ['cart'];
+
+    protected static string $view = 'shop::sections.cart-content';
 
     public $itemsSelected = [];
 

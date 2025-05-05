@@ -9,7 +9,9 @@ use Webkul\Product\Helpers\Review;
 
 class ProductDetails extends LivewireSection
 {
-    public static string $view = 'shop::sections.product-details';
+    protected static array $enabledOn = ['product'];
+
+    protected static string $view = 'shop::sections.product-details';
 
     public int $quantity = 1;
 

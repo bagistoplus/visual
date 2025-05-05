@@ -10,6 +10,8 @@ use Webkul\Product\Repositories\ProductFlatRepository;
 
 class FeaturedProducts extends BladeSection
 {
+    protected static array $disabledOn = ['auth/*', 'account/*'];
+
     protected static string $view = 'shop::sections.featured-products';
 
     public function getProducts()

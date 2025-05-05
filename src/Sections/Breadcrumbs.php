@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 
 class Breadcrumbs extends BladeSection
 {
-    public static string $view = 'shop::sections.breadcrumbs';
+    protected static string $view = 'shop::sections.breadcrumbs';
 
     public function getViewData(): array
     {

@@ -4,5 +4,7 @@ namespace BagistoPlus\Visual\Sections;
 
 class Profile extends BladeSection
 {
-    public static string $view = 'shop::sections.profile';
+    protected static array $enabledOn = ['account/profile'];
+
+    protected static string $view = 'shop::sections.profile';
 }

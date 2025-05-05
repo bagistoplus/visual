@@ -66,6 +66,10 @@ final class Section implements JsonSerializable
      */
     public array $default;
 
+    public array $enabledOn = ['*'];
+
+    public array $disabledOn = [];
+
     public function __construct(
         $slug,
         $name,
@@ -77,6 +81,8 @@ final class Section implements JsonSerializable
         $previewImageUrl = '',
         $previewDescription = '',
         $default = [],
+        $enabledOn = ['*'],
+        $disabledOn = [],
         $isLivewire = false
     ) {
         $this->slug = $slug;
@@ -89,6 +95,8 @@ final class Section implements JsonSerializable
         $this->previewImageUrl = $previewImageUrl;
         $this->previewDescription = $previewDescription;
         $this->default = $default;
+        $this->enabledOn = $enabledOn;
+        $this->disabledOn = $disabledOn;
         $this->isLivewire = $isLivewire;
     }
 
@@ -129,6 +137,8 @@ final class Section implements JsonSerializable
             'previewImageUrl' => $this->previewImageUrl,
             'previewDescription' => $this->previewDescription,
             'default' => $this->default,
+            'enabledOn' => $this->enabledOn,
+            'disabledOn' => $this->disabledOn,
             'isLivewire' => $this->isLivewire,
         ];
     }
@@ -150,6 +160,8 @@ final class Section implements JsonSerializable
             description: $component::description(),
             previewImageUrl: $component::previewImageUrl(),
             previewDescription: $component::previewDescription(),
+            enabledOn: $component::enabledOn(),
+            disabledOn: $component::disabledOn(),
             default: $component::default(),
             isLivewire: is_subclass_of($component, \Livewire\Component::class)
         );

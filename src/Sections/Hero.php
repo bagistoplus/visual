@@ -4,6 +4,8 @@ namespace BagistoPlus\Visual\Sections;
 
 class Hero extends BladeSection
 {
+    protected static array $disabledOn = ['auth/*', 'account/*'];
+
     protected static string $view = 'shop::sections.hero';
 
     public static function settings(): array

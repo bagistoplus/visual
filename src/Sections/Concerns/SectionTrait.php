@@ -108,4 +108,14 @@ trait SectionTrait
     {
         return static::$default;
     }
+
+    public static function enabledOn(): array
+    {
+        return static::$enabledOn;
+    }
+
+    public static function disabledOn(): array
+    {
+        return static::$disabledOn;
+    }
 }

@@ -4,5 +4,7 @@ namespace BagistoPlus\Visual\Sections;
 
 class CustomerOrderDetails extends BladeSection
 {
-    public static string $view = 'shop::sections.customer-order-details';
+    protected static array $enabledOn = ['account/order-details'];
+
+    protected static string $view = 'shop::sections.customer-order-details';
 }

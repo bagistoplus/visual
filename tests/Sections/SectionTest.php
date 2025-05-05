@@ -37,7 +37,21 @@ it('creates a section from component', function () {
 })->todo();
 
 it('returns an array representation of the section', function () {
-    $section = new Section('test-section', 'Test Section', 'div', ['setting1' => 'value'], [], 10, 'Test Description', 'image.jpg', 'Preview Description', ['default_key' => 'default_value'], true);
+    $section = new Section(
+        slug: 'test-section',
+        name: 'Test Section',
+        wrapper: 'div',
+        settings: ['setting1' => 'value'],
+        blocks: [],
+        maxBlocks: 10,
+        description: 'Test Description',
+        previewImageUrl: 'image.jpg',
+        previewDescription: 'Preview Description',
+        default: ['default_key' => 'default_value'],
+        enabledOn: ['*'],
+        disabledOn: [],
+        isLivewire: true
+    );
 
     $array = $section->toArray();
 
@@ -51,7 +65,9 @@ it('returns an array representation of the section', function () {
         ->toHaveKey('previewImageUrl', 'image.jpg')
         ->toHaveKey('previewDescription', 'Preview Description')
         ->toHaveKey('default.default_key', 'default_value')
-        ->toHaveKey('isLivewire', true);
+        ->toHaveKey('isLivewire', true)
+        ->toHaveKey('enabledOn', ['*'])
+        ->toHaveKey('disabledOn', []);
 });
 
 it('serializes to JSON', function () {

@@ -8,7 +8,9 @@ use BagistoPlus\Visual\Actions\RemoveItemFromCompareList;
 
 class Compare extends LivewireSection
 {
-    public static string $view = 'shop::sections.compare';
+    protected static array $enabledOn = ['compare'];
+
+    protected static string $view = 'shop::sections.compare';
 
     public $productIds = [];
 
