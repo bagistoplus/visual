@@ -21,13 +21,14 @@ it('can create a BlockData instance', function () {
         ],
     ];
 
-    $block = BlockData::make($blockId, $blockData, $blockSchema);
+    $block = BlockData::make($blockId, $blockData, $blockSchema, 'section-1');
 
     expect($block)
         ->id->toBe($blockId)
         ->type->toBe('image')
         ->name->toBe('image')
         ->disabled->toBeFalse()
+        ->sectionId->toBe('section-1')
         ->and($block->settings->toArray())->toBe([
             'size' => 'large',  // custom value
             'alignment' => 'center', // default value
@@ -40,7 +41,8 @@ it('serializes BlockData to JSON', function () {
         type: 'text',
         name: 'Font',
         settings: new SettingsValues(['font' => 'Arial'], ['font' => 'font']),
-        disabled: true
+        disabled: true,
+        sectionId: 'section-1',
     );
 
     expect($block->jsonSerialize())->toBe([

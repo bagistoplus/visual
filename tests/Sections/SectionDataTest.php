@@ -51,6 +51,7 @@ it('serializes SectionData to JSON', function () {
             name: 'Image',
             disabled: false,
             settings: new SettingsValues(['size' => 'large'], ['size' => 'text']),
+            sectionId: 'section-1',
         ),
     ];
 
