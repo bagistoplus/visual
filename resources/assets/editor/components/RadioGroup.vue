@@ -2,7 +2,7 @@
   import { RadioGroup } from '@ark-ui/vue/radio-group';
 
   interface Props {
-    label: string;
+    label?: string;
     options: {
       value: any;
       label: string
@@ -17,9 +17,13 @@
     v-model="value"
     class="relative gap-4 flex flex-col"
   >
-    <RadioGroup.Label class="text-sm font-medium">
+    <RadioGroup.Label
+      v-if="label"
+      class="text-sm font-medium"
+    >
       {{ label }}
     </RadioGroup.Label>
+
     <RadioGroup.Indicator />
     <RadioGroup.Item
       v-for="option in options"

@@ -5,7 +5,6 @@
 
   const store = useStore();
   const model = defineModel<number | null>();
-  const props = defineProps<{ label: string; }>();
   const opened = ref(false);
 
   const selectedCategory = computed<Category | null>({
@@ -19,12 +18,6 @@
 <template>
   <div>
     <Popover.Root v-model:open="opened">
-      <label
-        class="text-sm font-medium block mb-2"
-        v-if="label"
-      >
-        {{ label }}
-      </label>
       <Popover.Trigger as-child>
         <div class="flex items-center w-full gap-3 cursor-pointer border rounded px-3 h-10 text-sm">
           <template v-if="selectedCategory">

@@ -14,7 +14,7 @@
   import { Menu } from '@ark-ui/vue/menu'
 
   const model = defineModel<string>();
-  const props = defineProps<{ label: string, inline?: boolean }>();
+  const props = defineProps<{ inline?: boolean }>();
 
   const editor = useEditor({
     content: model.value,
@@ -42,10 +42,6 @@
 </script>
 <template>
   <div class="flex flex-col gap-2">
-    <label
-      v-if="label"
-      class="text-sm font-medium"
-    >{{ label }}</label>
     <section
       class="border rounded-lg"
       v-if="editor"

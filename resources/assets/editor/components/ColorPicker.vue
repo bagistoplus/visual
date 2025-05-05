@@ -42,9 +42,13 @@
     :model-value="value"
     @value-change-end="onSelect"
   >
-    <ColorPicker.Label class="font-medium text-sm">
+    <ColorPicker.Label
+      v-if="label"
+      class="font-medium text-sm"
+    >
       {{ label }}
     </ColorPicker.Label>
+
     <ColorPicker.Control class="flex gap-2">
       <ColorPicker.Trigger class="appearance-none rounded cursor-pointer inline-flex items-center justify-center outline-none h-10 min-w-10 gap-2 border border-zinc-300">
         <ColorPicker.TransparencyGrid class="rounded" />

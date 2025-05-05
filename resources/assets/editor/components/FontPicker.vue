@@ -4,10 +4,6 @@
   import { useFetch } from '@vueuse/core';
   import { useIntersectionObserver } from '@vueuse/core';
 
-  interface Props {
-    label?: string;
-  }
-
   interface Font {
     slug: string;
     name: string;
@@ -15,7 +11,6 @@
     styles: string[];
   }
 
-  const props = defineProps<Props>();
   const model = defineModel({
     get(v: string | Font | null): Font | null {
       if (!v) {
@@ -113,11 +108,6 @@
 
 <template>
   <div>
-    <label
-      v-if="label"
-      class="text-sm mb-2"
-    >{{ label }}</label>
-
     <Dialog.Root
       v-model:open="opened"
       :modal="false"

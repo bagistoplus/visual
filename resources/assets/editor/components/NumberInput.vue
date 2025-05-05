@@ -4,17 +4,22 @@
 
   const value = defineModel({ default: '0' });
   const props = defineProps<{
-    label: string;
+    label?: string;
   }>();
 </script>
+
 <template>
   <NumberInput.Root
     v-model="value"
     class="flex flex-col gap-1.5"
   >
-    <NumberInput.Label class="text-sm  font-medium">
+    <NumberInput.Label
+      v-if="label"
+      class="text-sm  font-medium"
+    >
       {{ props.label }}
     </NumberInput.Label>
+
     <NumberInput.Control :class="[
       'ps-3 h-10 overflow-hidden',
       'text-md',

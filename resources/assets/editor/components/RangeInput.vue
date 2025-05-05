@@ -3,7 +3,7 @@
   import { Slider } from '@ark-ui/vue/slider';
 
   interface Props {
-    label: string;
+    label?: string;
     min?: number;
     max?: number;
     unit?: string;
@@ -43,9 +43,13 @@
     class="gap-3 flex flex-col"
     @value-change="onValueChange"
   >
-    <Slider.Label class="text-sm font-medium">
+    <Slider.Label
+      v-if="label"
+      class="text-sm font-medium"
+    >
       {{ label }}
     </Slider.Label>
+
     <div class="flex items-center gap-4">
       <Slider.Control class="flex-1 flex items-center h-2 select-none touch-none">
         <Slider.Track class="flex-1 overflow-hidden h-1 rounded-full bg-gray-100">

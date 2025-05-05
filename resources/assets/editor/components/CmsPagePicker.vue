@@ -5,7 +5,6 @@
 
   const store = useStore();
   const model = defineModel<number | null>();
-  const props = defineProps<{ label: string; }>();
   const opened = ref(false);
 
   const selectedPage = computed<CmsPage | null>({
@@ -18,12 +17,6 @@
 <template>
   <div>
     <Popover.Root v-model:open="opened">
-      <label
-        class="text-sm font-medium block mb-2"
-        v-if="label"
-      >
-        {{ label }}
-      </label>
       <Popover.Trigger as-child>
         <div
           role="button"

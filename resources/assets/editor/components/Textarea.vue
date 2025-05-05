@@ -3,15 +3,19 @@
 
   const value = defineModel<string>()
   const props = defineProps<{
-    label: string;
+    label?: string;
   }>();
 </script>
 
 <template>
   <Field.Root class="flex flex-col gap-1.5">
-    <Field.Label class="text-sm font-medium">
+    <Field.Label
+      v-if="label"
+      class="text-sm font-medium"
+    >
       {{ props.label }}
     </Field.Label>
+
     <Field.Textarea
       v-model="value"
       :class="[

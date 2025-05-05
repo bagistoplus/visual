@@ -4,7 +4,6 @@
   import { CmsPage } from '../types';
 
   const model = defineModel<string | null>();
-  const props = defineProps<{ label?: string }>();
 
   const valueType = ref('link');
   const realLink = ref();
@@ -98,12 +97,6 @@
       class="gap-2 flex flex-col"
     >
       <div class="flex justify-between items-center">
-        <Combobox.Label
-          v-if="label"
-          class="text-sm font-medium"
-        >
-          {{ label }}
-        </Combobox.Label>
         <a
           v-if="realLink"
           :href="realLink"

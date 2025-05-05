@@ -28,12 +28,8 @@
   @pushOnce('scripts')
     <script>
       document.addEventListener('visual:editor:init', () => {
-        window.Visual.on('section:updated', ({
-          section
-        }) => {
-          if (section.type === '{{ $section->type }}') {
-            console.log('updated do')
-          }
+        window.Visual.on('section:updated', (context) => {
+          console.log(context);
         });
 
         window.Visual.handleLiveUpdate('{{ $section->type }}', {

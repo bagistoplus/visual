@@ -7,7 +7,7 @@
   import { Image } from '../types';
 
   interface Props {
-    label: string;
+    label?: string;
   }
 
   // @see https://stackoverflow.com/a/5717133
@@ -102,6 +102,7 @@
         v-if="label"
         class="text-sm"
       >{{ label }}</label>
+
       <div
         v-if="!model"
         class="min-h-24 border border-dashed rounded flex flex-col items-center justify-center"

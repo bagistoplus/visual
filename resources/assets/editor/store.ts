@@ -286,13 +286,13 @@ export const useStore = defineStore('main', () => {
     }
 
     if (context.section && !skipPreviewRefresh) {
-      await previewIframe.call('section:updating', { section: context.section }, 0);
+      await previewIframe.call('section:updating', { section: context.section, block: context.block }, 0);
     }
 
     const res = await persistThemeData({ skipPreviewRefresh });
 
     if (context.section && !skipPreviewRefresh) {
-      await previewIframe.call('section:updated', { section: context.section }, 0);
+      await previewIframe.call('section:updated', { section: context.section, block: context.block }, 0);
     }
   }
 
@@ -397,9 +397,17 @@ export const useStore = defineStore('main', () => {
 
     sectionData.blocks_order.push(id);
 
-    await previewIframe.call('section:updating', { section: sectionData }, 0);
+    await previewIframe.call(
+      'section:updating',
+      { section: toRaw(sectionData), block: toRaw(sectionData.blocks[id]) },
+      0
+    );
     await persistThemeData();
-    await previewIframe.call('section:updated', { section: sectionData }, 0);
+    await previewIframe.call(
+      'section:updated',
+      { section: toRaw(sectionData), block: toRaw(sectionData.blocks[id]) },
+      0
+    );
   }
 
   function toggleSectionBlock(sectionId: string, blockId: string) {
@@ -410,13 +418,15 @@ export const useStore = defineStore('main', () => {
     persistThemeData();
   }
 
-  function removeSectionBlock(sectionId: string, blockId: string) {
+  async function removeSectionBlock(sectionId: string, blockId: string) {
     const section = themeData.sectionsData[sectionId];
 
     delete section.blocks[blockId];
     section.blocks_order = section.blocks_order.filter((id) => id !== blockId);
 
-    persistThemeData();
+    await previewIframe.call('section:updating', { section: toRaw(section), block: null }, 0);
+    await persistThemeData();
+    await previewIframe.call('section:updated', { section: toRaw(section), block: null }, 0);
   }
 
   function activateSection(sectionId: string) {

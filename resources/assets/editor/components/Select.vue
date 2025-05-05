@@ -2,7 +2,7 @@
   import { createListCollection, Select } from '@ark-ui/vue/select'
 
   interface Props {
-    label: string;
+    label?: string;
     options: {
       label: string;
       value: any;
@@ -21,7 +21,11 @@
     :model-value="[value!]"
     @update:model-value="v => value = v[0]"
   >
-    <Select.Label class="text-sm font-medium">{{ label }}</Select.Label>
+    <Select.Label
+      v-if="label"
+      class="text-sm font-medium"
+    >{{ label }}</Select.Label>
+
     <Select.Control>
       <Select.Trigger
         class="text-gray-500 border px-3 h-10 gap-2 font-medium w-full cursor-pointer rounded inline-flex outline-0 items-center appearance-none justify-between focus:shadow focus:ring focus:ring-gray-700"
