@@ -73,8 +73,8 @@
 
       <div class="flex-1 px-4 border-l border-r">
         <h1 class="font-medium">{{ $t('title') }}</h1>
-        <h2 class="text-gray-700">
-          {{ store.themeData.theme }}
+        <h2 class="text-gray-700 capitalize">
+          {{ store.themeData.theme.replace('-', ' ') }}
         </h2>
       </div>
     </div>

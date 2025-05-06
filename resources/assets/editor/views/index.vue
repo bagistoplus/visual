@@ -56,6 +56,12 @@
     return grouped;
   });
 
+  const currentTemplate = computed(() => {
+    return store.templates.find((template) => {
+      return template.template === store.themeData.template;
+    });
+  })
+
   function matchPattern(pattern: string, value: string) {
     const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
     return regex.test(value);
@@ -95,7 +101,16 @@
   <div class="w-full h-full flex flex-col">
     <header class="flex none px-4 py-3 border-b font-medium">
       <!-- todo: translate -->
-      <h1>Page title</h1>
+      <h2
+        class="flex items-center gap-2"
+        v-if="currentTemplate"
+      >
+        <span
+          v-html="currentTemplate.icon"
+          class="h-4 w-4"
+        />
+        {{ currentTemplate?.label }}
+      </h2>
     </header>
     <div class="flex-1 overflow-y-auto">
       <SectionsGroup
