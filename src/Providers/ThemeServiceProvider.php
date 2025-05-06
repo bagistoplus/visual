@@ -115,6 +115,10 @@ abstract class ThemeServiceProvider extends ServiceProvider
         $this->mergeConfigFromArray('themes.shop', [
             $config['code'] => $config,
         ]);
+
+        $this->mergeConfigFromArray('bagisto-vite.viters', [
+            $config['code'] => $config['vite'],
+        ]);
     }
 
     protected function loadThemeConfig(): array

@@ -4,6 +4,7 @@
   const value = defineModel<string>();
   const props = defineProps<{
     label?: string;
+    placeholder?: string;
   }>();
 </script>
 
@@ -17,6 +18,7 @@
     </Field.Label>
     <Field.Input
       v-model="value"
+      :placeholder="placeholder"
       :class="[
         'px-3 h-10 text-surface-500 ',
         'rounded border border-gray-300',

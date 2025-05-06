@@ -2,7 +2,7 @@
 
 namespace BagistoPlus\Visual\Settings;
 
-class Textarea extends Base
+class Textarea extends Text
 {
     public static string $component = 'textarea-setting';
 }

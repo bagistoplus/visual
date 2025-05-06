@@ -10,7 +10,7 @@ The Visual Editor is where you build and customize your storefront in real time 
 - Preview how your store looks on desktop, tablet, and mobile
 - Customize each page individually (like homepage, contact, etc.)
 
-> 🖼️ _Screenshot suggestion:_ Full screenshot of the editor with callouts to “Preview Area,” “Sections Sidebar,” and “Toolbar.”
+![The Visual Editor screenshot](/editor-screenshot-callout.png)
 
 ## Sections, Pages & Themes
 
@@ -19,7 +19,7 @@ The Visual Editor is where you build and customize your storefront in real time 
 - Some sections (like header or footer) appear on every page
 - You can preview and switch between different pages right from the editor
 
-> 🖼️ _Screenshot suggestion:_ Highlight the page switcher at the top and different sections like “Header” and “Main Content.”
+![The Visual Editor page swicther screenshot](/editor-page-switcher.png)
 
 ## Why Use the Visual Editor?
 

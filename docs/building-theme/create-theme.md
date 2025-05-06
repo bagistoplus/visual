@@ -126,23 +126,16 @@ Each section is a reusable UI block that can be added to templates in the visual
 
 By default, the scaffold generates a **blank theme** with no layout, sections, or styles.
 
-If you prefer to start with a **sensible base theme**, you can install the official Bagisto Visual starter theme:
+If you prefer to start with a fully built base theme, you can clone the official Bagisto Visual starter theme:
 
 ```bash
-composer require bagistoplus/visual-debut
+git clone https://github.com/bagistoplus/visual-debut packages/Themes/YourThemeName
 ```
 
-Then, inside your `config/theme.php`, set your theme to **extend** the starter theme by adding:
-
-```php
-'parent' => 'visual-debut',
-```
+Then, update the `composer.json` and `config/theme.php` files to reflect your own theme name and vendor.
 
 ✅
-This way, your theme will inherit everything from **Visual Debut**, and you only need to **override or customize** what you want.
-
-✅
-However, you are also **free to build a theme completely from scratch** if you prefer a fully custom structure.
+This gives you a complete, working theme based on Visual Debut, which you can customize freely — layout, colors, sections, templates, or styles.
 
 ## Step 3: Installing and Using the Theme
 

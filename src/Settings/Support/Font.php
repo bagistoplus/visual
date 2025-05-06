@@ -2,6 +2,8 @@
 
 namespace BagistoPlus\Visual\Settings\Support;
 
+use Illuminate\Support\HtmlString;
+
 class Font
 {
     public function __construct(public string $slug, public string $name, public array $weights, public array $styles) {}
@@ -22,6 +24,8 @@ class Font
             }
         }
 
-        return $base."\n".'<link href="https://fonts.bunny.net/css?family='.$this->slug.':'.implode(',', $query).'" rel="stylesheet" />';
+        $base .= "\n".'  <link href="https://fonts.bunny.net/css?family='.$this->slug.':'.implode(',', $query).'" rel="stylesheet" />';
+
+        return new HtmlString($base);
     }
 }

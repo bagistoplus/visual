@@ -94,17 +94,16 @@
   <div>
     <Combobox.RootProvider
       :value="combobox"
-      class="gap-2 flex flex-col"
+      class="mt-1 gap-2 flex flex-col relative"
     >
-      <div class="flex justify-between items-center">
-        <a
-          v-if="realLink"
-          :href="realLink"
-          target="_blank"
-        >
-          <i-heroicons-arrow-top-right-on-square-solid class="w-4 h-4" />
-        </a>
-      </div>
+      <a
+        v-if="realLink"
+        :href="realLink"
+        target="_blank"
+        class="absolute right-0 -top-6"
+      >
+        <i-heroicons-arrow-top-right-on-square-solid class="w-4 h-4" />
+      </a>
       <Combobox.Control
         class="flex border px-3 h-10 gap-3 text-sm w-full cursor-pointer rounded outline-0 items-center appearance-none justify-between focus-within:shadow focus-within:ring focus-within:ring-gray-700"
       >

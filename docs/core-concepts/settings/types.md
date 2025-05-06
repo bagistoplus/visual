@@ -36,7 +36,7 @@ use BagistoPlus\Visual\Settings\Text;
 public static function settings(): array
 {
     return [
-        Text::make('text', 'Heading')
+        Text::make('title', 'Heading')
             ->default('Welcome to our store')
             ->placeholder('Enter heading here...'),
     ];
@@ -51,7 +51,7 @@ In Blade:
 @endif
 ```
 
-![Text Setting Example](https://placehold.co/800x80?text=Text+Setting)
+<SettingPreview image="/setting-text.png" title="Text setting type preview"/>
 
 ---
 
@@ -86,7 +86,7 @@ In Blade:
 @endif
 ```
 
-![Textarea Setting Example](https://placehold.co/800x120?text=Textarea+Setting)
+<SettingPreview image="/setting-textarea.png" title="Textarea setting type preview"/>
 
 ---
 
@@ -118,7 +118,7 @@ In Blade:
 @endif
 ```
 
-![Checkbox Setting Example](https://placehold.co/800x80?text=Checkbox+Setting)
+<SettingPreview image="/setting-checkbox.png" title="Checkbox setting type preview"/>
 
 ::: info
 If `default` is unspecified, it defaults to `false`.
@@ -173,7 +173,7 @@ In Blade:
 </div>
 ```
 
-![Radio Setting Example](https://placehold.co/800x80?text=Radio+Setting)
+<SettingPreview image="/setting-radio.png" title="Radio setting type preview"/>
 
 ::: info
 If default is unspecified, then the first option is selected by default.
@@ -226,7 +226,7 @@ In Blade:
 </div>
 ```
 
-![Select Setting Example](https://placehold.co/800x80?text=Select+Setting)
+<SettingPreview image="/setting-select.png" title="Select setting type preview"/>
 
 ::: info
 If `default` is unspecified, then the first option is selected by default.
@@ -257,7 +257,7 @@ public static function settings(): array
             ->min(1)
             ->max(6)
             ->step(1)
-            ->unit('columns')
+            ->unit('cols')
             ->default(3),
     ];
 }
@@ -271,7 +271,7 @@ In Blade:
 </div>
 ```
 
-![Range Setting Example](https://placehold.co/800x80?text=Range+Setting)
+<SettingPreview image="/setting-range.png" title="Range setting type preview"/>
 
 ::: info
 If default is unspecified, it defaults to the minimum value.
@@ -310,7 +310,7 @@ In Blade:
 </div>
 ```
 
-![Number Setting Example](https://placehold.co/800x80?text=Number+Setting)
+<SettingPreview image="/setting-number.png" title="Number setting type preview"/>
 
 ---
 
@@ -330,7 +330,7 @@ public static function settings(): array
 {
     return [
         Color::make('background_color', 'Background Color')
-            ->default('#f9fafb'),
+            ->default('#92400e'),
     ];
 }
 ```
@@ -345,7 +345,7 @@ In Blade:
 @endif
 ```
 
-![Color Setting Example](https://placehold.co/800x80?text=Color+Setting)
+<SettingPreview image="/setting-color.png" title="Color setting type preview"/>
 
 ---
 
@@ -365,7 +365,7 @@ public static function settings(): array
 {
     return [
         Link::make('cta_link', 'Call to Action Link')
-            ->default('/collections/all'),
+            ->default('/'),
     ];
 }
 ```
@@ -380,7 +380,7 @@ In Blade:
 @endif
 ```
 
-![Link Setting Example](https://placehold.co/800x80?text=Link+Setting)
+<SettingPreview image="/setting-link.png" title="Link setting type preview"/>
 
 ---
 
@@ -412,7 +412,7 @@ In Blade:
 @endif
 ```
 
-![Image Setting Example](https://placehold.co/800x80?text=Image+Setting)
+<SettingPreview image="/setting-image.png" title="Image setting type preview"/>
 
 ---
 
@@ -444,7 +444,7 @@ In Blade:
 @endif
 ```
 
-![Category Setting Example](https://placehold.co/800x80?text=Category+Setting)
+<SettingPreview image="/setting-category.png" title="Category setting type preview"/>
 
 ---
 
@@ -476,7 +476,7 @@ In Blade:
 @endif
 ```
 
-![Product Setting Example](https://placehold.co/800x80?text=Product+Setting)
+<SettingPreview image="/setting-product.png" title="Product setting type preview"/>
 
 ---
 
@@ -510,7 +510,7 @@ In Blade:
 @endif
 ```
 
-![CmsPage Setting Example](https://placehold.co/800x80?text=CmsPage+Setting)
+<SettingPreview image="/setting-page.png" title="Page setting type preview"/>
 
 ---
 
@@ -564,7 +564,7 @@ In Blade:
 @endif
 ```
 
-![RichText Setting Example](https://placehold.co/800x120?text=RichText+Setting)
+<SettingPreview image="/setting-richtext.png" title="RichText setting type preview"/>
 
 ---
 
@@ -584,6 +584,8 @@ public static function settings(): array
     ];
 }
 ```
+
+<SettingPreview image="/setting-font.png" title="Font setting type preview"/>
 
 In Blade:
 
@@ -607,7 +609,7 @@ Additionally, you may use the following snippet to render any resources necessar
 
 ```blade
 @pushOnce('styles')
-  {!! $section->settings->heading_font->toHtml() !!}
+  {{ $section->settings->heading_font->toHtml() }}
 @endPushOnce
 ```
 
@@ -617,42 +619,6 @@ Will render:
 <link rel="preconnect" href="https://fonts.bunny.net" />
 <link href="https://fonts.bunny.net/css?family=roboto:" rel="stylesheet" />
 ```
-
-![Font Setting Example](https://placehold.co/800x80?text=Font+Setting)
-
----
-
-### Video
-
-Video link input. Useful for embedding videos from external providers like YouTube, Vimeo, or Bunny.net.
-
-The merchant must provide a valid video URL.
-No file upload — the video will be embedded dynamically.
-
-```php
-use BagistoPlus\Visual\Settings\Video;
-
-public static function settings(): array
-{
-    return [
-        Video::make('background_video', 'Background Video'),
-    ];
-}
-```
-
-In Blade:
-
-```blade
-@if ($section->settings->background_video)
-    <!-- Access the raw URL -->
-    <p>Video URL: {{ $section->settings->background_video }}</p>
-
-    <!-- Render the embedded video player -->
-    {!! $section->settings->background_video->render() !!}
-@endif
-```
-
-![Video Setting Example](https://placehold.co/800x80?text=Video+Setting)
 
 ---
 
@@ -686,42 +652,7 @@ In Blade:
 @endif
 ```
 
-![Icon Picker Setting Example](https://placehold.co/800x80?text=Icon+Picker+Setting)
-
----
-
-### Gradient
-
-Gradient color picker input. Useful for allowing merchants to define a smooth transition between two or more colors (backgrounds, overlays, buttons, etc.).
-
-The merchant provides:
-
-- Start color
-- End color
-- (Optional) Gradient direction (angle or predefined choices)
-
-```php
-use BagistoPlus\Visual\Settings\Gradient;
-
-public static function settings(): array
-{
-    return [
-        Gradient::make('background_gradient', 'Background Gradient'),
-    ];
-}
-```
-
-In Blade:
-
-```blade
-@if ($section->settings->background_gradient)
-    <div style="background: {{ $section->settings->background_gradient }};">
-        <!-- Content with gradient background -->
-    </div>
-@endif
-```
-
-![Gradient Setting Example](https://placehold.co/800x80?text=Gradient+Setting)
+<SettingPreview image="/setting-icon.png" title="Icon setting type preview"/>
 
 ---
 
@@ -745,7 +676,7 @@ public static function settings(): array
 {
     return [
         ColorScheme::make('color_scheme', 'Color Scheme')
-            ->default('light'),
+            ->default('default'),
     ];
 }
 ```
@@ -772,7 +703,7 @@ This will output:
 
 This is used to scope the color schemes tokens to this block.
 
--> [Read more about color schemes](../../building-theme/best-practices/styling.md)
+<SettingPreview image="/setting-color-scheme.png" title="Color scheme setting type preview"/>
 
 ---
 
@@ -817,6 +748,8 @@ return [
 ];
 ```
 
+<SettingPreview image="/setting-color-scheme-group.png" title="Color scheme group setting type preview"/>
+
 #### Scheme Format
 
 Each scheme is an array with:
@@ -845,6 +778,8 @@ Each scheme is an array with:
   - Rename schemes
   - Change color values
 - Any section using a `ColorScheme` setting will automatically reflect the updated list
+
+<SettingPreview image="/setting-edit-color-scheme.png" title="Edit color scheme setting type preview"/>
 
 #### Blade Usage
 
@@ -962,4 +897,4 @@ public static function settings(): array
 > **Note:** Header settings are **only used inside the theme editor** to visually group fields.
 > They are not available inside Blade templates.
 
-![Header Setting Example](https://placehold.co/800x40?text=Header+Setting)
+<SettingPreview image="/setting-header.png" title="Header setting type preview"/>

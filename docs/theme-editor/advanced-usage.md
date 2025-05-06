@@ -22,8 +22,6 @@ You can:
 - Rearrange or delete them
 - Customize each block’s settings (text, images, links, etc.)
 
-> 🖼️ _Screenshot suggestion:_ Highlight a section with editable blocks (like a “Features” or “Image with Text” section).
-
 ## Preview Tools
 
 At the top of the editor, you’ll find useful controls:
@@ -31,8 +29,6 @@ At the top of the editor, you’ll find useful controls:
 - **Device preview**: See how your page looks on desktop, tablet, and mobile
 - **Language switcher**: If your store supports multiple languages, preview translations
 - **Page selector**: Quickly switch between pages (homepage, contact, product, etc.)
-
-> 🖼️ _Screenshot suggestion:_ Annotate the toolbar showing device toggle and language switch.
 
 ## Best Practices
 

@@ -65,7 +65,7 @@
   <div class="mb-4 last:mb-0">
     <label
       v-if="setting.label"
-      class="text-sm font-medium"
+      class="text-sm font-medium block mb-1"
     >{{ setting.label }}</label>
 
     <component

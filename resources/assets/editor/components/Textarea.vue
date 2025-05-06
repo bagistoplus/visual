@@ -4,6 +4,7 @@
   const value = defineModel<string>()
   const props = defineProps<{
     label?: string;
+    placeholder?: string;
   }>();
 </script>
 
@@ -18,6 +19,7 @@
 
     <Field.Textarea
       v-model="value"
+      :placeholder="placeholder"
       :class="[
         'px-2 py-2 h-20 text-surface-500 appearance-none relative',
         'rounded border border-gray-300 outline-0',

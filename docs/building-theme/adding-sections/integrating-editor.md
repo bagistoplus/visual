@@ -27,8 +27,8 @@ Each event exposes:
 
 ```ts
 event.detail = {
-  type: string, // Section slug
-  id: string, // Section instance ID
+  section,
+  block,
 };
 ```
 
@@ -39,13 +39,13 @@ event.detail = {
     @pushOnce('scripts')
         <script>
             document.addEventListener('visual:section:updating', (event) => {
-                if (event.detail.type === '{{ $section->type }}') {
+                if (event.detail.section.type === '{{ $section->type }}') {
                     // Save scroll position, destroy carousels, etc.
                 }
             });
 
             document.addEventListener('visual:section:updated', (event) => {
-                if (event.detail.type === '{{ $section->type }}') {
+                if (event.detail.section.type === '{{ $section->type }}') {
                     // Reinitialize interactivity: sliders, modals, listeners
                 }
             });

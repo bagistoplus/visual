@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Providers;
 
 use BagistoPlus\Visual\Commands;
+use BagistoPlus\Visual\Components\Svg;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\LivewireFeatures\SectionDataSynth;
@@ -15,14 +16,10 @@ use BagistoPlus\Visual\ThemePathsResolver;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\DynamicComponent;
 use Livewire\Livewire;
-use Webkul\Shop\Http\Middleware\Currency;
-use Webkul\Shop\Http\Middleware\Locale;
-use Webkul\Theme\ViewRenderEventManager;
 
 class CoreServiceProvider extends ServiceProvider
 {
@@ -38,7 +35,6 @@ class CoreServiceProvider extends ServiceProvider
     {
         $this->bootShopRoutes();
         $this->bootViewsAndTranslations();
-        $this->bootViewEventListeners();
         $this->bootMiddlewares();
         $this->bootLivewireMiddlewares();
         $this->bootVisualSections();
@@ -86,29 +82,16 @@ class CoreServiceProvider extends ServiceProvider
         $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'visual');
     }
 
-    protected function bootViewEventListeners()
-    {
-        Event::listen('bagisto.shop.checkout.payment.paypal_smart_button', function (ViewRenderEventManager $event) {
-            if (app('themes')->current()->code !== 'visual-debut') {
-                return;
-            }
-
-            $event->addTemplate('paypal::checkout.onepage.payment-button');
-        });
-    }
-
     protected function bootMiddlewares(): void
     {
-        // $this->app->booted(function ($app) {
         $this->app->bind(\Webkul\Shop\Http\Middleware\Theme::class, UseShopThemeFromRequest::class);
-        // });
     }
 
     protected function bootLivewireMiddlewares(): void
     {
         Livewire::addPersistentMiddleware([
-            Locale::class,
-            Currency::class,
+            \Webkul\Shop\Http\Middleware\Locale::class,
+            \Webkul\Shop\Http\Middleware\Currency::class,
             \Webkul\Shop\Http\Middleware\Theme::class,
         ]);
     }
@@ -120,17 +103,12 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function bootBladeIcons()
     {
-        $icons = [
-            'icon-users' => 'lucide-chevron-right ',
-        ];
-
         Blade::component('dynamic-component', DynamicComponent::class);
 
-        $this->app->booted(function () use ($icons) {
-            foreach ($icons as $alias => $icon) {
-                Blade::component($icon, $alias);
-            }
-        });
+        // Register alias for some blade-icons icons
+        foreach (config('bagisto_visual_iconmap') as $alias => $icon) {
+            Blade::component(Svg::class, $alias);
+        }
     }
 
     protected function bootMorphMap(): void
@@ -156,7 +134,7 @@ class CoreServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__.'/../../public/vendor/bagistoplus' => public_path('vendor/bagistoplus'),
-        ], ['public', 'bagistoplus-visual-assets']);
+        ], ['public', 'visual', 'visual-assets']);
     }
 
     protected function bootTemplates(): void

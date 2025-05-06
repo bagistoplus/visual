@@ -14,7 +14,7 @@ When you open the editor, you'll see three main areas:
   - **Main Content**: Specific to the current page
 - Click any section to open its settings
 
-> 🖼️ _Screenshot suggestion:_ Highlight the sidebar, with arrows pointing to a header section, a dynamic section, and the “Add Section” button.
+![The Visual Editor sidebar](/editor-sidebar.png)
 
 ---
 
@@ -24,7 +24,7 @@ When you open the editor, you'll see three main areas:
 - Updates instantly as you make changes
 - Click items in the preview to edit their settings in the sidebar
 
-> 🖼️ _Screenshot suggestion:_ Show a preview with a section selected and the live editor reacting to a text change.
+![The Visual Editor section configuration panel](/editor-edit-section.png)
 
 ---
 
@@ -32,9 +32,9 @@ When you open the editor, you'll see three main areas:
 
 - Shows which **page** you're editing (e.g. homepage, contact)
 - Lets you **switch language** or **preview screen sizes**
-- Some themes may also show draft / publish controls
+- And a button to publish your edits
 
-> 🖼️ _Screenshot suggestion:_ Annotate the top bar with page selector and preview icons.
+![The Visual Editor section configuration panel](/editor-toolbar.png)
 
 ## What You Can Do
 

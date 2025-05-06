@@ -7,13 +7,6 @@ if (! function_exists('visual_clear_inline_styles')) {
     }
 }
 
-if (! function_exists('visual_mapped_svg_icon')) {
-    function visual_mapped_svg_icon(string $icon): string
-    {
-        return config("bagisto_visual_iconmap.$icon", 'lucide-file-question');
-    }
-}
-
 if (! function_exists('visual_is_menu_active')) {
     function visual_is_menu_active($menu)
     {
