@@ -1,11 +1,20 @@
-# Bagisto theme framework and visual theme editor
+![Bagisto Visual social card](./art/socialcard.png)
+
+# A modern theme framework and visual editor for Bagisto
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/bagistoplus/visual.svg?style=flat-square)](https://packagist.org/packages/bagistoplus/visual)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/bagistoplus/visual/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/bagistoplus/visual/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/bagistoplus/visual/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/bagistoplus/visual/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/bagistoplus/visual.svg?style=flat-square)](https://packagist.org/packages/bagistoplus/visual)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+## Features
+
+Bagisto Visual provides everything you need to build powerful, customizable themes for the Bagisto e-commerce platform.
+
+- Modular theme framework with a clean, organized structure
+- JSON-based templates for layout flexibility and reusability
+- Visual drag-and-drop theme editor for merchants and developers
+- Prebuilt and customizable sections using Blade or Livewire
 
 ## Installation
 
@@ -18,21 +27,12 @@ composer require bagistoplus/visual
 You can publish the config file with:
 
 ```bash
-php artisan vendor:publish --tag="visual-config"
+php artisan vendor:publish --tag="visual"
 ```
 
-This is the contents of the published config file:
+## Documentation
 
-```php
-return [
-];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="visual-views"
-```
+Visit the official documentation for full guides at: [https://visual.bagistoplus.com](https://visual.bagistoplus.com)
 
 ## Changelog
 
@@ -40,11 +40,9 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 ## Contributing
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+We welcome issues, ideas, and pull requests.
 
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
+Please see [CONTRIBUTING](CONTRIBUTING.md) to get started.
 
 ## Credits
 
