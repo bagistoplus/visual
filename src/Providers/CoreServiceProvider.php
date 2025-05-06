@@ -26,6 +26,7 @@ class CoreServiceProvider extends ServiceProvider
     protected static $commands = [
         Commands\MakeThemeCommand::class,
         Commands\MakeSectionCommand::class,
+        Commands\GeneratePreviewCommand::class,
     ];
 
     /**
