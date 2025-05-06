@@ -93,7 +93,7 @@ class TemplateRegistrar
             route: 'shop.checkout.onepage.success',
             label: __('visual::theme-editor.templates.checkout_success'),
             icon: 'lucide-shopping-cart',
-            previewUrl: route('shop.checkout.onepage.success')
+            previewUrl: route('visual.template-preview.checkout-success')
         );
 
         $templates[] = Template::separator();

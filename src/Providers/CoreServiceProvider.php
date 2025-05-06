@@ -36,6 +36,7 @@ class CoreServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->bootShopRoutes();
         $this->bootViewsAndTranslations();
         $this->bootViewEventListeners();
         $this->bootMiddlewares();
@@ -73,6 +74,11 @@ class CoreServiceProvider extends ServiceProvider
      * Boot Methods
      * ---------------------------------------------------------
      */
+
+    protected function bootShopRoutes(): void
+    {
+        $this->loadRoutesFrom(__DIR__.'/../../routes/shop.php');
+    }
 
     protected function bootViewsAndTranslations(): void
     {
