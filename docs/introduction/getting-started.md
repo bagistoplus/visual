@@ -28,7 +28,7 @@ composer require bagistoplus/visual
 Then publish the assets and run migrations:
 
 ```bash
-php artisan vendor:publish --tag=bagisto-visual
+php artisan vendor:publish --tag=visual-config
 ```
 
 This installs the Bagisto Visual and prepares your store for theme customization.

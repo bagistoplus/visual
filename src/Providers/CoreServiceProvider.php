@@ -136,6 +136,10 @@ class CoreServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../../public/vendor/bagistoplus' => public_path('vendor/bagistoplus'),
         ], ['public', 'visual', 'visual-assets']);
+
+        $this->publishes([
+            __DIR__.'/../../config/bagisto-visual.php' => config_path('bagisto-visual.php'),
+        ], ['config', 'visual', 'visual-config']);
     }
 
     protected function bootTemplates(): void
