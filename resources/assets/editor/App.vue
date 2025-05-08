@@ -6,7 +6,7 @@
   const router = useRouter();
   const store = useStore();
   const nprogress = useNProgress();
-  const storefrontUrl = window.ThemeEditor.storefrontUrl;
+  const storefrontUrl = window.ThemeEditor.storefrontUrl();
 
   const previewIframe = useTemplateRef('previewer');
 
@@ -16,7 +16,7 @@
       return "width: 100%; height: 100%";
     }
 
-    return "width: 375px; height: 100%";
+    return "width: 420px; height: 100%";
   });
 
   const messageHandlers: Record<string, Function> = {
@@ -27,7 +27,7 @@
       store.setThemeData(data.themeData);
       store.setSettingsSchema(data.settingsSchema);
       store.setTemplates(data.templates);
-      store.setAvailableSections(window.ThemeEditor.availableSections);
+      store.setAvailableSections(window.ThemeEditor.availableSections());
       store.setPreviewIframeReady()
 
       if (templateChanged) {
@@ -60,7 +60,7 @@
   });
 
   function onExit() {
-    window.location.href = window.ThemeEditor.routes.themesIndex;
+    window.location.href = window.ThemeEditor.route('themesIndex');
   }
 
   function onChannelChanged(channel: string) {
@@ -68,7 +68,7 @@
       return;
     }
 
-    const url = new URL(window.ThemeEditor.storefrontUrl)
+    const url = new URL(storefrontUrl)
     url.searchParams.set('channel', channel);
 
     nprogress.start();
@@ -83,7 +83,7 @@
       return;
     }
 
-    const url = new URL(window.ThemeEditor.storefrontUrl)
+    const url = new URL(storefrontUrl)
     url.searchParams.set('locale', locale);
     url.searchParams.set('channel', store.themeData.channel);
 

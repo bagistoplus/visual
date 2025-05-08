@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Settings\Support;
 
 use BagistoPlus\Visual\View\TailwindPaletteGenerator;
+use Illuminate\Support\HtmlString;
 use matthieumastadenis\couleur\ColorFactory;
 use matthieumastadenis\couleur\ColorSpace;
 
@@ -33,9 +34,9 @@ class ColorScheme
         return $this->id;
     }
 
-    public function attributes(): string
+    public function attributes(): HtmlString
     {
-        return 'data-color-scheme="'.$this->id.'"';
+        return new HtmlString("data-color-scheme=\"{$this->id}\"");
     }
 
     public function outputCssVars()

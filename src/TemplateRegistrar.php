@@ -90,7 +90,7 @@ class TemplateRegistrar
 
         $templates[] = new Template(
             template: 'checkout-success',
-            route: 'shop.checkout.onepage.success',
+            route: ['shop.checkout.onepage.success', 'visual.template-preview.checkout-success'],
             label: __('visual::theme-editor.templates.checkout_success'),
             icon: 'lucide-shopping-cart',
             previewUrl: route('visual.template-preview.checkout-success')

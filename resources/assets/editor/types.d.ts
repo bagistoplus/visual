@@ -1,12 +1,12 @@
 export type ViewMode = 'desktop' | 'mobile' | 'fullscreen';
 
-export interface WindowThemeEditor {
+export interface ThemeEditorConfig {
   baseUrl: string;
   imagesBaseUrl: string;
   storefrontUrl: string;
   channels: Channel[];
   defaultChannel: string;
-  availableSections: Record<string, Section>;
+  sections: Record<string, Section>;
   templates: Template[];
   routes: {
     persistTheme: string;
@@ -27,6 +27,7 @@ interface Template {
   icon: string;
   previewUrl: string;
 }
+
 interface Locale {
   code: string;
   name: string;

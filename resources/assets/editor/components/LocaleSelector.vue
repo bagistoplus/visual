@@ -3,7 +3,7 @@
 
   const props = defineProps<{ channel: string }>();
 
-  const channels = window.ThemeEditor.channels;
+  const channels = window.ThemeEditor.channels();
   const selected = defineModel();
 
   const locales = computed(() => {

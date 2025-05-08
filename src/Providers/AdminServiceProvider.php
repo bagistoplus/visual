@@ -3,10 +3,12 @@
 namespace BagistoPlus\Visual\Providers;
 
 use BagistoPlus\Visual\Middlewares\AllowSameOriginIframeInEditor;
+use BagistoPlus\Visual\Middlewares\DispatchServingThemeEditor;
 use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
 use BagistoPlus\Visual\ThemeEditor;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class AdminServiceProvider extends ServiceProvider
@@ -20,9 +22,9 @@ class AdminServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        $this->loadRoutesFrom(__DIR__.'/../../routes/admin.php');
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
 
+        $this->bootRoutes();
         $this->bootMiddlewares();
         $this->bootViewEventListeners();
     }
@@ -36,6 +38,13 @@ class AdminServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../../config/viters.php', 'bagisto-vite.viters');
     }
 
+    protected function bootRoutes(): void
+    {
+        Route::prefix(config('app.admin_url'))
+            ->middleware(['web', 'admin'])
+            ->group(__DIR__.'/../../routes/admin.php');
+    }
+
     protected function bootMiddlewares()
     {
         /** @var \Illuminate\Foundation\Http\Kernel */
@@ -43,6 +52,7 @@ class AdminServiceProvider extends ServiceProvider
 
         $kernel->prependMiddleware(AllowSameOriginIframeInEditor::class);
         $kernel->pushMiddleware(InjectThemeEditorScript::class);
+        $kernel->pushMiddleware(DispatchServingThemeEditor::class);
     }
 
     protected function bootViewEventListeners()

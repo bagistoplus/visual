@@ -126,7 +126,7 @@ export const useStore = defineStore('main', () => {
     }
 
     try {
-      const res = await fetch(window.ThemeEditor.routes.persistTheme, {
+      const res = await fetch(window.ThemeEditor.route('persistTheme'), {
         headers,
         method: 'post',
         body: JSON.stringify(themeData),

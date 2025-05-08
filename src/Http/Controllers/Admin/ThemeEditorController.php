@@ -23,23 +23,25 @@ class ThemeEditorController extends Controller
     public function index($themeCode)
     {
         return view('visual::admin.editor.index', [
-            'baseUrl' => route('visual.admin.editor', ['theme' => $themeCode], false),
-            'imagesBaseUrl' => Storage::disk(config('bagisto_visual.images_storage'))->url(''),
-            'storefrontUrl' => url('/').'?'.http_build_query(['_designMode' => $themeCode]),
-            'channels' => $this->getChannels(),
-            'defaultChannel' => app('core')->getDefaultChannelCode(),
-            'sections' => Sections::all(),
-            'routes' => [
-                'themesIndex' => route('visual.admin.themes.index'),
-                'persistTheme' => route('visual.admin.editor.api.persist'),
-                'publishTheme' => route('visual.admin.editor.api.publish'),
-                'uploadImage' => route('visual.admin.editor.api.upload'),
-                'listImages' => route('visual.admin.editor.api.images'),
-                'getCmsPages' => route('visual.admin.editor.api.cms_pages'),
-                'getIcons' => route('visual.admin.editor.api.icons'),
+            'config' => [
+                'baseUrl' => route('visual.admin.editor', ['theme' => $themeCode], false),
+                'imagesBaseUrl' => Storage::disk(config('bagisto_visual.images_storage'))->url(''),
+                'storefrontUrl' => url('/').'?'.http_build_query(['_designMode' => $themeCode]),
+                'channels' => $this->getChannels(),
+                'defaultChannel' => app('core')->getDefaultChannelCode(),
+                'sections' => Sections::all(),
+                'routes' => [
+                    'themesIndex' => route('visual.admin.themes.index'),
+                    'persistTheme' => route('visual.admin.editor.api.persist'),
+                    'publishTheme' => route('visual.admin.editor.api.publish'),
+                    'uploadImage' => route('visual.admin.editor.api.upload'),
+                    'listImages' => route('visual.admin.editor.api.images'),
+                    'getCmsPages' => route('visual.admin.editor.api.cms_pages'),
+                    'getIcons' => route('visual.admin.editor.api.icons'),
+                ],
+                'messages' => Lang::get('visual::theme-editor'),
+                'editorLocale' => app()->getLocale(),
             ],
-            'messages' => Lang::get('visual::theme-editor'),
-            'editorLocale' => app()->getLocale(),
         ]);
     }
 

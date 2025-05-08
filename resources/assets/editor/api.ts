@@ -1,7 +1,7 @@
 import { createFetch } from '@vueuse/core';
 import { ThemeData } from './types';
 
-const routes = window.ThemeEditor.routes;
+const routes = window.editorConfig.routes;
 
 const useFetch = createFetch({
   options: {
@@ -55,11 +55,11 @@ export function useFetchProducts() {
 }
 
 export function useFetchCmsPages() {
-  const url = ref(window.ThemeEditor.routes.getCmsPages);
+  const url = ref(window.editorConfig.routes.getCmsPages);
   const context = useFetch(url, { refetch: true, immediate: false }).get().json();
 
   function execute(params: Record<string, any>) {
-    const newUrl = new URL(window.ThemeEditor.routes.getCmsPages, window.location.origin);
+    const newUrl = new URL(window.editorConfig.routes.getCmsPages, window.location.origin);
 
     for (const [key, value] of Object.entries(params)) {
       newUrl.searchParams.append(key, value);
@@ -72,13 +72,13 @@ export function useFetchCmsPages() {
 }
 
 export function useFetchIcons(options = { immediate: false }) {
-  const url = ref(window.ThemeEditor.routes.getIcons);
+  const url = ref(window.editorConfig.routes.getIcons);
   const context = useFetch(url, { refetch: true, ...options })
     .get()
     .json();
 
   function execute(params: Record<string, any>) {
-    const newUrl = new URL(window.ThemeEditor.routes.getIcons, window.location.origin);
+    const newUrl = new URL(window.editorConfig.routes.getIcons, window.location.origin);
 
     for (const [key, value] of Object.entries(params)) {
       newUrl.searchParams.append(key, value);
@@ -91,5 +91,5 @@ export function useFetchIcons(options = { immediate: false }) {
 }
 
 export function usePublishTheme(data: any) {
-  return useFetch(window.ThemeEditor.routes.publishTheme).post(data);
+  return useFetch(window.editorConfig.routes.publishTheme).post(data);
 }

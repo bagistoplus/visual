@@ -1,11 +1,12 @@
-import type { Setting, Template, ThemeData, WindowThemeEditor } from './types';
-export {};
+import ThemeEditor from './ThemeEditor';
+import type { Setting, Template, ThemeData, ThemeEditorConfig } from './types';
 
 declare global {
   interface Window {
     Alpine: any;
     Livewire: any;
-    ThemeEditor: WindowThemeEditor;
+    editorConfig: ThemeEditorConfig;
+    ThemeEditor: ThemeEditor;
 
     themeData: ThemeData;
     templates: Template[];

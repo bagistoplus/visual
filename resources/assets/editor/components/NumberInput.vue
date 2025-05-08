@@ -1,7 +1,6 @@
 <script setup lang="ts">
   import { NumberInput } from '@ark-ui/vue/number-input';
 
-
   const value = defineModel({ default: '0' });
   const props = defineProps<{
     label?: string;

@@ -22,18 +22,10 @@
       />
     @endif
 
+    {{ ThemeEditor::renderStyles() }}
+
     <script type="text/javascript">
-      window.ThemeEditor = {
-        baseUrl: "{{ $baseUrl }}",
-        imagesBaseUrl: "{{ $imagesBaseUrl }}",
-        storefrontUrl: "{{ $storefrontUrl }}",
-        channels: @json($channels),
-        defaultChannel: "{{ $defaultChannel }}",
-        availableSections: @json($sections),
-        routes: @json($routes),
-        messages: @json($messages),
-        editorLocale: "{{ $editorLocale }}"
-      }
+      window.editorConfig = @json($config)
     </script>
 
     {{-- blade-formatter-disable --}}
@@ -43,6 +35,8 @@
         ->withEntryPoints(['resources/assets/editor/index.ts'])
     }}
     {{-- blade-formatter-enable --}}
+
+    {{ ThemeEditor::renderScripts() }}
   </head>
 
   <body @if (core()->getCurrentLocale()->direction == 'rtl') class="rtl" @endif style="scroll-behavior: smooth;">

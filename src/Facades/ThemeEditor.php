@@ -6,6 +6,7 @@ use BagistoPlus\Visual\ThemeEditor as ThemeEditorManager;
 use Illuminate\Support\Facades\Facade;
 
 /**
+ * @method static void serving(\Closure $callback)
  * @method static bool active()
  * @method static bool inDesignMode()
  * @method static string activeTheme()
@@ -22,6 +23,8 @@ use Illuminate\Support\Facades\Facade;
  * @method static mixed registerTemplate(\BagistoPlus\Visual\Support\Template $template)
  * @method static mixed getTemplates()
  * @method static mixed getTemplateForRoute(string $routeName)
+ * @method static void vite(string|array $assets, array $options = [])
+ * @method static \Illuminate\Support\HtmlString renderVite()
  *
  * @see \BagistoPlus\Visual\ThemeEditor
  */

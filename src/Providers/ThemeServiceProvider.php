@@ -2,10 +2,13 @@
 
 namespace BagistoPlus\Visual\Providers;
 
+use BagistoPlus\Visual\Events\ServingThemeEditor;
 use BagistoPlus\Visual\Events\ThemeActivated;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Theme\Theme;
 use Illuminate\Contracts\Foundation\CachesConfiguration;
+use Illuminate\Routing\Events\RouteMatched;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use ReflectionClass;
 use RuntimeException;
@@ -65,13 +68,6 @@ abstract class ThemeServiceProvider extends ServiceProvider
 
     protected function bootSections()
     {
-        if (request()->is('*/visual/editor/*')) {
-            $theme = $this->loadThemeConfig();
-            Visual::discoverSectionsIn("{$theme['base_path']}/src/Sections", $theme['code']);
-
-            return;
-        }
-
         $this->whenActive(function (Theme $theme) {
             Visual::discoverSectionsIn("{$theme->basePath}/src/Sections", $theme->code);
         });
@@ -160,7 +156,17 @@ abstract class ThemeServiceProvider extends ServiceProvider
      */
     protected function whenActive(\Closure $callback)
     {
-        $this->app['events']->listen(ThemeActivated::class, function (ThemeActivated $event) use ($callback) {
+        Event::listen(ServingThemeEditor::class, function () use ($callback) {
+            Event::listen(RouteMatched::class, function ($event) use ($callback) {
+                $themeConfig = $this->loadThemeConfig();
+
+                if ($themeConfig && $themeConfig['code'] === $event->route->parameters['theme']) {
+                    $callback(Theme::make($themeConfig));
+                }
+            });
+        });
+
+        Event::listen(ThemeActivated::class, function (ThemeActivated $event) use ($callback) {
             if ($event->theme->code === $this->loadThemeConfig()['code']) {
                 $callback($event->theme);
             }

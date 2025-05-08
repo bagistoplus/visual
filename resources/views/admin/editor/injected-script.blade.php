@@ -24,23 +24,23 @@
       gap: 8px;
     }
 
-    #section-overlay .btn {
+    #section-overlay button {
       pointer-events: auto;
       color: #fff;
       padding: 4px;
       border-radius: 4px;
     }
 
-    #section-overlay .btn:hover {
+    #section-overlay button:hover {
       background-color: #151f8c;
     }
 
-    .move-up,
-    .move-down {
+    #move-up,
+    #move-down {
       display: none;
     }
 
-    #section-overlay .btn svg {
+    #section-overlay button svg {
       width: 20px;
     }
 
@@ -59,33 +59,19 @@
   <div id="section-overlay">
     <span id="label"></span>
     <div id="buttons">
-      <button
-        id="move-down"
-        class="btn move-down"
-        title="Move down"
-      ><x-lucide-arrow-down /></button>
+      <button id="move-down" title="Move down"><x-lucide-arrow-down /></button>
       <button
         id="move-up"
-        class="btn move-up"
         title="Move up"
         style="margin-right: 8px;"
       ><x-lucide-arrow-up /></button>
-      <button
-        id="edit"
-        class="btn"
-        title="Edit"
-      ><x-lucide-pencil /></button>
+      <button id="edit" title="Edit"><x-lucide-pencil /></button>
       <button
         id="disable"
-        class="btn"
         title="Hide"
         style="margin-right: 8px;"
       ><x-lucide-eye-off /></button>
-      <button
-        id="remove"
-        class="btn"
-        title="Remove"
-      ><x-lucide-trash-2 /></button>
+      <button id="remove" title="Remove"><x-lucide-trash-2 /></button>
     </div>
   </div>
 @endif

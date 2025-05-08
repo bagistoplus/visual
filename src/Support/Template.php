@@ -9,11 +9,16 @@ class Template implements Arrayable, JsonSerializable
 {
     public function __construct(
         public string $template,
-        public string $route,
+        public string|array $route,
         public string $label,
         public string $icon,
         public string $previewUrl
     ) {}
+
+    public function matchRoute($route)
+    {
+        return in_array($route, (array) $this->route);
+    }
 
     public static function fromArray(array $attributes): self
     {
