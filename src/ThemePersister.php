@@ -29,7 +29,8 @@ class ThemePersister
         $newVersionPath = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'versions/V'.time());
         $livePath = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'live');
 
-        $files = $this->files->allFiles($editorPath);
+        $files = collect($this->files->allFiles($editorPath))
+            ->filter(fn ($file) => $file->getFilename() !== '.last-deploy');
 
         foreach ($files as $file) {
             $content = $this->themeDataCollector->loadFileContent($file->getPathname());
@@ -43,6 +44,8 @@ class ThemePersister
         // We avoids relying on symlinks, which may not always behave consistently across different operating systems or deployment environments
         // This will also allow developers to setup versions dir cleanup process
         $this->files->copyDirectory($newVersionPath, $livePath);
+
+        $this->files->put($editorPath.'/.last-deploy', (string) time());
     }
 
     protected function persistTemplate(array $data)

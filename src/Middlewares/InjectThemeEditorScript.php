@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Middlewares;
 
+use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use BagistoPlus\Visual\ThemeDataCollector;
 use BagistoPlus\Visual\ThemeEditor;
 use Closure;
@@ -78,6 +79,8 @@ class InjectThemeEditorScript
                 'settings' => $this->themeDataCollector->getThemeSettings(),
 
                 'templateDataPath' => $this->themeEditor->renderingJsonView(),
+
+                'haveEdits' => $this->checkIfHaveEdits(),
             ];
 
             $editorScript = view('visual::admin.editor.injected-script', [
@@ -96,6 +99,31 @@ class InjectThemeEditorScript
         $response->setContent($content);
 
         return $response;
+    }
+
+    protected function checkIfHaveEdits(): bool
+    {
+        $theme = $this->themeEditor->activeTheme();
+        $channel = app('core')->getRequestedChannelCode();
+        $locale = app('core')->getRequestedLocaleCode();
+
+        $lastDeployFile = ThemePathsResolver::getThemeBaseDataPath($theme, 'editor/.last-deploy');
+
+        if (! file_exists($lastDeployFile)) {
+            return false;
+        }
+
+        $lastDeploy = filemtime($lastDeployFile);
+
+        $themeJsonPath = ThemePathsResolver::getThemeBaseDataPath($theme, "editor/{$channel}/{$locale}/theme.json");
+
+        if (! file_exists($themeJsonPath)) {
+            return false;
+        }
+
+        $lastEdit = filemtime($themeJsonPath);
+
+        return $lastEdit > $lastDeploy;
     }
 
     protected function getCurrentTheme()

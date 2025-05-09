@@ -99,6 +99,7 @@ export interface ThemeData {
   afterContentSectionsOrder: string[];
   sectionsData: Record<string, SectionData>;
   settings: Record<string, any>;
+  haveEdits: boolean;
 }
 
 export type SettingsSchema = {

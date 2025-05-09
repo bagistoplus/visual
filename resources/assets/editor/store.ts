@@ -52,6 +52,7 @@ export const useStore = defineStore('main', () => {
     afterContentSectionsOrder: [],
     sectionsData: {},
     settings: {},
+    haveEdits: false,
   });
 
   const activeSectionId = ref<string | null>(null);
@@ -61,6 +62,7 @@ export const useStore = defineStore('main', () => {
   const canUndoHistory = ref(false);
   const canRedoHistory = ref(false);
 
+  const haveEdits = computed(() => themeData.haveEdits);
   const categories = computed(() => {
     return Object.values(models.categories).map((c) => ({
       ...c,
@@ -159,6 +161,7 @@ export const useStore = defineStore('main', () => {
 
       canUndoHistory.value = history.hasUndo;
       canRedoHistory.value = history.hasRedo;
+      themeData.haveEdits = false;
     });
   }
 
@@ -554,6 +557,7 @@ export const useStore = defineStore('main', () => {
   }
 
   return {
+    haveEdits,
     viewMode,
     images,
     themeData,

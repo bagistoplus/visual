@@ -137,7 +137,7 @@
 
         <button
           class="cursor-pointer border px-3 rounded-md shadow-sm bg-gray-700 text-white active:bg-gray-600 focus:ring focus:ring-gray-200 disabled:bg-gray-200 disabled:text-gray-400"
-          :disabled="!canUndoHistory"
+          :disabled="!canUndoHistory && !store.haveEdits"
           @click="onPublishClick"
         >
           {{ $t('Publish') }}
