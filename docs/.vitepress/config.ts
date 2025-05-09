@@ -8,6 +8,9 @@ export default defineConfig({
   description: 'A theme framework and a visual theme editor for Bagisto e-commerce framework',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
+    search: {
+      provider: 'local',
+    },
     nav: [
       { text: 'Guide', link: '/introduction/getting-started' },
       { text: 'Theme Editor', link: '/theme-editor/' },

@@ -17,6 +17,7 @@ import type {
   SettingsSchema,
   Template,
   ThemeData,
+  ViewMode,
 } from './types';
 import { useFetchCategories, useFetchCmsPages, useFetchImages, useFetchProducts, usePublishTheme } from './api';
 
@@ -34,6 +35,7 @@ export const useStore = defineStore('main', () => {
   const nprogress = useNProgress();
   const history = new History();
 
+  const viewMode = ref<ViewMode>('desktop');
   const templates = ref<Template[]>([]);
   const settingsSchema = ref<SettingsSchema>([]);
   const usedColors = reactive<string[]>([]);
@@ -275,7 +277,7 @@ export const useStore = defineStore('main', () => {
     let skipPreviewRefresh = false;
 
     if (context.settingId) {
-      const response = await previewIframe.call('setting:update', {
+      const response = await previewIframe.call('setting:updated', {
         ...context,
         settingValue: toRaw(value),
       });
@@ -329,9 +331,14 @@ export const useStore = defineStore('main', () => {
   }
 
   function toggleSection(sectionId: string) {
-    themeData.sectionsData[sectionId].disabled = !themeData.sectionsData[sectionId].disabled;
+    const disabled = !themeData.sectionsData[sectionId].disabled;
+    themeData.sectionsData[sectionId].disabled = disabled;
 
-    persistThemeData();
+    if (disabled) {
+      previewIframe.call('section:removed', toRaw(themeData.sectionsData[sectionId]), 0);
+    }
+
+    persistThemeData({ skipPreviewRefresh: disabled });
   }
 
   function getSectionData(id: string) {
@@ -349,7 +356,7 @@ export const useStore = defineStore('main', () => {
     themeData.sectionsOrder = themeData.sectionsOrder.filter((id) => id !== sectionId);
 
     previewIframe.call('sectionsOrder', toRaw(themeData.sectionsOrder));
-    previewIframe.call('section:removed', { section: toRaw(section) });
+    previewIframe.call('section:removed', toRaw(section));
 
     persistThemeData();
   }
@@ -441,12 +448,29 @@ export const useStore = defineStore('main', () => {
 
   function selectSection(sectionId: string) {
     activeSectionId.value = sectionId;
-    previewIframe.call('section:select', sectionId);
+    previewIframe.call('section:selected', sectionId, 0);
   }
 
   function setContentSectionsOrder(order: string[]) {
-    updateThemeDataValue('sectionsOrder', order);
+    themeData.sectionsOrder = order;
+    persistThemeData({ skipPreviewRefresh: true });
+
+    if (viewMode.value === 'reordering') {
+      viewMode.value = 'desktop';
+    }
+
     previewIframe.call('sectionsOrder', order);
+  }
+
+  function reorderingContentSections({ order, sectionId }: { order: string[]; sectionId: string }) {
+    if (viewMode.value !== 'mobile') {
+      viewMode.value = 'reordering';
+    }
+
+    previewIframe.call('reordering', {
+      order: [...themeData.beforeContentSectionsOrder, ...order, ...themeData.afterContentSectionsOrder],
+      sectionId,
+    });
   }
 
   // Helpers
@@ -530,6 +554,7 @@ export const useStore = defineStore('main', () => {
   }
 
   return {
+    viewMode,
     images,
     themeData,
     templates,
@@ -578,6 +603,7 @@ export const useStore = defineStore('main', () => {
     addBlockToSection,
     toggleSectionBlock,
     removeSectionBlock,
+    reorderingContentSections,
 
     searchCategories,
     getProduct,

@@ -1,4 +1,4 @@
-export type ViewMode = 'desktop' | 'mobile' | 'fullscreen';
+export type ViewMode = 'desktop' | 'mobile' | 'fullscreen' | 'reordering';
 
 export interface ThemeEditorConfig {
   baseUrl: string;

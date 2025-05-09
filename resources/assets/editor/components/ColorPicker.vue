@@ -40,7 +40,7 @@
     format="rgba"
     class="flex flex-col gap-1.5"
     :model-value="value"
-    @value-change="onSelect($event); console.log($event)"
+    @value-change="onSelect($event)"
   >
     <ColorPicker.Label
       v-if="label"

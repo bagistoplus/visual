@@ -7,7 +7,7 @@
   const store = useStore();
   const sectionsDialogOpened = ref(false);
   const search = ref('');
-  const sections = sortBy(window.ThemeEditor.availableSections, ['name'], ['asc']);
+  const sections = sortBy(window.ThemeEditor.availableSections(), ['name'], ['asc']);
 
   const availableSections = computed(() => {
     return sections.filter((section) => {
@@ -128,6 +128,7 @@
         :order="store.contentSectionsOrder"
         :sections="store.contentSections"
         @reorder="onContentSectionsReorder"
+        @reordering="store.reorderingContentSections"
         @addSection="toggleSectionsDialog"
         @toggleSection="onToggleSection"
         @removeSection="onRemoveSection"

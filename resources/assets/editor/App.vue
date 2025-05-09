@@ -10,13 +10,14 @@
 
   const previewIframe = useTemplateRef('previewer');
 
-  const viewMode = ref('desktop');
   const iframeStyle = computed(() => {
-    if (viewMode.value !== "mobile") {
-      return "width: 100%; height: 100%";
+    if (store.viewMode === "mobile") {
+      return "width: 420px; height: 100%";
+    } else if (store.viewMode === 'reordering') {
+      return "width: 80%; height: 100%";
     }
 
-    return "width: 420px; height: 100%";
+    return "width: 100%; height: 100%";
   });
 
   const messageHandlers: Record<string, Function> = {
@@ -45,6 +46,12 @@
     'section:move-down': store.moveSectionDown,
     'section:toggle': store.toggleSection,
     'section:remove': store.removeSection,
+    'section:edit'(id: string) {
+      router.push({
+        name: '/[section]',
+        params: { section: id }
+      })
+    },
   };
 
   window.addEventListener('message', (event) => {
@@ -113,7 +120,6 @@
 <template>
   <div class="h-screen w-full flex flex-col">
     <Header
-      v-model:viewMode="viewMode"
       class="h-14 border-b flex-none"
       :can-undo-history="store.canUndoHistory"
       :can-redo-history="store.canRedoHistory"
@@ -128,13 +134,13 @@
 
     <div class="flex-1 bg-gray-100 flex overflow-y-hidden">
       <div
-        v-show="viewMode !== 'fullscreen'"
+        v-show="store.viewMode !== 'fullscreen'"
         class="w-14 flex-none border-r bg-white transition-all shado"
       >
         <ActionBar />
       </div>
       <aside
-        v-show="viewMode !== 'fullscreen'"
+        v-show="store.viewMode !== 'fullscreen'"
         class="flex-none w-80 border-r bg-white flex overflow-y-hidden transition-all shadow"
       >
         <RouterView />

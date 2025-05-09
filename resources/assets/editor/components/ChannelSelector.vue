@@ -11,7 +11,10 @@
 </script>
 
 <template>
-  <Menu.Root @select="onSelect">
+  <Menu.Root
+    @select="onSelect"
+    v-if="channels.length > 1"
+  >
     <Menu.Trigger class="min-w-32 py-2 appearance-none rounded-lg cursor-pointer inline-flex gap-3 outline-none relative select-none items-center justify-center hover:bg-gray-200">
       <i-heroicons-building-storefront class="inline w-4" />
       {{ selectedLabel }}

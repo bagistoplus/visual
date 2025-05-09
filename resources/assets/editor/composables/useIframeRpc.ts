@@ -2,12 +2,13 @@ import { v4 as uuidv4 } from 'uuid';
 
 type IframeMessage =
   | { type: 'refresh'; data: string }
-  | { type: 'setting:update'; data: any }
+  | { type: 'reordering'; data: { order: string[]; sectionId: string } }
+  | { type: 'setting:updated'; data: any }
   | { type: 'section:updating'; data: any }
   | { type: 'section:updated'; data: any }
   | { type: 'section:highlight'; data: string }
   | { type: 'clearActiveSection'; data: string }
-  | { type: 'section:select'; data: string }
+  | { type: 'section:selected'; data: string }
   | { type: 'sectionsOrder'; data: string[] }
   | { type: 'section:removed'; data: any }
   | { type: 'section:added'; data: any };
@@ -54,6 +55,7 @@ export function useIframeRpc() {
     const msg = { type, data } as IframeMessage;
 
     if (!ready.value) {
+      queue.push(msg);
       return Promise.resolve(null);
     }
 

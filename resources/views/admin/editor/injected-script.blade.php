@@ -1,5 +1,14 @@
 @if (ThemeEditor::inDesignMode())
   <style type="text/css">
+    html {
+      overflow: auto;
+      scrollbar-width: none;
+    }
+
+    html::-webkit-scrollbar {
+      display: none;
+    }
+
     #section-overlay {
       border: 2px solid #0041ff;
       position: absolute;
@@ -53,6 +62,14 @@
       border-radius: 0 0 4px 4px;
       padding: 0 4px;
       font-size: 0.8rem;
+    }
+
+    [data-reordering] {
+      border: 2px dashed #0041ff;
+    }
+
+    [data-visual-highlighted] {
+      border: 2px solid #0041ff;
     }
   </style>
 

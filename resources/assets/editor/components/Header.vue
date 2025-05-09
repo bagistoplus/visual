@@ -5,7 +5,7 @@
   import HeroiconsComputerDesktop from '~icons/heroicons/computer-desktop'
   import HeroiconsDevicePhoneMobile from '~icons/heroicons/device-phone-mobile'
   import HeroiconsArrowsPointingOut from '~icons/heroicons/arrows-pointing-out'
-  import { Template } from '../types';
+  import { Template, ViewMode } from '../types';
 
   const CONFIRM_PUBLISH_KEY = 'bagisto_visual_editor_confirm_publush';
 
@@ -25,22 +25,23 @@
   }>();
 
   const store = useStore();
-  const viewModeModel = defineModel<string>('viewMode', { default: 'desktop' });
+  const viewMode = ref(['desktop']);
   const viewModes = ref([
     { icon: HeroiconsComputerDesktop, value: 'desktop', label: 'Desktop' },
     { icon: HeroiconsDevicePhoneMobile, value: 'mobile', label: 'Mobile' },
     { icon: HeroiconsArrowsPointingOut, value: 'fullscreen', label: 'Fullscreen' },
   ]);
 
-  const viewMode = computed<string[]>({
-    get: () => [viewModeModel.value],
-    set(value: string[]) {
-      viewModeModel.value = value[0];
-    }
-  });
-
   const publishDialogActive = ref(false);
   const dontAskNextTime = ref(false);
+
+  watchEffect(() => {
+    if (viewMode.value.length === 0) {
+      viewMode.value = ['desktop'];
+    }
+
+    store.viewMode = viewMode.value[0] as ViewMode;
+  })
 
   function onPublishClick() {
     if (null === localStorage.getItem(CONFIRM_PUBLISH_KEY)) {

@@ -17,6 +17,7 @@
 
   const emit = defineEmits<{
     (e: 'reorder', order: string[]): void;
+    (e: 'reordering', ctx: { order: string[], sectionId: string }): void;
     (e: 'addSection', event: any): void;
     (e: 'toggleSection', id: string): void;
     (e: 'removeSection', id: string): void;
@@ -24,26 +25,36 @@
     (e: 'deactivateSection', id: string): void;
   }>();
 
-  const sortable = useTemplateRef<HTMLElement>('sortable');
+  const sortableEl = useTemplateRef<HTMLElement>('sortable');
 
   onMounted(() => {
     if (props.static) {
       return;
     }
 
-    new Sortable(sortable.value, {
+    new Sortable(sortableEl.value, {
       animation: 150,
       ghostClass: 'sortable-ghost',
-      onEnd({ newIndex, oldIndex }: { newIndex: number; oldIndex: number }) {
-        const order = [...props.order];
-        const moved = order.splice(oldIndex, 1)[0];
 
-        order.splice(newIndex, 0, moved);
+      onChange({ oldIndex, newIndex }: { oldIndex: number, newIndex: number }) {
+        const newOrder = reorderSection({ oldIndex, newIndex })
+        emit('reordering', { order: newOrder, sectionId: props.order[oldIndex] })
+      },
+
+      onEnd({ newIndex, oldIndex }: { newIndex: number; oldIndex: number }) {
+        const order = reorderSection({ oldIndex, newIndex });
         emit('reorder', order);
       },
     });
   });
-  function test() { alert('ok'); }
+
+  function reorderSection({ oldIndex, newIndex }: { oldIndex: number, newIndex: number }) {
+    const order = [...props.order];
+    const moved = order.splice(oldIndex, 1)[0];
+
+    order.splice(newIndex, 0, moved);
+    return order;
+  }
 </script>
 
 <template>
@@ -51,7 +62,7 @@
     <h2 class="text-sm font-semibold p-3">{{ title }}</h2>
     <div
       ref="sortable"
-      class="space-y-1 px-3"
+      class="space-y-1 mx-3"
     >
       <template v-if="sections.length > 0">
         <Section
