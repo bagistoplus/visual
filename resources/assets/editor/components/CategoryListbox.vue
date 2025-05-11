@@ -5,6 +5,9 @@
   const store = useStore();
   const model = defineModel<Category | null>();
   const search = ref('');
+  const searchInputRef = ref(null)
+
+  defineExpose({ searchInputRef })
 
   const { isFetching, execute } = store.fetchCategories();
 
@@ -30,6 +33,7 @@
         type="text"
         class="focus:outline-none text-gray-600"
         :placeholder="$t('Search category')"
+        ref="searchInputRef"
       >
     </div>
     <div class="flex-1 overflow-y-auto border-t">

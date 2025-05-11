@@ -1,101 +1,148 @@
 <script setup lang="ts">
-  import { Combobox, createListCollection, useCombobox } from '@ark-ui/vue/combobox';
-  import { Category, Product } from '../types';
-  import { CmsPage } from '../types';
+  import { Popover } from '@ark-ui/vue/popover'
+  import { Category, Product, CmsPage } from '../types'
 
-  const model = defineModel<string | null>();
+  const model = defineModel<string | null>()
+  const valueType = ref('link')
+  const realLink = ref('')
+  const activePanel = ref('')
+  const popoverOpen = ref(false)
+  const inputRef = ref<HTMLInputElement | null>(null)
 
-  const valueType = ref('link');
-  const realLink = ref();
 
-  const combobox = useCombobox({
-    collection: createListCollection({ items: [] }),
-    openOnClick: true,
-    openOnKeyPress: false,
-    allowCustomValue: true
-  });
-
-  const activePanel = ref<string>('');
+  watchEffect(() => {
+    console.log('watcher', model.value)
+  })
   onMounted(() => {
-    parseModelValue();
-  });
+    parseModelValue(model.value!);
+  })
 
-  function parseModelValue() {
-    if (!model.value) {
-      return;
+  function parseModelValue(value?: string) {
+    if (!value) return
+
+    if (!value.startsWith('visual://')) {
+      valueType.value = 'link'
+
+      if (!value.startsWith('/')) {
+        value = '/' + value;
+      }
+
+      realLink.value = value
+      model.value = value
+
+      return
     }
 
-    if (!model.value.startsWith('visual://')) {
-      valueType.value = 'link';
-      combobox.value.setInputValue(model.value);
-      realLink.value = model.value;
-      return;
-    }
-
-    const matches = model.value.match(/^visual:\/\/([^:]+):([^\/]+)\/(.*)?$/);
-
+    const matches = value.match(/^visual:\/\/([^:]+):([^\/]+)\/(.*)?$/)
     if (matches) {
-      valueType.value = matches[1];
-      combobox.value.setInputValue(decodeURIComponent(matches[2]));
-      realLink.value = computeRealLink(matches[3], matches[1] === 'cms_pages' ? 'page/' : '');
+      valueType.value = matches[1]
+      realLink.value = computeRealLink(matches[3], matches[1] === 'cms_pages' ? 'page/' : '')
     }
   }
 
   function computeRealLink(slug: string, path: string = '') {
-    const url = new URL(path + slug, new URL(window.ThemeEditor.storefrontUrl).origin);
-
-    return url.href;
+    const url = new URL(path + slug, new URL(window.ThemeEditor.storefrontUrl()).origin)
+    return url.href
   }
 
   function onCategorySelected(category: Category) {
-    model.value = 'visual://categories:' + encodeURIComponent(category.name) + '/' + category.slug;
-    combobox.value.setInputValue(category.name);
-    valueType.value = 'categories';
-    realLink.value = computeRealLink(category.slug);
-    combobox.value.setOpen(false);
+    model.value = `visual://categories:${encodeURIComponent(category.name)}/${category.slug}`
+    valueType.value = 'categories'
+    realLink.value = computeRealLink(category.slug)
+    popoverOpen.value = false
   }
 
   function onProductSelected(product: Product) {
-    model.value = 'visual://products:' + encodeURIComponent(product.name) + '/' + product.url_key;
-    combobox.value.setInputValue(product.name);
-    valueType.value = 'products';
-    realLink.value = computeRealLink(product.url_key);
-    combobox.value.setOpen(false);
+    model.value = `visual://products:${encodeURIComponent(product.name)}/${product.url_key}`
+    valueType.value = 'products'
+    realLink.value = computeRealLink(product.url_key)
+    popoverOpen.value = false
   }
 
   function onPageSelected(page: CmsPage) {
-    model.value = 'visual://cms_pages:' + encodeURIComponent(page.page_title) + '/' + page.url_key;
-    combobox.value.setInputValue(page.page_title);
-    valueType.value = 'cms_pages';
-    realLink.value = computeRealLink(page.url_key, 'page/');
-    combobox.value.setOpen(false);
+    model.value = `visual://cms_pages:${encodeURIComponent(page.page_title)}/${page.url_key}`
+    valueType.value = 'cms_pages'
+    realLink.value = computeRealLink(page.url_key, 'page/')
+    popoverOpen.value = false
+  }
+
+  function onClear() {
+    valueType.value = 'link'
+    realLink.value = ''
+    model.value = ''
   }
 
   function onInput(event: Event) {
     try {
-      const url = new URL((event.target as HTMLInputElement).value);
-      valueType.value = 'link';
-      model.value = url.href;
-      realLink.value = url.href;
-      combobox.value.setInputValue(url.href);
+      const url = new URL((event.target as HTMLInputElement).value)
+      valueType.value = 'link'
+      model.value = url.href
+      realLink.value = url.href
     } catch (e) {
-      parseModelValue();
+      parseModelValue((event.target as HTMLInputElement).value)
     }
-
   }
-  function onClear() {
-    combobox.value.setInputValue('');
-    valueType.value = 'link';
-    realLink.value = '';
-    model.value = '';
+
+  function onPopoverChange(open: boolean) {
+    if (open) {
+      setTimeout(() => {
+        inputRef.value?.focus()
+      }, 0)
+    }
   }
 </script>
+
 <template>
   <div>
-    <Combobox.RootProvider
-      :value="combobox"
-      class="mt-1 gap-2 flex flex-col relative"
+    <Popover.Root
+      v-model:open="popoverOpen"
+      @open-change="onPopoverChange"
     >
+      <Popover.Trigger as-child>
+        <div
+          class="relative flex border px-3 h-10 gap-3 text-sm w-full cursor-pointer rounded outline-0 items-center appearance-none justify-between focus-within:shadow focus-within:ring focus-within:ring-gray-700"
+        >
+          <a
+            v-if="realLink"
+            :href="realLink"
+            target="_blank"
+            class="absolute right-0 -top-6"
+          >
+            <i-heroicons-arrow-top-right-on-square-solid class="w-4 h-4" />
+          </a>
+          <i-bi-tags
+            v-if="valueType === 'categories'"
+            class="w-4 h-4 flex-none transform rotate-90"
+          />
+          <i-bi-tag
+            v-else-if="valueType === 'products'"
+            class="w-4 h-4 flex-none transform rotate-90"
+          />
+          <i-mdi-file-document-outline
+            v-else-if="valueType === 'cms_pages'"
+            class="w-4 h-4 flex-none"
+          />
+          <i-heroicons-link
+            v-else
+            class="w-4 h-4 flex-none"
+          />
+
+          <input
+            ref="inputRef"
+            class="outline-none flex-1 w-0 bg-transparent"
+            :value="realLink"
+            @change="onInput"
+          />
+          <button
+            v-if="model"
+            class="flex-none text-gray-700 hover:bg-gray-200 p-1 rounded-lg"
+            @click.prevent="onClear"
+          >
+            <i-heroicons-x-mark class="w-4 h-4" />
+          </button>
+        </div>
+      </Popover.Trigger>
+
       <a
         v-if="realLink"
         :href="realLink"
@@ -104,65 +151,36 @@
       >
         <i-heroicons-arrow-top-right-on-square-solid class="w-4 h-4" />
       </a>
-      <Combobox.Control
-        class="flex border px-3 h-10 gap-3 text-sm w-full cursor-pointer rounded outline-0 items-center appearance-none justify-between focus-within:shadow focus-within:ring focus-within:ring-gray-700"
-      >
-        <i-bi-tags
-          v-if="valueType === 'categories'"
-          class="w-4 h-4 flex-none transform rotate-90"
-        />
-        <i-bi-tag
-          v-else-if="valueType === 'products'"
-          class="w-4 h-4 flex-none transform rotate-90"
-        />
-        <i-mdi-file-document-outline
-          v-else-if="valueType === 'cms_pages'"
-          class="w-4 h-4 flex-none"
-        />
-        <i-heroicons-link
-          v-else
-          class="w-4 h-4 flex-none"
-        />
 
-        <Combobox.Input
-          class="outline-none flex-1 w-0"
-          @input="combobox.setOpen(false)"
-          @blur="onInput"
-        />
-        <button
-          v-if="model"
-          class="flex-none text-gray-700 hover:bg-gray-200 p-1 rounded-lg"
-          @click="onClear"
+      <Popover.Positioner class="w-[var(--reference-width)] !z-10">
+        <Popover.Content
+          class="bg-white rounded-lg shadow gap-1 flex flex-col max-h-96 border"
+          @pointerdown.stop
         >
-          <i-heroicons-x-mark clip="w-4 h-4" />
-        </button>
-      </Combobox.Control>
-
-      <Combobox.Positioner class="w-[var(--reference-width)] !z-10">
-        <Combobox.Content class="bg-white rounded-lg shadow gap-1 flex flex-col max-h-96 border data-[state=open]:animate-fade-in">
           <div v-if="!activePanel">
             <button
               class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-gray-200"
-              @click.prevent="activePanel = 'categories'"
+              @mousedown.prevent="activePanel = 'categories'"
             >
               <i-bi-tags class="w-4 h-4 transform rotate-90" />
               {{ $t('Categories') }}
             </button>
             <button
               class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-gray-200"
-              @click.prevent="activePanel = 'products'"
+              @mousedown.prevent="activePanel = 'products'"
             >
               <i-bi-tag class="w-4 h-4 transform rotate-90" />
               {{ $t('Products') }}
             </button>
             <button
               class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-gray-200"
-              @click.prevent="activePanel = 'cms_pages'"
+              @mousedown.prevent="activePanel = 'cms_pages'"
             >
-              <i-mdi-file-document-outline class="w-4 h-4 flex-none text-gray-700" />
+              <i-mdi-file-document-outline class="w-4 h-4 text-gray-700" />
               {{ $t('Cms Pages') }}
             </button>
           </div>
+
           <div
             v-else
             class="flex flex-col h-full overflow-hidden"
@@ -190,8 +208,8 @@
               @update:modelValue="onPageSelected"
             />
           </div>
-        </Combobox.Content>
-      </Combobox.Positioner>
-    </Combobox.RootProvider>
+        </Popover.Content>
+      </Popover.Positioner>
+    </Popover.Root>
   </div>
 </template>

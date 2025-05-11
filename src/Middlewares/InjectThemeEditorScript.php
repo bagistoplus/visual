@@ -128,14 +128,9 @@ class InjectThemeEditorScript
 
     protected function getCurrentTheme()
     {
-        /** @var \BagistoPlus\Visual\Theme\Theme */
-        $theme = app('themes')->current();
 
-        return [
-            'code' => $theme->code,
-            'name' => $theme->name,
-            'version' => $theme->version,
-        ];
+        return collect(app('themes')->current())
+            ->only(['code', 'name', 'version']);
     }
 
     protected function isHtmlResponse($response)

@@ -424,6 +424,8 @@ class ThemeEditor {
 
   private refreshPreviewer(html: string) {
     const newDoc = new DOMParser().parseFromString(html, 'text/html');
+
+    // console.log(newDoc.documentElement.innerHTML);
     Idiomorph.morph(document.documentElement, newDoc.documentElement, {
       callbacks: {
         beforeNodeMorphed(fromEl: Element, toEl: Element) {
@@ -432,6 +434,7 @@ class ThemeEditor {
             window.Alpine.morph(fromEl, toEl);
             return false;
           }
+
           return true;
         },
       },

@@ -118,7 +118,13 @@ final class Section implements JsonSerializable
         $template = $this->wrapper ? SimpleEmmetParser::parse($this->wrapper.'{__section__}') : '<div>{__section__}</div>';
 
         preg_match('/(<\w+)([>|\s].*)/', $template, $matches);
-        $template = $matches[1].sprintf(' data-section-type="%s" data-section-id="%s" id="%s"', $this->slug, $id, $id).$matches[2];
+
+        $template = $matches[1].sprintf(
+            ' <?php if(ThemeEditor::inDesignMode()): ?> data-section-type="%s" data-section-id="%s"<?php endif; ?>',
+            $this->slug,
+            $id
+        ).$matches[2];
+
         $template = str_replace('__section__', $component, $template);
 
         return $template;
