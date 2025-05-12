@@ -47,7 +47,9 @@ class ThemeEditorController extends Controller
 
     public function persistTheme(Request $request)
     {
-        return $this->themePersister->persist($request->all());
+        $this->themePersister->persist($request->all());
+
+        return redirect($request->input('url'));
     }
 
     public function publishTheme(Request $request)

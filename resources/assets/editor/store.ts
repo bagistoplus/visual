@@ -54,6 +54,7 @@ export const useStore = defineStore('main', () => {
     settings: {},
     haveEdits: false,
   });
+  const dirtySections = new Map();
 
   const activeSectionId = ref<string | null>(null);
   const images = reactive<Image[]>([]);
@@ -129,16 +130,19 @@ export const useStore = defineStore('main', () => {
       canRedoHistory.value = history.hasRedo;
     }
 
+    const updatedSections = new Map(dirtySections);
+    dirtySections.clear();
+
     try {
       const res = await fetch(window.ThemeEditor.route('persistTheme'), {
         headers,
         method: 'post',
-        body: JSON.stringify(themeData),
+        body: JSON.stringify({ ...themeData, updatedSections }),
       });
 
       if (!skipPreviewRefresh) {
         const html = await res.text();
-        await previewIframe.call('refresh', html);
+        await previewIframe.call('refresh', { html, updatedSections });
       }
     } catch (error) {
       console.error('Failed to persistThemeData: ' + error);
@@ -294,11 +298,11 @@ export const useStore = defineStore('main', () => {
       await previewIframe.call('section:updating', { section: context.section, block: context.block }, 0);
     }
 
-    const res = await persistThemeData({ skipPreviewRefresh });
-
-    if (context.section && !skipPreviewRefresh) {
-      await previewIframe.call('section:updated', { section: context.section, block: context.block }, 0);
+    if (context.section) {
+      dirtySections.set(context.section.id, context);
     }
+
+    await persistThemeData({ skipPreviewRefresh });
   }
 
   function getThemeDataValue(keyPath: string | string[]): unknown {
@@ -407,17 +411,12 @@ export const useStore = defineStore('main', () => {
 
     sectionData.blocks_order.push(id);
 
-    await previewIframe.call(
-      'section:updating',
-      { section: toRaw(sectionData), block: toRaw(sectionData.blocks[id]) },
-      0
-    );
-    await persistThemeData();
-    await previewIframe.call(
-      'section:updated',
-      { section: toRaw(sectionData), block: toRaw(sectionData.blocks[id]) },
-      0
-    );
+    const context = { section: toRaw(sectionData), block: toRaw(sectionData.blocks[id]) };
+    await previewIframe.call('section:updating', context, 0);
+
+    dirtySections.set(sectionData.id, context);
+
+    persistThemeData();
   }
 
   function toggleSectionBlock(sectionId: string, blockId: string) {
@@ -490,7 +489,7 @@ export const useStore = defineStore('main', () => {
     }
 
     const section = getSectionBySlug(sectionData.type);
-    return section.blocks.find((b) => b.type === type);
+    return section?.blocks.find((b) => b.type === type);
   }
 
   function canRemoveSection(sectionId: string) {

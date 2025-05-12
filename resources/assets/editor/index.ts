@@ -14,7 +14,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.ThemeEditor = new ThemeEditor(editorConfig, app);
 (window as any).Vue = Vue;
-
-// if (import.meta.hot) {
-//   handleHotUpdate(router);
-// }

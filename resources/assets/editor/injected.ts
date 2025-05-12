@@ -1,4 +1,4 @@
-import { Idiomorph } from 'idiomorph/dist/idiomorph.esm.js';
+import morphdom from 'morphdom';
 import { BlockData, SectionData } from './types';
 
 declare global {
@@ -68,7 +68,7 @@ class VisualObject {
 
   _dispatch<T>(event: string, detail: T) {
     const name = EVENTS.prefix + event;
-    document.dispatchEvent(new CustomEvent(name, { detail }));
+    document.dispatchEvent(new CustomEvent(name, { detail, bubbles: true }));
   }
 
   /**
@@ -422,23 +422,76 @@ class ThemeEditor {
     return true;
   }
 
-  private refreshPreviewer(html: string) {
-    const newDoc = new DOMParser().parseFromString(html, 'text/html');
+  private patchNode(nodeFrom: Element, nodeTo: Element) {
+    const self = this;
+    const hasWireAttribute = (node: HTMLElement) =>
+      node.hasAttributes?.() && Array.from(node.attributes).some((attr) => attr.value.includes('$wire'));
 
-    // console.log(newDoc.documentElement.innerHTML);
-    Idiomorph.morph(document.documentElement, newDoc.documentElement, {
-      callbacks: {
-        beforeNodeMorphed(fromEl: Element, toEl: Element) {
-          // @ts-ignore
-          if (fromEl['_x_dataStack'] && typeof window.Alpine?.morph === 'function') {
-            window.Alpine.morph(fromEl, toEl);
-            return false;
-          }
+    morphdom(nodeFrom, nodeTo, {
+      onBeforeElUpdated(fromEl, toEl) {
+        if (fromEl instanceof HTMLElement && hasWireAttribute(toEl)) {
+          fromEl.innerHTML = toEl.innerHTML;
+          self.copyNonAlpineAttributes(fromEl, toEl);
+          return false;
+        }
 
-          return true;
-        },
+        // @ts-ignore
+        if (fromEl['_x_dataStack'] && typeof window.Alpine?.morph === 'function') {
+          window.Alpine.morph(fromEl, toEl, {
+            updating(oldEl: Element, newEl: Element, childrenOnly: () => void) {
+              if (oldEl instanceof HTMLElement && newEl instanceof HTMLElement) {
+                if (oldEl.hasAttribute('wire:id')) {
+                  return childrenOnly();
+                }
+              }
+            },
+          });
+
+          return false;
+        }
+
+        return true;
       },
     });
+  }
+
+  private copyNonAlpineAttributes(fromEl: HTMLElement, toEl: HTMLElement) {
+    const isAlpineAttr = (name: string) => name.startsWith('x-') || name.startsWith('@') || name.startsWith(':');
+
+    // Remove old non-Alpine attributes
+    Array.from(fromEl.attributes).forEach((attr) => {
+      if (!isAlpineAttr(attr.name)) {
+        fromEl.removeAttribute(attr.name);
+      }
+    });
+
+    // Copy new non-Alpine attributes
+    Array.from(toEl.attributes).forEach((attr) => {
+      if (!isAlpineAttr(attr.name)) {
+        fromEl.setAttribute(attr.name, attr.value);
+      }
+    });
+  }
+
+  private refreshPreviewer({ html, updatedSections }: { html: string; updatedSections: Map<string, any> }) {
+    const newDoc = new DOMParser().parseFromString(html, 'text/html');
+
+    if (updatedSections.size === 0) {
+      this.patchNode(document.documentElement, newDoc.documentElement);
+    } else {
+      updatedSections.forEach((context: any, sectionId: string) => {
+        const oldEl = document.querySelector(`[data-section-id="${sectionId}"]`);
+        const newEl = newDoc.querySelector(`[data-section-id="${sectionId}"]`);
+
+        if (!oldEl || !newEl) {
+          return;
+        }
+
+        this.patchNode(oldEl, newEl);
+        console.log(context);
+        window.Visual._dispatch('section:updated', context);
+      });
+    }
 
     if (this.activeSectionId) {
       const el = document.querySelector(`[${ATTRS.SectionId}="${this.activeSectionId}"]`) as HTMLElement;
@@ -473,5 +526,9 @@ class ThemeEditor {
 window.addEventListener('DOMContentLoaded', () => {
   const editor = new ThemeEditor();
   editor.init();
-  document.dispatchEvent(new CustomEvent(EVENTS.prefix + EVENTS.EDITOR_INITIALIZED));
+  document.dispatchEvent(
+    new CustomEvent(EVENTS.prefix + EVENTS.EDITOR_INITIALIZED, {
+      bubbles: true,
+    })
+  );
 });

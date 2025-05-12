@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 type IframeMessage =
-  | { type: 'refresh'; data: string }
+  | { type: 'refresh'; data: { html: string; updatedSections: Map<string, any> } }
   | { type: 'reordering'; data: { order: string[]; sectionId: string } }
   | { type: 'setting:updated'; data: any }
   | { type: 'section:updating'; data: any }

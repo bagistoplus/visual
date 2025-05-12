@@ -110,7 +110,7 @@ final class Section implements JsonSerializable
         $slug = str_replace('::', '-', $this->slug);
 
         if ($this->isLivewire) {
-            $component = sprintf("@livewire('visual-section-%s', ['visualId' => '%s', 'viewData' => %s])", $slug, $id, $viewData);
+            $component = sprintf("@livewire('visual-section-%s', ['visualId' => '%s', 'viewData' => %s], key('%s'))", $slug, $id, $viewData, $id);
         } else {
             $component = sprintf('<x-visual-section-%s visualId="%s" :viewData="%s" />', $slug, $id, $viewData);
         }

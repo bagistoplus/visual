@@ -69,5 +69,9 @@ export default class ThemeEditor {
     this.vueApp.use(pinia);
     this.vueApp.use(router);
     this.vueApp.use(i18n);
+
+    if (import.meta.hot) {
+      handleHotUpdate(router);
+    }
   }
 }

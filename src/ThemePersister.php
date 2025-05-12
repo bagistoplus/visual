@@ -16,8 +16,6 @@ class ThemePersister
     {
         $this->persistTemplate($data);
         $this->persistThemeData($data);
-
-        return redirect($data['url']);
     }
 
     /**

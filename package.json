@@ -44,6 +44,7 @@
     "idiomorph": "^0.7.3",
     "laravel-vite-plugin": "^1.0.5",
     "lodash": "^4.17.21",
+    "morphdom": "^2.7.5",
     "nprogress": "^0.2.0",
     "perfect-debounce": "^1.0.0",
     "pinia": "^2.2.4",
