@@ -78,7 +78,7 @@ class InjectThemeEditorScript
 
                 'settings' => $this->themeDataCollector->getThemeSettings(),
 
-                'templateDataPath' => $this->themeEditor->renderingJsonView(),
+                'source' => encrypt($this->themeEditor->renderingJsonView()),
 
                 'haveEdits' => $this->checkIfHaveEdits(),
             ];
@@ -136,10 +136,10 @@ class InjectThemeEditorScript
     protected function isHtmlResponse($response)
     {
         if ($response instanceof JsonResponse) {
-            return false; // JSON responses are not HTML
+            return false;
         }
 
-        return str_contains($response->headers->get('Content-Type'), 'text/html');
+        return str_starts_with($response->headers->get('Content-Type'), 'text/html');
     }
 
     protected function fixCategoryOrProductRoute($routeName)

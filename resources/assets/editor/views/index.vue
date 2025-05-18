@@ -186,12 +186,19 @@
                     class="rounded cursor-pointer shadow hover:shadow-lg"
                     @click="onAddSection(section)"
                   >
-                    <div class="aspect-[4/2] bg-gray-100"></div>
+                    <div class="aspect-[16/9] bg-gray-100">
+                      <img
+                        v-if="section.previewImageUrl"
+                        :src="section.previewImageUrl"
+                        :alt="section.name"
+                        class="h-full w-full object-cover object-center"
+                      >
+                    </div>
                     <div class="text-center p-3">
                       <h3 class="uppercase text-xs font-semibold">
                         {{ section.name }}
                       </h3>
-                      <p class="text-xs line-clamp-1">
+                      <p class="text-xs line-clamp-2">
                         {{ section.previewDescription }}
                       </p>
                     </div>

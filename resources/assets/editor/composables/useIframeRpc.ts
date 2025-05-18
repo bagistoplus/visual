@@ -9,6 +9,7 @@ type IframeMessage =
   | { type: 'section:highlight'; data: string }
   | { type: 'clearActiveSection'; data: string }
   | { type: 'section:selected'; data: string }
+  | { type: 'block:selected'; data: { sectionId: string; blockId: string } }
   | { type: 'sectionsOrder'; data: string[] }
   | { type: 'section:removed'; data: any }
   | { type: 'section:added'; data: any };

@@ -13,7 +13,7 @@
   const groupedSettings = computed(() => groupSettings(block.value?.settings || []));
 
   onMounted(() => {
-    store.selectSection(route.params.section);
+    store.selectBlock(route.params.section, route.params.block);
   });
 
   function goBack() {
@@ -78,7 +78,7 @@
       </p>
     </header>
 
-    <section class="flex-1 overflow-y-auto">
+    <section class="flex-1 min-h-0 overflow-y-auto">
       <Accordion.Root
         multiple
         :defaultValue="['blocks', 'Settings']"

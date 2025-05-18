@@ -4,7 +4,7 @@ namespace BagistoPlus\Visual\Settings\Support;
 
 use Illuminate\Support\HtmlString;
 
-class Font
+class FontValue
 {
     public function __construct(public string $slug, public string $name, public array $weights, public array $styles) {}
 

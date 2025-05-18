@@ -16,6 +16,12 @@ return [
                         'background' => '#ffffff',
                         'on-background' => '#181a2a',
 
+                        'surface' => '#e8e8e8',
+                        'on-surface' => '#181a2a',
+
+                        'surface-alt' => '#d1d1d1',
+                        'on-surface-alt' => '#181a2a',
+
                         'primary' => '#0082ce',
                         'on-primary' => '#ffffff',
 
@@ -28,11 +34,8 @@ return [
                         'neutral' => '#000000',
                         'on-neutral' => '#ffffff',
 
-                        'surface' => '#e8e8e8',
-                        'on-surface' => '#181a2a',
-
-                        'surface-alt' => '#d1d1d1',
-                        'on-surface-alt' => '#181a2a',
+                        'info' => '#0090b5',
+                        'on-info' => '#ffffff',
 
                         'success' => '#00a43b',
                         'on-success' => '#ffffff',
@@ -42,9 +45,6 @@ return [
 
                         'danger' => '#ff6266',
                         'on-danger' => '#000000',
-
-                        'info' => '#0090b5',
-                        'on-info' => '#ffffff',
                     ]
                 ])
         ]

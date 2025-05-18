@@ -123,6 +123,7 @@ final class SettingsValues implements Arrayable, IteratorAggregate, JsonSerializ
         }
 
         return match ($type) {
+            'richtext' => (new RichTextTransformer)($value),
             'color' => (new ColorTransformer)($value),
             'image' => (new ImageTransformer)($value),
             'category' => (new CategoryTransformer)($value),

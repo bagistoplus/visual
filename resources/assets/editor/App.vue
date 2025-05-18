@@ -95,6 +95,7 @@
     url.searchParams.set('channel', store.themeData.channel);
 
     nprogress.start();
+    console.log(url.href);
     previewIframe.value!.contentWindow?.location.replace(url.href);
     store.resetHistory();
     router.replace('/');

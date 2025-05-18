@@ -92,7 +92,7 @@ export interface ThemeData {
   channel: string;
   locale: string;
   template: string;
-  templateDataPath: string;
+  source: string;
   hasStaticContent: boolean;
   sectionsOrder: string[];
   beforeContentSectionsOrder: string[];

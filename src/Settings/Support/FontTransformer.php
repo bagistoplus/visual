@@ -22,7 +22,7 @@ class FontTransformer
         $font['weights'] = $font['weights'] ?? [];
         $font['styles'] = $font['styles'] ?? [];
 
-        return new Font(
+        return new FontValue(
             slug: $font['slug'],
             name: $font['name'],
             weights: $font['weights'],

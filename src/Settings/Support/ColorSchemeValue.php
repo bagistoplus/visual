@@ -7,7 +7,7 @@ use Illuminate\Support\HtmlString;
 use matthieumastadenis\couleur\ColorFactory;
 use matthieumastadenis\couleur\ColorSpace;
 
-class ColorScheme
+class ColorSchemeValue
 {
     public function __construct(public string $id, public ?array $tokens = [])
     {

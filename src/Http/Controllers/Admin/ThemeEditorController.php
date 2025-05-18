@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Webkul\CMS\Models\Page;
 use Webkul\CMS\Repositories\PageRepository;
 
@@ -47,6 +48,12 @@ class ThemeEditorController extends Controller
 
     public function persistTheme(Request $request)
     {
+        $request->validate([
+            'theme' => ['required', 'string', Rule::in($this->getVisualThemes())],
+            'channel' => ['required', 'string', Rule::in($this->getChannelCodes())],
+            'locale' => ['required', 'string', Rule::in($this->getLocaleCodes($request->input('channel')))],
+        ]);
+
         $this->themePersister->persist($request->all());
 
         return redirect($request->input('url'));
@@ -167,5 +174,31 @@ class ThemeEditorController extends Controller
             'locales' => $channel->locales,
             'default_locale' => $channel->default_locale->code,
         ]);
+    }
+
+    protected function getChannelCodes(): array
+    {
+        return $this->getChannels()
+            ->map(fn ($channel) => $channel['code'])
+            ->toArray();
+    }
+
+    protected function getLocaleCodes(string $channel): array
+    {
+        $channel = $this->getChannels()->firstWhere('code', $channel);
+
+        if (! $channel) {
+            return [];
+        }
+
+        return $channel['locales']->map(fn ($locale) => $locale['code'])->toArray();
+    }
+
+    protected function getVisualThemes(): array
+    {
+        return collect(config('themes.shop', []))
+            ->filter(fn ($config) => $config['visual_theme'] ?? false)
+            ->map(fn ($config) => $config['code'])
+            ->toArray();
     }
 }

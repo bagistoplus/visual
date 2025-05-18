@@ -80,20 +80,20 @@ class ThemePathsResolver
 
         $requestedChannel = app('core')->getRequestedChannel();
         $defaultChannel = app('core')->getDefaultChannel();
-        $requestedLocale = app('core')->getRequestedLocale();
+        $requestedLocale = app()->getLocale();
 
         $paths = [
-            $this->buildThemePath($themeCode, $mode, $requestedChannel->code, $requestedLocale->code),
+            $this->buildThemePath($themeCode, $mode, $requestedChannel->code, $requestedLocale),
         ];
 
-        if ($requestedLocale->code !== $requestedChannel->default_locale->code) {
+        if ($requestedLocale !== $requestedChannel->default_locale->code) {
             $paths[] = $this->buildThemePath($themeCode, $mode, $requestedChannel->code, $requestedChannel->default_locale->code);
         }
 
         if ($requestedChannel->code !== $defaultChannel->code) {
-            $paths[] = $this->buildThemePath($themeCode, $mode, $defaultChannel->code, $requestedLocale->code);
+            $paths[] = $this->buildThemePath($themeCode, $mode, $defaultChannel->code, $requestedLocale);
 
-            if ($requestedLocale->code !== $defaultChannel->default_locale->code) {
+            if ($requestedLocale !== $defaultChannel->default_locale->code) {
                 $paths[] = $this->buildThemePath($themeCode, $mode, $defaultChannel->code, $defaultChannel->default_locale->code);
             }
         }

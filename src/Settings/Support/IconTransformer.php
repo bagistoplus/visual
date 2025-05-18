@@ -10,6 +10,6 @@ class IconTransformer
             return null;
         }
 
-        return new Icon($icon);
+        return new IconValue($icon);
     }
 }

@@ -63,26 +63,25 @@
 </script>
 
 <template>
-  <div
-    class="mb-4 last:mb-0"
-    :class="{ 'flex gap-2 flex-row-reverse justify-end items-center': inline }"
-  >
-    <label
-      v-if="setting.label"
-      class="text-sm font-medium block"
-      :class="{ 'mb-1': !inline }"
-    >{{ setting.label }}</label>
+  <div class="mb-4 last:mb-0">
+    <div :class="{ 'flex gap-2 flex-row-reverse justify-end items-center': inline }">
+      <label
+        v-if="setting.label"
+        class="text-sm font-medium block"
+        :class="{ 'mb-1': !inline }"
+      >{{ setting.label }}</label>
 
-    <component
-      :is="setting.component"
-      v-bind="{ ...setting, label: null }"
-      :model-value="props.value"
-      @update:modelValue="(val: any) => emit('input', val)"
-    />
+      <component
+        :is="setting.component"
+        v-bind="{ ...setting, label: null }"
+        :model-value="props.value"
+        @update:modelValue="(val: any) => emit('input', val)"
+      />
+    </div>
 
     <small
       v-if="setting.info"
-      class="text-xs leading-3"
+      class="text-xs italic leading-[0.5rem]"
     >{{ setting.info }}</small>
   </div>
 </template>

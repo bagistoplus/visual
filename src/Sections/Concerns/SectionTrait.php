@@ -96,12 +96,12 @@ trait SectionTrait
 
     public static function previewImageUrl(): string
     {
-        return static::$previewImageUrl;
+        return static::$previewImageUrl ? url(static::$previewImageUrl) : '';
     }
 
     public static function previewDescription(): string
     {
-        return static::$previewDescription;
+        return static::$previewDescription ? static::$previewDescription : static::description();
     }
 
     public static function default(): array

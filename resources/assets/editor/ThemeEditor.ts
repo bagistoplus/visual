@@ -26,6 +26,10 @@ export default class ThemeEditor {
     return this.config.storefrontUrl;
   }
 
+  imagesBaseUrl() {
+    return this.config.imagesBaseUrl;
+  }
+
   availableSections() {
     return this.config.sections;
   }

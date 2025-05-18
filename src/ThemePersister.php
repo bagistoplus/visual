@@ -61,12 +61,15 @@ class ThemePersister
 
         // Resolve parent data path and merge if applicable
         $parentDataPath = null;
+        $sourceFile = isset($data['source']) ? decrypt($data['source']) : null;
 
-        if ($data['templateDataPath'] !== $path && str_starts_with($data['templateDataPath'], config('bagisto_visual.data_path'))) {
-            $parentDataPath = $data['templateDataPath'];
+        if ($sourceFile !== $path && str_starts_with($sourceFile, config('bagisto_visual.data_path'))) {
+            $parentDataPath = $sourceFile;
         } elseif ($this->files->exists($path)) {
             $currentData = json_decode($this->files->get($path), true);
-            $parentDataPath = $currentData['parent'] ?? null;
+            $parentDataPath = isset($currentData['parent'])
+                ? config('bagisto_visual.data_path').DIRECTORY_SEPARATOR.$currentData['parent']
+                : null;
         }
 
         if ($parentDataPath) {
@@ -100,7 +103,9 @@ class ThemePersister
 
         if ($this->files->exists($path)) {
             $currentData = json_decode($this->files->get($path), true);
-            $parentDataPath = $currentData['parent'] ?? null;
+            $parentDataPath = isset($currentData['parent'])
+                ? config('bagisto_visual.data_path').DIRECTORY_SEPARATOR.$currentData['parent']
+                : null;
         }
 
         if (! $parentDataPath) {

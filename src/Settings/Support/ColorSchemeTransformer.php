@@ -10,6 +10,6 @@ class ColorSchemeTransformer
             return null;
         }
 
-        return new ColorScheme($colorScheme);
+        return new ColorSchemeValue($colorScheme);
     }
 }

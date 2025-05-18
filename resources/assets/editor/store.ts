@@ -45,7 +45,7 @@ export const useStore = defineStore('main', () => {
     channel: 'default',
     locale: 'en',
     template: 'index',
-    templateDataPath: '',
+    source: '',
     hasStaticContent: false,
     sectionsOrder: [],
     beforeContentSectionsOrder: [],
@@ -65,10 +65,19 @@ export const useStore = defineStore('main', () => {
 
   const haveEdits = computed(() => themeData.haveEdits);
   const categories = computed(() => {
-    return Object.values(models.categories).map((c) => ({
-      ...c,
-      ...c.translations.find((t) => t.locale === themeData.locale),
-    }));
+    return Object.values(models.categories).map((cat) => {
+      const trans = cat.translations.find((t) => t.locale === themeData.locale);
+
+      if (trans) {
+        return {
+          ...cat,
+          name: trans.name,
+          slug: trans.slug,
+        };
+      }
+
+      return cat;
+    });
   });
 
   const products = computed(() => Object.values(models.products));
@@ -453,6 +462,11 @@ export const useStore = defineStore('main', () => {
     previewIframe.call('section:selected', sectionId, 0);
   }
 
+  function selectBlock(sectionId: string, blockId: string) {
+    activeSectionId.value = sectionId;
+    previewIframe.call('block:selected', { sectionId, blockId });
+  }
+
   function setContentSectionsOrder(order: string[]) {
     themeData.sectionsOrder = order;
     persistThemeData({ skipPreviewRefresh: true });
@@ -592,6 +606,7 @@ export const useStore = defineStore('main', () => {
     activateSection,
     deactivateSection,
     selectSection,
+    selectBlock,
     setContentSectionsOrder,
     moveSectionUp,
     moveSectionDown,

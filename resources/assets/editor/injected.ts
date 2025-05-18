@@ -44,6 +44,7 @@ const EVENTS = {
   SETTING_UPDATED: 'setting:updated',
   SECTION_HIGHLIGHT: 'section:highlight',
   SECTION_SELECTED: 'section:selected',
+  BLOCK_SELECTED: 'block:selected',
   SECTION_REMOVED: 'section:removed',
   CLEAR_ACTIVE_SECTION: 'clearActiveSection',
   SECTIONS_REORDERED: 'sectionsOrder',
@@ -155,6 +156,7 @@ class ThemeEditor {
   private messageHandlers: Record<string, (data: any, messageId?: string) => void> = {
     [EVENTS.SECTION_HIGHLIGHT]: (data) => this.handleSectionHighlight(data),
     [EVENTS.SECTION_SELECTED]: (data) => this.handleSectionSelected(data),
+    [EVENTS.BLOCK_SELECTED]: (data) => this.handleBlockSelected(data),
     [EVENTS.SECTION_REMOVED]: (data) => this.handleSectionRemoved(data),
     [EVENTS.CLEAR_ACTIVE_SECTION]: () => this.handleClearActiveSection(),
     [EVENTS.SECTIONS_REORDERED]: (data) => this.handleSectionsReordered(data),
@@ -303,6 +305,11 @@ class ThemeEditor {
     });
   }
 
+  private handleBlockSelected(data: { sectionId: string; blockId: string }) {
+    this.handleSectionSelected(data.sectionId);
+    window.Visual._dispatch(EVENTS.BLOCK_SELECTED, data);
+  }
+
   private handleSectionRemoved(data: { id: string }) {
     const el = document.querySelector(`[${ATTRS.SectionId}="${data.id}"]`);
 
@@ -410,15 +417,19 @@ class ThemeEditor {
   }): boolean {
     const { section, block, settingId, settingValue } = data;
     const key = [section?.id, block?.id, settingId].filter(Boolean).join(':');
+
     const el = document.querySelector(`[data-live-update-key="${key}"]`) as HTMLElement;
+
     if (!el) {
       return false;
     }
+
     if (el.dataset.liveUpdateAttr) {
       el.setAttribute(el.dataset.liveUpdateAttr, settingValue);
     } else {
-      el.innerHTML = settingValue;
+      el.textContent = settingValue;
     }
+
     return true;
   }
 
@@ -456,7 +467,8 @@ class ThemeEditor {
   }
 
   private copyNonAlpineAttributes(fromEl: HTMLElement, toEl: HTMLElement) {
-    const isAlpineAttr = (name: string) => name.startsWith('x-') || name.startsWith('@') || name.startsWith(':');
+    const isAlpineAttr = (name: string) =>
+      name.startsWith('x-') || name.startsWith('@') || name.startsWith(':') || name.startsWith('wire:');
 
     // Remove old non-Alpine attributes
     Array.from(fromEl.attributes).forEach((attr) => {
@@ -478,6 +490,7 @@ class ThemeEditor {
 
     if (updatedSections.size === 0) {
       this.patchNode(document.documentElement, newDoc.documentElement);
+      // document.documentElement.innerHTML = newDoc.documentElement.innerHTML;
     } else {
       updatedSections.forEach((context: any, sectionId: string) => {
         const oldEl = document.querySelector(`[data-section-id="${sectionId}"]`);
@@ -488,7 +501,7 @@ class ThemeEditor {
         }
 
         this.patchNode(oldEl, newEl);
-        console.log(context);
+
         window.Visual._dispatch('section:updated', context);
       });
     }

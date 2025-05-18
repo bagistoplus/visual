@@ -4,7 +4,7 @@ namespace BagistoPlus\Visual\Settings\Support;
 
 use BladeUI\Icons\Factory;
 
-class Icon
+class IconValue
 {
     public function __construct(public string $icon) {}
 

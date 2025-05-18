@@ -32,8 +32,9 @@
       if (!v) {
         return null;
       }
+      // console.log(v, window.ThemeEditor.imagesBaseUrl());
 
-      return { path: v, url: isValidUrl(v) ? v : window.ThemeEditor.imagesBaseUrl + v, name: v };
+      return { path: v, url: isValidUrl(v) ? v : window.ThemeEditor.imagesBaseUrl() + v, name: v };
     }
   });
 

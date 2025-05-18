@@ -57,6 +57,10 @@ class Theme extends BagistoTheme
     {
         $paths = parent::getViewPaths();
 
+        if (! $this->isVisualTheme) {
+            return $paths;
+        }
+
         $visualPaths = ThemePathsResolver::resolveThemeViewsPaths($this->code);
 
         return array_merge($visualPaths, $paths);

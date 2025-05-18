@@ -33,7 +33,6 @@ declare module 'vue' {
     IHeroiconsArrowUturnRight: typeof import('~icons/heroicons/arrow-uturn-right')['default']
     IHeroiconsBold: typeof import('~icons/heroicons/bold')['default']
     IHeroiconsBuildingStorefront: typeof import('~icons/heroicons/building-storefront')['default']
-    IHeroiconsCheck: typeof import('~icons/heroicons/check')['default']
     IHeroiconsCheckCircleSolid: typeof import('~icons/heroicons/check-circle-solid')['default']
     IHeroiconsChevronDown: typeof import('~icons/heroicons/chevron-down')['default']
     IHeroiconsChevronUp: typeof import('~icons/heroicons/chevron-up')['default']

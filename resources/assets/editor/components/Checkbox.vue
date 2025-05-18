@@ -8,7 +8,16 @@
 </script>
 
 <template>
-  <Checkbox.Root
+  <div>
+    <input
+      type="checkbox"
+      v-model="checked"
+    />
+  </div>
+
+  <!-- TODO: Investigate layout shift triggered when this component is clicked.-->
+  <!-- Likely related to focus or scroll behavior in the checkbox implementation (Ark UI) -->
+  <!-- <Checkbox.Root
     v-model:checked="checked"
     class="gap-2 flex items-center"
   >
@@ -22,5 +31,5 @@
     </Checkbox.Control>
     <Checkbox.Label v-if="label">{{ props.label }}</Checkbox.Label>
     <Checkbox.HiddenInput />
-  </Checkbox.Root>
+  </Checkbox.Root> -->
 </template>

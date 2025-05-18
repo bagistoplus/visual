@@ -13,7 +13,7 @@ class ImageTransformer
         }
 
         if (filter_var($path, FILTER_VALIDATE_URL)) {
-            return new Image(
+            return new ImageValue(
                 name: '',
                 path: $path,
                 url: $path
@@ -30,7 +30,7 @@ class ImageTransformer
             $originalName = $encodedName;
         }
 
-        return new Image(
+        return new ImageValue(
             name: $originalName,
             path: $path,
             url: Storage::disk(config('bagisto_visual.images_storage'))->url($path)

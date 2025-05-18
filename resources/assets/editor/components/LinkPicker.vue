@@ -1,93 +1,100 @@
 <script setup lang="ts">
-  import { Popover } from '@ark-ui/vue/popover'
-  import { Category, Product, CmsPage } from '../types'
+  import { Popover } from '@ark-ui/vue/popover';
+  import { Category, Product, CmsPage } from '../types';
 
-  const model = defineModel<string | null>()
-  const valueType = ref('link')
-  const realLink = ref('')
-  const activePanel = ref('')
-  const popoverOpen = ref(false)
-  const inputRef = ref<HTMLInputElement | null>(null)
+  const model = defineModel<string | null>();
+  const valueType = ref('link');
+  const realLink = ref('');
+  const displayedValue = ref('');
+  const activePanel = ref('');
+  const popoverOpen = ref(false);
+  const inputRef = ref<HTMLInputElement | null>(null);
 
-
-  watchEffect(() => {
-    console.log('watcher', model.value)
-  })
   onMounted(() => {
     parseModelValue(model.value!);
   })
 
   function parseModelValue(value?: string) {
-    if (!value) return
+    if (!value) {
+      return;
+    }
 
     if (!value.startsWith('visual://')) {
-      valueType.value = 'link'
+      valueType.value = 'link';
 
       if (!value.startsWith('/')) {
         value = '/' + value;
       }
 
-      realLink.value = value
-      model.value = value
+      realLink.value = value;
+      displayedValue.value = value;
+      model.value = value;
 
-      return
+      return;
     }
 
-    const matches = value.match(/^visual:\/\/([^:]+):([^\/]+)\/(.*)?$/)
+    const matches = value.match(/^visual:\/\/([^:]+):([^\/]+)\/(.*)?$/);
+
     if (matches) {
-      valueType.value = matches[1]
-      realLink.value = computeRealLink(matches[3], matches[1] === 'cms_pages' ? 'page/' : '')
+      valueType.value = matches[1];
+      realLink.value = computeRealLink(matches[3], matches[1] === 'cms_pages' ? 'page/' : '');
+      displayedValue.value = decodeURIComponent(matches[2]);
     }
   }
 
   function computeRealLink(slug: string, path: string = '') {
-    const url = new URL(path + slug, new URL(window.ThemeEditor.storefrontUrl()).origin)
-    return url.href
+    const url = new URL(path + slug, new URL(window.ThemeEditor.storefrontUrl()).origin);
+    return url.href;
   }
 
   function onCategorySelected(category: Category) {
-    model.value = `visual://categories:${encodeURIComponent(category.name)}/${category.slug}`
-    valueType.value = 'categories'
-    realLink.value = computeRealLink(category.slug)
-    popoverOpen.value = false
+    model.value = `visual://categories:${encodeURIComponent(category.name)}/${category.slug}`;
+    valueType.value = 'categories';
+    realLink.value = computeRealLink(category.slug);
+    displayedValue.value = category.name;
+    popoverOpen.value = false;
   }
 
   function onProductSelected(product: Product) {
-    model.value = `visual://products:${encodeURIComponent(product.name)}/${product.url_key}`
-    valueType.value = 'products'
-    realLink.value = computeRealLink(product.url_key)
-    popoverOpen.value = false
+    model.value = `visual://products:${encodeURIComponent(product.name)}/${product.url_key}`;
+    valueType.value = 'products';
+    realLink.value = computeRealLink(product.url_key);
+    displayedValue.value = product.name;
+    popoverOpen.value = false;
   }
 
   function onPageSelected(page: CmsPage) {
-    model.value = `visual://cms_pages:${encodeURIComponent(page.page_title)}/${page.url_key}`
-    valueType.value = 'cms_pages'
-    realLink.value = computeRealLink(page.url_key, 'page/')
-    popoverOpen.value = false
+    model.value = `visual://cms_pages:${encodeURIComponent(page.page_title)}/${page.url_key}`;
+    valueType.value = 'cms_pages';
+    realLink.value = computeRealLink(page.url_key, 'page/');
+    displayedValue.value = page.page_title;
+    popoverOpen.value = false;
   }
 
   function onClear() {
-    valueType.value = 'link'
-    realLink.value = ''
-    model.value = ''
+    valueType.value = 'link';
+    realLink.value = '';
+    model.value = '';
+    displayedValue.value = '';
   }
 
   function onInput(event: Event) {
     try {
-      const url = new URL((event.target as HTMLInputElement).value)
-      valueType.value = 'link'
-      model.value = url.href
-      realLink.value = url.href
+      const url = new URL((event.target as HTMLInputElement).value);
+      valueType.value = 'link';
+      model.value = url.href;
+      realLink.value = url.href;
+      displayedValue.value = url.href;
     } catch (e) {
-      parseModelValue((event.target as HTMLInputElement).value)
+      parseModelValue((event.target as HTMLInputElement).value);
     }
   }
 
   function onPopoverChange(open: boolean) {
     if (open) {
       setTimeout(() => {
-        inputRef.value?.focus()
-      }, 0)
+        inputRef.value?.focus();
+      }, 0);
     }
   }
 </script>
@@ -107,6 +114,7 @@
             :href="realLink"
             target="_blank"
             class="absolute right-0 -top-6"
+            @click.stop
           >
             <i-heroicons-arrow-top-right-on-square-solid class="w-4 h-4" />
           </a>
@@ -130,7 +138,7 @@
           <input
             ref="inputRef"
             class="outline-none flex-1 w-0 bg-transparent"
-            :value="realLink"
+            :value="displayedValue"
             @change="onInput"
           />
           <button
