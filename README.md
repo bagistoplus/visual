@@ -36,7 +36,7 @@ composer require bagistoplus/visual
 You can publish the config file with:
 
 ```bash
-php artisan vendor:publish --tag="visual"
+php artisan vendor:publish --tag="visual-assets"
 ```
 
 ## Documentation

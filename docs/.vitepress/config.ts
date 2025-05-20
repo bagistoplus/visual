@@ -13,7 +13,7 @@ export default defineConfig({
     },
     nav: [
       { text: 'Guide', link: '/introduction/getting-started' },
-      { text: 'Theme Editor', link: '/theme-editor/' },
+      { text: 'Theme Editor', link: '/theme-editor/overview' },
       { text: 'Sections Pack', link: 'https://bagistosectionspro.com/' },
       // { text: 'GitHub', link: 'https://github.com/bagistoplus/visual' },
     ],
@@ -133,4 +133,19 @@ export default defineConfig({
   vite: {
     plugins: [llmstxt()],
   },
+
+  head: [
+    ...(process.env.NODE_ENV === 'production'
+      ? [
+          [
+            'script',
+            {
+              defer: 'true',
+              src: 'https://cloud.umami.is/script.js',
+              'data-website-id': 'b89cd703-13ec-41b3-b7eb-9f89aa3cf710',
+            },
+          ] as [string, Record<string, string>],
+        ]
+      : []),
+  ],
 });
