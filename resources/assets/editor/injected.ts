@@ -45,6 +45,7 @@ const EVENTS = {
   SECTION_HIGHLIGHT: 'section:highlight',
   SECTION_SELECTED: 'section:selected',
   BLOCK_SELECTED: 'block:selected',
+  SECTION_ADDED: 'section:added',
   SECTION_REMOVED: 'section:removed',
   CLEAR_ACTIVE_SECTION: 'clearActiveSection',
   SECTIONS_REORDERED: 'sectionsOrder',
@@ -157,6 +158,7 @@ class ThemeEditor {
     [EVENTS.SECTION_HIGHLIGHT]: (data) => this.handleSectionHighlight(data),
     [EVENTS.SECTION_SELECTED]: (data) => this.handleSectionSelected(data),
     [EVENTS.BLOCK_SELECTED]: (data) => this.handleBlockSelected(data),
+    [EVENTS.SECTION_ADDED]: (data) => this.handleSectionAdded(data),
     [EVENTS.SECTION_REMOVED]: (data) => this.handleSectionRemoved(data),
     [EVENTS.CLEAR_ACTIVE_SECTION]: () => this.handleClearActiveSection(),
     [EVENTS.SECTIONS_REORDERED]: (data) => this.handleSectionsReordered(data),
@@ -308,6 +310,11 @@ class ThemeEditor {
   private handleBlockSelected(data: { sectionId: string; blockId: string }) {
     this.handleSectionSelected(data.sectionId);
     window.Visual._dispatch(EVENTS.BLOCK_SELECTED, data);
+  }
+
+  private handleSectionAdded({ section }: { section: SectionData }) {
+    this.handleSectionHighlight(section.id);
+    window.Visual._dispatch(EVENTS.SECTION_ADDED, { section });
   }
 
   private handleSectionRemoved(data: { id: string }) {

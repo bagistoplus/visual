@@ -15,6 +15,7 @@ import type {
   Section,
   Setting,
   SettingsSchema,
+  SettingValue,
   Template,
   ThemeData,
   ViewMode,
@@ -378,11 +379,11 @@ export const useStore = defineStore('main', () => {
   }
 
   async function addNewSection(section: Section) {
-    const settings: Record<string, unknown> = {};
+    const settings: Record<string, SettingValue> = {};
     const id = uuidv4();
 
-    section.settings.forEach((setting: Setting) => {
-      settings[setting.id] = setting.default;
+    section.settings.forEach(({ id, default: defaultValue }) => {
+      settings[id] = section.default.settings?.[id] ?? defaultValue;
     });
 
     themeData.sectionsData[id] = {
@@ -397,17 +398,33 @@ export const useStore = defineStore('main', () => {
 
     themeData.sectionsOrder.push(id);
 
+    // set default blocks
+    if (Array.isArray(section.default.blocks)) {
+      section.default.blocks.forEach((blockData) => {
+        const block = section.blocks.find(({ type }) => type === blockData.type);
+
+        if (block) {
+          addBlockToSection(id, block, blockData.settings, true);
+        }
+      });
+    }
+
     await persistThemeData();
     previewIframe.call('section:added', { section: toRaw(themeData.sectionsData[id]) });
   }
 
-  async function addBlockToSection(sectionId: string, block: Block) {
+  async function addBlockToSection(
+    sectionId: string,
+    block: Block,
+    defaults: Record<string, any> = {},
+    skipNotify = false
+  ) {
     const sectionData = themeData.sectionsData[sectionId];
     const settings: Record<string, any> = {};
     const id = uuidv4();
 
     block.settings.forEach((setting) => {
-      settings[setting.id] = setting.default;
+      settings[setting.id] = defaults[setting.id] || setting.default;
     });
 
     sectionData.blocks[id] = {
@@ -420,12 +437,14 @@ export const useStore = defineStore('main', () => {
 
     sectionData.blocks_order.push(id);
 
-    const context = { section: toRaw(sectionData), block: toRaw(sectionData.blocks[id]) };
-    await previewIframe.call('section:updating', context, 0);
+    if (!skipNotify) {
+      const context = { section: toRaw(sectionData), block: toRaw(sectionData.blocks[id]) };
+      await previewIframe.call('section:updating', context, 0);
 
-    dirtySections.set(sectionData.id, context);
+      dirtySections.set(sectionData.id, context);
 
-    persistThemeData();
+      persistThemeData();
+    }
   }
 
   function toggleSectionBlock(sectionId: string, blockId: string) {

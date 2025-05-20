@@ -1,4 +1,5 @@
 export type ViewMode = 'desktop' | 'mobile' | 'fullscreen' | 'reordering';
+export type SettingValue = string | number | boolean | object | null | undefined;
 
 export interface ThemeEditorConfig {
   baseUrl: string;
@@ -45,7 +46,7 @@ export interface Setting {
   type: string;
   id: string;
   label: string;
-  default?: unknown;
+  default?: SettingValue;
   info?: string;
   component: string;
   [key: string]: any;
@@ -70,6 +71,13 @@ export interface Section {
   maxBlocks: number;
   enabledOn: string[];
   disabledOn: string[];
+  default: {
+    settings?: Record<string, SettingValue>;
+    blocks?: {
+      type: string;
+      settings?: Record<string, SettingValue>;
+    }[];
+  };
 }
 
 export interface BlockData {
@@ -77,7 +85,7 @@ export interface BlockData {
   type: string;
   name: string;
   disabled: boolean;
-  settings: Record<string, any>;
+  settings: Record<string, SettingValue>;
 }
 
 export interface SectionData extends BlockData {
@@ -98,7 +106,7 @@ export interface ThemeData {
   beforeContentSectionsOrder: string[];
   afterContentSectionsOrder: string[];
   sectionsData: Record<string, SectionData>;
-  settings: Record<string, any>;
+  settings: Record<string, SettingValue>;
   haveEdits: boolean;
 }
 
