@@ -84,7 +84,7 @@ abstract class ThemeServiceProvider extends ServiceProvider
 
         $this->publishes(
             [
-                $this->getBasePath().'/resources/assets' => public_path("themes/shop/{$theme['code']}"),
+                $this->getBasePath().'/'.$theme['assets_path'] => base_path($theme['assets_path']),
             ],
             [
                 'public',

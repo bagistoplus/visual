@@ -7,7 +7,10 @@ parameters:
         - src
         - config
     bootstrapFiles:
+        - vendor/bagisto/bagisto/packages/Webkul/Core/src/Http/helpers.php
+        - vendor/bagisto/bagisto/packages/Webkul/Theme/src/Http/helpers.php
         - vendor/bagisto/bagisto/packages/Webkul/Product/src/Http/helpers.php
+
     tmpDir: build/phpstan
     checkOctaneCompatibility: true
     checkModelProperties: true
@@ -17,6 +20,8 @@ parameters:
     stubFiles:
         - stubs/Webkul/Theme/Theme.stub
         - stubs/Webkul/Theme/Themes.stub
+        - stubs/Webkul/Core/Models/Locale.stub
+        - stubs/Webkul/Core/Models/Channel.stub
     ignoreErrors:
         -
             message: '#Parameter \#1 \$column of method #'

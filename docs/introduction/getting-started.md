@@ -15,7 +15,7 @@ This guide will help you:
 Before you begin, make sure you have:
 
 - PHP version **8.1 or later**
-- A running Bagisto store (version **2.0.0 or later**)
+- A running Bagisto store (version **2.2.0 or later**)
 
 ## Step 1: Install Bagisto Visual
 
@@ -25,10 +25,10 @@ Install the package via Composer:
 composer require bagistoplus/visual
 ```
 
-Then publish the assets and run migrations:
+Then publish the assets:
 
 ```bash
-php artisan vendor:publish --tag=visual-config
+php artisan vendor:publish --tag=visual-assets
 ```
 
 This installs the Bagisto Visual and prepares your store for theme customization.
@@ -41,9 +41,13 @@ Install the default theme package:
 composer require themes/visual-debut
 ```
 
-Once installed, the theme will appear in your Bagisto admin under the menu **Bagisto Visual** -> **Themes**.
+And publish it's assets:
 
-> 🖼️ _Screenshot suggestion:_ Use the shared image showing the theme listing with "Visual Debut", "Customize", and "Preview" buttons.
+```bash
+php artisan vendor:publish --tag=visual-debut-assets
+```
+
+Once installed, the theme will appear in your Bagisto admin under the menu **Bagisto Visual** -> **Themes**.
 
 Click **Customize** to launch the visual editor.
 

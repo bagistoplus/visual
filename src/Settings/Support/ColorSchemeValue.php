@@ -13,7 +13,7 @@ class ColorSchemeValue
     {
         if (empty($this->tokens)) {
             /** @var \BagistoPlus\Visual\Theme\Theme */
-            $theme = app('themes')->current();
+            $theme = themes()->current();
 
             $schemesSetting = collect($theme->settingsSchema)
                 ->flatMap(fn ($group) => $group['settings'])

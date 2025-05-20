@@ -29,7 +29,7 @@ class ThemeEditorController extends Controller
                 'imagesBaseUrl' => Storage::disk(config('bagisto_visual.images_storage'))->url(''),
                 'storefrontUrl' => url('/').'?'.http_build_query(['_designMode' => $themeCode]),
                 'channels' => $this->getChannels(),
-                'defaultChannel' => app('core')->getDefaultChannelCode(),
+                'defaultChannel' => core()->getDefaultChannelCode(),
                 'sections' => Sections::all(),
                 'routes' => [
                     'themesIndex' => route('visual.admin.themes.index'),
@@ -109,7 +109,7 @@ class ThemeEditorController extends Controller
 
     public function cmsPages(Request $request)
     {
-        $currentLocale = app('core')->getRequestedLocaleCode();
+        $currentLocale = core()->getRequestedLocaleCode();
 
         return Page::query()
             ->select('cms_pages.id')
@@ -168,7 +168,7 @@ class ThemeEditorController extends Controller
 
     protected function getChannels()
     {
-        return app('core')->getAllChannels()->map(fn ($channel) => [
+        return core()->getAllChannels()->map(fn ($channel) => [
             'code' => $channel->code,
             'name' => $channel->name,
             'locales' => $channel->locales,

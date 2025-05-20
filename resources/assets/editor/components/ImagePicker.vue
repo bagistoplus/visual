@@ -12,12 +12,16 @@
 
   // @see https://stackoverflow.com/a/5717133
   const isValidUrl = (str: string) => {
-    var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
-      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+    const pattern = new RegExp(
+      '^(https?:\\/\\/)?' + // protocol
+      '((localhost)|' + // allow localhost
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,})|' + // domain name
       '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
       '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
       '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-      '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+      '(\\#[-a-z\\d_]*)?$',
+      'i');
+
     return !!pattern.test(str);
   }
 
@@ -32,7 +36,6 @@
       if (!v) {
         return null;
       }
-      // console.log(v, window.ThemeEditor.imagesBaseUrl());
 
       return { path: v, url: isValidUrl(v) ? v : window.ThemeEditor.imagesBaseUrl() + v, name: v };
     }

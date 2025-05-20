@@ -34,7 +34,9 @@ class ViewServiceProvider extends ServiceProvider
         $this->bootLivewireFeatures();
         $this->bootViewComposers();
 
+        $this->app->bind(\Webkul\Theme\Themes::class, Themes::class);
         $this->app->singleton('themes', fn () => new Themes);
+
         $this->app->singleton(ThemePathsResolver::class, function (Application $app) {
             return new ThemePathsResolver;
         });
@@ -103,7 +105,7 @@ class ViewServiceProvider extends ServiceProvider
     protected function bootViewComposers()
     {
         view()->composer('shop::*', function ($view) {
-            $theme = app('themes')->current();
+            $theme = themes()->current();
 
             if ($theme instanceof Theme && $theme->isVisualTheme) {
                 $theme->settings = Visual::themeDataCollector()->getThemeSettings();

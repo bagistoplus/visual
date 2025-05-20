@@ -9,12 +9,12 @@ it('should extends \\Webkul\\Theme\\Themes', function () {
 });
 
 test('`app(\'themes\')` should resolve instance of \\BagistoPlus\\Visual\\Theme\Themes', function () {
-    expect(app('themes'))
+    expect(themes())
         ->toBeInstanceOf(\BagistoPlus\Visual\Theme\Themes::class);
 });
 
 it('should load themes as instance of \\BagistoPlus\\Visual\\Theme\\Theme', function () {
-    expect(app('themes')->all())
+    expect(themes()->all())
         ->toContainOnlyInstancesOf(\BagistoPlus\Visual\Theme\Theme::class);
 });
 
@@ -22,7 +22,7 @@ it('should prepend default views path to shop namespace when active theme is vis
     ThemePathsResolver::shouldReceive('resolveThemeViewsPaths')
         ->andReturn([]);
 
-    app('themes')->set('fake-theme');
+    themes()->set('fake-theme');
 
     $defaultViewsPath = __DIR__.'/../../resources/views/theme';
     $shopPaths = View::getFinder()->getHints()['shop'];

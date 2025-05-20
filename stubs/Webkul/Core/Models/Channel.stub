@@ -1,0 +1,9 @@
+<?php
+
+namespace Webkul\Core\Models;
+
+/**
+ * @property string $code
+ * @property \Webkul\Core\Models\Locale $default_locale
+ */
+class Channel {}

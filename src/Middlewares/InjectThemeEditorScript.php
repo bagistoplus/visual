@@ -50,9 +50,9 @@ class InjectThemeEditorScript
 
                 'theme' => $this->themeEditor->activeTheme(),
 
-                'channel' => app('core')->getRequestedChannelCode(),
+                'channel' => core()->getRequestedChannelCode(),
 
-                'locale' => app('core')->getRequestedLocaleCode(),
+                'locale' => core()->getRequestedLocaleCode(),
 
                 'template' => $this->themeEditor->getTemplateForRoute(
                     $this->fixCategoryOrProductRoute(Route::currentRouteName())
@@ -83,11 +83,14 @@ class InjectThemeEditorScript
                 'haveEdits' => $this->checkIfHaveEdits(),
             ];
 
+            /** @var \BagistoPlus\Visual\Theme\Theme */
+            $theme = themes()->current();
+
             $editorScript = view('visual::admin.editor.injected-script', [
                 'theme' => $this->getCurrentTheme(),
                 'themeData' => $themeData,
                 'templates' => $this->themeEditor->getTemplates(),
-                'settingsSchema' => app('themes')->current()->settingsSchema,
+                'settingsSchema' => $this->translateSettingsSchema($theme->settingsSchema),
             ]);
         } else {
             $editorScript = view('visual::admin.editor.injected-script', [
@@ -104,8 +107,8 @@ class InjectThemeEditorScript
     protected function checkIfHaveEdits(): bool
     {
         $theme = $this->themeEditor->activeTheme();
-        $channel = app('core')->getRequestedChannelCode();
-        $locale = app('core')->getRequestedLocaleCode();
+        $channel = core()->getRequestedChannelCode();
+        $locale = core()->getRequestedLocaleCode();
 
         $lastDeployFile = ThemePathsResolver::getThemeBaseDataPath($theme, 'editor/.last-deploy');
 
@@ -129,8 +132,24 @@ class InjectThemeEditorScript
     protected function getCurrentTheme()
     {
 
-        return collect(app('themes')->current())
+        return collect(themes()->current())
             ->only(['code', 'name', 'version']);
+    }
+
+    protected function translateSettingsSchema(array $settingsSchema): array
+    {
+        return collect($settingsSchema)->map(function ($group) {
+            $group['name'] = trans($group['name']);
+
+            $group['settings'] = collect($group['settings'])->map(function ($setting) {
+                $setting['label'] = trans($setting['label']);
+                $setting['info'] = trans($setting['info']);
+
+                return $setting;
+            })->all();
+
+            return $group;
+        })->all();
     }
 
     protected function isHtmlResponse($response)

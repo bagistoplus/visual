@@ -59,7 +59,7 @@ class Themes extends BagistoThemes
             app('view')->prependNamespace('shop', __DIR__.'/../../resources/views/theme');
             app('view')->prependNamespace('shop', $this->activeTheme->basePath.'/resources/views');
 
-            event(new ThemeActivated($theme));
+            ThemeActivated::dispatch($theme);
         }
 
         return $theme;

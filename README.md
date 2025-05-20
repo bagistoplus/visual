@@ -34,6 +34,11 @@ php artisan vendor:publish --tag="visual"
 
 Visit the official documentation for full guides at: [https://visual.bagistoplus.com](https://visual.bagistoplus.com)
 
+## Requirements
+
+- Bagisto version: ^2.2
+- PHP version: ^8.1
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.

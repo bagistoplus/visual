@@ -15,7 +15,7 @@ class FontValue
 
     public function toHtml()
     {
-        $base = '<link rel="preconnect" href="https://fonts.bunny.net">';
+        $base = '<link rel="preconnect" href="https://fonts.bunny.net" crossorigin>';
         $query = [];
 
         foreach ($this->weights as $weight) {
@@ -24,6 +24,7 @@ class FontValue
             }
         }
 
+        $base .= "\n".'  <link href="https://fonts.bunny.net/css?family='.$this->slug.':'.implode(',', $query).'" rel="preload" as="style" />';
         $base .= "\n".'  <link href="https://fonts.bunny.net/css?family='.$this->slug.':'.implode(',', $query).'" rel="stylesheet" />';
 
         return new HtmlString($base);

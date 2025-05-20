@@ -1,0 +1,8 @@
+<?php
+
+namespace Webkul\Core\Models;
+
+/**
+ * @property string $code
+ */
+class Locale {}

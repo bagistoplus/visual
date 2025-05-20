@@ -67,7 +67,10 @@ class ThemeDataCollector
      */
     public function getThemeSettings(): SettingsValues
     {
-        if (! ($theme = app('themes')->current())) {
+        /** @var \BagistoPlus\Visual\Theme\Theme|null $theme */
+        $theme = themes()->current();
+
+        if (! $theme) {
             return new SettingsValues;
         }
 
@@ -217,9 +220,9 @@ class ThemeDataCollector
     public function getDefaultDataFilePath(): ?string
     {
         $mode = ThemeEditor::inDesignMode() ? 'editor' : 'live';
-        $themeCode = app('themes')->current()->code;
-        $channel = app('core')->getRequestedChannelCode();
-        $locale = app('core')->getRequestedLocaleCode();
+        $themeCode = themes()->current()->code;
+        $channel = core()->getRequestedChannelCode();
+        $locale = core()->getRequestedLocaleCode();
 
         $path = $this->themePathsResolver->resolvePath($themeCode, $channel, $locale, $mode, 'theme.json');
 
@@ -228,9 +231,9 @@ class ThemeDataCollector
         }
 
         return $this->themePathsResolver->resolveThemeFallbackDataPath(
-            themeCode: app('themes')->current()->code,
-            channel: app('core')->getRequestedChannelCode(),
-            locale: app('core')->getRequestedLocaleCode(),
+            themeCode: themes()->current()->code,
+            channel: core()->getRequestedChannelCode(),
+            locale: core()->getRequestedLocaleCode(),
             mode: $mode
         );
     }

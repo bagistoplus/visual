@@ -41,14 +41,15 @@ class ThemePathsResolver
      */
     public function resolveThemeFallbackDataPath(string $themeCode, string $channel, string $locale, string $mode = 'live'): ?string
     {
-        $defaultChannel = app('core')->getDefaultChannel();
+        /** @var \Webkul\Core\Models\Channel */
+        $defaultChannel = core()->getDefaultChannel();
+
+        /** @var \Webkul\Core\Models\Channel */
         $channelModel = once(fn () => Channel::query()->with(['default_locale'])->where('code', $channel)->first());
         $pathsToCheck = [];
 
         if ($channel !== $defaultChannel->code) {
-            /** @phpstan-ignore property.notFound */
             if ($locale !== $channelModel->default_locale->code) {
-                /** @phpstan-ignore property.notFound */
                 $pathsToCheck[] = $this->buildThemePath($themeCode, $mode, $channel, $channelModel->default_locale->code);
             }
 
@@ -78,8 +79,12 @@ class ThemePathsResolver
     {
         $mode = ThemeEditor::inDesignMode() ? 'editor' : 'live';
 
-        $requestedChannel = app('core')->getRequestedChannel();
-        $defaultChannel = app('core')->getDefaultChannel();
+        /** @var \Webkul\Core\Models\Channel $requestedChannel */
+        $requestedChannel = core()->getRequestedChannel();
+
+        /** @var \Webkul\Core\Models\Channel $defaultChannel */
+        $defaultChannel = core()->getDefaultChannel();
+
         $requestedLocale = app()->getLocale();
 
         $paths = [

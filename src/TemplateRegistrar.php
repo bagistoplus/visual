@@ -10,21 +10,11 @@ use Webkul\Product\Repositories\ProductRepository;
 
 class TemplateRegistrar
 {
-    protected CategoryRepository $categoryRepository;
-
-    protected ProductRepository $productRepository;
-
-    protected PageRepository $pageRepository;
-
     public function __construct(
-        CategoryRepository $categoryRepository,
-        ProductRepository $productRepository,
-        PageRepository $pageRepository
-    ) {
-        $this->categoryRepository = $categoryRepository;
-        $this->productRepository = $productRepository;
-        $this->pageRepository = $pageRepository;
-    }
+        protected CategoryRepository $categoryRepository,
+        protected ProductRepository $productRepository,
+        protected PageRepository $pageRepository
+    ) {}
 
     /**
      * Register the theme editor templates.

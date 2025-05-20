@@ -21,11 +21,11 @@ abstract class Base implements Arrayable, JsonSerializable
 
     public string $label;
 
-    public string $type;
-
     public mixed $default;
 
     public string $info;
+
+    public string $type;
 
     public static string $component = 'base-setting';
 
@@ -41,7 +41,7 @@ abstract class Base implements Arrayable, JsonSerializable
             ->default(null)
             ->info('');
 
-        $instance->type(static::$type ?? Str::snake((new \ReflectionClass(static::class))->getShortName()));
+        $instance->type($instance->type ?? Str::snake((new \ReflectionClass(static::class))->getShortName()));
 
         return $instance;
     }
