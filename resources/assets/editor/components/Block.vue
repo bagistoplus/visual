@@ -14,7 +14,7 @@
   function sanitizeString(input: string) {
     const doc = new DOMParser().parseFromString(input, 'text/html');
     const content = doc.body.textContent;
-    return content === 'undefined' ? input : content;
+    return content === 'undefined' || content === 'null' ? input : content;
   }
 </script>
 
@@ -33,7 +33,7 @@
         class="group mx-2 py-1 pr-1 text-sm flex-1 flex items-center max-w-full"
       >
         <div class="w-0 flex-1 truncate text-xs capitalize">
-          {{ block.settings.title || block.settings.heading || sanitizeString(block.settings.text) || block.name }}
+          {{ block.settings.title || block.settings.heading || sanitizeString(block.settings.text as string) || block.name }}
         </div>
         <button
           @click.stop="emit('remove')"

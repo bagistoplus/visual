@@ -38,7 +38,7 @@ This installs the Bagisto Visual and prepares your store for theme customization
 Install the default theme package:
 
 ```bash
-composer require themes/visual-debut
+composer require bagistoplus/visual-debut
 ```
 
 And publish it's assets:
