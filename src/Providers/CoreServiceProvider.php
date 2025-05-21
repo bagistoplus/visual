@@ -74,7 +74,9 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function bootShopRoutes(): void
     {
-        $this->loadRoutesFrom(__DIR__.'/../../routes/shop.php');
+        Route::prefix('/visual/template-preview')
+            ->middleware(['web', 'locale', 'theme', 'currency'])
+            ->group(__DIR__.'/../../routes/shop.php');
     }
 
     protected function bootViewsAndTranslations(): void
