@@ -11,6 +11,8 @@ class UseShopThemeFromRequest extends Theme
     public function handle($request, Closure $next)
     {
         if (ThemeEditor::inDesignMode() || ThemeEditor::inPreviewMode()) {
+            config(['responsecache.enabled' => false]);
+
             themes()->set(ThemeEditor::activeTheme());
 
             return $next($request);
