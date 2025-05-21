@@ -60,6 +60,8 @@ abstract class ThemeServiceProvider extends ServiceProvider
         $this->loadTranslationsFrom($this->getBasePath().'/resources/lang', $theme['code']);
 
         if ($this->app->runningInConsole()) {
+            $this->app['view']->prependNamespace('shop', $this->getBasePath().'/resources/views');
+
             $this->publishes([
                 $this->getBasePath().'/resources/views' => resource_path("themes/{$theme['code']}/views"),
             ], [$theme['code'], $theme['code'].'-views']);
@@ -68,6 +70,15 @@ abstract class ThemeServiceProvider extends ServiceProvider
 
     protected function bootSections()
     {
+        if ($this->app->runningInConsole()) {
+            $this->app->booted(function () {
+                $theme = $this->loadThemeConfig();
+                Visual::discoverSectionsIn("{$theme['base_path']}/src/Sections", $theme['code']);
+            });
+
+            return;
+        }
+
         $this->whenActive(function (Theme $theme) {
             Visual::discoverSectionsIn("{$theme->basePath}/src/Sections", $theme->code);
         });
