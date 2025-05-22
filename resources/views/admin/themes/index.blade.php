@@ -13,7 +13,7 @@
     @forelse($themes as  $theme)
       <div class="relative mb-6 min-h-[16rem] rounded border border-gray-200 bg-white px-8 pb-8 pt-8 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300">
         <div class="absolute inset-y-0 right-0 h-full w-[360px] bg-cover bg-no-repeat"
-          style="background-image: url({{ $theme->previewImage ? $theme->url($theme->previewImage) : bagisto_asset('images/default_theme_preview.png', 'visual_admin') }})"
+          style="background-image: url({{ $theme->previewImage ? asset($theme->previewImage) : bagisto_asset('images/default_theme_preview.png', 'visual_admin') }})"
         >
         </div>
         <div class="relative w-full max-w-xs">
