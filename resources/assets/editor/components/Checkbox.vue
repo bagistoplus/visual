@@ -8,11 +8,12 @@
 </script>
 
 <template>
-  <div>
+  <div class="flex gap-2 items-center">
     <input
       type="checkbox"
       v-model="checked"
     />
+    <label v-if="label">{{ label }}</label>
   </div>
 
   <!-- TODO: Investigate layout shift triggered when this component is clicked.-->
