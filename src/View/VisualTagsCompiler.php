@@ -49,7 +49,7 @@ class VisualTagsCompiler extends ComponentTagCompiler
                 ?>
                 <?php if (Visual::isSectionEnabled('{$id}')): ?>
                 {$template}
-                <? endif; ?>
+                <?php endif; ?>
                 PHP;
 
                 return parent::compile($template);
