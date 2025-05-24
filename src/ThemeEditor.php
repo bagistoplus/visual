@@ -28,6 +28,12 @@ class ThemeEditor
 
     protected array $styles = [];
 
+    protected array $preloadedModels = [
+        'categories' => [],
+        'products' => [],
+        'cms_pages' => [],
+    ];
+
     /**
      * Register an event listerner for ServingThemeEditor event
      */
@@ -138,6 +144,16 @@ class ThemeEditor
             ->firstWhere(fn ($template) => $template->matchRoute($routeName));
 
         return $template ? $template->template : Str::of($routeName)->slug();
+    }
+
+    public function preloadModel(string $type, $model): void
+    {
+        $this->preloadedModels[$type][] = $model;
+    }
+
+    public function preloadedModels(): array
+    {
+        return $this->preloadedModels;
     }
 
     /**

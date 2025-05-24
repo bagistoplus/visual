@@ -166,6 +166,12 @@ interface CmsPage {
   }[];
 }
 
+type PreloadedModels = {
+  products: Product[];
+  categories: Category[];
+  cms_pages: CmsPage[];
+};
+
 type ColorSchemeDefintion = {
   [K in
     | 'background'

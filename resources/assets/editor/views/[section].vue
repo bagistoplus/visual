@@ -125,6 +125,7 @@
             <BlocksGroup
               class="-mt-2 mb-2"
               :blocks="blocksData"
+              :blocksSchema="section.blocks"
               :order="sectionData.blocks_order"
               @reorder="onBlocksReorder"
               @toggleBlock="onToggleBlock"

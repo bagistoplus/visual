@@ -8,7 +8,7 @@
   const opened = ref(false);
 
   const selectedCategory = computed<Category | null>({
-    get: () => model.value ? store.categories.find(c => c.id === model.value) : null,
+    get: () => model.value ? store.getCategory(model.value) : null,
     set: (category: Category | null) => {
       model.value = category ? category.id : null;
     }

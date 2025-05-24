@@ -176,6 +176,7 @@ class ThemeEditor {
       themeData: window.themeData,
       templates: window.templates,
       settingsSchema: window.settingsSchema,
+      preloadedModels: window.preloadedModels,
     });
 
     this.sectionsOrder = window.themeData.sectionsOrder;

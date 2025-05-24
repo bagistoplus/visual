@@ -1,11 +1,71 @@
 <script lang="ts" setup>
-  import { BlockData } from '../types';
+  import { useStore } from '../store';
+  import { Block, BlockData } from '../types';
 
+  const store = useStore();
   const router = useRouter();
   const route = useRoute('/[section]');
 
   const emit = defineEmits(['remove', 'toggle']);
-  const props = defineProps<{ block: BlockData }>();
+  const props = defineProps<{ block: BlockData, schema: Block }>();
+
+  const label = computed(() => {
+    let text;
+
+    for (const fn of [getProductLabel, getCategoryLabel, getPageLabel, getText, getTitle, getHeading]) {
+      if (text = fn()) break;
+    }
+
+    return text ? props.block.name + ' - ' + text : props.block.name;
+  })
+
+  const getProductLabel = () => {
+    const productSetting = props.schema.settings.find(s => s.type === 'product');
+    if (!productSetting) {
+      return null;
+    }
+
+    const product = store.getProduct(props.block.settings[productSetting.id] as number);
+    return product?.name;
+  }
+
+  const getCategoryLabel = () => {
+    const categorySetting = props.schema.settings.find(s => s.type === 'category');
+    if (!categorySetting) {
+      return null;
+    }
+
+    const category = store.getCategory(props.block.settings[categorySetting.id] as number);
+    return category?.name;
+  }
+
+  const getPageLabel = () => {
+    const pageSetting = props.schema.settings.find(s => s.type === 'cms_page');
+    if (!pageSetting) {
+      return null;
+    }
+
+    const page = store.getCmsPage(props.block.settings[pageSetting.id] as number);
+    return page?.page_title;
+  }
+
+  const getTitle = () => {
+    return props.block.settings.title;
+  }
+
+  const getHeading = () => {
+    return props.block.settings.heading;
+  }
+
+  const getText = () => {
+    const textSetting = props.schema.settings.find(s => s.type === 'text');
+    if (!textSetting) {
+      return null;
+    }
+
+    const text = props.block.settings[textSetting.id];
+    return text ? sanitizeString(text as string) : null;
+  }
 
   function open() {
     router.push({ name: '/[section].[block]', params: { block: props.block.id, section: route.params.section } });
@@ -16,6 +76,7 @@
     const content = doc.body.textContent;
     return content === 'undefined' || content === 'null' ? input : content;
   }
+
 </script>
 
 <template>
@@ -33,7 +94,7 @@
         class="group mx-2 py-1 pr-1 text-sm flex-1 flex items-center max-w-full"
       >
         <div class="w-0 flex-1 truncate text-xs capitalize">
-          {{ block.settings.title || block.settings.heading || sanitizeString(block.settings.text as string) || block.name }}
+          {{ label }}
         </div>
         <button
           @click.stop="emit('remove')"

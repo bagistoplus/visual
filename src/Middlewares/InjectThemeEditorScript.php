@@ -91,6 +91,7 @@ class InjectThemeEditorScript
                 'themeData' => $themeData,
                 'templates' => $this->themeEditor->getTemplates(),
                 'settingsSchema' => $this->translateSettingsSchema($theme->settingsSchema),
+                'preloadedModels' => $this->themeEditor->preloadedModels(),
             ]);
         } else {
             $editorScript = view('visual::admin.editor.injected-script', [

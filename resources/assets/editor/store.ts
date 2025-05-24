@@ -11,6 +11,7 @@ import type {
   Category,
   CmsPage,
   Image,
+  PreloadedModels,
   Product,
   Section,
   Setting,
@@ -216,6 +217,20 @@ export const useStore = defineStore('main', () => {
     return models.products[id];
   }
 
+  function getCategory(id: number) {
+    let category = models.categories[id];
+
+    if (category) {
+      const trans = category.translations.find((t) => t.locale === themeData.locale);
+      if (trans) {
+        category.name = trans.name;
+        category.slug = trans.slug;
+      }
+    }
+
+    return category;
+  }
+
   function getCmsPage(id: number) {
     let page = models.cmsPages[id];
 
@@ -240,6 +255,20 @@ export const useStore = defineStore('main', () => {
 
     Object.assign(themeData, data);
     history.pushSync(structuredClone(data));
+  }
+
+  function setPreloadedModels(preloadedModels: PreloadedModels) {
+    preloadedModels.products.forEach((product) => {
+      models.products[product.id] = product;
+    });
+
+    preloadedModels.categories.forEach((cat) => {
+      models.categories[cat.id] = cat;
+    });
+
+    preloadedModels.cms_pages.forEach((page) => {
+      models.cmsPages[page.id] = page;
+    });
   }
 
   function setTemplates(tpls: Template[]) {
@@ -621,6 +650,7 @@ export const useStore = defineStore('main', () => {
 
     setThemeData,
     setTemplates,
+    setPreloadedModels,
     setAvailableSections,
     setPreviewIframe,
     setSettingsSchema,
@@ -648,6 +678,7 @@ export const useStore = defineStore('main', () => {
 
     searchCategories,
     getProduct,
+    getCategory,
     getCmsPage,
 
     fetchImages,

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import type { SettingsSchema, Template, ThemeData } from './types'
+  import type { PreloadedModels, SettingsSchema, Template, ThemeData } from './types'
   import { useStore } from './store';
   import { useNProgress } from '@vueuse/integrations/useNProgress.mjs';
 
@@ -21,13 +21,14 @@
   });
 
   const messageHandlers: Record<string, Function> = {
-    initialize(data: { themeData: ThemeData, templates: Template[], settingsSchema: SettingsSchema }) {
+    initialize(data: { themeData: ThemeData, templates: Template[], settingsSchema: SettingsSchema, preloadedModels: PreloadedModels }) {
 
       const templateChanged = store.themeData.template !== data.themeData.template;
 
       store.setThemeData(data.themeData);
       store.setSettingsSchema(data.settingsSchema);
       store.setTemplates(data.templates);
+      store.setPreloadedModels(data.preloadedModels);
       store.setAvailableSections(window.ThemeEditor.availableSections());
       store.setPreviewIframeReady()
 
@@ -95,7 +96,6 @@
     url.searchParams.set('channel', store.themeData.channel);
 
     nprogress.start();
-    console.log(url.href);
     previewIframe.value!.contentWindow?.location.replace(url.href);
     store.resetHistory();
     router.replace('/');

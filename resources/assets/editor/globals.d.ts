@@ -1,5 +1,5 @@
 import ThemeEditor from './ThemeEditor';
-import type { Setting, Template, ThemeData, ThemeEditorConfig } from './types';
+import type { PreloadedModels, Setting, Template, ThemeData, ThemeEditorConfig } from './types';
 
 declare global {
   interface Window {
@@ -11,6 +11,7 @@ declare global {
     themeData: ThemeData;
     templates: Template[];
     settingsSchema: { name: string; settings: Setting[] }[];
+    preloadedModels: PreloadedModels;
     usedColors: string[];
   }
 }

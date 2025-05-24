@@ -106,6 +106,7 @@
     window.themeData = @json($themeData);
     window.settingsSchema = @json($settingsSchema);
     window.templates = @json($templates);
+    window.preloadedModels = @json($preloadedModels);
   </script>
   {{-- blade-formatter-disable --}}
   {{
