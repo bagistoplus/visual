@@ -44,6 +44,11 @@ class ThemePersister
         $this->files->copyDirectory($newVersionPath, $livePath);
 
         $this->files->put($editorPath.'/.last-deploy', (string) time());
+
+        // Clear response cache
+        if (class_exists('\\Spatie\\ResponseCache\\Facades\\ResponseCache')) {
+            \Spatie\ResponseCache\Facades\ResponseCache::clear();
+        }
     }
 
     protected function persistTemplate(array $data)

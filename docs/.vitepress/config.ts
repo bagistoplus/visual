@@ -14,6 +14,7 @@ export default defineConfig({
     nav: [
       { text: 'Guide', link: '/introduction/getting-started' },
       { text: 'Theme Editor', link: '/theme-editor/overview' },
+      { text: 'Demo', link: 'https://visual-debut-demo.bagistoplus.com' },
       { text: 'Sections Pack', link: 'https://bagistosectionspro.com/?ref=doc' },
       // { text: 'GitHub', link: 'https://github.com/bagistoplus/visual' },
     ],
