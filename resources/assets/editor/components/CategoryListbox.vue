@@ -5,19 +5,18 @@
   const store = useStore();
   const model = defineModel<Category | null>();
   const search = ref('');
-  const searchInputRef = ref(null)
 
-  defineExpose({ searchInputRef })
-
-  const { isFetching, execute } = store.fetchCategories();
+  const { isFetching, data, execute } = store.fetchCategories();
 
   const categories = computed(() => {
-    if (!search.value) {
-      return store.categories
-    }
-
-    return store.searchCategories(search.value);
+    return data.value ? data.value.data : [];
   });
+
+  const onSearch = useDebounceFn(() => {
+    execute({ name: search.value });
+  });
+
+  onMounted(() => execute());
 
   watch([() => store.themeData.channel, () => store.themeData.locale], () => execute());
 </script>
@@ -33,7 +32,7 @@
         type="text"
         class="focus:outline-none text-gray-600"
         :placeholder="$t('Search category')"
-        ref="searchInputRef"
+        @input="onSearch"
       >
     </div>
     <div class="flex-1 overflow-y-auto border-t">

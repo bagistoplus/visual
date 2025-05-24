@@ -553,7 +553,11 @@ export const useStore = defineStore('main', () => {
       });
     });
 
-    return context;
+    function execute(params: any = {}) {
+      context.execute({ locale: themeData.locale, channel: themeData.channel, ...params });
+    }
+
+    return { ...context, execute };
   }
 
   function fetchProducts() {

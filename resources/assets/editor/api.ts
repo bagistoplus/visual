@@ -32,7 +32,22 @@ export function useFetchImages() {
 }
 
 export function useFetchCategories() {
-  return useFetch('/api/categories').get().json();
+  const url = ref('/api/categories');
+  const context = useFetch(url, { refetch: true, immediate: false }).get().json();
+
+  function execute(params: Record<string, any>) {
+    const newUrl = new URL(url.value, window.location.origin);
+
+    for (const [key, value] of Object.entries(params)) {
+      newUrl.searchParams.append(key, value);
+    }
+
+    newUrl.searchParams.append('limit', '10');
+
+    url.value = newUrl.href;
+  }
+
+  return { ...context, execute };
 }
 
 export function useFetchProducts() {
