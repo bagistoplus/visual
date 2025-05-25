@@ -8,12 +8,14 @@ import { History } from 'stateshot';
 
 import type {
   Block,
+  BlockData,
   Category,
   CmsPage,
   Image,
   PreloadedModels,
   Product,
   Section,
+  SectionData,
   Setting,
   SettingsSchema,
   SettingValue,
@@ -316,6 +318,72 @@ export const useStore = defineStore('main', () => {
     return { section: null, block: null, settingId: null };
   }
 
+  function getRealSettingValue(
+    value: SettingValue,
+    context: { section?: SectionData; block?: BlockData; settingId?: string }
+  ): any {
+    const { section, block, settingId } = context;
+
+    if (!section || !settingId) {
+      return value;
+    }
+
+    const sectionConfig = window.editorConfig.sections[section.type];
+    if (!sectionConfig) {
+      return value;
+    }
+
+    const settings = block
+      ? sectionConfig.blocks.find((b) => b.type === block.type)?.settings ?? []
+      : sectionConfig.settings;
+
+    const setting = settings.find((s) => s.id === settingId);
+    if (!setting) {
+      return value;
+    }
+
+    switch (setting.type) {
+      case 'image': {
+        return `${window.ThemeEditor.imagesBaseUrl()}/${value}`;
+      }
+
+      case 'product': {
+        return toRaw(getProduct(value as number));
+      }
+
+      case 'category': {
+        return toRaw(getCategory(value as number));
+      }
+
+      case 'cms_page': {
+        return toRaw(getCmsPage(value as number));
+      }
+
+      case 'link': {
+        const strVal = String(value);
+
+        if (!strVal.startsWith('visual://')) {
+          return value;
+        }
+
+        const matches = strVal.match(/^visual:\/\/([^:]+):([^\/]+)\/(.*)?$/);
+        if (!matches) {
+          return value;
+        }
+
+        const [, type, , slug] = matches;
+        const base = new URL(window.ThemeEditor.storefrontUrl()).origin;
+        const path = type === 'cms_page' ? `page/${slug}` : slug;
+
+        return new URL(path, base).href;
+      }
+
+      default: {
+        return value;
+      }
+    }
+  }
+
   async function updateThemeDataValue(keyPath: string | string[], value: unknown) {
     setValue(themeData, keyPath, value);
 
@@ -325,7 +393,7 @@ export const useStore = defineStore('main', () => {
     if (context.settingId) {
       const response = await previewIframe.call('setting:updated', {
         ...context,
-        settingValue: toRaw(value),
+        settingValue: getRealSettingValue(toRaw(value) as SettingValue, context as any),
       });
 
       if (response?.skipRefresh) {
