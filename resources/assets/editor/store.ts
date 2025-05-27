@@ -32,6 +32,7 @@ interface Models {
 }
 
 const previewIframe = useIframeRpc();
+const { findIconById } = useIconStore();
 
 export const useStore = defineStore('main', () => {
   let availableSections: Record<string, Section> = {};
@@ -358,6 +359,10 @@ export const useStore = defineStore('main', () => {
       case 'cms_page': {
         return toRaw(getCmsPage(value as number));
       }
+
+      case 'icon':
+        const icon = findIconById(value as string);
+        return icon?.svg;
 
       case 'link': {
         const strVal = String(value);
