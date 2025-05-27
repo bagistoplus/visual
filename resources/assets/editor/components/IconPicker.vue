@@ -82,9 +82,12 @@
         <Dialog.Content class="bg-white shadow flex flex-col w-full h-full overflow-hidden">
           <header class="flex-none h-12 border-b border-neutral-200 flex gap-3 px-4 items-center justify-between">
             <Dialog.Title>{{ $t('Icon Picker') }}</Dialog.Title>
-            <Dialog.CloseTrigger class="cursor-pointer rounded-lg p-0.5 text-neutral-700 hover:bg-neutral-300">
+            <button
+              @click="onCancel"
+              class="cursor-pointer rounded-lg p-0.5 text-neutral-700 hover:bg-neutral-300"
+            >
               <i-heroicons-x-mark class="w-5 h-5" />
-            </Dialog.CloseTrigger>
+            </button>
           </header>
           <div class="flex-1 flex flex-col  min-h-0  overflow-y-auto">
             <div class="p-3">
