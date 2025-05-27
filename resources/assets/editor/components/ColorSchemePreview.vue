@@ -34,7 +34,7 @@
     />
 
     <div class="px-2 py-1 col-span-3 col-start-2 row-start-1 row-span-3">
-      <div class="mb-px font-semibold">
+      <div class="mb-px font-semibold text-xs">
         {{ id }}
       </div>
       <div class="grid grid-cols-2 gap-2">
