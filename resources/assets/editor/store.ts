@@ -339,7 +339,7 @@ export const useStore = defineStore('main', () => {
       : sectionConfig.settings;
 
     const setting = settings.find((s) => s.id === settingId);
-    if (!setting) {
+    if (!setting || !value) {
       return value;
     }
 
