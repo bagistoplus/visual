@@ -428,41 +428,43 @@ class ThemeEditor {
     const attrName = `data-live-update-${key}`;
     const selector = `[${CSS.escape(attrName)}]`;
 
-    const el = document.querySelector(selector) as HTMLElement;
-    if (!el) {
+    const elements = document.querySelectorAll(selector);
+    if (!elements.length) {
       return false;
     }
 
-    const type = el.getAttribute(attrName);
-    const [updateType, updateKey] = type?.split(':') ?? ['text', undefined];
+    elements.forEach((el) => {
+      const type = el.getAttribute(attrName);
+      const [updateType, updateKey] = type?.split(':') ?? ['text', undefined];
 
-    switch (updateType) {
-      case 'text':
-        el.textContent = settingValue;
-        break;
-      case 'html':
-        el.innerHTML = settingValue;
-        break;
-      case 'outerHTML':
-        el.outerHTML = settingValue;
-        break;
-      case 'attr':
-        if (!settingValue) {
-          el.removeAttribute(updateKey as string);
-        } else {
-          el.setAttribute(updateKey as string, settingValue);
-        }
-        break;
-      case 'style':
-        if (!settingValue) {
-          el.style.removeProperty(updateKey as string);
-        } else {
-          el.style.setProperty(updateKey as string, settingValue);
-        }
-        break;
-      default:
-        console.warn(`Unknown live update type: ${updateType}`);
-    }
+      switch (updateType) {
+        case 'text':
+          el.textContent = settingValue;
+          break;
+        case 'html':
+          el.innerHTML = settingValue;
+          break;
+        case 'outerHTML':
+          el.outerHTML = settingValue;
+          break;
+        case 'attr':
+          if (!settingValue) {
+            el.removeAttribute(updateKey as string);
+          } else {
+            el.setAttribute(updateKey as string, settingValue);
+          }
+          break;
+        case 'style':
+          if (!settingValue) {
+            (el as HTMLElement).style.removeProperty(updateKey as string);
+          } else {
+            (el as HTMLElement).style.setProperty(updateKey as string, settingValue);
+          }
+          break;
+        default:
+          console.warn(`Unknown live update type: ${updateType}`);
+      }
+    });
 
     return true;
   }
