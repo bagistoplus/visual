@@ -424,18 +424,44 @@ class ThemeEditor {
     settingValue: any;
   }): boolean {
     const { section, block, settingId, settingValue } = data;
-    const key = [section?.id, block?.id, settingId].filter(Boolean).join(':');
+    const key = [section?.id, block?.id, settingId].filter(Boolean).join('.');
+    const attrName = `data-live-update-${key}`;
+    const selector = `[${CSS.escape(attrName)}]`;
 
-    const el = document.querySelector(`[data-live-update-key="${key}"]`) as HTMLElement;
-
+    const el = document.querySelector(selector) as HTMLElement;
     if (!el) {
       return false;
     }
 
-    if (el.dataset.liveUpdateAttr) {
-      el.setAttribute(el.dataset.liveUpdateAttr, settingValue);
-    } else {
-      el.textContent = settingValue;
+    const type = el.getAttribute(attrName);
+    const [updateType, updateKey] = type?.split(':') ?? ['text', undefined];
+
+    switch (updateType) {
+      case 'text':
+        el.textContent = settingValue;
+        break;
+      case 'html':
+        el.innerHTML = settingValue;
+        break;
+      case 'outerHTML':
+        el.outerHTML = settingValue;
+        break;
+      case 'attr':
+        if (!settingValue) {
+          el.removeAttribute(updateKey as string);
+        } else {
+          el.setAttribute(updateKey as string, settingValue);
+        }
+        break;
+      case 'style':
+        if (!settingValue) {
+          el.style.removeProperty(updateKey as string);
+        } else {
+          el.style.setProperty(updateKey as string, settingValue);
+        }
+        break;
+      default:
+        console.warn(`Unknown live update type: ${updateType}`);
     }
 
     return true;

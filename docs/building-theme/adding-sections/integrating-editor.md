@@ -68,35 +68,86 @@ Bagisto Visual supports this via:
 
 ### Option 1: `liveUpdate()` Blade Directives
 
-Use `$section->liveUpdate()` or `$block->liveUpdate()` to wire an element to a setting.
+Use `$section->liveUpdate()` or `$block->liveUpdate()` to bind settings to elements.
 
-#### Text Content
+These helpers inject metadata to enable the editor to update the live preview without requiring a server-side re-render.
 
-```blade
-<h2 {{ $section->liveUpdate('title') }}>
-  {{ $section->settings->title }}
-</h2>
-```
+#### `->text(string $settingId)`
 
-#### Element Attributes
+**Updates the element's `textContent`** whenever the specified setting changes.
 
 ```blade
-<img src="{{ $section->settings->image }}" {{ $section->liveUpdate('image', 'src') }}>
+<h1 {{ $section->liveUpdate()->text('heading') }}>
+  {{ $section->settings->heading }}
+</h1>
 ```
 
-#### Inside Blocks
+#### `->html(string $settingId)`
+
+**Updates the element's `innerHTML`** with the new setting value.
+
+```blade
+<div {{ $section->liveUpdate()->html('html_content') }}>
+  {!! $section->settings->html_content !!}
+</div>
+```
+
+#### `->outerHtml(string $settingId)`
+
+**Replaces the entire element (`outerHTML`)** with the setting value.
+
+```blade
+<div {{ $section->liveUpdate()->outerHtml('html_block') }}>
+  {!! $section->settings->html_block !!}
+</div>
+```
+
+#### `->attr(string $settingId, string $attributeName)`
+
+**Updates the specified HTML attribute** (e.g. `src`, `href`, `alt`) with the setting value.
+
+```blade
+<img
+  src="{{ $section->settings->image }}"
+  {{ $section->liveUpdate()->attr('image', 'src') }}>
+```
+
+#### `->style(string $settingId, string $property)`
+
+**Updates a specific CSS style property** on the element using the setting value.
+
+```blade
+<div
+  style="width: {{ $section->settings->width }}"
+  {{ $section->liveUpdate()->style('width', 'width') }}>
+</div>
+```
+
+#### 🔹 Multiple Bindings on a Single Element
+
+You can bind multiple settings fluently to different parts of the same element:
+
+```blade
+<a
+  href="{{ $section->settings->link_url }}"
+  {{ $section->liveUpdate()
+      ->text('link_text')
+      ->attr('link_url', 'href') }}>
+  {{ $section->settings->link_text }}
+</a>
+```
+
+#### 🔹 Working Inside Blocks
+
+Works seamlessly inside dynamic or repeated blocks:
 
 ```blade
 @foreach ($section->blocks as $block)
   <p {{ $block->liveUpdate('text') }}>
-    {{ $block->settings['text'] }}
+    {{ $block->settings->text }}
   </p>
 @endforeach
 ```
-
-These helpers inject metadata to enable the editor to update content without requiring a server-side re-render.
-
----
 
 ### Option 2: JavaScript API (`Visual.handleLiveUpdate()`)
 

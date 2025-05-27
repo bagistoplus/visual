@@ -85,12 +85,18 @@ class SectionData implements JsonSerializable
         ];
     }
 
-    public function liveUpdate(string $settingId, ?string $attribute = null): LiveUpdateData
+    public function liveUpdate(?string $settingId = null, ?string $attr = null): LiveUpdatesBuilder
     {
-        return new LiveUpdateData(
-            settingId: $settingId,
-            attribute: $attribute,
-            sectionId: $this->id,
-        );
+        $builder = new LiveUpdatesBuilder(sectionId: $this->id, blockId: null);
+
+        if ($settingId && $attr) {
+            return $builder->attr($settingId, $attr);
+        }
+
+        if ($settingId) {
+            return $builder->text($settingId);
+        }
+
+        return $builder;
     }
 }

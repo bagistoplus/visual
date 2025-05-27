@@ -52,13 +52,18 @@ class BlockData implements JsonSerializable
         ];
     }
 
-    public function liveUpdate(string $settingId, ?string $attribute = null): LiveUpdateData
+    public function liveUpdate(?string $settingId = null, ?string $attr = null): LiveUpdatesBuilder
     {
-        return new LiveUpdateData(
-            settingId: $settingId,
-            attribute: $attribute,
-            sectionId: $this->sectionId,
-            blockId: $this->id,
-        );
+        $builder = new LiveUpdatesBuilder(sectionId: $this->sectionId, blockId: $this->id);
+
+        if ($settingId && $attr) {
+            return $builder->attr($settingId, $attr);
+        }
+
+        if ($settingId) {
+            return $builder->text($settingId);
+        }
+
+        return $builder;
     }
 }
