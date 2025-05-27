@@ -52,7 +52,7 @@
           href="#"
           class="flex items-center gap-3 px-3 py-2 outline-none hover:bg-neutral-200 text-sm"
           :class="{ 'bg-neutral-200': model && model.url_key === page.url_key }"
-          @click.stop="model = page"
+          @click.stop.prevent="model = page"
         >
           <i-mdi-file-document-outline class="w-4 h-4 flex-none text-gray-700" />
           <span class="truncate flex-1 w-0">

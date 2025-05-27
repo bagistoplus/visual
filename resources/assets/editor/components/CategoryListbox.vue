@@ -49,7 +49,7 @@
           href="#"
           class="flex items-center gap-3 px-3 py-2 outline-none hover:bg-neutral-200 text-sm"
           :class="{ 'bg-neutral-200': model && model.id === category.id }"
-          @click.stop="model = category"
+          @click.stop.prevent="model = category"
         >
           <img
             v-if="category.logo"
