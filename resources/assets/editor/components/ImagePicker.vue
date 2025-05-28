@@ -45,7 +45,7 @@
   const uploadingImages = ref<Image[]>([]);
   const currentValue = ref<Image>();
 
-  const [state, send] = useMachine(machine({
+  const service = useMachine(machine, {
     id: "imagepicker",
     accept: "image/*",
     maxFiles: 10,
@@ -74,9 +74,9 @@
         onImageSelect(store.images[0]);
       })
     },
-  }));
+  });
 
-  const fileUpload = computed(() => connect(state.value, send, normalizeProps));
+  const fileUpload = computed(() => connect(service, normalizeProps));
 
   function onImageSelect(image: Image) {
     model.value = image;
