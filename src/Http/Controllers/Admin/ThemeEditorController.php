@@ -56,7 +56,10 @@ class ThemeEditorController extends Controller
 
         $this->themePersister->persist($request->all());
 
-        return redirect($request->input('url'));
+        $request = Request::create($request->input('url'), 'GET');
+        $response = app()->handle($request);
+
+        return $response->getContent();
     }
 
     public function publishTheme(Request $request)

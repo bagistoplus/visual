@@ -156,7 +156,7 @@ export const useStore = defineStore('main', () => {
 
       if (!skipPreviewRefresh) {
         const html = await res.text();
-        await previewIframe.call('refresh', { html, updatedSections });
+        await previewIframe.call('refresh', { html, updatedSections }, 0);
       }
     } catch (error) {
       console.error('Failed to persistThemeData: ' + error);
