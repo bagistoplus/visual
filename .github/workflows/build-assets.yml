@@ -1,0 +1,44 @@
+name: Build assets
+
+on:
+  push:
+    paths:
+      - '.github/workflows/build-assets.yml'
+      - 'resources/assets/**'
+      - 'vite.editor.config.ts'
+      - 'vite.admin.config.ts'
+      - 'package.json'
+      - 'package-lock.json'
+
+permissions:
+  contents: write
+
+jobs:
+  build-assets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build assets
+        run: |
+          npm run editor:build
+          npm run admin:build
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Built assets

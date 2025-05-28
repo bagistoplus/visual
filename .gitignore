@@ -2,7 +2,6 @@
 .phpunit.cache
 build
 composer.lock
-package-lock.json
 coverage
 docs/.vitepress/dist
 docs/.vitepress/cache
