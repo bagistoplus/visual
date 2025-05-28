@@ -56,7 +56,13 @@ class ThemeEditorController extends Controller
 
         $this->themePersister->persist($request->all());
 
-        $request = Request::create($request->input('url'), 'GET');
+        $url = $request->input('url');
+
+        if (! empty($sections = $request->input('updatedSections', []))) {
+            $url .= '&'.http_build_query(['_sections' => implode(',', $sections)]);
+        }
+
+        $request = Request::create($url, 'GET');
         $response = app()->handle($request);
 
         return $response->getContent();

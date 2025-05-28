@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual;
 
 use BagistoPlus\Visual\Facades\Sections;
+use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Sections\Section;
 use BagistoPlus\Visual\Sections\SectionInterface;
 use Illuminate\Support\Facades\Blade;
@@ -98,6 +99,12 @@ class VisualManager
      */
     public function isSectionEnabled($sectionId): bool
     {
+        if (ThemeEditor::inDesignMode() && request()->has('_sections')) {
+            $sectionsToRender = explode(',', request()->input('_sections', ''));
+
+            return in_array($sectionId, $sectionsToRender);
+        }
+
         return ! $this->themeDataCollector->getSectionData($sectionId)->disabled;
     }
 

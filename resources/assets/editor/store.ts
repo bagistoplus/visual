@@ -151,7 +151,7 @@ export const useStore = defineStore('main', () => {
       const res = await fetch(window.ThemeEditor.route('persistTheme'), {
         headers,
         method: 'post',
-        body: JSON.stringify({ ...themeData, updatedSections }),
+        body: JSON.stringify({ ...themeData, updatedSections: Array.from(updatedSections.keys()) }),
       });
 
       if (!skipPreviewRefresh) {
