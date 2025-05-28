@@ -154,6 +154,8 @@ class ThemeEditor {
   private hoverDebounce = 0;
   private reorderingSectionId: string | null = null;
 
+  private discardLivewireComponentNotFoundError = false;
+
   private messageHandlers: Record<string, (data: any, messageId?: string) => void> = {
     [EVENTS.SECTION_HIGHLIGHT]: (data) => this.handleSectionHighlight(data),
     [EVENTS.SECTION_SELECTED]: (data) => this.handleSectionSelected(data),
@@ -185,6 +187,16 @@ class ThemeEditor {
     window.addEventListener('resize', () => this.handleWindowResize());
 
     this.extractUsedColors();
+
+    window.addEventListener('error', (event) => {
+      if (!this.discardLivewireComponentNotFoundError) {
+        return;
+      }
+
+      if (event.message === 'Uncaught Could not find Livewire component in DOM tree') {
+        event.preventDefault(); // Prevents it from showing in the console
+      }
+    });
   }
 
   private initializeUIElements() {
@@ -471,14 +483,24 @@ class ThemeEditor {
 
   private patchNode(nodeFrom: Element, nodeTo: Element) {
     const self = this;
-    const hasWireAttribute = (node: HTMLElement) =>
-      node.hasAttributes?.() && Array.from(node.attributes).some((attr) => attr.value.includes('$wire'));
-
     morphdom(nodeFrom, nodeTo, {
       onBeforeElUpdated(fromEl, toEl) {
-        if (fromEl instanceof HTMLElement && hasWireAttribute(toEl)) {
-          fromEl.innerHTML = toEl.innerHTML;
-          self.copyNonAlpineAttributes(fromEl, toEl);
+        if (fromEl instanceof HTMLElement && fromEl.hasAttribute('wire:id')) {
+          // @ts-ignore
+          const livewireComponent = fromEl.__livewire;
+          const newSnapshot = toEl.getAttribute('wire:snapshot');
+          const effects = JSON.parse(toEl.getAttribute('wire:effects') as string);
+
+          effects.html = toEl.outerHTML;
+          livewireComponent.mergeNewSnapshot(newSnapshot, effects);
+
+          self.discardLivewireComponentNotFoundError = true;
+          livewireComponent.processEffects(effects);
+
+          setTimeout(() => {
+            self.discardLivewireComponentNotFoundError = false;
+          });
+
           return false;
         }
 
@@ -499,25 +521,6 @@ class ThemeEditor {
 
         return true;
       },
-    });
-  }
-
-  private copyNonAlpineAttributes(fromEl: HTMLElement, toEl: HTMLElement) {
-    const isAlpineAttr = (name: string) =>
-      name.startsWith('x-') || name.startsWith('@') || name.startsWith(':') || name.startsWith('wire:');
-
-    // Remove old non-Alpine attributes
-    Array.from(fromEl.attributes).forEach((attr) => {
-      if (!isAlpineAttr(attr.name)) {
-        fromEl.removeAttribute(attr.name);
-      }
-    });
-
-    // Copy new non-Alpine attributes
-    Array.from(toEl.attributes).forEach((attr) => {
-      if (!isAlpineAttr(attr.name)) {
-        fromEl.setAttribute(attr.name, attr.value);
-      }
     });
   }
 

@@ -477,7 +477,7 @@ export const useStore = defineStore('main', () => {
     previewIframe.call('sectionsOrder', toRaw(themeData.sectionsOrder));
     previewIframe.call('section:removed', toRaw(section));
 
-    persistThemeData();
+    persistThemeData({ skipPreviewRefresh: true });
   }
 
   async function addNewSection(section: Section) {
