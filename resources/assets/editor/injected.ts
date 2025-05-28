@@ -535,11 +535,27 @@ class ThemeEditor {
         const oldEl = document.querySelector(`[data-section-id="${sectionId}"]`);
         const newEl = newDoc.querySelector(`[data-section-id="${sectionId}"]`);
 
-        if (!oldEl || !newEl) {
+        if (oldEl && newEl) {
+          this.patchNode(oldEl, newEl);
+        } else if (!oldEl && newEl) {
+          const sections = document.querySelectorAll(`[${ATTRS.SectionType}]`);
+          const position = context.position ?? sections.length;
+          const parent = sections[0]?.parentNode;
+
+          if (!parent) {
+            return;
+          }
+
+          if (position <= 0) {
+            parent.insertBefore(newEl, sections[0]);
+          } else if (position >= sections.length) {
+            parent.appendChild(newEl);
+          } else {
+            parent.insertBefore(newEl, sections[position]);
+          }
+        } else {
           return;
         }
-
-        this.patchNode(oldEl, newEl);
 
         window.Visual._dispatch('section:updated', context);
       });

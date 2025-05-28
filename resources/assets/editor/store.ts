@@ -24,6 +24,7 @@ import type {
   ViewMode,
 } from './types';
 import { useFetchCategories, useFetchCmsPages, useFetchImages, useFetchProducts, usePublishTheme } from './api';
+import { dir } from 'console';
 
 interface Models {
   categories: Record<number, Category>;
@@ -450,12 +451,25 @@ export const useStore = defineStore('main', () => {
   }
 
   function toggleSection(sectionId: string) {
-    const disabled = !themeData.sectionsData[sectionId].disabled;
+    const section = themeData.sectionsData[sectionId];
+    const disabled = !section.disabled;
+
     themeData.sectionsData[sectionId].disabled = disabled;
 
     if (disabled) {
       previewIframe.call('section:removed', toRaw(themeData.sectionsData[sectionId]), 0);
     }
+
+    dirtySections.set(sectionId, {
+      section: toRaw(section),
+      block: null,
+      settingId: null,
+      position: [
+        ...themeData.beforeContentSectionsOrder,
+        ...themeData.sectionsOrder,
+        ...themeData.afterContentSectionsOrder,
+      ].indexOf(sectionId),
+    });
 
     persistThemeData({ skipPreviewRefresh: disabled });
   }
@@ -488,7 +502,7 @@ export const useStore = defineStore('main', () => {
       settings[id] = section.default.settings?.[id] ?? defaultValue;
     });
 
-    themeData.sectionsData[id] = {
+    const sectionData: SectionData = {
       id,
       name: section.name,
       settings,
@@ -497,6 +511,8 @@ export const useStore = defineStore('main', () => {
       blocks_order: [],
       disabled: false,
     };
+
+    themeData.sectionsData[id] = sectionData;
 
     themeData.sectionsOrder.push(id);
 
@@ -511,6 +527,12 @@ export const useStore = defineStore('main', () => {
       });
     }
 
+    dirtySections.set(id, {
+      section: toRaw(sectionData),
+      block: null,
+      settingId: null,
+      position: themeData.beforeContentSectionsOrder.length + themeData.sectionsOrder.length,
+    });
     await persistThemeData();
     previewIframe.call('section:added', { section: toRaw(themeData.sectionsData[id]) });
   }
@@ -550,10 +572,12 @@ export const useStore = defineStore('main', () => {
   }
 
   function toggleSectionBlock(sectionId: string, blockId: string) {
-    const block = themeData.sectionsData[sectionId].blocks[blockId];
+    const section = themeData.sectionsData[sectionId];
+    const block = section.blocks[blockId];
 
     block.disabled = !block.disabled;
 
+    dirtySections.set(sectionId, { section: toRaw(section), block: toRaw(block), settingId: null });
     persistThemeData();
   }
 
