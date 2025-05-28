@@ -7,7 +7,7 @@ type IframeMessage =
   | { type: 'section:updating'; data: any }
   | { type: 'section:updated'; data: any }
   | { type: 'section:highlight'; data: string }
-  | { type: 'clearActiveSection'; data: string }
+  | { type: 'section:unhighlight'; data: string }
   | { type: 'section:selected'; data: string }
   | { type: 'block:selected'; data: { sectionId: string; blockId: string } }
   | { type: 'sectionsOrder'; data: string[] }

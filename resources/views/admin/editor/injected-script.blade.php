@@ -69,7 +69,15 @@
     }
 
     [data-visual-highlighted] {
+      position: relative;
+    }
+
+    [data-visual-highlighted]:before {
+      position: absolute;
+      content: '';
       border: 2px solid #0041ff;
+      inset: 0;
+      z-index: 9000;
     }
   </style>
 

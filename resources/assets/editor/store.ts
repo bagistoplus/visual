@@ -531,7 +531,7 @@ export const useStore = defineStore('main', () => {
       section: toRaw(sectionData),
       block: null,
       settingId: null,
-      position: themeData.beforeContentSectionsOrder.length + themeData.sectionsOrder.length,
+      position: themeData.beforeContentSectionsOrder.length + themeData.sectionsOrder.length - 1,
     });
     await persistThemeData();
     previewIframe.call('section:added', { section: toRaw(themeData.sectionsData[id]) });
@@ -599,7 +599,7 @@ export const useStore = defineStore('main', () => {
 
   function deactivateSection(sectionId: string) {
     activeSectionId.value = null;
-    previewIframe.call('clearActiveSection', sectionId);
+    previewIframe.call('section:unhighlight', sectionId);
   }
 
   function selectSection(sectionId: string) {
