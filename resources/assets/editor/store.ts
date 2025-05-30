@@ -346,7 +346,7 @@ export const useStore = defineStore('main', () => {
 
     switch (setting.type) {
       case 'image': {
-        return `${window.ThemeEditor.imagesBaseUrl()}/${value}`;
+        return String(value).startsWith('http') ? value : `${window.ThemeEditor.imagesBaseUrl()}/${value}`;
       }
 
       case 'product': {
@@ -587,9 +587,7 @@ export const useStore = defineStore('main', () => {
     delete section.blocks[blockId];
     section.blocks_order = section.blocks_order.filter((id) => id !== blockId);
 
-    await previewIframe.call('section:updating', { section: toRaw(section), block: null }, 0);
     await persistThemeData();
-    await previewIframe.call('section:updated', { section: toRaw(section), block: null }, 0);
   }
 
   function activateSection(sectionId: string) {
@@ -604,12 +602,22 @@ export const useStore = defineStore('main', () => {
 
   function selectSection(sectionId: string) {
     activeSectionId.value = sectionId;
-    previewIframe.call('section:selected', sectionId, 0);
+    previewIframe.call('section:select', sectionId, 0);
+  }
+
+  function deselectSection(sectionId: string) {
+    activeSectionId.value = null;
+    previewIframe.call('section:deselect', sectionId, 0);
   }
 
   function selectBlock(sectionId: string, blockId: string) {
     activeSectionId.value = sectionId;
-    previewIframe.call('block:selected', { sectionId, blockId });
+    previewIframe.call('block:select', { sectionId, blockId }, 0);
+  }
+
+  function deselectBlock(sectionId: string, blockId: string) {
+    activeSectionId.value = sectionId;
+    previewIframe.call('block:deselect', { sectionId, blockId }, 0);
   }
 
   function setContentSectionsOrder(order: string[]) {
@@ -756,7 +764,9 @@ export const useStore = defineStore('main', () => {
     activateSection,
     deactivateSection,
     selectSection,
+    deselectSection,
     selectBlock,
+    deselectBlock,
     setContentSectionsOrder,
     moveSectionUp,
     moveSectionDown,

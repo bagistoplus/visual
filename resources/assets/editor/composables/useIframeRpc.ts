@@ -5,11 +5,12 @@ type IframeMessage =
   | { type: 'reordering'; data: { order: string[]; sectionId: string } }
   | { type: 'setting:updated'; data: any }
   | { type: 'section:updating'; data: any }
-  | { type: 'section:updated'; data: any }
   | { type: 'section:highlight'; data: string }
   | { type: 'section:unhighlight'; data: string }
-  | { type: 'section:selected'; data: string }
-  | { type: 'block:selected'; data: { sectionId: string; blockId: string } }
+  | { type: 'section:select'; data: string }
+  | { type: 'section:deselect'; data: string }
+  | { type: 'block:select'; data: { sectionId: string; blockId: string } }
+  | { type: 'block:deselect'; data: { sectionId: string; blockId: string } }
   | { type: 'sectionsOrder'; data: string[] }
   | { type: 'section:removed'; data: any }
   | { type: 'section:added'; data: any };

@@ -59,12 +59,17 @@ class LiveUpdatesBuilder implements Htmlable
 
     public function attr(string $settingId, string $attr): self
     {
-        return $this->add($settingId, 'attr:'.$attr);
+        return $this->add($settingId, 'attr:' . $attr);
     }
 
     public function style(string $settingId, string $style): self
     {
-        return $this->add($settingId, 'style:'.$style);
+        return $this->add($settingId, 'style:' . $style);
+    }
+
+    public function toggleClass(string $settingId, string $class): self
+    {
+        return $this->add($settingId, 'toggleClass:' . $class);
     }
 
     public function toHtml(): string
@@ -79,9 +84,9 @@ class LiveUpdatesBuilder implements Htmlable
         }
 
         return collect($this->updates)->map(function ($update) {
-            $attr = 'data-live-update-'.$update['key'];
+            $attr = 'data-live-update-' . $update['key'];
 
-            return $attr.'="'.htmlspecialchars($update['type'], ENT_QUOTES, 'UTF-8').'"';
+            return $attr . '="' . htmlspecialchars($update['type'], ENT_QUOTES, 'UTF-8') . '"';
         })->implode(' ');
     }
 }

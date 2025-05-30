@@ -18,10 +18,10 @@ When a section is updated in the editor, its DOM is replaced. Any interactive Ja
 
 Bagisto Visual emits events during this lifecycle:
 
-| Event                     | Timing                        | Use case                 |
-| ------------------------- | ----------------------------- | ------------------------ |
-| `visual:section:updating` | Before section is removed     | Save UI state            |
-| `visual:section:updated`  | After new section is inserted | Reinitialize JS behavior |
+| Event                   | Timing                                   | Use case                                                                                                                                                                    |
+| ----------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `visual:section:load`   | After section is added or re-rendered    | Re-run any necessary JavaScript to ensure the section functions and displays correctly, as if the page were freshly loaded. You may also want to restore the section state. |
+| `visual:section:unload` | Before section is removed or re-rendered | Make sure to clean up event listeners, variables, and anything else to prevent issues when interacting with the page and avoid memory leaks. Also, save the section state.  |
 
 Each event exposes:
 
@@ -38,13 +38,13 @@ event.detail = {
 @visual_design_mode
     @pushOnce('scripts')
         <script>
-            document.addEventListener('visual:section:updating', (event) => {
+            document.addEventListener('visual:section:unload', (event) => {
                 if (event.detail.section.type === '{{ $section->type }}') {
                     // Save scroll position, destroy carousels, etc.
                 }
             });
 
-            document.addEventListener('visual:section:updated', (event) => {
+            document.addEventListener('visual:section:load', (event) => {
                 if (event.detail.section.type === '{{ $section->type }}') {
                     // Reinitialize interactivity: sliders, modals, listeners
                 }

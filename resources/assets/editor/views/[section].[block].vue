@@ -16,6 +16,10 @@
     store.selectBlock(route.params.section, route.params.block);
   });
 
+  onBeforeRouteLeave(() => {
+    store.deselectBlock(route.params.section, route.params.block);
+  });
+
   function goBack() {
     router.back();
   }

@@ -42,6 +42,10 @@
     store.selectSection(route.params.section);
   });
 
+  onBeforeRouteLeave(() => {
+    store.deselectSection(route.params.section);
+  });
+
   function goBack() {
     router.back();
   }

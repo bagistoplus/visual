@@ -44,8 +44,13 @@ const EVENTS = {
   SETTING_UPDATED: 'setting:updated',
   SECTION_HIGHLIGHT: 'section:highlight',
   SECTION_UNHIGHLIGHT: 'section:unhighlight',
-  SECTION_SELECTED: 'section:selected',
-  BLOCK_SELECTED: 'block:selected',
+  SECTION_SELECT: 'section:select',
+  SECTION_DESELECT: 'section:deselect',
+  SECTION_LOAD: 'section:load',
+  SECTION_UNLOAD: 'section:unload',
+
+  BLOCK_SELECT: 'block:select',
+  BLOCK_DESELECT: 'block:deselect',
   SECTION_ADDED: 'section:added',
   SECTION_REMOVED: 'section:removed',
   SECTIONS_REORDERED: 'sectionsOrder',
@@ -130,6 +135,8 @@ class VisualObject {
         (targetEl.style as any)[config.style] = value;
       } else if (config.attr) {
         targetEl.setAttribute(config.attr, value);
+      } else {
+        return;
       }
 
       skipRefresh();
@@ -158,8 +165,10 @@ class ThemeEditor {
 
   private messageHandlers: Record<string, (data: any, messageId?: string) => void> = {
     [EVENTS.SECTION_HIGHLIGHT]: (data) => this.handleSectionHighlight(data),
-    [EVENTS.SECTION_SELECTED]: (data) => this.handleSectionSelected(data),
-    [EVENTS.BLOCK_SELECTED]: (data) => this.handleBlockSelected(data),
+    [EVENTS.SECTION_SELECT]: (data) => this.handleSectionSelected(data),
+    [EVENTS.SECTION_DESELECT]: (data) => this.handleSectionDeselected(data),
+    [EVENTS.BLOCK_SELECT]: (data) => this.handleBlockSelected(data),
+    [EVENTS.BLOCK_DESELECT]: (data) => this.handleBlockDeselected(data),
     [EVENTS.SECTION_ADDED]: (data) => this.handleSectionAdded(data),
     [EVENTS.SECTION_REMOVED]: (data) => this.handleSectionRemoved(data),
     [EVENTS.SECTION_UNHIGHLIGHT]: () => this.handleUnhighlightSection(),
@@ -262,6 +271,7 @@ class ThemeEditor {
   }
 
   private handleWindowResize() {
+    console.log('Window resized, focusing on active section if exists', this.activeSectionId);
     if (this.activeSectionId) {
       const activeSection = document.querySelector(`[${ATTRS.SectionId}="${this.activeSectionId}"]`) as HTMLElement;
 
@@ -315,17 +325,42 @@ class ThemeEditor {
     this.handleSectionHighlight(id);
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    window.Visual._dispatch(EVENTS.SECTION_SELECTED, {
+    window.Visual._dispatch(EVENTS.SECTION_SELECT, {
       section: {
-        id: el.dataset.sectionId,
+        id,
         type: el.dataset.sectionType,
       },
     });
+
+    window.Visual._dispatch(EVENTS.SECTION_SELECT + `:${id}`, {});
+  }
+
+  private handleSectionDeselected(id: string) {
+    if (this.activeSectionId === id) {
+      this.clearActiveSection();
+      this.activeSectionId = null;
+    }
+
+    const el = document.querySelector(`[${ATTRS.SectionId}="${id}"]`) as HTMLElement;
+    if (!el) {
+      return;
+    }
+
+    el.removeAttribute(ATTRS.VisualHighlighted);
+
+    window.Visual._dispatch(EVENTS.SECTION_DESELECT, { section: { id, type: el.dataset.sectionType } });
+    window.Visual._dispatch(EVENTS.SECTION_DESELECT + `:${id}`, {});
   }
 
   private handleBlockSelected(data: { sectionId: string; blockId: string }) {
     this.handleSectionSelected(data.sectionId);
-    window.Visual._dispatch(EVENTS.BLOCK_SELECTED, data);
+    window.Visual._dispatch(EVENTS.BLOCK_SELECT, data);
+    window.Visual._dispatch(EVENTS.BLOCK_SELECT + `:${data.blockId}`, {});
+  }
+
+  private handleBlockDeselected(data: { sectionId: string; blockId: string }) {
+    window.Visual._dispatch(EVENTS.BLOCK_DESELECT, data);
+    window.Visual._dispatch(EVENTS.BLOCK_DESELECT + `:${data.blockId}`, {});
   }
 
   private handleSectionAdded({ section }: { section: SectionData }) {
@@ -399,7 +434,7 @@ class ThemeEditor {
       const el = document.querySelector(`[${ATTRS.SectionId}="${this.activeSectionId}"]`) as HTMLElement;
       if (el) {
         this.focusOnSection(el);
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
 
@@ -448,9 +483,9 @@ class ThemeEditor {
       return false;
     }
 
-    elements.forEach((el) => {
+    for (const el of elements) {
       const type = el.getAttribute(attrName);
-      const [updateType, updateKey] = type?.split(':') ?? ['text', undefined];
+      const [updateType, updateKey] = type?.split(/:(.+)/) ?? ['text', undefined];
 
       switch (updateType) {
         case 'text':
@@ -464,6 +499,10 @@ class ThemeEditor {
           break;
         case 'attr':
           if (!settingValue) {
+            if (el.tagName.toLowerCase() === 'img' && updateKey === 'src') {
+              return false;
+            }
+
             el.removeAttribute(updateKey as string);
           } else {
             el.setAttribute(updateKey as string, settingValue);
@@ -476,10 +515,13 @@ class ThemeEditor {
             (el as HTMLElement).style.setProperty(updateKey as string, settingValue);
           }
           break;
+        case 'toggleClass':
+          el.classList.toggle(updateKey as string);
+          break;
         default:
           console.warn(`Unknown live update type: ${updateType}`);
       }
-    });
+    }
 
     return true;
   }
@@ -539,6 +581,7 @@ class ThemeEditor {
         const newEl = newDoc.querySelector(`[data-section-id="${sectionId}"]`);
 
         if (oldEl && newEl) {
+          window.Visual._dispatch(EVENTS.SECTION_UNLOAD, context);
           this.patchNode(oldEl, newEl);
         } else if (!oldEl && newEl) {
           const sections = document.querySelectorAll(`[${ATTRS.SectionType}]`);
@@ -560,7 +603,7 @@ class ThemeEditor {
           return;
         }
 
-        window.Visual._dispatch('section:updated', context);
+        window.Visual._dispatch(EVENTS.SECTION_LOAD, context);
       });
     }
 
