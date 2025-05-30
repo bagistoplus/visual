@@ -9,6 +9,7 @@ on:
       - 'vite.admin.config.ts'
       - 'package.json'
       - 'package-lock.json'
+  workflow_dispatch:
 
 permissions:
   contents: write
