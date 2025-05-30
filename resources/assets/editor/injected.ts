@@ -271,7 +271,6 @@ class ThemeEditor {
   }
 
   private handleWindowResize() {
-    console.log('Window resized, focusing on active section if exists', this.activeSectionId);
     if (this.activeSectionId) {
       const activeSection = document.querySelector(`[${ATTRS.SectionId}="${this.activeSectionId}"]`) as HTMLElement;
 
