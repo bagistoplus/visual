@@ -105,7 +105,7 @@ class VisualObject {
         return;
       }
 
-      let config: LiveUpdateOptions | undefined;
+      let config: LiveUpdateOptions | ((value: any) => void) | undefined;
 
       if (block && mappings.blocks?.[block.type]) {
         config = mappings.blocks[block.type][settingId];
@@ -115,6 +115,12 @@ class VisualObject {
 
       if (!config) {
         return;
+      }
+
+      if (typeof config === 'function') {
+        // then use it as a custom handler, no target
+        config(settingValue);
+        return skipRefresh();
       }
 
       const targetEl = config.target ? (container.querySelector(config.target) as HTMLElement) : null;
@@ -161,6 +167,8 @@ class ThemeEditor {
   private hoverDebounce = 0;
   private reorderingSectionId: string | null = null;
 
+  private sectionContainers = new Map<string, HTMLElement>();
+
   private discardLivewireComponentNotFoundError = false;
 
   private messageHandlers: Record<string, (data: any, messageId?: string) => void> = {
@@ -191,6 +199,7 @@ class ThemeEditor {
     });
 
     this.sectionsOrder = window.themeData.sectionsOrder;
+    this.buildSectionContainers();
 
     window.addEventListener('message', ({ data }) => this.handleMessage(data));
     window.addEventListener('resize', () => this.handleWindowResize());
@@ -217,6 +226,23 @@ class ThemeEditor {
     this.editBtn = this.sectionOverlay.querySelector('#edit') as HTMLButtonElement;
     this.disableBtn = this.sectionOverlay.querySelector('#disable') as HTMLButtonElement;
     this.removeBtn = this.sectionOverlay.querySelector('#remove') as HTMLButtonElement;
+  }
+
+  private buildSectionContainers() {
+    document.querySelectorAll(`[${ATTRS.SectionId}]`).forEach((el) => {
+      this.sectionContainers.set((el as HTMLElement).dataset.sectionId!, el.parentNode as HTMLElement);
+    });
+  }
+
+  private findCommentParent(text: string): Node | null {
+    const iterator = document.createNodeIterator(document.body, NodeFilter.SHOW_COMMENT, {
+      acceptNode(node) {
+        return node.nodeValue?.trim() === text ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+      },
+    });
+
+    const commentNode = iterator.nextNode();
+    return commentNode?.parentNode ?? null;
   }
 
   private attachButtonEvents() {
@@ -568,13 +594,59 @@ class ThemeEditor {
     });
   }
 
+  private patchScripts(existingContainer: Element, newContainer: Element) {
+    const existingScripts = Array.from(existingContainer.querySelectorAll('script'));
+    const newScripts = Array.from(newContainer.querySelectorAll('script'));
+
+    newScripts.forEach((newScript) => {
+      const isInline = !newScript.src;
+      const matchesExisting = existingScripts.some((existingScript) => {
+        // Match external scripts by src
+        if (!isInline && existingScript.src === newScript.src) return true;
+
+        // Match inline scripts by content and attributes
+        if (isInline && existingScript.textContent === newScript.textContent) {
+          return Array.from(newScript.attributes).every(
+            (attr) => existingScript.getAttribute(attr.name) === attr.value
+          );
+        }
+
+        return false;
+      });
+
+      if (!matchesExisting) {
+        const executableScript = document.createElement('script');
+
+        // Copy attributes
+        Array.from(newScript.attributes).forEach((attr) => {
+          executableScript.setAttribute(attr.name, attr.value);
+        });
+
+        // Copy inline content
+        if (isInline) {
+          executableScript.textContent = newScript.textContent;
+        }
+
+        // Append to existing container to execute
+        existingContainer.appendChild(executableScript);
+      }
+    });
+  }
+
   private refreshPreviewer({ html, updatedSections }: { html: string; updatedSections: Map<string, any> }) {
     const newDoc = new DOMParser().parseFromString(html, 'text/html');
+    const sectionContainers = this.sectionContainers;
+
+    morphdom(document.head, newDoc.head);
 
     if (updatedSections.size === 0) {
-      this.patchNode(document.documentElement, newDoc.documentElement);
+      this.patchNode(document.body, newDoc.body);
+      window.Visual._dispatch('page:load', {});
       // document.documentElement.innerHTML = newDoc.documentElement.innerHTML;
     } else {
+      const templateContainer = this.findCommentParent('BEGIN: template') as HTMLElement;
+      const sections = document.querySelectorAll(`[${ATTRS.SectionType}]`);
+
       updatedSections.forEach((context: any, sectionId: string) => {
         const oldEl = document.querySelector(`[data-section-id="${sectionId}"]`);
         const newEl = newDoc.querySelector(`[data-section-id="${sectionId}"]`);
@@ -583,20 +655,26 @@ class ThemeEditor {
           window.Visual._dispatch(EVENTS.SECTION_UNLOAD, context);
           this.patchNode(oldEl, newEl);
         } else if (!oldEl && newEl) {
-          const sections = document.querySelectorAll(`[${ATTRS.SectionType}]`);
           const position = context.position ?? sections.length;
-          const parent = sections[0]?.parentNode;
-
-          if (!parent) {
-            return;
-          }
+          const sectionId = (newEl as HTMLElement).dataset.sectionId as string;
 
           if (position <= 0) {
-            parent.insertBefore(newEl, sections[0]);
+            let parent = sectionContainers.get(sectionId) ?? templateContainer;
+            parent.insertBefore(newEl, parent.firstChild);
+
+            if (!sectionContainers.has(sectionId)) {
+              sectionContainers.set(sectionId, parent);
+            }
           } else if (position >= sections.length) {
+            let parent = sectionContainers.get(sectionId) ?? templateContainer;
             parent.appendChild(newEl);
+
+            if (!sectionContainers.has(sectionId)) {
+              sectionContainers.set(sectionId, parent);
+            }
           } else {
-            parent.insertBefore(newEl, sections[position]);
+            const nextSection = sections[position];
+            nextSection.parentNode?.insertBefore(newEl, nextSection);
           }
         } else {
           return;
@@ -605,6 +683,8 @@ class ThemeEditor {
         window.Visual._dispatch(EVENTS.SECTION_LOAD, context);
       });
     }
+
+    this.patchScripts(document.body, newDoc.body);
 
     if (this.activeSectionId) {
       const el = document.querySelector(`[${ATTRS.SectionId}="${this.activeSectionId}"]`) as HTMLElement;

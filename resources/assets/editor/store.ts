@@ -346,7 +346,9 @@ export const useStore = defineStore('main', () => {
 
     switch (setting.type) {
       case 'image': {
-        return String(value).startsWith('http') ? value : `${window.ThemeEditor.imagesBaseUrl()}/${value}`;
+        return String(value).startsWith('http') || String(value).startsWith('/')
+          ? value
+          : `${window.ThemeEditor.imagesBaseUrl()}/${value}`;
       }
 
       case 'product': {
@@ -513,7 +515,6 @@ export const useStore = defineStore('main', () => {
     };
 
     themeData.sectionsData[id] = sectionData;
-
     themeData.sectionsOrder.push(id);
 
     // set default blocks
@@ -587,6 +588,7 @@ export const useStore = defineStore('main', () => {
     delete section.blocks[blockId];
     section.blocks_order = section.blocks_order.filter((id) => id !== blockId);
 
+    dirtySections.set(sectionId, { section: toRaw(section), block: null, settingId: null });
     await persistThemeData();
   }
 

@@ -8,6 +8,7 @@
   const sectionsDialogOpened = ref(false);
   const search = ref('');
   const sections = sortBy(window.ThemeEditor.availableSections(), ['name'], ['asc']);
+  const isJsonTemplate = computed(() => !!store.themeData.source)
 
   const availableSections = computed(() => {
     return sections.filter((section) => {
@@ -127,6 +128,7 @@
         :title="$t('Template Sections')"
         :order="store.contentSectionsOrder"
         :sections="store.contentSections"
+        :static="!isJsonTemplate"
         @reorder="onContentSectionsReorder"
         @reordering="store.reorderingContentSections"
         @addSection="toggleSectionsDialog"

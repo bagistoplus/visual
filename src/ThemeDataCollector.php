@@ -9,6 +9,7 @@ use BagistoPlus\Visual\Settings\Support\SettingsValues;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Symfony\Component\Yaml\Yaml;
 
 class ThemeDataCollector
@@ -119,7 +120,9 @@ class ThemeDataCollector
         if (! isset($data['blocks']) && isset($section->default)) {
             $data['blocks'] = collect($section->default['blocks'] ?? [])
                 ->mapWithKeys(function ($block) {
-                    return [$block['type'] => $block];
+                    $id = $block['id'] ?? Str::uuid()->toString();
+
+                    return [$id => $block];
                 })
                 ->toArray();
 

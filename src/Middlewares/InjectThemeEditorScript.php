@@ -74,11 +74,11 @@ class InjectThemeEditorScript
                     ->merge($renderedSections->where('group', 'afterTemplate'))
                     ->pluck('id'),
 
-                'sectionsData' => $this->themeDataCollector->getSectionsData()->all(),
+                'sectionsData' => (object) $this->themeDataCollector->getSectionsData()->all(),
 
                 'settings' => $this->themeDataCollector->getThemeSettings(),
 
-                'source' => encrypt($this->themeEditor->renderingJsonView()),
+                'source' => $this->themeEditor->renderingJsonView() ? encrypt($this->themeEditor->renderingJsonView()) : null,
 
                 'haveEdits' => $this->checkIfHaveEdits(),
             ];

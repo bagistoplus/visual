@@ -22,7 +22,7 @@
       '(\\#[-a-z\\d_]*)?$',
       'i');
 
-    return !!pattern.test(str);
+    return str.startsWith('/') || !!pattern.test(str);
   }
 
   const store = useStore();

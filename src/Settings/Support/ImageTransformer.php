@@ -26,14 +26,18 @@ class ImageTransformer
         // @see https://stackoverflow.com/questions/41194159/how-to-catch-hex2bin-warning
         if (ctype_xdigit($encodedName) && strlen($encodedName) % 2 == 0) {
             $originalName = hex2bin($encodedName);
-        } else {
-            $originalName = $encodedName;
+
+            return new ImageValue(
+                name: $originalName,
+                path: $path,
+                url: Storage::disk(config('bagisto_visual.images_storage'))->url($path)
+            );
         }
 
         return new ImageValue(
-            name: $originalName,
+            name: $encodedName,
             path: $path,
-            url: Storage::disk(config('bagisto_visual.images_storage'))->url($path)
+            url: url($path)
         );
     }
 }

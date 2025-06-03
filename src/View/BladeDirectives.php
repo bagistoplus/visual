@@ -39,9 +39,11 @@ class BladeDirectives
             ThemeEditor::startRenderingTemplate();
         }
         ?>
+        <!--BEGIN: template-->
         PHP;
 
         $themeEditorAfter = <<<'PHP'
+        <!--END: template-->
         <?php
         if (ThemeEditor::inDesignMode()) {
             ThemeEditor::stopRenderingTemplate();

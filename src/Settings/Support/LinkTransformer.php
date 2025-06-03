@@ -10,8 +10,12 @@ class LinkTransformer
             return null;
         }
 
-        if (strpos($url, 'visual://') !== 0) {
+        if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
             return $url;
+        }
+
+        if (! str_starts_with($url, 'visual://')) {
+            return url($url);
         }
 
         if (preg_match('/^visual:\/\/([^:]+):([^\/]+)\/(.*)?$/', $url, $matches)) {

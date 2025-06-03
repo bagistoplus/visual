@@ -30,7 +30,7 @@
       store.setTemplates(data.templates);
       store.setPreloadedModels(data.preloadedModels);
       store.setAvailableSections(window.ThemeEditor.availableSections());
-      store.setPreviewIframeReady()
+      store.setPreviewIframeReady();
 
       if (templateChanged) {
         router.replace('/');

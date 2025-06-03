@@ -57,9 +57,9 @@ class SimpleEmmetParser
             // The regex matches the following Emmet syntax elements in order:
             // 1. (\w+): The tag name (e.g., div, header)
             // 2. (?:#([\w-_]+))?: Optionally matches an ID starting with '#' and followed by word characters or hyphens
-            // 3. (?:\.(\w[\w.-]*))?: Optionally matches classes starting with '.' and followed by word characters, dots, or hyphens
+            // 3. (?:\.([a-zA-Z0-9:_\.-]+))?: Optionally matches classes starting with '.' and. Supports :, _, ., -
             // 4. (?:\{(.+?)\})?: Optionally matches text content within curly braces
-            preg_match('/^(\w+)(?:#([\w-]+))?(?:\.([\w.-]+))?(?:\{(.+)\})?$/', trim($part), $matches);
+            preg_match('/^(\w+)(?:#([\w-]+))?(?:\.([a-zA-Z0-9:_\.-]+))?(?:\{(.+?)\})?$/', trim($part), $matches);
 
             if (empty($matches)) {
                 continue;

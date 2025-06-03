@@ -31,6 +31,7 @@ class SectionData implements JsonSerializable
 
     public static function make(string $id, array $data, Section $section, ?string $sourceFile = null): self
     {
+
         $blocks = self::prepareBlocks($data['blocks'] ?? [], $section->blocks, $id);
 
         return new self(
@@ -60,6 +61,7 @@ class SectionData implements JsonSerializable
 
     protected static function prepareBlocks(array $blocks, array $blocksSchemas, string $sectionId): array
     {
+
         return collect($blocks)->map(function ($block, $id) use ($blocksSchemas, $sectionId) {
             $blockSchema = collect($blocksSchemas)->firstWhere('type', $block['type']);
 
