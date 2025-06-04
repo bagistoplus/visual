@@ -8,16 +8,16 @@
   const sectionsDialogOpened = ref(false);
   const search = ref('');
   const sections = sortBy(window.ThemeEditor.availableSections(), ['name'], ['asc']);
-  const isJsonTemplate = computed(() => !!store.themeData.source)
+  const isJsonTemplate = computed(() => !!store.themeData.source);
 
   const availableSections = computed(() => {
     return sections.filter((section) => {
-      const disabled = section.disabledOn.some(pattern => matchPattern(pattern, store.themeData.template));
+      const disabled = section.disabledOn.some((pattern) => matchPattern(pattern, store.themeData.template));
       if (disabled) {
         return false;
       }
 
-      return section.enabledOn.some(pattern => matchPattern(pattern, store.themeData.template));
+      return section.enabledOn.some((pattern) => matchPattern(pattern, store.themeData.template));
     });
   });
 
@@ -26,7 +26,7 @@
       return availableSections.value;
     }
 
-    const regex = new RegExp(search.value, "gi");
+    const regex = new RegExp(search.value, 'gi');
     return availableSections.value.filter((section) => {
       return (
         regex.test(section.slug) ||
@@ -61,7 +61,7 @@
     return store.templates.find((template) => {
       return template.template === store.themeData.template;
     });
-  })
+  });
 
   function matchPattern(pattern: string, value: string) {
     const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
@@ -96,6 +96,8 @@
     toggleSectionsDialog();
     store.addNewSection(section);
   }
+
+  watchEffect(() => console.log(isJsonTemplate.value))
 </script>
 
 <template>
@@ -122,13 +124,13 @@
         @activateSection="onActivateSection"
         @deactivateSection="onDeactivateSection"
       />
-      <hr>
+      <hr />
 
       <SectionsGroup
         :title="$t('Template Sections')"
         :order="store.contentSectionsOrder"
         :sections="store.contentSections"
-        :static="!isJsonTemplate"
+        :can-add-section="isJsonTemplate"
         @reorder="onContentSectionsReorder"
         @reordering="store.reorderingContentSections"
         @addSection="toggleSectionsDialog"
@@ -137,7 +139,7 @@
         @activateSection="onActivateSection"
         @deactivateSection="onDeactivateSection"
       />
-      <hr>
+      <hr />
       <SectionsGroup
         static
         :title="$t('Layout Footer Sections')"
@@ -194,7 +196,7 @@
                         :src="section.previewImageUrl"
                         :alt="section.name"
                         class="h-full w-full object-cover object-center"
-                      >
+                      />
                     </div>
                     <div class="text-center p-3">
                       <h3 class="uppercase text-xs font-semibold">

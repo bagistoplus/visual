@@ -24,15 +24,15 @@ class ThemePersister
     public function publish(string $themeCode): void
     {
         $editorPath = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'editor');
-        $newVersionPath = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'versions/V'.time());
+        $newVersionPath = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'versions/V' . time());
         $livePath = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'live');
 
         $files = collect($this->files->allFiles($editorPath))
-            ->filter(fn ($file) => $file->getFilename() !== '.last-deploy');
+            ->filter(fn($file) => $file->getFilename() !== '.last-deploy');
 
         foreach ($files as $file) {
             $content = $this->themeDataCollector->loadFileContent($file->getPathname());
-            $filePath = $newVersionPath.'/'.$file->getRelativePathname();
+            $filePath = $newVersionPath . '/' . $file->getRelativePathname();
 
             $this->files->ensureDirectoryExists(dirname($filePath));
             $this->files->put($filePath, json_encode($content));
@@ -43,7 +43,7 @@ class ThemePersister
         // This will also allow developers to setup versions dir cleanup process
         $this->files->copyDirectory($newVersionPath, $livePath);
 
-        $this->files->put($editorPath.'/.last-deploy', (string) time());
+        $this->files->put($editorPath . '/.last-deploy', (string) time());
 
         // Clear response cache
         if (class_exists('\\Spatie\\ResponseCache\\Facades\\ResponseCache')) {
@@ -60,7 +60,7 @@ class ThemePersister
         $content = [
             'order' => $data['sectionsOrder'],
             'sections' => collect($data['sectionsOrder'])
-                ->mapWithKeys(fn ($id) => [$id => $data['sectionsData'][$id]])
+                ->mapWithKeys(fn($id) => [$id => $data['sectionsData'][$id]])
                 ->all(),
         ];
 
@@ -73,13 +73,13 @@ class ThemePersister
         } elseif ($this->files->exists($path)) {
             $currentData = json_decode($this->files->get($path), true);
             $parentDataPath = isset($currentData['parent'])
-                ? config('bagisto_visual.data_path').DIRECTORY_SEPARATOR.$currentData['parent']
+                ? config('bagisto_visual.data_path') . DIRECTORY_SEPARATOR . $currentData['parent']
                 : null;
         }
 
         if ($parentDataPath) {
             $parentData = $this->themeDataCollector->loadFileContent($parentDataPath);
-            $content['parent'] = str_replace(config('bagisto_visual.data_path').DIRECTORY_SEPARATOR, '', $parentDataPath); // Store the relative path
+            $content['parent'] = str_replace(config('bagisto_visual.data_path') . DIRECTORY_SEPARATOR, '', $parentDataPath); // Store the relative path
             $content = $this->computeDiff($content, $parentData);
         }
 
@@ -92,7 +92,7 @@ class ThemePersister
         $content = [
             'settings' => $data['settings'],
             'sections' => collect(array_merge($data['beforeContentSectionsOrder'], $data['afterContentSectionsOrder']))
-                ->mapWithKeys(fn ($id) => [$id => $data['sectionsData'][$id]])
+                ->mapWithKeys(fn($id) => [$id => $data['sectionsData'][$id]])
                 ->all(),
         ];
 
@@ -109,7 +109,7 @@ class ThemePersister
         if ($this->files->exists($path)) {
             $currentData = json_decode($this->files->get($path), true);
             $parentDataPath = isset($currentData['parent'])
-                ? config('bagisto_visual.data_path').DIRECTORY_SEPARATOR.$currentData['parent']
+                ? config('bagisto_visual.data_path') . DIRECTORY_SEPARATOR . $currentData['parent']
                 : null;
         }
 
@@ -124,7 +124,7 @@ class ThemePersister
 
         if ($parentDataPath && $parentDataPath !== $path) {
             $parentData = $this->themeDataCollector->loadFileContent($parentDataPath);
-            $content['parent'] = str_replace(config('bagisto_visual.data_path').DIRECTORY_SEPARATOR, '', $parentDataPath); // Store the relative path
+            $content['parent'] = str_replace(config('bagisto_visual.data_path') . DIRECTORY_SEPARATOR, '', $parentDataPath); // Store the relative path
             $content = $this->computeDiff($content, $parentData);
         }
 

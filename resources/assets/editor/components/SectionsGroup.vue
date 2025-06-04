@@ -8,11 +8,13 @@
     sections: SectionData[];
     order?: string[];
     static?: boolean;
+    canAddSection?: boolean
   };
 
   const props = withDefaults(defineProps<Props>(), {
     order: () => [],
-    static: false
+    static: false,
+    canAddSection: false
   });
 
   const emit = defineEmits<{
@@ -90,7 +92,8 @@
       v-if="!props.static"
     >
       <button
-        class="w-full text-sm text-blue-600 rounded-lg cursor-pointer outline-0 inline-flex items-center gap-2 px-2 py-1 hover:bg-gray-200 focus:ring focus:ring-gray-700"
+        :disabled="!canAddSection"
+        class="w-full text-sm text-blue-600 rounded-lg cursor-pointer outline-0 inline-flex items-center gap-2 px-2 py-1 hover:bg-gray-200 focus:ring focus:ring-gray-700 disabled:text-gray-400 disabled:pointer-events-none"
         @click="($event: any) => emit('addSection', $event)"
       >
         <i-heroicons-plus-circle class="w-4 h-4 inline mr-1" />
