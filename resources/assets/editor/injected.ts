@@ -410,6 +410,7 @@ class ThemeEditor {
   private handleSectionsReordered(order: string[]) {
     this.sectionsOrder = order;
     this.reorderingSectionId = null;
+
     document.querySelectorAll('[data-reordering]').forEach((el) => {
       el.removeAttribute('data-reordering');
     });
@@ -417,9 +418,10 @@ class ThemeEditor {
 
   private handleReordering(data: { order: string[]; sectionId: string }) {
     this.reorderingSectionId = data.sectionId;
+    const sectionsContainer = this.findCommentParent('BEGIN: template') as HTMLElement;
 
     data.order.forEach((id) => {
-      const el = document.querySelector(`[${ATTRS.SectionId}="${id}"]`) as HTMLElement;
+      const el = sectionsContainer.querySelector(`[${ATTRS.SectionId}="${id}"]`) as HTMLElement;
       if (el?.parentElement) {
         el.parentElement.appendChild(el);
       }
