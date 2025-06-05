@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Settings\Support;
 
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Str;
 
 class FontValue
 {
@@ -10,7 +11,7 @@ class FontValue
 
     public function __toString()
     {
-        return $this->name;
+        return Str::headline($this->name);
     }
 
     public function toHtml()

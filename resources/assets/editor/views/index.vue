@@ -96,8 +96,6 @@
     toggleSectionsDialog();
     store.addNewSection(section);
   }
-
-  watchEffect(() => console.log(isJsonTemplate.value))
 </script>
 
 <template>

@@ -99,6 +99,11 @@
     return `https://fonts.bunny.net/css?display=fallback&family=${font.slug}`;
   }
 
+  function onOpenChange() {
+    isDirty.value = false;
+    initialValue.value = model.value as Font | null
+  }
+
   function onCancel() {
     opened.value = false;
     model.value = initialValue.value;
@@ -112,11 +117,11 @@
       v-model:open="opened"
       :modal="false"
       :close-on-interact-outside="false"
-      @open-change="isDirty = false; initialValue = model as Font | null"
+      @open-change="onOpenChange"
     >
       <Dialog.Trigger class="flex items-center px-3 py-2.5 gap-4 border rounded w-full">
         <i-ri-font-size class="flex-none w-4 h-4 text-gray-500" />
-        <span class="flex-1 text-left capitalize">{{ model?.name }}</span>
+        <span class="flex-1 text-left capitalize line-clamp-1">{{ model?.name }}</span>
         <i-heroicons-chevron-up-down class="flex-none w-4 h-4 text-gray-500" />
       </Dialog.Trigger>
       <Dialog.Positioner class="flex fixed z-50 top-14 left-14 bottom-0 w-[19.9rem] items-center justify-center">
