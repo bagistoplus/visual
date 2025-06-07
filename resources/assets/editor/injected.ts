@@ -596,42 +596,47 @@ class ThemeEditor {
     });
   }
 
-  private patchScripts(existingContainer: Element, newContainer: Element) {
-    const existingScripts = Array.from(existingContainer.querySelectorAll('script'));
-    const newScripts = Array.from(newContainer.querySelectorAll('script'));
+  private patchScripts(oldNode: Element, newNode: Element) {
+    const oldScripts = Array.from(oldNode.querySelectorAll('script'));
+    const newScripts = Array.from(newNode.querySelectorAll('script'));
 
     newScripts.forEach((newScript) => {
       const isInline = !newScript.src;
-      const matchesExisting = existingScripts.some((existingScript) => {
-        // Match external scripts by src
-        if (!isInline && existingScript.src === newScript.src) return true;
 
-        // Match inline scripts by content and attributes
-        if (isInline && existingScript.textContent === newScript.textContent) {
-          return Array.from(newScript.attributes).every(
-            (attr) => existingScript.getAttribute(attr.name) === attr.value
-          );
-        }
+      // Create the new script element and copy attributes & content
+      const executableScript = document.createElement('script');
 
-        return false;
+      Array.from(newScript.attributes).forEach((attr) => {
+        executableScript.setAttribute(attr.name, attr.value);
       });
 
-      if (!matchesExisting) {
-        const executableScript = document.createElement('script');
+      if (isInline) {
+        executableScript.innerHTML = newScript.innerHTML;
+      }
 
-        // Copy attributes
-        Array.from(newScript.attributes).forEach((attr) => {
-          executableScript.setAttribute(attr.name, attr.value);
+      // Check for existing script by id
+      const oldById = newScript.id ? oldNode.querySelector(`script#${CSS.escape(newScript.id)}`) : null;
+
+      if (oldById) {
+        oldById.replaceWith(executableScript);
+        return;
+      }
+
+      if (!isInline) {
+        const matchesOld = oldScripts.some((oldScript) => {
+          if (oldScript.src !== newScript.src) {
+            return false;
+          }
+
+          return Array.from(newScript.attributes).every((attr) => oldScript.getAttribute(attr.name) === attr.value);
         });
 
-        // Copy inline content
-        if (isInline) {
-          executableScript.textContent = newScript.textContent;
+        if (matchesOld) {
+          return;
         }
-
-        // Append to existing container to execute
-        existingContainer.appendChild(executableScript);
       }
+
+      oldNode.appendChild(executableScript);
     });
   }
 

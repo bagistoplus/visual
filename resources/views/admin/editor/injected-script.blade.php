@@ -101,14 +101,6 @@
   </div>
 @endif
 
-<script type="text/javascript">
-  window.Visual = {
-    inPreviewMode: true,
-    inDesignMode: false,
-    theme: @json($theme)
-  }
-</script>
-
 @if (ThemeEditor::inDesignMode())
   <script type="text/javascript">
     window.themeData = @json($themeData);
@@ -123,4 +115,12 @@
       ->withEntryPoints(['resources/assets/editor/injected.ts'])
   }}
 {{-- blade-formatter-enable --}}
+@else
+  <script type="text/javascript">
+    window.Visual = {
+      inPreviewMode: true,
+      inDesignMode: false,
+      theme: @json($theme)
+    }
+  </script>
 @endif
