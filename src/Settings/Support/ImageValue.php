@@ -43,6 +43,6 @@ class ImageValue
             return $this->url;
         }
 
-        return url("cache/{$size}/" . $this->path);
+        return url("cache/{$size}/".$this->path);
     }
 }
