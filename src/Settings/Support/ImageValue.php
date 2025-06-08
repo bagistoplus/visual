@@ -11,6 +11,17 @@ class ImageValue
         return $this->url;
     }
 
+    public function srcset(): string
+    {
+        return sprintf(
+            '%s 1920w, %s 1280w, %s 1024w, %s 525w',
+            $this->url,
+            $this->large(),
+            $this->medium(),
+            $this->small()
+        );
+    }
+
     public function small(): string
     {
         return $this->getSizedUrl('small');
@@ -32,6 +43,6 @@ class ImageValue
             return $this->url;
         }
 
-        return url("cache/{$size}/".$this->path);
+        return url("cache/{$size}/" . $this->path);
     }
 }
