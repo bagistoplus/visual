@@ -257,16 +257,39 @@ class ThemeEditor {
     document.addEventListener(
       'mouseover',
       (e) => {
-        if (!(e.target instanceof Element)) {
+        const target = e.target as Element | null;
+        const from = e.relatedTarget as Element | null;
+
+        if (!target) {
           return;
         }
 
-        const section = (e.target as Element).closest(`[${ATTRS.SectionType}]`) as HTMLElement;
+        const enteredSection = target.closest(`[${ATTRS.SectionType}]`) as HTMLElement | null;
+        const leftSection = from?.closest?.(`[${ATTRS.SectionType}]`) as HTMLElement | null;
 
-        if (section) {
+        if (enteredSection && enteredSection !== leftSection) {
           this.handleUnhighlightSection();
           this.buttonsContainer.style.display = 'flex';
-          this.debounceFocusSection(section);
+          this.debounceFocusSection(enteredSection);
+        }
+      },
+      { passive: true }
+    );
+
+    document.addEventListener(
+      'mouseout',
+      (e) => {
+        const target = e.target as Element | null;
+        const to = e.relatedTarget as Element | null;
+
+        const leftSection = target?.closest?.(`[${ATTRS.SectionType}]`) as HTMLElement | null;
+        const enteredSection = to?.closest?.(`[${ATTRS.SectionType}]`) as HTMLElement | null;
+
+        const goingIntoOverlay = to && this.sectionOverlay.contains(to);
+
+        if (leftSection && leftSection !== enteredSection && !goingIntoOverlay) {
+          this.buttonsContainer.style.display = 'none';
+          this.clearActiveSection();
         }
       },
       { passive: true }
@@ -275,25 +298,18 @@ class ThemeEditor {
     document.addEventListener(
       'mouseleave',
       (e) => {
-        if (!(e.target instanceof Element)) {
-          this.buttonsContainer.style.display = 'none';
-          this.clearActiveSection();
-          return;
-        }
-
-        const section = (e.target as Element).closest(`[${ATTRS.SectionType}]`) as HTMLElement;
-        if (!section) {
-          return;
-        }
-
-        const toEl = e.relatedTarget;
-        if (!toEl || !this.sectionOverlay.contains(toEl as Node)) {
+        if (!e.relatedTarget) {
           this.buttonsContainer.style.display = 'none';
           this.clearActiveSection();
         }
       },
       { passive: true }
     );
+
+    window.addEventListener('blur', () => {
+      this.buttonsContainer.style.display = 'none';
+      this.clearActiveSection();
+    });
   }
 
   private handleWindowResize() {
