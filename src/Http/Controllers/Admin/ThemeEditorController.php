@@ -25,7 +25,7 @@ class ThemeEditorController extends Controller
     {
         return view('visual::admin.editor.index', [
             'config' => [
-                'baseUrl' => route('visual.admin.editor', ['theme' => $themeCode], false),
+                'baseUrl' => parse_url(route('visual.admin.editor', ['theme' => $themeCode]), PHP_URL_PATH),
                 'imagesBaseUrl' => Storage::disk(config('bagisto_visual.images_storage'))->url(''),
                 'storefrontUrl' => url('/').'?'.http_build_query(['_designMode' => $themeCode]),
                 'channels' => $this->getChannels(),
@@ -56,10 +56,15 @@ class ThemeEditorController extends Controller
 
         $this->themePersister->persist($request->all());
 
+        $baseUrl = rtrim(config('app.url'));
         $url = $request->input('url');
 
         if (! empty($sections = $request->input('updatedSections', []))) {
             $url .= '&'.http_build_query(['_sections' => implode(',', $sections)]);
+        }
+
+        if (parse_url($baseUrl, PHP_URL_PATH) !== null) {
+            return redirect($url);
         }
 
         $request = Request::create($url, 'GET');
