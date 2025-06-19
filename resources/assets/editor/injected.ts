@@ -268,6 +268,7 @@ class ThemeEditor {
         const leftSection = from?.closest?.(`[${ATTRS.SectionType}]`) as HTMLElement | null;
 
         if (enteredSection && enteredSection !== leftSection) {
+          this.activeSectionId = enteredSection.dataset.sectionId as string;
           this.handleUnhighlightSection();
           this.buttonsContainer.style.display = 'flex';
           this.debounceFocusSection(enteredSection);
@@ -379,7 +380,6 @@ class ThemeEditor {
   private handleSectionDeselected(id: string) {
     if (this.activeSectionId === id) {
       this.clearActiveSection();
-      this.activeSectionId = null;
     }
 
     const el = document.querySelector(`[${ATTRS.SectionId}="${id}"]`) as HTMLElement;
@@ -427,9 +427,11 @@ class ThemeEditor {
     this.sectionsOrder = order;
     this.reorderingSectionId = null;
 
-    document.querySelectorAll('[data-reordering]').forEach((el) => {
-      el.removeAttribute('data-reordering');
-    });
+    setTimeout(() => {
+      document.querySelectorAll('[data-reordering]').forEach((el) => {
+        el.removeAttribute('data-reordering');
+      });
+    }, 1000);
   }
 
   private handleReordering(data: { order: string[]; sectionId: string }) {
@@ -449,6 +451,7 @@ class ThemeEditor {
       requestAnimationFrame(() => {
         movedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         movedEl.dataset.reordering = 'true';
+        this.clearActiveSection();
       });
     }
   }
@@ -489,6 +492,7 @@ class ThemeEditor {
   private focusOnSection(section: HTMLElement) {
     // this.activeSectionId = section.dataset.sectionId!;
     const rect = section.getBoundingClientRect();
+
     window.requestAnimationFrame(() => {
       Object.assign(this.sectionOverlay.style, {
         display: 'block',
@@ -500,13 +504,14 @@ class ThemeEditor {
       this.sectionLabel.textContent = section.dataset.sectionName || '';
 
       const position = this.sectionsOrder.indexOf(section.dataset.sectionId!);
+
       this.moveUpBtn.style.display = position > 0 ? 'inline' : 'none';
-      this.moveDownBtn.style.display = position > 0 && position < this.sectionsOrder.length - 1 ? 'inline' : 'none';
+      this.moveDownBtn.style.display = position >= 0 && position < this.sectionsOrder.length - 1 ? 'inline' : 'none';
     });
   }
 
   private clearActiveSection() {
-    // this.activeSectionId = null;
+    this.activeSectionId = null;
     this.sectionOverlay.style.display = 'none';
   }
 

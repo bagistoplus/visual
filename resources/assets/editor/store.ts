@@ -434,8 +434,9 @@ export const useStore = defineStore('main', () => {
     themeData.sectionsOrder.splice(idx, 1);
     themeData.sectionsOrder.splice(idx - 1, 0, sectionId);
 
+    persistThemeData({ skipPreviewRefresh: true });
+    previewIframe.call('reordering', { order: toRaw(themeData.sectionsOrder), sectionId }, 0);
     previewIframe.call('sectionsOrder', toRaw(themeData.sectionsOrder));
-    persistThemeData();
   }
 
   function moveSectionDown(sectionId: string) {
@@ -448,8 +449,9 @@ export const useStore = defineStore('main', () => {
     themeData.sectionsOrder.splice(idx, 1);
     themeData.sectionsOrder.splice(idx + 1, 0, sectionId);
 
+    persistThemeData({ skipPreviewRefresh: true });
+    previewIframe.call('reordering', { order: toRaw(themeData.sectionsOrder), sectionId }, 0);
     previewIframe.call('sectionsOrder', toRaw(themeData.sectionsOrder));
-    persistThemeData();
   }
 
   function toggleSection(sectionId: string) {
