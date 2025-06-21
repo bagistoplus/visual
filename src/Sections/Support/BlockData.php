@@ -36,7 +36,7 @@ class BlockData implements JsonSerializable
         return collect($settingsSchema)
             ->reject(fn ($setting) => $setting['type'] === 'header')
             ->mapWithKeys(fn ($schema) => [
-                $schema['id'] => $settings[$schema['id']] ?? $schema['default'] ?? null,
+                $schema['id'] => array_key_exists($schema['id'], $settings) ? $settings[$schema['id']] : ($schema['default'] ?? null),
             ])
             ->toArray();
     }

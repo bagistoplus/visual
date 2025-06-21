@@ -54,7 +54,7 @@ class SectionData implements JsonSerializable
         return collect($settingsSchemas)
             ->reject(fn ($schema) => $schema['type'] === 'header')
             ->mapWithKeys(fn ($schema) => [
-                $schema['id'] => $settings[$schema['id']] ?? $schema['default'] ?? null,
+                $schema['id'] => array_key_exists($schema['id'], $settings) ? $settings[$schema['id']] : ($schema['default'] ?? null),
             ])
             ->all();
     }
