@@ -67,7 +67,7 @@
       :close-on-interact-outside="false"
       @open-change="isDirty = false; initialValue = model"
     >
-      <Dialog.Trigger class="flex items-center px-3 py-2.5 gap-4 border rounded ">
+      <Dialog.Trigger class="flex items-center px-3 py-2.5 gap-4 border rounded relative">
         <span
           v-if="selectedIcon"
           v-html="selectedIcon.svg"
@@ -77,6 +77,14 @@
           v-else
           class="w-8 h-8 text-gray-600"
         />
+
+        <button
+          v-if="selectedIcon"
+          class="absolute -top-2 -right-2 bg-zinc-100 rounded-full p-1 hover:bg-zinc-200"
+          @click.stop="model = null"
+        >
+          <i-heroicons-x-mark class="w-4 h-4" />
+        </button>
       </Dialog.Trigger>
       <Dialog.Positioner class="flex fixed z-50 top-14 left-14 bottom-0 w-[19.9rem] items-center justify-center">
         <Dialog.Content class="bg-white shadow flex flex-col w-full h-full overflow-hidden">
