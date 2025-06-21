@@ -4,14 +4,16 @@
 
   const store = useStore();
   const isSchemesDefined = computed(() => {
-    return Object.keys(store.colorSchemes).length > 0;
+    return Object.keys(store.colorSchemes!).length > 0;
   });
 
   const model = defineModel<string | null>();
   const opened = ref(false);
 
   const selectedScheme = computed(() => {
-    return model.value ? store.colorSchemes[model.value] : null;
+    return model.value && store.colorSchemes
+      ? (store.colorSchemes as Record<string, any>)[model.value]
+      : null;
   });
 
   function onSelectScheme(id: string) {
@@ -26,16 +28,22 @@
       <Popover.Trigger class="border rounded w-full flex justify-between h-10 px-3 items-center">
         <div
           v-if="selectedScheme"
-          class="flex gap-3"
+          class="flex flex-1 gap-3"
         >
           <div
-            class="w-6 rounded"
+            class="w-6 rounded flex-none"
             :style="{ backgroundColor: selectedScheme.background, color: selectedScheme['on-background'] }"
           >A</div>
-          <div class="capitalize">{{ model }}</div>
+          <div class="capitalize flex-1 text-left">{{ model }}</div>
+          <button
+            class="ml-auto flex-none mr-1 p-1 rounded-lg hover:bg-zinc-100"
+            @click.stop="model = null"
+          >
+            <i-heroicons-x-mark class="w-4 h-4" />
+          </button>
         </div>
         <span v-else>Select a color scheme</span>
-        <i-heroicons-chevron-up-down class="h-4 w-4" />
+        <i-heroicons-chevron-up-down class="flex-none h-4 w-4" />
       </Popover.Trigger>
 
       <Teleport to="body">
