@@ -21,6 +21,17 @@ Before you begin, make sure you have:
 
 Install the package via Composer:
 
+::: info
+Make sure your `composer.json` includes:
+
+```json
+"minimum-stability": "dev",
+"prefer-stable": true
+```
+
+This ensures the alpha version of Bagito Visual can be installed properly.
+:::
+
 ```bash
 composer require bagistoplus/visual
 ```
