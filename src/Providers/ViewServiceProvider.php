@@ -35,7 +35,7 @@ class ViewServiceProvider extends ServiceProvider
         $this->bootViewComposers();
 
         $this->app->bind(\Webkul\Theme\Themes::class, Themes::class);
-        $this->app->singleton('themes', fn () => new Themes);
+        $this->app->singleton('themes', fn() => new Themes);
 
         $this->app->singleton(ThemePathsResolver::class, function (Application $app) {
             return new ThemePathsResolver;
@@ -87,8 +87,12 @@ class ViewServiceProvider extends ServiceProvider
         Blade::directive('visual_content', [BladeDirectives::class, 'visualContent']);
         Blade::directive('end_visual_content', [BladeDirectives::class, 'endVisualContent']);
 
+        Blade::directive('style', [BladeDirectives::class, 'style']);
+        Blade::directive('endstyle', [BladeDirectives::class, 'endStyle']);
+
         Blade::directive('visual_design_mode', [BladeDirectives::class, 'visualDesignMode']);
         Blade::directive('end_visual_design_mode', [BladeDirectives::class, 'endVisualDesignMode']);
+
         Blade::if('visualdesignmode', function () {
             return ThemeEditor::inDesignMode();
         });

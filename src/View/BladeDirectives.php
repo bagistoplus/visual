@@ -20,7 +20,7 @@ class BladeDirectives
             'type' => $folder,
             'view' => $viewName,
             'path' => $path,
-            'name' => $folder.'/'.$viewName,
+            'name' => $folder . '/' . $viewName,
         ];
     }
 
@@ -51,9 +51,9 @@ class BladeDirectives
         ?>
         PHP;
 
-        return $themeEditorBefore.
+        return $themeEditorBefore .
             '<?php echo $__env->yieldContent("layout_content"); ?>'
-            .$themeEditorAfter;
+            . $themeEditorAfter;
     }
 
     public static function visualContent()
@@ -74,6 +74,28 @@ class BladeDirectives
     public static function endVisualDesignMode()
     {
         return '<?php endif; ?>';
+    }
+
+    public static function style(): string
+    {
+        return "<?php ob_start(); ?>";
+    }
+
+    public static function endStyle(): string
+    {
+        return <<<'PHP'
+            <?php
+                $css = ob_get_clean();
+
+                if (app()->environment('production')) {
+                    $css = preg_replace('/\s+/', ' ', $css);
+                    $css = preg_replace('/\s*([{}:;,])\s*/', '$1', $css);
+                    $css = trim($css);
+                }
+
+                echo "<style>{$css}</style>";
+            ?>
+        PHP;
     }
 
     public static function visualColorVars($expression)
