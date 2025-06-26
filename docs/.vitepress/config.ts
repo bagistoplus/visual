@@ -132,7 +132,7 @@ export default defineConfig({
   },
 
   vite: {
-    plugins: [llmstxt()],
+    plugins: [llmstxt() as any],
   },
 
   head: [
@@ -149,4 +149,8 @@ export default defineConfig({
         ]
       : []),
   ],
+
+  sitemap: {
+    hostname: 'https://visual.bagistoplus.com',
+  },
 });
