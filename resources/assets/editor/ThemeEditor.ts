@@ -27,7 +27,7 @@ export default class ThemeEditor {
   }
 
   imagesBaseUrl() {
-    return this.config.imagesBaseUrl;
+    return this.config.imagesBaseUrl.endsWith('/') ? this.config.imagesBaseUrl.slice(0, -1) : this.config.imagesBaseUrl;
   }
 
   availableSections() {

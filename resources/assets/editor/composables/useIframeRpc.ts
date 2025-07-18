@@ -55,7 +55,6 @@ export function useIframeRpc() {
     timeout = 3000
   ): Promise<any> {
     const msg = { type, data } as IframeMessage;
-
     if (!ready.value) {
       queue.push(msg);
       return Promise.resolve(null);
@@ -72,7 +71,6 @@ export function useIframeRpc() {
       }, timeout);
 
       resolvers.set(messageId, { resolve, timer });
-
       post({ ...msg, messageId });
     });
   }

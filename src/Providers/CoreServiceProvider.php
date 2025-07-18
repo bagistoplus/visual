@@ -140,7 +140,7 @@ class CoreServiceProvider extends ServiceProvider
         ], ['public', 'visual', 'visual-assets']);
 
         $this->publishes([
-            __DIR__.'/../../config/bagisto-visual.php' => config_path('bagisto-visual.php'),
+            __DIR__.'/../../config/bagisto-visual.php' => config_path('bagisto_visual.php'),
         ], ['config', 'visual', 'visual-config']);
     }
 

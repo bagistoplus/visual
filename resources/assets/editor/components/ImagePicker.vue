@@ -37,7 +37,7 @@
         return null;
       }
 
-      return { path: v, url: isValidUrl(v) ? v : window.ThemeEditor.imagesBaseUrl() + v, name: v };
+      return { path: v, url: isValidUrl(v) ? v : window.ThemeEditor.imagesBaseUrl() + '/' + v, name: v };
     }
   });
 

@@ -179,7 +179,7 @@ class ThemeEditor
             }
         }
 
-        if (! app()->isProduction()) {
+        /* if (! app()->isProduction()) {
             $manifestUrl = asset($buildDirectory.'/'.$manifestFilename);
             $reloadScript = <<<HTML
 <script>
@@ -207,7 +207,7 @@ class ThemeEditor
 HTML;
 
             $this->script($reloadScript);
-        }
+        } */
     }
 
     /**
