@@ -4,11 +4,13 @@ namespace BagistoPlus\Visual\Sections;
 
 use BagistoPlus\Visual\Sections\Concerns\SectionTrait;
 use BagistoPlus\Visual\Sections\Support\SectionData;
+use Craftile\Core\Concerns\ContextAware;
+use Craftile\Core\Concerns\IsBlock;
 use Livewire\Component;
 
 class LivewireSection extends Component implements SectionInterface
 {
-    use SectionTrait;
+    use IsBlock, SectionTrait;
 
     public $visualId;
 

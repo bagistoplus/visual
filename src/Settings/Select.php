@@ -7,13 +7,11 @@ namespace BagistoPlus\Visual\Settings;
  */
 class Select extends Base
 {
-    public static string $component = 'select-setting';
-
-    public array $options = [];
+    protected static string $type = 'select';
 
     public function options(array $options): self
     {
-        $this->options = collect($options)->map(function ($item, $key) {
+        $this->meta['options'] = collect($options)->map(function ($item, $key) {
             // If already structured as ['value' => ..., 'label' => ...]
             if (is_array($item) && array_key_exists('value', $item) && array_key_exists('label', $item)) {
                 return $item;
@@ -27,12 +25,5 @@ class Select extends Base
         })->values()->toArray();
 
         return $this;
-    }
-
-    public function toArray(): array
-    {
-        return array_merge(parent::toArray(), [
-            'options' => $this->options,
-        ]);
     }
 }

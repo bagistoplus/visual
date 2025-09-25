@@ -1,16 +1,7 @@
-import * as Vue from 'vue';
-import { createApp } from 'vue';
-
-import App from '../../assets/editor/App.vue';
-import './index.css';
-import ThemeEditor from './ThemeEditor';
+import { createCraftileEditor } from '@craftile/editor';
 
 const editorConfig = window.editorConfig;
-const app = createApp(App);
 
-document.addEventListener('DOMContentLoaded', () => {
-  window.ThemeEditor.boot();
+createCraftileEditor({
+  el: '#app',
 });
-
-window.ThemeEditor = new ThemeEditor(editorConfig, app);
-(window as any).Vue = Vue;

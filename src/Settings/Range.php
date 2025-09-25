@@ -10,23 +10,29 @@ namespace BagistoPlus\Visual\Settings;
  */
 class Range extends Base
 {
-    public static string $component = 'range-setting';
+    protected static string $type = 'range';
 
-    public int|float $min = 1;
-
-    public int|float $max = 100;
-
-    public int|float $step = 1;
-
-    public string $unit = '';
-
-    public function toArray(): array
+    public function min(int|float $min): self
     {
-        return array_merge(parent::toArray(), [
-            'min' => $this->min,
-            'max' => $this->max,
-            'step' => $this->step,
-            'unit' => $this->unit,
-        ]);
+        $this->meta['min'] = $min;
+        return $this;
+    }
+
+    public function max(int|float $max): self
+    {
+        $this->meta['max'] = $max;
+        return $this;
+    }
+
+    public function step(int|float $step): self
+    {
+        $this->meta['step'] = $step;
+        return $this;
+    }
+
+    public function unit(string $unit): self
+    {
+        $this->meta['unit'] = $unit;
+        return $this;
     }
 }

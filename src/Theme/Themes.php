@@ -17,7 +17,7 @@ class Themes extends BagistoThemes
     {
         $parentThemes = [];
 
-        if (Str::contains(request()->url(), config('app.admin_url').'/')) {
+        if (Str::contains(request()->url(), config('app.admin_url') . '/')) {
             $themes = config('themes.admin', []);
         } else {
             $themes = config('themes.shop', []);
@@ -56,8 +56,8 @@ class Themes extends BagistoThemes
         $theme = parent::set($themeName);
 
         if ($this->activeTheme instanceof Theme && $this->activeTheme->isVisualTheme()) {
-            app('view')->prependNamespace('shop', __DIR__.'/../../resources/views/theme');
-            app('view')->prependNamespace('shop', $this->activeTheme->basePath.'/resources/views');
+            app('view')->prependNamespace('shop', __DIR__ . '/../../resources/views/theme');
+            app('view')->prependNamespace('shop', $this->activeTheme->basePath . '/resources/views');
 
             ThemeActivated::dispatch($theme);
         }

@@ -6,19 +6,9 @@ use Illuminate\Support\Str;
 
 trait SectionTrait
 {
-    protected static string $slug = '';
-
-    protected static string $name = '';
-
     protected static string $wrapper = 'section';
 
     protected static array $settings = [];
-
-    protected static array $blocks = [];
-
-    protected static int $maxBlocks = 16;
-
-    protected static string $description = '';
 
     protected static string $previewImageUrl = '';
 
@@ -32,37 +22,28 @@ trait SectionTrait
 
     protected static string $view = '';
 
+    protected static array $blocks = [];
+
+    protected static int $maxBlocks = 16;
+
+    public static function blocks(): array
+    {
+        return static::$blocks;
+    }
+
+    public static function maxBlocks(): int
+    {
+        return static::$maxBlocks;
+    }
+
     protected function getViewData(): array
     {
         return [];
     }
 
-    public function render()
+    public function render(): mixed
     {
         return view(static::$view, $this->getViewData());
-    }
-
-    protected static function className(): string
-    {
-        return (new \ReflectionClass(static::class))->getShortName();
-    }
-
-    public static function slug(): string
-    {
-        if (! empty(static::$slug)) {
-            return static::$slug;
-        }
-
-        return Str::kebab(self::className());
-    }
-
-    public static function name(): string
-    {
-        if (! empty(static::$name)) {
-            return static::$name;
-        }
-
-        return Str::of(self::slug())->headline();
     }
 
     public static function wrapper(): string
@@ -76,22 +57,7 @@ trait SectionTrait
 
     public static function settings(): array
     {
-        return static::$settings;
-    }
-
-    public static function blocks(): array
-    {
-        return static::$blocks;
-    }
-
-    public static function maxBlocks(): int
-    {
-        return static::$maxBlocks;
-    }
-
-    public static function description(): string
-    {
-        return static::$description;
+        return static::properties();
     }
 
     public static function previewImageUrl(): string

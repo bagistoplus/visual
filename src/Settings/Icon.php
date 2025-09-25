@@ -4,5 +4,5 @@ namespace BagistoPlus\Visual\Settings;
 
 class Icon extends Base
 {
-    public static string $component = 'icon-setting';
+    protected static string $type = 'icon';
 }

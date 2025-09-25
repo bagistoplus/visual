@@ -7,5 +7,5 @@ namespace BagistoPlus\Visual\Settings;
  */
 class Radio extends Select
 {
-    public static string $component = 'radio-setting';
+    protected static string $type = 'radio';
 }

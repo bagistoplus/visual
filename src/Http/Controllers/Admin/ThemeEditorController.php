@@ -8,6 +8,7 @@ use BagistoPlus\Visual\Settings\Support\ImageTransformer;
 use BagistoPlus\Visual\ThemePersister;
 use BladeUI\Icons\Factory;
 use BladeUI\Icons\IconsManifest;
+use Craftile\Laravel\BlockSchemaRegistry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Lang;
@@ -23,11 +24,12 @@ class ThemeEditorController extends Controller
 
     public function index($themeCode)
     {
+        dd(app(BlockSchemaRegistry::class)->all());
         return view('visual::admin.editor.index', [
             'config' => [
                 'baseUrl' => parse_url(route('visual.admin.editor', ['theme' => $themeCode]), PHP_URL_PATH),
                 'imagesBaseUrl' => Storage::disk(config('bagisto_visual.images_storage'))->url(''),
-                'storefrontUrl' => url('/').'?'.http_build_query(['_designMode' => $themeCode]),
+                'storefrontUrl' => url('/') . '?' . http_build_query(['_designMode' => $themeCode]),
                 'channels' => $this->getChannels(),
                 'defaultChannel' => core()->getDefaultChannelCode(),
                 'sections' => Sections::all(),
@@ -60,7 +62,7 @@ class ThemeEditorController extends Controller
         $url = $request->input('url');
 
         if (! empty($sections = $request->input('updatedSections', []))) {
-            $url .= '&'.http_build_query(['_sections' => implode(',', $sections)]);
+            $url .= '&' . http_build_query(['_sections' => implode(',', $sections)]);
         }
 
         if (parse_url($baseUrl, PHP_URL_PATH) !== null) {
@@ -88,7 +90,7 @@ class ThemeEditorController extends Controller
         return $images->map(function ($image) {
             $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $image->guessExtension();
-            $storedName = bin2hex($originalName).'_'.uniqid().'.'.$extension;
+            $storedName = bin2hex($originalName) . '_' . uniqid() . '.' . $extension;
 
             $path = $image->storeAs(
                 config('bagisto_visual.images_directory'),
@@ -167,7 +169,7 @@ class ThemeEditorController extends Controller
 
                 $icons->push([
                     'name' => $name,
-                    'id' => $set['prefix'].'-'.$name,
+                    'id' => $set['prefix'] . '-' . $name,
                     'svg' => File::get($file->getRealPath()),
                 ]);
             }
@@ -175,14 +177,14 @@ class ThemeEditorController extends Controller
 
         return [
             'currentSet' => $selectedSet,
-            'sets' => collect($sets)->map(fn ($set, $key) => ['id' => $key, 'prefix' => $set['prefix'], 'name' => Str::headline($key)])->values(),
+            'sets' => collect($sets)->map(fn($set, $key) => ['id' => $key, 'prefix' => $set['prefix'], 'name' => Str::headline($key)])->values(),
             'icons' => $icons->values(),
         ];
     }
 
     protected function getChannels()
     {
-        return core()->getAllChannels()->map(fn ($channel) => [
+        return core()->getAllChannels()->map(fn($channel) => [
             'code' => $channel->code,
             'name' => $channel->name,
             'locales' => $channel->locales,
@@ -193,7 +195,7 @@ class ThemeEditorController extends Controller
     protected function getChannelCodes(): array
     {
         return $this->getChannels()
-            ->map(fn ($channel) => $channel['code'])
+            ->map(fn($channel) => $channel['code'])
             ->toArray();
     }
 
@@ -205,14 +207,14 @@ class ThemeEditorController extends Controller
             return [];
         }
 
-        return $channel['locales']->map(fn ($locale) => $locale['code'])->toArray();
+        return $channel['locales']->map(fn($locale) => $locale['code'])->toArray();
     }
 
     protected function getVisualThemes(): array
     {
         return collect(config('themes.shop', []))
-            ->filter(fn ($config) => $config['visual_theme'] ?? false)
-            ->map(fn ($config) => $config['code'])
+            ->filter(fn($config) => $config['visual_theme'] ?? false)
+            ->map(fn($config) => $config['code'])
             ->toArray();
     }
 }

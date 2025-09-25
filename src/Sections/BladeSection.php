@@ -5,20 +5,24 @@ namespace BagistoPlus\Visual\Sections;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Sections\Concerns\SectionTrait;
 use BagistoPlus\Visual\Sections\Support\SectionData;
+use Craftile\Core\Concerns\ContextAware;
+use Craftile\Core\Concerns\IsBlock;
+use Craftile\Laravel\BlockData;
 use Illuminate\View\Component;
 
 abstract class BladeSection extends Component implements SectionInterface
 {
-    use SectionTrait;
+    use IsBlock, SectionTrait;
 
-    public SectionData $section;
+    public function __construct(public BlockData $block, protected array $context = [], public $children = null) {}
 
-    public array $context;
-
-    public function __construct(public string $visualId, protected array $viewData)
+    public function __get($name)
     {
-        $this->section = Visual::themeDataCollector()->getSectionData($visualId);
-        $this->context = $viewData;
+        if ($name === 'section') {
+            return $this->block;
+        }
+
+        return null;
     }
 
     public function data()
@@ -29,7 +33,7 @@ abstract class BladeSection extends Component implements SectionInterface
             $this->extractPublicProperties(),
             $this->extractPublicMethods(),
             $this->getVisualSectionData(),
-            $this->viewData
+            $this->context
         );
     }
 
@@ -43,8 +47,6 @@ abstract class BladeSection extends Component implements SectionInterface
         return array_merge(parent::ignoredMethods(), [
             'slug',
             'name',
-            'getSchemaPath',
-            'getSchema',
             'getViewData',
         ]);
     }
@@ -52,7 +54,7 @@ abstract class BladeSection extends Component implements SectionInterface
     protected function getVisualSectionData()
     {
         return [
-            'section' => $this->section,
+            'section' => $this->block,
         ];
     }
 }

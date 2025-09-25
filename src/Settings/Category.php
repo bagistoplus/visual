@@ -4,5 +4,5 @@ namespace BagistoPlus\Visual\Settings;
 
 class Category extends Base
 {
-    public static string $component = 'category-setting';
+    public static string $type = 'category';
 }

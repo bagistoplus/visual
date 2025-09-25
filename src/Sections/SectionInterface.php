@@ -2,4 +2,6 @@
 
 namespace BagistoPlus\Visual\Sections;
 
-interface SectionInterface {}
+use Craftile\Core\Contracts\BlockInterface;
+
+interface SectionInterface extends BlockInterface {}

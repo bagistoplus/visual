@@ -4,5 +4,11 @@ namespace BagistoPlus\Visual\Settings;
 
 class Checkbox extends Base
 {
-    public static string $component = 'checkbox-setting';
+    protected static string $type = 'checkbox';
+
+    public function asSwitch(): self
+    {
+        $this->meta['switch'] = true;
+        return $this;
+    }
 }

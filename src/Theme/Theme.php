@@ -18,6 +18,7 @@ class Theme extends BagistoTheme
             basePath: $attributes['base_path'] ?? $attributes['code'],
             assetsPath: $attributes['assets_path'] ?? $attributes['code'],
             viewsPath: $attributes['views_path'] ?? $attributes['code'],
+            viewsNamespace: $attributes['views_namespace'] ?? null,
             vite: $attributes['vite'] ?? [],
             version: $attributes['version'] ?? '1.0.0',
             author: $attributes['author'] ?? '',
@@ -34,6 +35,7 @@ class Theme extends BagistoTheme
         public $basePath,
         public $assetsPath = null,
         public $viewsPath = null,
+        public $viewsNamespace = null,
         public $vite = [],
         public ?string $version = '0.0.0',
         public ?string $author = '',
@@ -42,7 +44,14 @@ class Theme extends BagistoTheme
         public bool $isVisualTheme = false,
         public array $settingsSchema = []
     ) {
-        parent::__construct($code, $name, $assetsPath, $viewsPath, $vite);
+        parent::__construct(
+            code: $code,
+            name: $name,
+            assetsPath: $assetsPath,
+            viewsPath: $viewsPath,
+            viewsNamespace: $viewsNamespace,
+            vite: $vite
+        );
     }
 
     public function isVisualTheme(): bool
