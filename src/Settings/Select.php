@@ -9,6 +9,13 @@ class Select extends Base
 {
     protected static string $type = 'select';
 
+    public function asSegment(): self
+    {
+        $this->meta['variant'] = 'segment';
+
+        return $this;
+    }
+
     public function options(array $options): self
     {
         $this->meta['options'] = collect($options)->map(function ($item, $key) {

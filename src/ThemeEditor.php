@@ -28,6 +28,8 @@ class ThemeEditor
 
     protected array $styles = [];
 
+    protected array $jsonViews = [];
+
     protected array $preloadedModels = [
         'categories' => [],
         'products' => [],
@@ -64,6 +66,16 @@ class ThemeEditor
     public function inPreviewMode(): bool
     {
         return request()->query->has('_previewMode') || request()->headers->has('x-visual-preview-theme');
+    }
+
+    public function addJsonView(string $path): void
+    {
+        $this->jsonViews[] = $path;
+    }
+
+    public function jsonViews(): array
+    {
+        return $this->jsonViews;
     }
 
     public function renderingView(?string $view = '')

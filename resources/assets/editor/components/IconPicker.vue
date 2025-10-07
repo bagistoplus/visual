@@ -1,7 +1,9 @@
 <script lang="ts" setup>
   import { Dialog } from '@ark-ui/vue/dialog';
   import { Field } from '@ark-ui/vue/field';
+  import useI18n from '../composables/i18n';
 
+  const { t } = useI18n();
   const isDirty = ref(false);
   const opened = ref(false);
   const model = defineModel<string | null>();
@@ -71,11 +73,11 @@
         <span
           v-if="selectedIcon"
           v-html="selectedIcon.svg"
-          class="w-8 h-8 text-gray-600"
+          class="w-8 h-8 text-zinc-600"
         ></span>
         <i-heroicons-question-mark-circle
           v-else
-          class="w-8 h-8 text-gray-600"
+          class="w-8 h-8 text-zinc-600"
         />
 
         <button
@@ -89,7 +91,7 @@
       <Dialog.Positioner class="flex fixed z-50 top-14 left-14 bottom-0 w-[19.9rem] items-center justify-center">
         <Dialog.Content class="bg-white shadow flex flex-col w-full h-full overflow-hidden">
           <header class="flex-none h-12 border-b border-neutral-200 flex gap-3 px-4 items-center justify-between">
-            <Dialog.Title>{{ $t('Icon Picker') }}</Dialog.Title>
+            <Dialog.Title>{{ t('Icon Picker') }}</Dialog.Title>
             <button
               @click="onCancel"
               class="cursor-pointer rounded-lg p-0.5 text-neutral-700 hover:bg-neutral-300"
@@ -110,10 +112,10 @@
                 >{{ set.name }}</option>
               </select>
               <Field.Root class="relative">
-                <i-heroicons-magnifying-glass class="absolute left-3 top-2.5 text-gray-500" />
+                <i-heroicons-magnifying-glass class="absolute left-3 top-2.5 text-zinc-500" />
                 <Field.Input
                   v-model="search"
-                  class="w-full pr-3 pl-9 h-10 text-surface-500 rounded-b border border-gray-300 focus:outline-none focus:ring focus:ring-gray-700"
+                  class="w-full pr-3 pl-9 h-10 text-surface-500 rounded-b border border-zinc-300 focus:outline-none focus:ring focus:ring-zinc-700"
                   placeholder="Search"
                 />
               </Field.Root>
@@ -123,7 +125,7 @@
               v-if="isFetching"
               class="flex items-center justify-center py-6"
             >
-              <i-lucide-loader-2 class="w-6 h-6 animate-spin text-gray-500" />
+              <i-lucide-loader-2 class="w-6 h-6 animate-spin text-zinc-500" />
             </div>
 
             <div
@@ -133,10 +135,10 @@
               <button
                 v-for="icon in icons"
                 type="button"
-                class="flex justify-center p-3 border rounded text-gray-500 "
+                class="flex justify-center p-3 border rounded text-zinc-500 "
                 :class="{
                   'border-blue-300 bg-blue-50 hover:bg-blue-50': model === icon.id,
-                  'hover:bg-gray-100': model !== icon.id,
+                  'hover:bg-zinc-100': model !== icon.id,
                 }"
                 @click="onSelectIcon(icon)"
               >
@@ -151,9 +153,9 @@
             <button
               @click="onCancel"
               class="text-sm shadow px-3 py-1 rounded bg-neutral-100 border"
-            >{{ $t('Cancel') }}</button>
+            >{{ t('Cancel') }}</button>
             <Dialog.CloseTrigger
-              class="text-sm shadow px-3 py-1 rounded bg-gray-800 text-white border hover:bg-gray-700"
+              class="text-sm shadow px-3 py-1 rounded bg-zinc-800 text-white border hover:bg-zinc-700"
               :class="{ 'opacity-40 cursor-not-allowed': !isDirty }"
               :disabled="!isDirty"
             >Select</Dialog.CloseTrigger>

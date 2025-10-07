@@ -1,18 +1,34 @@
 <script setup lang="ts">
   import { Popover } from '@ark-ui/vue/popover';
-  import { useStore } from '../store';
+  import { useState } from '../state';
+  import { ColorSchemeDefintion } from '../types';
 
-  const store = useStore();
+  const { theme } = useState();
+
+  const colorSchemes = computed<Record<string, ColorSchemeDefintion>>(() => {
+    if (!theme.value) return {};
+
+    const settingId = theme.value.settingsSchema
+      .flatMap((obj) => obj.settings)
+      .find((setting) => setting.type === 'color-scheme-group')?.id;
+
+    if (!settingId) {
+      return {};
+    }
+
+    return (theme.value.settings[settingId] as Record<string, ColorSchemeDefintion>) || {};
+  });
+
   const isSchemesDefined = computed(() => {
-    return Object.keys(store.colorSchemes!).length > 0;
+    return Object.keys(colorSchemes.value).length > 0;
   });
 
   const model = defineModel<string | null>();
   const opened = ref(false);
 
   const selectedScheme = computed(() => {
-    return model.value && store.colorSchemes
-      ? (store.colorSchemes as Record<string, any>)[model.value]
+    return model.value && colorSchemes.value
+      ? colorSchemes.value[model.value]
       : null;
   });
 
@@ -25,7 +41,7 @@
 <template>
   <div v-if="isSchemesDefined">
     <Popover.Root v-model:open="opened">
-      <Popover.Trigger class="border rounded w-full flex justify-between h-10 px-3 items-center">
+      <Popover.Trigger class="border border-zinc-300 rounded w-full flex justify-between h-10 px-3 items-center">
         <div
           v-if="selectedScheme"
           class="flex flex-1 gap-3"
@@ -48,11 +64,11 @@
 
       <Teleport to="body">
         <Popover.Positioner>
-          <Popover.Content class="border  rounded shadow-md w-[var(--reference-width)] z-50 bg-white -mt-1 overflow-y-auto max-h-[360px]">
-            <div v-for="(scheme, id) in store.colorSchemes">
+          <Popover.Content class="border border-zinc-300 rounded shadow-md w-[var(--reference-width)] z-50 bg-white -mt-1 overflow-y-auto max-h-[360px]">
+            <div v-for="(scheme, id) in colorSchemes">
               <div
-                class=" px-3 py-3 hover:bg-gray-100 relative"
-                :class="{ 'bg-gray-100': model === String(id) }"
+                class=" px-3 py-3 hover:bg-zinc-100 relative"
+                :class="{ 'bg-zinc-100': model === String(id) }"
               >
                 <i-heroicons-check-circle-solid
                   v-if="model === String(id)"

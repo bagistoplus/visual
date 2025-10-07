@@ -2,7 +2,7 @@
 
 namespace {{ namespace }};
 
-use BagistoPlus\Visual\Sections\BladeSection;
+use BagistoPlus\Visual\Blocks\BladeSection;
 
 class {{ class }} extends BladeSection
 {

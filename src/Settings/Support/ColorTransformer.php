@@ -2,11 +2,13 @@
 
 namespace BagistoPlus\Visual\Settings\Support;
 
+use BagistoPlus\Visual\Contracts\SettingTransformerInterface;
 use matthieumastadenis\couleur\ColorFactory;
+use matthieumastadenis\couleur\ColorInterface;
 
-class ColorTransformer
+class ColorTransformer implements SettingTransformerInterface
 {
-    public function __invoke(string $color)
+    public function transform($color): ColorInterface
     {
         return ColorFactory::new($color);
     }

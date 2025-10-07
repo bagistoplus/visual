@@ -1,18 +1,50 @@
 <script setup lang="ts">
   import { Popover } from '@ark-ui/vue/popover';
   import { CmsPage } from '../types';
-  import { useStore } from '../store';
+  import { useHttpClient } from '../composables/http';
+  import useI18n from '../composables/i18n';
 
-  const store = useStore();
+  const { t } = useI18n();
+  const { get } = useHttpClient();
   const model = defineModel<number | null>();
   const opened = ref(false);
 
-  const selectedPage = computed<CmsPage | null>({
-    get: () => (model.value ? store.getCmsPage(model.value) : null),
-    set: (page: CmsPage | null) => {
-      model.value = page ? page.id : null;
+  const pagesCache = ref<Map<number, CmsPage>>(new Map());
+  const selectedPage = ref<CmsPage | null>(null);
+
+  // Fetch page details when model changes
+  watch(() => model.value, async (pageId) => {
+    if (!pageId) {
+      selectedPage.value = null;
+      return;
     }
-  });
+
+    if (pagesCache.value.has(pageId)) {
+      selectedPage.value = pagesCache.value.get(pageId)!;
+      return;
+    }
+
+    const request = get<CmsPage>(`${window.editorConfig.routes.getCmsPages}/${pageId}`);
+
+    request.onSuccess((data) => {
+      pagesCache.value.set(pageId, data);
+      selectedPage.value = data;
+    });
+
+    request.onError((error) => {
+      console.error('Failed to fetch page:', error);
+    });
+
+    await request.execute();
+  }, { immediate: true });
+
+  const updatePage = (page: CmsPage | null) => {
+    selectedPage.value = page;
+    model.value = page ? page.id : null;
+    if (page) {
+      pagesCache.value.set(page.id, page);
+    }
+  };
 </script>
 <template>
   <div>
@@ -32,7 +64,7 @@
               <i-heroicons-x-mark />
             </button>
           </template>
-          <span v-else>{{ $t('Select page') }}</span>
+          <span v-else>{{ t('Select page') }}</span>
         </div>
       </Popover.Trigger>
 
@@ -47,7 +79,7 @@
 
           <CmsPageListbox
             v-model="selectedPage"
-            @update:model-value="opened = false"
+            @update:model-value="updatePage($event); opened = false"
           />
         </Popover.Content>
       </Popover.Positioner>

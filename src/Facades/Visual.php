@@ -5,12 +5,11 @@ namespace BagistoPlus\Visual\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static \BagistoPlus\Visual\ThemeDataCollector themeDataCollector()
- * @method static void discoverSectionsIn(string $path, string $vendorPreix = '')
- * @method static void registerSection(string $componentClass, string $vendorPrefix = '')
- * @method static void registerSections(array $sections, string $vendorPrefix = '')
- * @method static void collectSectionData(string $sectionId, string|null $renderPath = null, string|null $type = null)
- * @method static bool isSectionEnabled(string $sectionId)
+ * @method static \BagistoPlus\Visual\ThemeSettingsLoader themeSettingsLoader()
+ * @method static void discoverSectionsIn(string $path, string $namespace = 'App\\Sections')
+ * @method static void discoverBlocksIn(string $path, string $namespace = 'App\\Blocks')
+ * @method static void registerSettingTransformer(string $type, string $transformerClass)
+ * @method static void supportLivewire()
  *
  * @see \BagistoPlus\Visual\VisualManager
  */

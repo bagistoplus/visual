@@ -1,6 +1,8 @@
 <script setup lang="ts">
   import { ColorPicker, parseColor } from '@ark-ui/vue/color-picker'
+  import useI18n from '../composables/i18n';
 
+  const { t } = useI18n();
   const value = defineModel({
     set(val: any) {
       return val.toString('hex');
@@ -57,7 +59,7 @@
 
       <ColorPicker.ChannelInput
         channel="hex"
-        class="appearance-none rounded bg-none outline-0 relative w-full border px-3 h-10 min-w-10 focus:ring focus:ring-gray-700"
+        class="appearance-none rounded bg-none outline-0 relative w-full border px-3 h-10 min-w-10 focus:ring focus:ring-zinc-700"
       />
       <!-- <ColorPicker.ChannelInput channel="alpha" /> -->
       <!-- <ColorPicker.ValueText /> -->
@@ -99,16 +101,16 @@
         >
           <ColorPicker.ChannelInput
             channel="hex"
-            class="flex-1 border px-3 h-8 w-0 rounded outline-0 focus:ring focus:ring-gray-700"
+            class="flex-1 border px-3 h-8 w-0 rounded outline-0 focus:ring focus:ring-zinc-700"
           />
           <ColorPicker.ChannelInput
             channel="alpha"
-            class=" flex-none border px-3 h-8 rounded outline-0 focus:ring focus:ring-gray-700"
+            class=" flex-none border px-3 h-8 rounded outline-0 focus:ring focus:ring-zinc-700"
           />
         </ColorPicker.View>
 
         <div v-if="selected.length > 0">
-          <p class="text-xs font-medium">{{ $t('Recently selected') }}</p>
+          <p class="text-xs font-medium">{{ t('Recently selected') }}</p>
 
           <ColorPicker.SwatchGroup class="grid grid-cols-6 gap-2 mt-2">
             <ColorPicker.SwatchTrigger
@@ -125,7 +127,7 @@
         </div>
 
         <div>
-          <p class="text-xs font-medium">{{ $t('Currently used') }}</p>
+          <p class="text-xs font-medium">{{ t('Currently used') }}</p>
 
           <ColorPicker.SwatchGroup class="grid grid-cols-6 gap-2 mt-2">
             <ColorPicker.SwatchTrigger

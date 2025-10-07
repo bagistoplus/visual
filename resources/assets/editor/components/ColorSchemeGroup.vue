@@ -1,31 +1,53 @@
 <script setup lang="ts">
-  import { Dialog } from '@ark-ui/vue/dialog';
-  import { ColorSchemeDefintion } from '../types';
+import { Dialog } from '@ark-ui/vue/dialog';
+import { ColorSchemeDefintion } from '../types';
 
-  const model = defineModel<Record<string, ColorSchemeDefintion>>();
-  const emit = defineEmits(['update:modelValue'])
+const model = defineModel<Record<string, { id: string; tokens: ColorSchemeDefintion } | ColorSchemeDefintion>>();
+const emit = defineEmits(['update:modelValue'])
 
-  const editingScheme = ref<string | null>(null);
-  const editModalOpen = ref(false);
+const editingScheme = ref<string | null>(null);
+const editModalOpen = ref(false);
 
-  function onEditScheme(id: string) {
-    editingScheme.value = id;
-    editModalOpen.value = true;
+const editingSchemeValue = computed({
+  get() {
+    if (!editingScheme.value || !model.value?.[editingScheme.value]) {
+      return null;
+    }
+    const scheme = model.value[editingScheme.value];
+    // If scheme has tokens property, return tokens, otherwise return scheme directly
+    return 'tokens' in scheme ? scheme.tokens : scheme;
+  },
+  set(value: ColorSchemeDefintion | null) {
+    if (!editingScheme.value || !value) return;
+
+    const currentScheme = model.value![editingScheme.value];
+    // If current scheme has tokens property, update tokens, otherwise update directly
+    if ('tokens' in currentScheme) {
+      currentScheme.tokens = value;
+    } else {
+      model.value![editingScheme.value] = value as any;
+    }
   }
+});
 
-  function onUpdate() {
-    emit('update:modelValue', model.value)
-  }
+function onEditScheme(id: string) {
+  editingScheme.value = id;
+  editModalOpen.value = true;
+}
 
-  function onAddScheme() {
-    const keys = Object.keys(model.value!);
-    const id = `scheme-${keys.length + 1}`;
+function onUpdate() {
+  emit('update:modelValue', model.value)
+}
 
-    model.value![id] = structuredClone(toRaw(model.value![keys[0]]));
+function onAddScheme() {
+  const keys = Object.keys(model.value!);
+  const id = `scheme-${keys.length + 1}`;
 
-    onUpdate();
-    onEditScheme(id);
-  }
+  model.value![id] = structuredClone(toRaw(model.value![keys[0]]));
+
+  onUpdate();
+  onEditScheme(id);
+}
 </script>
 
 <template>
@@ -55,7 +77,7 @@
       :modal="false"
       :close-on-interact-outside="false"
     >
-      <Dialog.Positioner class="flex fixed z-50 top-14 left-14 bottom-0 w-[19.9rem] items-center justify-center">
+      <Dialog.Positioner class="flex fixed z-50 top-14 left-14 bottom-0 w-75 items-center justify-center">
         <Dialog.Content class="bg-white shadow flex flex-col w-full h-full overflow-hidden">
           <header class="flex-none h-12 border-b border-neutral-200 flex gap-3 px-4 items-center justify-between">
             <Dialog.Title class="capitalize">Editing {{ editingScheme?.replace('-', ' ') }}</Dialog.Title>
@@ -65,9 +87,9 @@
           </header>
           <div class="flex-1 flex flex-col  min-h-0  overflow-y-auto p-4">
             <EditColorScheme
-              v-if="editingScheme"
+              v-if="editingScheme && editingSchemeValue"
               :id="editingScheme"
-              v-model="model![editingScheme]"
+              v-model="editingSchemeValue"
               @update="onUpdate"
             />
           </div>

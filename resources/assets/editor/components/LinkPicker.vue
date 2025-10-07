@@ -1,7 +1,9 @@
 <script setup lang="ts">
   import { Popover } from '@ark-ui/vue/popover';
   import { Category, Product, CmsPage } from '../types';
+  import useI18n from '../composables/i18n';
 
+  const { t } = useI18n();
   const model = defineModel<string | null>();
   const valueType = ref('link');
   const realLink = ref('');
@@ -43,7 +45,7 @@
   }
 
   function computeRealLink(slug: string, path: string = '') {
-    const url = new URL(path + slug, new URL(window.ThemeEditor.storefrontUrl()).origin);
+    const url = new URL(path + slug, new URL(window.editorConfig.storefrontUrl).origin);
     return url.href;
   }
 
@@ -107,7 +109,7 @@
     >
       <Popover.Trigger as-child>
         <div
-          class="relative flex border px-3 h-10 gap-3 text-sm w-full cursor-pointer rounded outline-0 items-center appearance-none justify-between focus-within:shadow focus-within:ring focus-within:ring-gray-700"
+          class="relative flex border px-3 h-10 gap-3 text-sm w-full cursor-pointer rounded outline-0 items-center appearance-none justify-between focus-within:shadow focus-within:ring focus-within:ring-zinc-700"
         >
           <a
             v-if="realLink"
@@ -143,7 +145,7 @@
           />
           <button
             v-if="model"
-            class="flex-none text-gray-700 hover:bg-gray-200 p-1 rounded-lg"
+            class="flex-none text-zinc-700 hover:bg-zinc-200 p-1 rounded-lg"
             @click.prevent="onClear"
           >
             <i-heroicons-x-mark class="w-4 h-4" />
@@ -167,25 +169,25 @@
         >
           <div v-if="!activePanel">
             <button
-              class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-gray-200"
+              class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-zinc-200"
               @mousedown.prevent="activePanel = 'categories'"
             >
               <i-bi-tags class="w-4 h-4 transform rotate-90" />
-              {{ $t('Categories') }}
+              {{ t('Categories') }}
             </button>
             <button
-              class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-gray-200"
+              class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-zinc-200"
               @mousedown.prevent="activePanel = 'products'"
             >
               <i-bi-tag class="w-4 h-4 transform rotate-90" />
-              {{ $t('Products') }}
+              {{ t('Products') }}
             </button>
             <button
-              class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-gray-200"
+              class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-zinc-200"
               @mousedown.prevent="activePanel = 'cms_pages'"
             >
-              <i-mdi-file-document-outline class="w-4 h-4 text-gray-700" />
-              {{ $t('Cms Pages') }}
+              <i-mdi-file-document-outline class="w-4 h-4 text-zinc-700" />
+              {{ t('Cms Pages') }}
             </button>
           </div>
 
@@ -194,11 +196,11 @@
             class="flex flex-col h-full overflow-hidden"
           >
             <button
-              class="h-9 flex-none bg-gray-200 flex gap-3 w-full items-center rounded-t-lg text-left px-3"
+              class="h-9 flex-none bg-zinc-200 flex gap-3 w-full items-center rounded-t-lg text-left px-3"
               @click="activePanel = ''"
             >
               <i-heroicons-arrow-left class="w-4 h-4" />
-              {{ $t('Back') }}
+              {{ t('Back') }}
             </button>
             <CategoryListbox
               v-if="activePanel === 'categories'"

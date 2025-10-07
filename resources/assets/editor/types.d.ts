@@ -1,5 +1,35 @@
+import { BlockSchema } from '@craftile/types';
+import type { CraftileEditor } from '@craftile/editor/';
+import type * as Vue from 'vue';
+
 export type ViewMode = 'desktop' | 'mobile' | 'fullscreen' | 'reordering';
 export type SettingValue = string | number | boolean | object | null | undefined;
+
+declare global {
+  interface Window {
+    editorConfig: ThemeEditorConfig;
+    craftileEditor: CraftileEditor;
+    Vue: typeof Vue;
+  }
+
+  interface DocumentEventMap {
+    'visual:editor:ready': CustomEvent<{
+      editor: CraftileEditor;
+      Vue: typeof Vue;
+    }>;
+  }
+}
+
+export interface Theme {
+  name: string;
+  code: string;
+  version: string;
+  settings: Record<string, SettingValue>;
+  settingsSchema: {
+    name: string;
+    settings: Setting[];
+  }[];
+}
 
 export interface ThemeEditorConfig {
   baseUrl: string;
@@ -7,10 +37,12 @@ export interface ThemeEditorConfig {
   storefrontUrl: string;
   channels: Channel[];
   defaultChannel: string;
-  sections: Record<string, Section>;
+  blockSchemas: BlockSchema[];
+  theme: Theme;
   templates: Template[];
   routes: {
-    persistTheme: string;
+    persistUpdates: string;
+    persistThemeSettings: string;
     publishTheme: string;
     themesIndex: string;
     uploadImage: string;

@@ -73,14 +73,18 @@ abstract class ThemeServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->app->booted(function () {
                 $theme = $this->loadThemeConfig();
-                Visual::discoverSectionsIn("{$theme['base_path']}/src/Sections", $theme['code']);
+                $namespace = $this->getThemeNamespace();
+                Visual::discoverSectionsIn("{$theme['base_path']}/src/Sections", "{$namespace}\\Sections");
+                Visual::discoverBlocksIn("{$theme['base_path']}/src/Blocks", "{$namespace}\\Blocks");
             });
 
             return;
         }
 
         $this->whenActive(function (Theme $theme) {
-            Visual::discoverSectionsIn("{$theme->basePath}/src/Sections", $theme->code);
+            $namespace = $this->getThemeNamespace();
+            Visual::discoverSectionsIn("{$theme->basePath}/src/Sections", "{$namespace}\\Sections");
+            Visual::discoverBlocksIn("{$theme->basePath}/src/Blocks", "{$namespace}\\Blocks");
         });
     }
 
@@ -154,7 +158,7 @@ abstract class ThemeServiceProvider extends ServiceProvider
         $settings = require $schemaPath;
 
         return collect($settings)->map(function ($group) {
-            $group['settings'] = collect($group['settings'])->toArray();
+            $group['settings'] = collect($group['settings'])->map->toArray()->toArray();
 
             return $group;
         })->toArray();
@@ -227,6 +231,37 @@ abstract class ThemeServiceProvider extends ServiceProvider
     public function getThemeSettingsPath(): string
     {
         return $this->getBasePath().'/config/settings.php';
+    }
+
+    /**
+     * Get the root namespace of the theme package from composer.json autoload.
+     */
+    protected function getThemeNamespace(): string
+    {
+        $composerPath = $this->getBasePath().'/composer.json';
+
+        if (! file_exists($composerPath)) {
+            throw new RuntimeException('Unable to locate composer.json in theme package.');
+        }
+
+        $composer = json_decode(file_get_contents($composerPath), true);
+
+        if (! isset($composer['autoload']['psr-4'])) {
+            throw new RuntimeException('No PSR-4 autoload configuration found in theme composer.json.');
+        }
+
+        $reflector = new ReflectionClass(get_class($this));
+        $currentNamespace = $reflector->getNamespaceName();
+
+        // Find the PSR-4 namespace that matches the current service provider's namespace
+        foreach ($composer['autoload']['psr-4'] as $namespace => $path) {
+            $namespace = rtrim($namespace, '\\');
+            if (str_starts_with($currentNamespace, $namespace)) {
+                return $namespace;
+            }
+        }
+
+        throw new RuntimeException('Unable to determine theme namespace from composer.json autoload configuration.');
     }
 
     /**

@@ -9,7 +9,7 @@ class ThemePersister
 {
     public function __construct(
         protected Filesystem $files,
-        protected ThemeDataCollector $themeDataCollector
+        protected ThemeSettingsLoader $themeSettingsLoader
     ) {}
 
     public function persist(array $data)
@@ -31,7 +31,7 @@ class ThemePersister
             ->filter(fn ($file) => $file->getFilename() !== '.last-deploy');
 
         foreach ($files as $file) {
-            $content = $this->themeDataCollector->loadFileContent($file->getPathname());
+            $content = $this->themeSettingsLoader->loadFileContent($file->getPathname());
             $filePath = $newVersionPath.'/'.$file->getRelativePathname();
 
             $this->files->ensureDirectoryExists(dirname($filePath));
@@ -78,7 +78,7 @@ class ThemePersister
         }
 
         if ($parentDataPath) {
-            $parentData = $this->themeDataCollector->loadFileContent($parentDataPath);
+            $parentData = $this->themeSettingsLoader->loadFileContent($parentDataPath);
             $content['parent'] = str_replace(config('bagisto_visual.data_path').DIRECTORY_SEPARATOR, '', $parentDataPath); // Store the relative path
             $content = $this->computeDiff($content, $parentData);
         }
@@ -123,7 +123,7 @@ class ThemePersister
         }
 
         if ($parentDataPath && $parentDataPath !== $path) {
-            $parentData = $this->themeDataCollector->loadFileContent($parentDataPath);
+            $parentData = $this->themeSettingsLoader->loadFileContent($parentDataPath);
             $content['parent'] = str_replace(config('bagisto_visual.data_path').DIRECTORY_SEPARATOR, '', $parentDataPath); // Store the relative path
             $content = $this->computeDiff($content, $parentData);
         }

@@ -10,6 +10,11 @@ class ColorSchemeTransformer
             return null;
         }
 
+        // For editor context, return just the ID
+        if (request()->is('admin/visual/editor*')) {
+            return $colorScheme;
+        }
+
         return new ColorSchemeValue($colorScheme);
     }
 }

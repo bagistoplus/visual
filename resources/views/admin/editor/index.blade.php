@@ -18,7 +18,7 @@
       <link
         rel="icon"
         sizes="16x16"
-        href="{{ asset('vendor/webkul/ui/assets/images/favicon.ico') }}"
+        href="{{ bagisto_asset('images/favicon.ico') }}"
       />
     @endif
 

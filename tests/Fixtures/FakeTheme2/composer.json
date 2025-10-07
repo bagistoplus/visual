@@ -1,1 +1,7 @@
-{}
+{
+    "autoload": {
+        "psr-4": {
+            "BagistoPlus\\Visual\\Tests\\Fixtures\\FakeTheme2\\": ""
+        }
+    }
+}

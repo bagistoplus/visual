@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool inDesignMode()
  * @method static string activeTheme()
  * @method static bool inPreviewMode()
+ * @method static void addJsonView(string $path)
+ * @method static array jsonViews()
  * @method static mixed renderingView(string|null $view = '')
  * @method static mixed renderingJsonView(string|null $view = '')
  * @method static mixed startRenderingLayout()
@@ -23,8 +25,13 @@ use Illuminate\Support\Facades\Facade;
  * @method static mixed registerTemplate(\BagistoPlus\Visual\Support\Template $template)
  * @method static mixed getTemplates()
  * @method static mixed getTemplateForRoute(string $routeName)
- * @method static void vite(string|array $assets, array $options = [])
- * @method static \Illuminate\Support\HtmlString renderVite()
+ * @method static void preloadModel(string $type, $model)
+ * @method static array preloadedModels()
+ * @method static void assets(string $buildDirectory, string|null $manifestFilename = 'manifest.json')
+ * @method static void script(array|string $scripts)
+ * @method static void style(array|string $styles)
+ * @method static \Illuminate\Support\HtmlString renderScripts()
+ * @method static \Illuminate\Support\HtmlString renderStyles()
  *
  * @see \BagistoPlus\Visual\ThemeEditor
  */
