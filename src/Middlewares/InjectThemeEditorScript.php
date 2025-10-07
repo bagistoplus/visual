@@ -2,132 +2,45 @@
 
 namespace BagistoPlus\Visual\Middlewares;
 
-use BagistoPlus\Visual\Facades\ThemePathsResolver;
-use BagistoPlus\Visual\ThemeDataCollector;
 use BagistoPlus\Visual\ThemeEditor;
-use Closure;
+use BagistoPlus\Visual\ThemeSettingsLoader;
+use Craftile\Laravel\Middlewares\PreviewScriptMiddleware;
+use Craftile\Laravel\PreviewDataCollector;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Webkul\Category\Repositories\CategoryRepository;
 use Webkul\Product\Repositories\ProductRepository;
 
-class InjectThemeEditorScript
+class InjectThemeEditorScript extends PreviewScriptMiddleware
 {
     public function __construct(
         protected ThemeEditor $themeEditor,
-        protected ThemeDataCollector $themeDataCollector,
+        protected ThemeSettingsLoader $themeSettingsLoader,
         protected CategoryRepository $categoryRepository,
-        protected ProductRepository $productRepository
+        protected ProductRepository $productRepository,
+        protected PreviewDataCollector $previewCollector
     ) {}
 
     /**
-     * Inject theme editor metadata in the response
-     *
-     * @return mixed
+     * Build the scripts to inject for preview functionality.
      */
-    public function handle(Request $request, Closure $next)
+    protected function buildPreviewScripts(array $pageData): string
     {
-        if (! $this->themeEditor->inDesignMode() && ! $this->themeEditor->inPreviewMode()) {
-            return $next($request);
-        }
+        $settingsBag = $this->themeSettingsLoader->loadActiveThemeSettings();
 
-        $response = $next($request);
-
-        if (
-            ! $this->isHtmlResponse($response)
-            || $response->getStatusCode() >= 500
-            || Route::currentRouteName() === 'imagecache'
-        ) {
-            return $response;
-        }
-
-        if ($this->themeEditor->inDesignMode()) {
-            $renderedSections = collect($this->themeEditor->renderedSections());
-
-            $themeData = [
-                'url' => $request->fullUrl(),
-
-                'theme' => $this->themeEditor->activeTheme(),
-
-                'channel' => core()->getRequestedChannelCode(),
-
-                'locale' => core()->getRequestedLocaleCode(),
-
-                'template' => $this->themeEditor->getTemplateForRoute(
-                    $this->fixCategoryOrProductRoute(Route::currentRouteName())
-                ),
-
-                'hasStaticContent' => $renderedSections->filter(function ($item) {
-                    return in_array($item['group'], ['beforeContent', 'afterContent']);
-                })->isNotEmpty(),
-
-                'sectionsOrder' => $renderedSections->where('group', 'content')->pluck('id'),
-
-                'beforeContentSectionsOrder' => $renderedSections
-                    ->where('group', 'beforeTemplate')
-                    ->merge($renderedSections->where('group', 'beforeContent'))
-                    ->pluck('id'),
-
-                'afterContentSectionsOrder' => $renderedSections
-                    ->where('group', 'afterContent')
-                    ->merge($renderedSections->where('group', 'afterTemplate'))
-                    ->pluck('id'),
-
-                'sectionsData' => (object) $this->themeDataCollector->getSectionsData()->all(),
-
-                'settings' => $this->themeDataCollector->getThemeSettings(),
-
-                'source' => $this->themeEditor->renderingJsonView() ? encrypt($this->themeEditor->renderingJsonView()) : null,
-
-                'haveEdits' => $this->checkIfHaveEdits(),
-            ];
-
-            /** @var \BagistoPlus\Visual\Theme\Theme */
-            $theme = themes()->current();
-
-            $editorScript = view('visual::admin.editor.injected-script', [
-                'theme' => $this->getCurrentTheme(),
-                'themeData' => $themeData,
-                'templates' => $this->themeEditor->getTemplates(),
-                'settingsSchema' => $this->translateSettingsSchema($theme->settingsSchema),
-                'preloadedModels' => $this->themeEditor->preloadedModels(),
-            ]);
-        } else {
-            $editorScript = view('visual::admin.editor.injected-script', [
-                'theme' => $this->getCurrentTheme(),
-            ]);
-        }
-
-        $content = str_replace('</body>', sprintf('%s</body>', $editorScript), $response->getContent());
-        $response->setContent($content);
-
-        return $response;
-    }
-
-    protected function checkIfHaveEdits(): bool
-    {
-        $theme = $this->themeEditor->activeTheme();
-        $channel = core()->getRequestedChannelCode();
-        $locale = core()->getRequestedLocaleCode();
-
-        $lastDeployFile = ThemePathsResolver::getThemeBaseDataPath($theme, 'editor/.last-deploy');
-
-        if (! file_exists($lastDeployFile)) {
-            return false;
-        }
-
-        $lastDeploy = filemtime($lastDeployFile);
-
-        $themeJsonPath = ThemePathsResolver::getThemeBaseDataPath($theme, "editor/{$channel}/{$locale}/theme.json");
-
-        if (! file_exists($themeJsonPath)) {
-            return false;
-        }
-
-        $lastEdit = filemtime($themeJsonPath);
-
-        return $lastEdit > $lastDeploy;
+        return view('visual::admin.editor.injected-script', [
+            'pageData' => [
+                'content' => $pageData,
+                'template' => [
+                    'url' => request()->fullUrl(),
+                    'name' => $this->themeEditor->getTemplateForRoute(
+                        $this->fixCategoryOrProductRoute(Route::currentRouteName())
+                    ),
+                    'sources' => encrypt($this->themeEditor->jsonViews()),
+                ],
+                'settings' => $settingsBag->toArray(),
+            ],
+        ])->render();
     }
 
     protected function getCurrentTheme()

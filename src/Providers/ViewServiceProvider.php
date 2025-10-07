@@ -4,36 +4,24 @@ namespace BagistoPlus\Visual\Providers;
 
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
-use BagistoPlus\Visual\LivewireFeatures\SupportComponentAttributes;
-use BagistoPlus\Visual\LivewireFeatures\SupportSectionData;
 use BagistoPlus\Visual\Theme\Theme;
 use BagistoPlus\Visual\Theme\Themes;
 use BagistoPlus\Visual\ThemePathsResolver;
 use BagistoPlus\Visual\View\BladeDirectives;
-use BagistoPlus\Visual\View\JsonViewCompiler;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\View\Engines\CompilerEngine;
 
 class ViewServiceProvider extends ServiceProvider
 {
-    public function register()
-    {
-        //
-    }
-
     public function boot()
     {
         $this->registerBladeDirectives();
-
-        $this->bootLivewireFeatures();
         $this->bootViewComposers();
 
         $this->app->bind(\Webkul\Theme\Themes::class, Themes::class);
-        $this->app->singleton('themes', fn() => new Themes);
+        $this->app->singleton('themes', fn () => new Themes);
 
-        $this->app->singleton(ThemePathsResolver::class, function (Application $app) {
+        $this->app->singleton(ThemePathsResolver::class, function () {
             return new ThemePathsResolver;
         });
     }
@@ -53,19 +41,13 @@ class ViewServiceProvider extends ServiceProvider
         Blade::directive('visual_color_vars', [BladeDirectives::class, 'visualColorVars']);
     }
 
-    protected function bootLivewireFeatures()
-    {
-        $this->app['livewire']->componentHook(SupportSectionData::class);
-        $this->app['livewire']->componentHook(SupportComponentAttributes::class);
-    }
-
     protected function bootViewComposers()
     {
         view()->composer('shop::*', function ($view) {
             $theme = themes()->current();
 
             if ($theme instanceof Theme && $theme->isVisualTheme) {
-                $theme->settings = Visual::themeDataCollector()->getThemeSettings();
+                $theme->settings = Visual::themeSettingsLoader()->loadThemeSettings($theme);
                 $view->with('theme', $theme);
             }
         });

@@ -1,24 +1,69 @@
 <script setup lang="ts">
-  import { Popover } from '@ark-ui/vue/popover';
-  import ProductListbox from './ProductListbox.vue'
-  import { useStore } from '../store';
-  import { Product } from '../types';
+import type { PropertyField } from '@craftile/types';
+import { Popover } from '@ark-ui/vue/popover';
+import ProductListbox from './ProductListbox.vue'
+import { Product } from '../types';
+import { useHttpClient } from '../composables/http';
+import useI18n from '../composables/i18n';
 
-  const store = useStore();
-  const model = defineModel<number | null>();
-  const opened = ref(false);
+interface Props {
+  field: PropertyField;
+}
 
-  const selectedProduct = computed<Product | null>({
-    get: () => model.value ? store.getProduct(model.value) : null,
-    set: (product: Product | null) => {
-      model.value = product ? product.id : null;
-    }
+defineProps<Props>();
+
+const { t } = useI18n();
+const { get } = useHttpClient();
+const model = defineModel<number | null>();
+const opened = ref(false);
+
+const productsCache = ref<Map<number, Product>>(new Map());
+const selectedProduct = ref<Product | null>(null);
+
+// Fetch product details when model changes
+watch(() => model.value, async (productId) => {
+  if (!productId) {
+    selectedProduct.value = null;
+    return;
+  }
+
+  if (productsCache.value.has(productId)) {
+    selectedProduct.value = productsCache.value.get(productId)!;
+    return;
+  }
+
+  const request = get<Product>(`/api/products/${productId}`);
+
+  request.onSuccess((data) => {
+    productsCache.value.set(productId, data);
+    selectedProduct.value = data;
   });
+
+  request.onError((error) => {
+    console.error('Failed to fetch product:', error);
+  });
+
+  await request.execute();
+}, { immediate: true });
+
+const updateProduct = (product: Product | null) => {
+  selectedProduct.value = product;
+  model.value = product ? product.id : null;
+  if (product) {
+    productsCache.value.set(product.id, product);
+  }
+};
 
 </script>
 
 <template>
   <div>
+    <label
+      v-if="field.label"
+      class="text-sm block mb-1 font-medium text-gray-700"
+    >
+      {{ field.label }}
+    </label>
     <Popover.Root v-model:open="opened">
       <Popover.Trigger as-child>
         <div
@@ -44,7 +89,7 @@
               <i-heroicons-x-mark />
             </button>
           </template>
-          <span v-else>{{ $t('Select product') }}</span>
+          <span v-else>{{ t('Select product') }}</span>
         </div>
       </Popover.Trigger>
       <Popover.Positioner class="w-[var(--reference-width)] !z-10">
@@ -58,7 +103,7 @@
 
           <ProductListbox
             v-model="selectedProduct"
-            @update:model-value="(opened = false)"
+            @update:model-value="updateProduct($event); opened = false"
           />
         </Popover.Content>
       </Popover.Positioner>

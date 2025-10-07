@@ -45,8 +45,8 @@ Visit the official documentation for full guides at: [https://visual.bagistoplus
 
 ## Requirements
 
-- Bagisto version: ^2.2
-- PHP version: ^8.1
+- Bagisto version: ^2.2.2
+- PHP version: ^8.2
 
 ## Changelog
 

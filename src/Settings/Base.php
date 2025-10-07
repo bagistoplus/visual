@@ -3,10 +3,6 @@
 namespace BagistoPlus\Visual\Settings;
 
 use Craftile\Laravel\Property;
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Support\Str;
-use JsonSerializable;
-
 
 abstract class Base extends Property
 {

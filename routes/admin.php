@@ -8,6 +8,9 @@ Route::prefix('/visual/editor')->group(function () {
     Route::post('api/persist-theme', [ThemeEditorController::class, 'persistTheme'])
         ->name('visual.admin.editor.api.persist');
 
+    Route::post('api/persist-settings', [ThemeEditorController::class, 'persistThemeSettings'])
+        ->name('visual.admin.editor.api.persist_settings');
+
     Route::post('api/publish-theme', [ThemeEditorController::class, 'publishTheme'])
         ->name('visual.admin.editor.api.publish');
 

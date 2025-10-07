@@ -1,66 +1,82 @@
 <script lang="ts" setup>
-  import { Dialog } from '@ark-ui/vue/dialog';
-  import { Field } from '@ark-ui/vue/field';
+import type { PropertyField } from '@craftile/types';
+import { Button } from '@craftile/editor/ui';
+import { Dialog } from '@ark-ui/vue/dialog';
+import { Field } from '@ark-ui/vue/field';
+import useI18n from '../composables/i18n';
 
-  const isDirty = ref(false);
-  const opened = ref(false);
-  const model = defineModel<string | null>();
-  const initialValue = ref<string | null | undefined>(null);
-  const search = ref('');
-  const selectedSet = ref('lucide');
-  const initialized = ref(false);
+interface Props {
+  field: PropertyField;
+}
 
-  const { sets, isFetching, getIcons, findIconById, findSetByIconId, fetchSet } = useIconStore();
+defineProps<Props>();
 
-  const icons = computed(() => {
-    const list = getIcons(selectedSet.value);
+const { t } = useI18n();
+const isDirty = ref(false);
+const opened = ref(false);
+const model = defineModel<string | null>();
+const initialValue = ref<string | null | undefined>(null);
+const search = ref('');
+const selectedSet = ref('lucide');
+const initialized = ref(false);
 
-    if (!search.value) {
-      return list;
-    }
+const { sets, isFetching, getIcons, findIconById, findSetByIconId, fetchSet } = useIconStore();
 
-    return list.filter((icon) =>
-      icon.name.toLowerCase().includes(search.value.toLowerCase())
-    );
-  });
+const icons = computed(() => {
+  const list = getIcons(selectedSet.value);
 
-  const selectedIcon = computed(() => {
-    return model.value ? findIconById(model.value) : null;
-  });
-
-  watch(() => sets.value, (newSets) => {
-    if (initialized.value || newSets.length === 0 || !model.value) {
-      return;
-    }
-
-    const currentIconSet = findSetByIconId(model.value);
-
-    if (currentIconSet) {
-      selectedSet.value = currentIconSet.id;
-      fetchSet(currentIconSet.id);
-    }
-
-    initialized.value = true;
-  }, { immediate: true });
-
-  function onChangeSet() {
-    fetchSet(selectedSet.value);
+  if (!search.value) {
+    return list;
   }
 
-  function onSelectIcon(icon: any) {
-    model.value = icon.id;
-    isDirty.value = true;
+  return list.filter((icon) =>
+    icon.name.toLowerCase().includes(search.value.toLowerCase())
+  );
+});
+
+const selectedIcon = computed(() => {
+  return model.value ? findIconById(model.value) : null;
+});
+
+watch(() => sets.value, (newSets) => {
+  if (initialized.value || newSets.length === 0 || !model.value) {
+    return;
   }
 
-  function onCancel() {
-    opened.value = false;
-    model.value = initialValue.value;
-    isDirty.value = false;
+  const currentIconSet = findSetByIconId(model.value);
+
+  if (currentIconSet) {
+    selectedSet.value = currentIconSet.id;
+    fetchSet(currentIconSet.id);
   }
+
+  initialized.value = true;
+}, { immediate: true });
+
+function onChangeSet() {
+  fetchSet(selectedSet.value);
+}
+
+function onSelectIcon(icon: any) {
+  model.value = icon.id;
+  isDirty.value = true;
+}
+
+function onCancel() {
+  opened.value = false;
+  model.value = initialValue.value;
+  isDirty.value = false;
+}
 </script>
 
 <template>
   <div>
+    <label
+      v-if="field.label"
+      class="text-sm block mb-1 font-medium text-gray-700"
+    >
+      {{ field.label }}
+    </label>
     <Dialog.Root
       v-model:open="opened"
       :modal="false"
@@ -71,11 +87,11 @@
         <span
           v-if="selectedIcon"
           v-html="selectedIcon.svg"
-          class="w-8 h-8 text-gray-600"
+          class="w-8 h-8 text-zinc-600"
         ></span>
         <i-heroicons-question-mark-circle
           v-else
-          class="w-8 h-8 text-gray-600"
+          class="w-8 h-8 text-zinc-600"
         />
 
         <button
@@ -86,10 +102,10 @@
           <i-heroicons-x-mark class="w-4 h-4" />
         </button>
       </Dialog.Trigger>
-      <Dialog.Positioner class="flex fixed z-50 top-14 left-14 bottom-0 w-[19.9rem] items-center justify-center">
+      <Dialog.Positioner class="flex absolute z-50 inset-0 w-full h-full items-center justify-center">
         <Dialog.Content class="bg-white shadow flex flex-col w-full h-full overflow-hidden">
           <header class="flex-none h-12 border-b border-neutral-200 flex gap-3 px-4 items-center justify-between">
-            <Dialog.Title>{{ $t('Icon Picker') }}</Dialog.Title>
+            <Dialog.Title>{{ t('Icon Picker') }}</Dialog.Title>
             <button
               @click="onCancel"
               class="cursor-pointer rounded-lg p-0.5 text-neutral-700 hover:bg-neutral-300"
@@ -110,10 +126,10 @@
                 >{{ set.name }}</option>
               </select>
               <Field.Root class="relative">
-                <i-heroicons-magnifying-glass class="absolute left-3 top-2.5 text-gray-500" />
+                <i-heroicons-magnifying-glass class="absolute left-3 top-2.5 text-zinc-500" />
                 <Field.Input
                   v-model="search"
-                  class="w-full pr-3 pl-9 h-10 text-surface-500 rounded-b border border-gray-300 focus:outline-none focus:ring focus:ring-gray-700"
+                  class="w-full pr-3 pl-9 h-10 text-surface-500 rounded-b border border-zinc-300 focus:outline-none focus:ring focus:ring-zinc-700"
                   placeholder="Search"
                 />
               </Field.Root>
@@ -123,7 +139,7 @@
               v-if="isFetching"
               class="flex items-center justify-center py-6"
             >
-              <i-lucide-loader-2 class="w-6 h-6 animate-spin text-gray-500" />
+              <i-lucide-loader-2 class="w-6 h-6 animate-spin text-zinc-500" />
             </div>
 
             <div
@@ -133,10 +149,10 @@
               <button
                 v-for="icon in icons"
                 type="button"
-                class="flex justify-center p-3 border rounded text-gray-500 "
+                class="flex justify-center p-3 border rounded text-zinc-500 "
                 :class="{
                   'border-blue-300 bg-blue-50 hover:bg-blue-50': model === icon.id,
-                  'hover:bg-gray-100': model !== icon.id,
+                  'hover:bg-zinc-100': model !== icon.id,
                 }"
                 @click="onSelectIcon(icon)"
               >
@@ -148,15 +164,15 @@
             </div>
           </div>
           <footer class="flex-none flex items-center gap-3 p-3 justify-end h-12 border-t border-neutral-200">
-            <button
-              @click="onCancel"
-              class="text-sm shadow px-3 py-1 rounded bg-neutral-100 border"
-            >{{ $t('Cancel') }}</button>
-            <Dialog.CloseTrigger
-              class="text-sm shadow px-3 py-1 rounded bg-gray-800 text-white border hover:bg-gray-700"
-              :class="{ 'opacity-40 cursor-not-allowed': !isDirty }"
-              :disabled="!isDirty"
-            >Select</Dialog.CloseTrigger>
+            <Button @click="onCancel">{{ t('Cancel') }}</Button>
+            <Dialog.CloseTrigger as-child>
+              <Button
+                variant="primary"
+                :disabled="!isDirty"
+              >
+                {{ t('Select') }}
+              </Button>
+            </Dialog.CloseTrigger>
           </footer>
         </Dialog.Content>
       </Dialog.Positioner>

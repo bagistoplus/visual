@@ -1,37 +1,61 @@
 <script setup lang="ts">
-  import { useStore } from '../store';
-  import { Category } from '../types';
+import { Category } from '../types';
+import { useState } from '../state';
+import { useHttpClient } from '../composables/http';
+import useI18n from '../composables/i18n';
 
-  const store = useStore();
-  const model = defineModel<Category | null>();
-  const search = ref('');
+const { t } = useI18n();
+const { get } = useHttpClient();
+const { channel, locale } = useState();
+const model = defineModel<Category | null>();
+const search = ref('');
+const categories = ref<Category[]>([]);
 
-  const { isFetching, data, execute } = store.fetchCategories();
-
-  const categories = computed(() => {
-    return data.value ? data.value.data : [];
+const requestUrl = computed(() => {
+  const params = new URLSearchParams({
+    channel: channel.value,
+    locale: locale.value,
   });
+  if (search.value) {
+    params.append('name', search.value);
+  }
+  return `/api/categories?${params}`;
+});
 
-  const onSearch = useDebounceFn(() => {
-    execute({ name: search.value });
-  });
+const { isFetching, execute, onSuccess, onError } = get(requestUrl);
 
-  onMounted(() => execute());
+onSuccess((data) => {
+  categories.value = data?.data || [];
+});
 
-  watch([() => store.themeData.channel, () => store.themeData.locale], () => execute());
+onError((error) => {
+  console.error('Failed to fetch categories:', error);
+});
+
+const debouncedFetch = useDebounceFn(() => {
+  execute();
+}, 300);
+
+const onSearch = () => {
+  debouncedFetch();
+};
+
+onMounted(() => execute());
+
+watch([channel, locale], () => execute());
 </script>
 <template>
   <div class="flex flex-col overflow-y-hidden">
     <div
       v-if="search || categories.length > 2"
-      class="flex items-center mx-2 my-2 px-3 py-1 gap-3 border rounded-lg focus-within:ring focus-within:ring-gray-700"
+      class="flex items-center mx-2 my-2 px-3 py-1 gap-3 border rounded-lg focus-within:ring-2 focus-within:ring-zinc-700"
     >
       <i-heroicons-magnifying-glass class="w-4 h-4" />
       <input
         v-model="search"
         type="text"
-        class="focus:outline-none text-gray-600"
-        :placeholder="$t('Search category')"
+        class="focus:outline-none text-zinc-600"
+        :placeholder="t('Search category')"
         @input="onSearch"
       >
     </div>
@@ -40,7 +64,7 @@
         v-if="isFetching"
         class="h-20 flex items-center justify-center"
       >
-        <Spinner class="h-6 w-6 text-gray-700" />
+        <Spinner class="h-6 w-6 text-zinc-700" />
       </div>
       <div v-else>
         <a

@@ -15,24 +15,28 @@ class Range extends Base
     public function min(int|float $min): self
     {
         $this->meta['min'] = $min;
+
         return $this;
     }
 
     public function max(int|float $max): self
     {
         $this->meta['max'] = $max;
+
         return $this;
     }
 
     public function step(int|float $step): self
     {
         $this->meta['step'] = $step;
+
         return $this;
     }
 
     public function unit(string $unit): self
     {
         $this->meta['unit'] = $unit;
+
         return $this;
     }
 }

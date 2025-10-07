@@ -2,8 +2,8 @@
 
 namespace BagistoPlus\Visual;
 
+use BagistoPlus\Visual\Data\Template;
 use BagistoPlus\Visual\Facades\ThemeEditor;
-use BagistoPlus\Visual\Support\Template;
 use Webkul\Category\Repositories\CategoryRepository;
 use Webkul\CMS\Repositories\PageRepository;
 use Webkul\Product\Repositories\ProductRepository;

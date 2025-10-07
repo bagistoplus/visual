@@ -39,7 +39,7 @@ class ColorSchemeGroup extends Base
             $missing = array_diff(self::REQUIRED_TOKENS, array_keys($tokens));
 
             if (! empty($missing)) {
-                throw new \InvalidArgumentException("Color scheme '{$name}' is missing tokens: " . implode(', ', $missing));
+                throw new \InvalidArgumentException("Color scheme '{$name}' is missing tokens: ".implode(', ', $missing));
             }
         }
 

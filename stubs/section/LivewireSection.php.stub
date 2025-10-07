@@ -2,7 +2,7 @@
 
 namespace {{ namespace }};
 
-use BagistoPlus\Visual\Sections\LivewireSection;
+use BagistoPlus\Visual\Blocks\LivewireSection;
 
 class {{ class }} extends LivewireSection
 {
@@ -11,12 +11,6 @@ class {{ class }} extends LivewireSection
     public static function settings(): array
     {
         // section settings
-        return [];
-    }
-
-    public static function blocks(): array
-    {
-        // section blocks
         return [];
     }
 }

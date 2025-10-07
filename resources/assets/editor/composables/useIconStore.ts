@@ -1,4 +1,4 @@
-import { useFetchIcons } from '../api';
+import { useHttpClient } from './http';
 
 export interface Icon {
   id: string;
@@ -15,12 +15,13 @@ export interface IconSet {
 const sets = ref<IconSet[]>([]);
 const loadedSets = ref(new Map<string, Icon[]>());
 const loadingSets = ref(new Set<string>());
+const initialized = ref(false);
 
-const { execute, isFetching, onFetchResponse } = useFetchIcons({ immediate: true });
+const requestUrl = ref(window.editorConfig.routes.getIcons);
+const { get } = useHttpClient();
+const { isFetching, execute, onSuccess, onError } = get(requestUrl);
 
-onFetchResponse(async (response) => {
-  const responseData = await response.json();
-
+onSuccess((responseData) => {
   if (!sets.value.length && responseData.sets) {
     sets.value = responseData.sets;
   }
@@ -31,6 +32,30 @@ onFetchResponse(async (response) => {
   }
 });
 
+onError((error) => {
+  console.error('Failed to fetch icons:', error);
+});
+
+async function fetchIcons(params?: Record<string, any>) {
+  const url = new URL(window.editorConfig.routes.getIcons, window.location.origin);
+
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      url.searchParams.append(key, value);
+    }
+  }
+
+  requestUrl.value = url.href;
+  await execute();
+}
+
+function ensureInitialized() {
+  if (!initialized.value) {
+    initialized.value = true;
+    fetchIcons();
+  }
+}
+
 function fetchSet(setId: string) {
   if (loadedSets.value.has(setId) || loadingSets.value.has(setId)) {
     return;
@@ -38,7 +63,7 @@ function fetchSet(setId: string) {
 
   loadingSets.value.add(setId);
 
-  execute({ set: setId });
+  fetchIcons({ set: setId });
 }
 
 function getIcons(setId: string): Icon[] {
@@ -66,6 +91,9 @@ function findIconById(iconId: string): Icon | null {
 }
 
 export function useIconStore() {
+  // Ensure icons are fetched when first used
+  ensureInitialized();
+
   return {
     sets: computed(() => sets.value),
     getIcons,

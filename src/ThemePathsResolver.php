@@ -7,8 +7,6 @@ use Webkul\Core\Models\Channel;
 
 class ThemePathsResolver
 {
-    public function __construct() {}
-
     /**
      * Resolve a specific data path within a theme for a given channel and locale.
      *
@@ -31,15 +29,15 @@ class ThemePathsResolver
     }
 
     /**
-     * Resolve the path to the fallback theme data based on the channel and locale hierarchy.
+     * Resolve the path to theme settings file based on the channel and locale hierarchy.
      *
      * @param  string  $themeCode  The code of the theme.
      * @param  string  $channel  The code of the current channel.
      * @param  string  $locale  The locale for the current channel.
      * @param  string  $mode  The mode of the theme ('live', 'editor', etc.). Defaults to 'live'.
-     * @return string|null The resolved fallback data path or null if no path exists.
+     * @return string|null The resolved settings path or null if no path exists.
      */
-    public function resolveThemeFallbackDataPath(string $themeCode, string $channel, string $locale, string $mode = 'live'): ?string
+    public function resolveThemeSettingsPath(string $themeCode, string $channel, string $locale, string $mode = 'live'): ?string
     {
         /** @var \Webkul\Core\Models\Channel */
         $defaultChannel = core()->getDefaultChannel();
@@ -77,7 +75,7 @@ class ThemePathsResolver
      */
     public function resolveThemeViewsPaths(string $themeCode): array
     {
-        $mode = ThemeEditor::inDesignMode() ? 'editor' : 'live';
+        $mode = ThemeEditor::active() ? 'editor' : 'live';
 
         /** @var \Webkul\Core\Models\Channel $requestedChannel */
         $requestedChannel = core()->getRequestedChannel();

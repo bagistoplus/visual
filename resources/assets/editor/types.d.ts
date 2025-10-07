@@ -1,5 +1,34 @@
+import { BlockSchema } from '@craftile/types';
+import type * as Vue from 'vue';
+
 export type ViewMode = 'desktop' | 'mobile' | 'fullscreen' | 'reordering';
 export type SettingValue = string | number | boolean | object | null | undefined;
+
+declare global {
+  interface Window {
+    editorConfig: ThemeEditorConfig;
+    craftileEditor: any;
+    Vue: typeof Vue;
+  }
+
+  interface DocumentEventMap {
+    'visual:editor:ready': CustomEvent<{
+      editor: any;
+      Vue: typeof Vue;
+    }>;
+  }
+}
+
+export interface Theme {
+  name: string;
+  code: string;
+  version: string;
+  settings: Record<string, SettingValue>;
+  settingsSchema: {
+    name: string;
+    settings: Setting[];
+  }[];
+}
 
 export interface ThemeEditorConfig {
   baseUrl: string;
@@ -7,10 +36,12 @@ export interface ThemeEditorConfig {
   storefrontUrl: string;
   channels: Channel[];
   defaultChannel: string;
-  sections: Record<string, Section>;
+  blockSchemas: BlockSchema[];
+  theme: Theme;
   templates: Template[];
   routes: {
-    persistTheme: string;
+    persistUpdates: string;
+    persistThemeSettings: string;
     publishTheme: string;
     themesIndex: string;
     uploadImage: string;
@@ -20,22 +51,23 @@ export interface ThemeEditorConfig {
   };
   messages: Record<string, any>;
   editorLocale: string;
+  haveEdits: boolean;
 }
 
-interface Template {
+export interface Template {
   template: string;
   label: string;
   icon: string;
   previewUrl: string;
 }
 
-interface Locale {
+export interface Locale {
   code: string;
   name: string;
   logo_url: string;
 }
 
-interface Channel {
+export interface Channel {
   code: string;
   name: string;
   locales: Locale[];
@@ -115,7 +147,7 @@ export type SettingsSchema = {
   settings: Setting[];
 }[];
 
-interface Image {
+export interface Image {
   name: string;
   path: string;
   url: string;
@@ -197,3 +229,14 @@ type ColorSchemeDefintion = {
     | 'info'
     | 'on-info']: string;
 };
+
+export interface GradientStop {
+  color: string; // hexa format (#rrggbbaa)
+  position: number; // 0-100
+}
+
+export interface GradientValue {
+  type: 'linear' | 'radial';
+  angle?: number;
+  stops: GradientStop[];
+}

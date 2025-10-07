@@ -49,7 +49,7 @@
       </div>
     @empty
       <div class="card">
-        {{ __('arcade::theme-editor.themes.no-themes') }}
+        {{ __('visual::theme-editor.themes.no-themes') }}
       </div>
     @endforelse
   </div>

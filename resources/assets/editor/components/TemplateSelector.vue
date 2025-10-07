@@ -1,51 +1,52 @@
 <script setup lang="ts">
-  import { Menu } from '@ark-ui/vue/menu';
-  import { useStore } from '../store';
+import { Menu } from '@ark-ui/vue/menu';
+import { Button } from '@craftile/editor/ui';
 
-  const store = useStore();
-  const router = useRouter();
+import { useState } from '../state';
 
-  const emit = defineEmits<{
-    (e: 'select', value: any): void;
-  }>();
+const editor = useCraftileEditor();
+const { currentTemplate, templates, theme, channel, locale } = useState();
 
-  const model = defineModel<string>();
-  const selected = computed(() => store.templates.find(t => t.template === model.value));
+function onSelect({ value }: { value: string }) {
+  const template = templates.value.find(t => t.template === value);
 
-
-  watch(
-    [store.templates, () => store.themeData.template],
-    ([templates, activeTemplate]) => {
-      if (activeTemplate && model.value !== activeTemplate) {
-        model.value = activeTemplate;
-      } else if (!model.value && templates.length) {
-        model.value = templates[0].template;
-      }
-    },
-    { immediate: true }
-  );
-
-  function onSelect({ value }: { value: string }) {
-    model.value = value;
-    emit('select', selected.value);
+  if (template) {
+    const url = new URL(template.previewUrl);
+    url.searchParams.set('_designMode', theme.value!.code as string);
+    url.searchParams.set('channel', channel.value);
+    url.searchParams.set('locale', locale.value);
+    editor.preview.loadUrl(url.href);
   }
+}
 </script>
 
 <template>
-  <Menu.Root @select="onSelect">
-    <Menu.Trigger class="min-w-44 px-4 py-2 appearance-none rounded-lg cursor-pointer inline-flex gap-3 outline-none relative select-none items-center justify-center hover:bg-gray-200">
-      <template v-if="selected">
-        <span v-html="selected.icon"></span>
-        {{ selected.label }}
-      </template>
-      <Menu.Indicator>
-        <i-heroicons-chevron-down class="inline w-4" />
-      </Menu.Indicator>
+  <Menu.Root
+    @select="onSelect"
+    :positioning="{ gutter: 4 }"
+  >
+    <Menu.Trigger asChild>
+      <Button>
+        <template v-if="currentTemplate">
+          <span v-html="currentTemplate.icon"></span>
+          {{ currentTemplate.label }}
+        </template>
+        <template v-else-if="templates.length > 0">
+          <span v-html="templates[0].icon"></span>
+          {{ templates[0].label }}
+        </template>
+        <template v-else>
+          Select Template
+        </template>
+        <Menu.Indicator>
+          <i-heroicons-chevron-down class="inline w-4" />
+        </Menu.Indicator>
+      </Button>
     </Menu.Trigger>
     <Menu.Positioner class="w-64">
       <Menu.Content class="pointer-events-none border shadow flex gap-1 p-1 flex-col outline-none rounded bg-white data-[state=open]:animate-fade-in">
         <template
-          v-for="t in store.templates"
+          v-for="t in templates"
           :key="t.template"
         >
           <Menu.Separator v-if="t.template === '__separator__'" />

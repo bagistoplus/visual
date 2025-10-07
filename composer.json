@@ -27,16 +27,14 @@
     "andreiio/blade-remix-icon": "^3.6",
     "blade-ui-kit/blade-heroicons": "^2.4",
     "blade-ui-kit/blade-icons": "^1.7",
-    "craftile/laravel": "^0.1.0",
+    "craftile/laravel": "^0.3.0",
     "illuminate/contracts": "^10.0||^11.0",
-    "livewire/livewire": "^3.6",
     "mallardduck/blade-lucide-icons": "^1.23",
     "matthieumastadenis/couleur": "^0.1.2",
     "mews/purifier": "^3.4",
     "spatie/browsershot": "^3.61||^5.0",
     "spatie/once": "^3.1",
-    "symfony/filesystem": "^6.4",
-    "symfony/yaml": "^6.4"
+    "symfony/filesystem": "^6.4"
   },
   "require-dev": {
     "archielite/laravel-facade-docblock-generator": "^1.0",
@@ -44,6 +42,7 @@
     "calebdw/larastan-livewire": "^1.1",
     "larastan/larastan": "^2.9",
     "laravel/pint": "^1.14",
+    "livewire/livewire": "^3.6",
     "mockery/mockery": "^1.6",
     "nunomaduro/collision": "^8.1.1||^7.10.0",
     "orchestra/testbench": "^9.0.0||^8.22.0",
