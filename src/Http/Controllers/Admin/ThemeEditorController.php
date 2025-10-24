@@ -244,44 +244,44 @@ class ThemeEditorController extends Controller
         $schemas = collect(app(BlockSchemaRegistry::class)->all());
 
         return $schemas->map(function (BlockSchema $blockSchema) {
-                $currentGroup = null;
-                $properties = collect($blockSchema->properties)
-                    ->map(function ($prop) use (&$currentGroup) {
-                        $propArray = $prop->toArray();
+            $currentGroup = null;
+            $properties = collect($blockSchema->properties)
+                ->map(function ($prop) use (&$currentGroup) {
+                    $propArray = $prop->toArray();
 
-                        if ($propArray['type'] === 'header') {
-                            $currentGroup = $propArray['label'];
+                    if ($propArray['type'] === 'header') {
+                        $currentGroup = $propArray['label'];
 
-                            return null;
-                        }
+                        return null;
+                    }
 
-                        if ($currentGroup !== null) {
-                            $propArray['group'] = $currentGroup;
-                        }
+                    if ($currentGroup !== null) {
+                        $propArray['group'] = $currentGroup;
+                    }
 
-                        return $propArray;
-                    })
-                    ->filter()
-                    ->values();
+                    return $propArray;
+                })
+                ->filter()
+                ->values();
 
-                return [
-                    'type' => $blockSchema->type,
-                    'properties' => $properties,
-                    'accepts' => $blockSchema->accepts,
-                    'presets' => $blockSchema->presets,
-                    'private' => $blockSchema->private,
-                    'meta' => [
-                        'name' => $blockSchema->name,
-                        'icon' => $blockSchema->icon,
-                        'category' => $blockSchema->category,
-                        'description' => $blockSchema->description,
-                        'previewImageUrl' => asset($blockSchema->previewImageUrl),
-                        'isSection' => collect([SimpleSection::class, BladeSection::class, LivewireSection::class])->some(fn ($class) => is_subclass_of($blockSchema->class, $class)),
-                        'enabledOn' => $blockSchema->enabledOn ?? [],
-                        'disabledOn' => $blockSchema->disabledOn ?? [],
-                    ],
-                ];
-            })
+            return [
+                'type' => $blockSchema->type,
+                'properties' => $properties,
+                'accepts' => $blockSchema->accepts,
+                'presets' => $blockSchema->presets,
+                'private' => $blockSchema->private,
+                'meta' => [
+                    'name' => $blockSchema->name,
+                    'icon' => $blockSchema->icon,
+                    'category' => $blockSchema->category,
+                    'description' => $blockSchema->description,
+                    'previewImageUrl' => asset($blockSchema->previewImageUrl),
+                    'isSection' => collect([SimpleSection::class, BladeSection::class, LivewireSection::class])->some(fn ($class) => is_subclass_of($blockSchema->class, $class)),
+                    'enabledOn' => $blockSchema->enabledOn ?? [],
+                    'disabledOn' => $blockSchema->disabledOn ?? [],
+                ],
+            ];
+        })
             ->values();
     }
 
