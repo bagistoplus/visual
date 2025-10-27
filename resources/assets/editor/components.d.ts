@@ -8,6 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    BackButton: typeof import('./components/BackButton.vue')['default']
     CategoryListbox: typeof import('./components/CategoryListbox.vue')['default']
     CategoryPicker: typeof import('./components/CategoryPicker.vue')['default']
     ChannelSelector: typeof import('./components/ChannelSelector.vue')['default']

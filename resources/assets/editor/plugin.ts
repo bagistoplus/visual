@@ -27,10 +27,18 @@ import GradientPicker from './components/GradientPicker.vue';
 import PublishAction from './components/PublishAction.vue';
 import useI18n from './composables/i18n';
 import ConfirmPublish from './components/ConfirmPublish.vue';
+import BackButton from './components/BackButton.vue';
 
 const { t } = useI18n();
 function configureHeader(ui: PluginContext['editor']['ui']) {
+  ui.removeHeaderAction('back-button');
   ui.removeHeaderAction('title');
+
+  ui.registerHeaderAction({
+    id: 'back-button',
+    slot: 'left',
+    render: BackButton,
+  });
 
   ui.registerHeaderAction({
     id: 'title',
