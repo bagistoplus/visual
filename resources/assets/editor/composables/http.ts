@@ -2,6 +2,7 @@ import { Ref, ref, MaybeRefOrGetter, toValue } from 'vue';
 
 export interface UseFetchOptions {
   immediate?: boolean;
+  responseType?: 'json' | 'text';
 }
 
 export interface UseFetchReturn<T = any, D = any> {
@@ -15,6 +16,8 @@ export interface UseFetchReturn<T = any, D = any> {
   onSuccess: (fn: (data: T) => void) => void;
   onError: (fn: (error: Error) => void) => void;
   onFinish: (fn: () => void) => void;
+  json: () => UseFetchReturn<T, D>;
+  text: () => UseFetchReturn<string, D>;
 }
 
 export type HttpClient = {
@@ -63,13 +66,13 @@ function createUseFetch<T = any, D = any>(
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const result = await response.json();
-      data.value = result;
+      const result = options.responseType === 'text' ? await response.text() : await response.json();
+      data.value = result as T;
 
       // Call success callbacks
-      successCallbacks.forEach((cb) => cb(result));
+      successCallbacks.forEach((cb) => cb(result as T));
 
-      return result;
+      return result as T;
     } catch (err) {
       const fetchError = err instanceof Error ? err : new Error(String(err));
       error.value = fetchError;
@@ -115,7 +118,7 @@ function createUseFetch<T = any, D = any>(
     execute();
   }
 
-  return {
+  const returnValue: UseFetchReturn<T, D> = {
     data: data as Ref<T | null>,
     error,
     isFetching,
@@ -126,7 +129,17 @@ function createUseFetch<T = any, D = any>(
     onSuccess,
     onError,
     onFinish,
+    json: () => {
+      options.responseType = 'json';
+      return returnValue;
+    },
+    text: () => {
+      options.responseType = 'text';
+      return returnValue as UseFetchReturn<string, D>;
+    },
   };
+
+  return returnValue;
 }
 
 function createHttpClientInstance(): HttpClient {

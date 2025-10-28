@@ -19,7 +19,7 @@ export function persistUpdates(updates: UpdatesEvent) {
       },
       updates,
     }
-  );
+  ).text();
 
   request.onError((error) => {
     console.error('Failed to persist updates:', error);

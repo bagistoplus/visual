@@ -8,7 +8,6 @@ use BagistoPlus\Visual\Blocks\SimpleSection;
 use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use BagistoPlus\Visual\Http\Controllers\Controller;
-use BagistoPlus\Visual\Persistence\ComputeEffects;
 use BagistoPlus\Visual\Persistence\PersistEditorUpdates;
 use BagistoPlus\Visual\Persistence\PersistThemeSettings;
 use BagistoPlus\Visual\Persistence\PublishTheme;
@@ -35,7 +34,6 @@ class ThemeEditorController extends Controller
         protected PersistEditorUpdates $persistEditorUpdates,
         protected PersistThemeSettings $persistThemeSettings,
         protected PublishTheme $publishTheme,
-        protected ComputeEffects $computeEffects,
         protected RenderPreview $renderPreview,
         protected ThemeSettingsLoader $themeSettingsLoader
     ) {}
@@ -89,18 +87,11 @@ class ThemeEditorController extends Controller
             'updates.regions' => ['present', 'array'],
         ]);
 
-        $result = $this->persistEditorUpdates->handle($validated);
+        $this->persistEditorUpdates->handle($validated);
 
         $url = $request->input('template.url');
-        $blocksData = $validated['updates']['blocks'] ?? [];
-        $loadedBlocks = $result['loadedBlocks'] ?? [];
 
-        $effects = $this->computeEffects->execute($url, $blocksData, $loadedBlocks);
-
-        return response()->json([
-            'success' => true,
-            'effects' => $effects,
-        ]);
+        return $this->renderPreview->execute($url);
     }
 
     public function persistThemeSettings(Request $request)

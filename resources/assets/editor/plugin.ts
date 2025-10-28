@@ -181,6 +181,81 @@ function hasChanges(updates: UpdatesEvent): boolean {
   );
 }
 
+function determineBlocksToProcess(
+  updatedBlocks: Record<string, any>,
+  allBlocks: Record<string, any>
+): string[] {
+  const blocksToProcess: string[] = [];
+
+  for (const [blockId, block] of Object.entries(updatedBlocks)) {
+    // Skip if parent is also being updated
+    if (block.parentId && updatedBlocks[block.parentId]) {
+      continue;
+    }
+
+    const repeatedAncestor = findRepeatedAncestor(blockId, allBlocks);
+    if (repeatedAncestor) {
+      const parentOfRepeated = allBlocks[repeatedAncestor]?.parentId;
+      if (parentOfRepeated) blocksToProcess.push(parentOfRepeated);
+      continue;
+    }
+
+    if (allBlocks[blockId]?.ghost === true) {
+      const parentOfGhost = allBlocks[blockId]?.parentId;
+      if (parentOfGhost) blocksToProcess.push(parentOfGhost);
+      continue;
+    }
+
+    blocksToProcess.push(blockId);
+  }
+
+  return Array.from(new Set(blocksToProcess));
+}
+
+function findRepeatedAncestor(blockId: string, allBlocks: Record<string, any>): string | null {
+  let currentId = blockId;
+  while (allBlocks[currentId]?.parentId) {
+    const parentId = allBlocks[currentId].parentId;
+    if (!allBlocks[parentId]) break;
+    if (allBlocks[parentId]?.repeated === true) return parentId;
+    currentId = parentId;
+  }
+  return null;
+}
+
+function computeEffects(html: string, blocksToUpdate: string[]) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+
+  const effects: { html: Record<string, string>; css: string[]; js: string[] } = {
+    html: {},
+    css: [],
+    js: [],
+  };
+
+  doc.head.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
+    effects.css.push(link.outerHTML);
+  });
+
+  doc.querySelectorAll('style').forEach((style) => {
+    effects.css.push(style.outerHTML);
+  });
+
+  doc.querySelectorAll('script').forEach((script) => {
+    effects.js.push(script.outerHTML);
+  });
+
+  // Extract block HTML
+  for (const blockId of blocksToUpdate) {
+    const blockEl = doc.querySelector(`[data-block="${blockId}"]`);
+    if (blockEl) {
+      effects.html[blockId] = blockEl.outerHTML;
+    }
+  }
+
+  return effects;
+}
+
 export const CRAFTILE_EDITOR = Symbol('CRAFTILE_EDITOR');
 
 export default function (editorConfig: ThemeEditorConfig): CraftileEditorPlugin {
@@ -227,14 +302,18 @@ export default function (editorConfig: ThemeEditorConfig): CraftileEditorPlugin 
       const request = persistUpdates(mergedUpdates);
 
       try {
-        const result = await request.execute();
+        const htmlResponse = await request.execute();
 
-        if (result && result.effects) {
-          editor.preview.sendMessage('updates.effects', {
-            effects: result.effects,
-            ...mergedUpdates,
-          });
-        }
+        
+        const allBlocks = editor.engine.getPage().blocks;
+        const blocksToUpdate = determineBlocksToProcess(mergedUpdates.blocks, allBlocks);
+
+        const effects = computeEffects(htmlResponse, blocksToUpdate);
+
+        editor.preview.sendMessage('updates.effects', {
+          effects,
+          ...mergedUpdates,
+        });
       } catch (error) {
         if (error instanceof Error && error.name === 'AbortError') {
           return;

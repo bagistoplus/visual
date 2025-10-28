@@ -22,27 +22,15 @@ class RenderPreview
         app(JsonViewParser::class)->clearCache();
         app(ThemeSettingsLoader::class)->clearCache();
 
-        // Handle subdirectory installs by extracting relative path
+        // Handle subdirectory installs by redirecting
         $baseUrl = rtrim(config('app.url'));
         $basePath = parse_url($baseUrl, PHP_URL_PATH);
 
         if ($basePath !== null) {
-            // Remove base path from URL to get relative path
-            $parsedUrl = parse_url($url);
-            $fullPath = $parsedUrl['path'] ?? '/';
-
-            if (str_starts_with($fullPath, $basePath)) {
-                $relativePath = substr($fullPath, strlen($basePath)) ?: '/';
-            } else {
-                $relativePath = $fullPath;
-            }
-
-            parse_str($parsedUrl['query'] ?? '', $queryParams);
-            $request = Request::create($relativePath, 'GET', $queryParams);
-        } else {
-            $request = Request::create($url, 'GET');
+            return redirect($url);
         }
 
+        $request = Request::create($url, 'GET');
         $response = app()->handle($request);
 
         return $response->getContent();
