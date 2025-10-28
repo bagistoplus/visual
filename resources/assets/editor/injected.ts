@@ -16,7 +16,6 @@ window.addEventListener('error', (event) => {
   }
 });
 
-
 function createMorphdomHandler() {
   return function onBeforeElUpdated(fromEl: Element, toEl: Element): boolean {
     if (fromEl instanceof HTMLElement && fromEl.hasAttribute('wire:id') && toEl.hasAttribute('wire:id')) {
@@ -146,15 +145,15 @@ class VisualObject {
       handler(e.detail);
     }) as EventListener;
 
-    document.addEventListener(event, listener);
+    window.addEventListener(event, listener);
 
     return () => {
-      document.removeEventListener(event, listener);
+      window.removeEventListener(event, listener);
     };
   }
 
   off(event: string, handler: (data: any) => void): void {
-    document.removeEventListener(event, handler as EventListener);
+    window.removeEventListener(event, handler as EventListener);
   }
 
   emit(event: string, data?: any): void {

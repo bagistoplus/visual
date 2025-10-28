@@ -9,7 +9,6 @@ import { matchesCondition } from './utils/patternMatcher';
 
 const { blockSchemas } = window.editorConfig;
 
-// Create state before plugin initialization
 const state = createState({
   channels: window.editorConfig.channels,
   channel: window.editorConfig.defaultChannel,
