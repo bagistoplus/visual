@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress';
 import tabsPlugin from '@red-asuka/vitepress-plugin-tabs';
 import llmstxt from 'vitepress-plugin-llms';
+import { genFeed } from './genFeed';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -14,6 +15,7 @@ export default defineConfig({
     nav: [
       { text: 'Guide', link: '/introduction/getting-started' },
       { text: 'Theme Editor', link: '/theme-editor/overview' },
+      { text: 'Blog', link: '/blog/' },
       { text: 'Demo', link: 'https://visual-debut-demo.bagistoplus.com' },
       { text: 'Sections Pack', link: 'https://bagistosectionspro.com/?ref=doc' },
       // { text: 'GitHub', link: 'https://github.com/bagistoplus/visual' },
@@ -153,4 +155,6 @@ export default defineConfig({
   sitemap: {
     hostname: 'https://visual.bagistoplus.com',
   },
+
+  buildEnd: genFeed,
 });

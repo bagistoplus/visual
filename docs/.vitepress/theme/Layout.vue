@@ -1,9 +1,20 @@
 <script setup>
   import DefaultTheme from "vitepress/theme";
+  import { useData, useRoute } from 'vitepress';
+  import { computed } from 'vue';
+  import BlogHome from './components/BlogHome.vue';
+  import BlogPost from './components/BlogPost.vue';
+
+  const { frontmatter } = useData();
+  const route = useRoute();
+
+  const isBlogPost = computed(() => route.path.startsWith('/blog/') && route.path !== '/blog/');
 </script>
 
 <template>
-  <DefaultTheme.Layout>
+  <BlogHome v-if="frontmatter.layout === 'blog'" />
+  <BlogPost v-else-if="isBlogPost" />
+  <DefaultTheme.Layout v-else>
     <template #home-hero-image>
       <iframe
         class="video"
