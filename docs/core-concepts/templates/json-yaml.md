@@ -1,11 +1,12 @@
-# JSON Templates
+# JSON & YAML Templates
 
-JSON (or YAML) templates define **how sections are organized on a page** in Bagisto Visual.
+JSON and YAML templates define **how sections are organized on a page** in Bagisto Visual using a simple, declarative format.
 
-Rather than coding in PHP, templates use a simple configuration file that lists sections, their settings, and their order.
-This allows **merchants** to **customize, add, remove, and reorder sections** easily through the **Theme Editor**.
+Rather than coding in PHP, templates use a configuration file that lists sections, their settings, and their order. This allows **merchants** to **customize, add, remove, and reorder sections** easily through the **Theme Editor**.
 
-JSON templates make themes **modular, flexible, and user-friendly** without touching code.
+::: tip Looking for PHP Templates?
+For a programmatic alternative with IDE support and type safety, see **[PHP Templates](./php-templates.md)**.
+:::
 
 ## How JSON Templates Work
 
@@ -291,3 +292,11 @@ This gives merchants **complete control** over the page structure without touchi
 - **Use clear section names**.
 - **Use settings and blocks** to maximize flexibility for merchants.
 - **Prefer YAML** for better manual editing readability when templates grow.
+- **For complex templates**, consider using [PHP Templates](./php-templates.md) for IDE support.
+
+## Next Steps
+
+- **[PHP Templates](./php-templates.md)** - Programmatic alternative with IDE support
+- **[Template Overview](./overview.md)** - Compare all template formats
+- **[Available Templates](./available.md)** - See all default page templates
+- **[Adding Sections](../../building-theme/adding-sections/overview.md)** - Learn to create sections

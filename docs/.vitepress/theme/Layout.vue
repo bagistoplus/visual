@@ -1,14 +1,14 @@
 <script setup>
-  import DefaultTheme from "vitepress/theme";
-  import { useData, useRoute } from 'vitepress';
-  import { computed } from 'vue';
-  import BlogHome from './components/BlogHome.vue';
-  import BlogPost from './components/BlogPost.vue';
+import DefaultTheme from "vitepress/theme";
+import { useData, useRoute } from 'vitepress';
+import { computed } from 'vue';
+import BlogHome from './components/BlogHome.vue';
+import BlogPost from './components/BlogPost.vue';
 
-  const { frontmatter } = useData();
-  const route = useRoute();
+const { frontmatter } = useData();
+const route = useRoute();
 
-  const isBlogPost = computed(() => route.path.startsWith('/blog/') && route.path !== '/blog/');
+const isBlogPost = computed(() => route.path.startsWith('/blog/') && route.path !== '/blog/');
 </script>
 
 <template>
@@ -24,6 +24,9 @@
         allow="autoplay; encrypted-media"
         allowfullscreen
       ></iframe>
+    </template>
+    <template #layout-top>
+      <slot name="layout-top" />
     </template>
   </DefaultTheme.Layout>
 </template>

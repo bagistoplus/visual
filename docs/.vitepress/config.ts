@@ -58,11 +58,15 @@ export default defineConfig({
               collapsed: true,
               items: [
                 { text: 'Overview', link: '/core-concepts/templates/overview' },
-                { text: 'JSON Template', link: '/core-concepts/templates/json-template' },
+                { text: 'JSON & YAML', link: '/core-concepts/templates/json-yaml' },
+                { text: 'PHP Templates', link: '/core-concepts/templates/php-templates' },
                 { text: 'Available templates', link: '/core-concepts/templates/available' },
               ],
             },
             { text: 'Sections', link: '/core-concepts/sections' },
+            { text: 'Regions', link: '/core-concepts/regions' },
+            { text: 'Blocks', link: '/core-concepts/blocks' },
+            { text: 'Presets', link: '/core-concepts/presets' },
             {
               text: 'Settings',
               collapsed: true,
@@ -80,6 +84,19 @@ export default defineConfig({
             { text: 'Creating a Theme', link: '/building-theme/create-theme' },
             { text: 'Adding Layouts', link: '/building-theme/adding-layouts' },
             { text: 'Adding Templates', link: '/building-theme/adding-templates' },
+            {
+              text: 'Adding Blocks',
+              collapsed: true,
+              items: [
+                { text: 'Overview', link: '/building-theme/adding-blocks/overview' },
+                { text: 'Creating a block', link: '/building-theme/adding-blocks/creating-block' },
+                { text: 'Block schema', link: '/building-theme/adding-blocks/block-schema' },
+                { text: 'Static vs Dynamic blocks', link: '/building-theme/adding-blocks/static-vs-dynamic-blocks' },
+                { text: 'Rendering blocks', link: '/building-theme/adding-blocks/rendering-blocks' },
+                { text: 'Container blocks', link: '/building-theme/adding-blocks/container-blocks' },
+                { text: 'Using in sections', link: '/building-theme/adding-blocks/using-in-sections' },
+              ],
+            },
             {
               text: 'Adding Sections',
               collapsed: true,

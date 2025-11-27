@@ -3,10 +3,11 @@
 Templates define the structure of store pages in Bagisto Visual.
 They control how sections are arranged and rendered inside the main layout.
 
-Templates can be created using two formats:
+Templates can be created using multiple formats:
 
 - **Blade templates** (`.blade.php`) — simple static content or basic Blade directives
-- **JSON templates** (`.json` or `.yaml`) — fully dynamic, section-driven layouts for the Visual Editor
+- **JSON/YAML templates** (`.json` or `.yaml`) — fully dynamic, section-driven layouts for the Visual Editor
+- **PHP templates** (`.visual.php`) — programmatic templates with IDE support and type safety
 
 At this stage, we will start with a Blade template for simplicity.
 
@@ -47,17 +48,64 @@ Once the template file is created:
 At this stage, no sections are included yet.
 Templates are static until sections are added.
 
-## JSON Templates
+## JSON, YAML, and PHP Templates
 
-Bagisto Visual also supports creating templates using JSON files.
-JSON templates enable merchants to visually edit pages, add sections dynamically, and control page structure without touching code.
+Bagisto Visual also supports creating templates using JSON, YAML, or PHP files.
+These templates enable merchants to visually edit pages, add sections dynamically, and control page structure without touching code.
 
-The structure and behavior of JSON templates are explained in the [JSON Template](../core-concepts/templates/json-template.md) documentation.
+### JSON/YAML Templates
+
+Use `.json` or `.yaml` files for simple, declarative template definitions:
+
+```json
+{
+  "sections": {
+    "hero": {
+      "type": "visual-hero",
+      "settings": {
+        "image" => "https://example.com/banner.jpg"
+      }
+    }
+  },
+  "order": ["hero"]
+}
+```
+
+### PHP Templates (`.visual.php`)
+
+For more complex templates with IDE support and type safety, use `.visual.php` files:
+
+```php
+<?php
+
+use BagistoPlus\Visual\Support\TemplateBuilder;
+use Themes\AwesomeTheme\Presets\HeroBanner;
+
+return TemplateBuilder::make()
+    ->section('hero', HeroBanner::class)
+    ->section('featured-products', 'visual-featured-products', fn($section) => $section
+        ->properties([
+            'heading' => 'Featured Products',
+            'nb_products' => 4,
+        ])
+    )
+    ->order(['hero', 'featured-products']);
+```
+
+**Benefits of PHP templates:**
+- ✅ IDE autocomplete and type checking
+- ✅ Import and use preset classes directly
+- ✅ Use PHP variables, loops, and conditionals
+- ✅ Better refactoring support
+
+The structure and behavior of template formats are explained in:
+- [JSON & YAML Templates](../core-concepts/templates/json-yaml.md) - Declarative templates
+- [PHP Templates](../core-concepts/templates/php-templates.md) - Programmatic templates with IDE support
 
 In the next chapter, we will cover:
 
 - How to create sections
-- How to use sections inside JSON templates to build dynamic pages
+- How to use sections inside templates to build dynamic pages
 
 For now, starting with a simple Blade template is sufficient to initialize your theme.
 
@@ -65,7 +113,8 @@ For now, starting with a simple Blade template is sufficient to initialize your 
 
 - Templates define page content and are rendered inside layouts.
 - Blade templates are static and easy to start with.
-- JSON templates enable full dynamic editing and will be introduced after learning about sections.
+- JSON/YAML/PHP templates enable full dynamic editing and will be introduced after learning about sections.
+- PHP templates (`.visual.php`) provide IDE support and type safety.
 - Templates must be placed in `resources/views/templates/`.
 
 Read more about [available default templates](../core-concepts/templates/available.md)
