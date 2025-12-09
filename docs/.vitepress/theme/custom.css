@@ -67,6 +67,12 @@
   border-bottom: 1px solid var(--vp-c-divider);
 }
 
+/* Fix mobile menu height on landing page */
+.landing .VPNavScreen {
+  height: auto !important;
+  min-height: 100vh !important;
+}
+
 /* Landing Page - Hide default hero */
 .landing .VPHero {
   display: none;

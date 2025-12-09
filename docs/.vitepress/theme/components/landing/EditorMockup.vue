@@ -197,7 +197,7 @@ onMounted(() => {
 .editor-body {
   display: grid;
   grid-template-columns: 60px 1fr;
-  height: 500px;
+  height: 350px;
 }
 
 .editor-sidebar {
@@ -349,7 +349,7 @@ onMounted(() => {
 
 @media (max-width: 768px) {
   .editor-body {
-    height: 400px;
+    height: 300px;
   }
 
   .grid-placeholder {

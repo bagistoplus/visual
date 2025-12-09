@@ -74,28 +74,28 @@ function onSelectScheme(id: string) {
           <i-heroicons-chevron-up-down class="flex-none h-4 w-4" />
         </Popover.Trigger>
 
-        <Teleport to="body">
-          <Popover.Positioner>
-            <Popover.Content class="border border-zinc-300 rounded shadow-md w-[var(--reference-width)] z-50 bg-white -mt-1 overflow-y-auto max-h-[360px]">
-              <div v-for="(scheme, id) in colorSchemes">
-                <div
-                  class=" px-3 py-3 hover:bg-zinc-100 relative"
-                  :class="{ 'bg-zinc-100': model === String(id) }"
-                >
-                  <i-heroicons-check-circle-solid
-                    v-if="model === String(id)"
-                    class="w-5 h-5 absolute top-2 right-2 text-green-400"
-                  />
-                  <ColorSchemePreview
-                    :scheme="scheme"
-                    :id="String(id)"
-                    @click="onSelectScheme(String(id))"
-                  />
-                </div>
+        <!-- <Teleport to="body"> -->
+        <Popover.Positioner>
+          <Popover.Content class="border border-zinc-300 rounded shadow-md w-[var(--reference-width)] z-50 bg-white -mt-1 overflow-y-auto max-h-[360px]">
+            <div v-for="(scheme, id) in colorSchemes">
+              <div
+                class=" px-3 py-3 hover:bg-zinc-100 relative"
+                :class="{ 'bg-zinc-100': model === String(id) }"
+              >
+                <i-heroicons-check-circle-solid
+                  v-if="model === String(id)"
+                  class="w-5 h-5 absolute top-2 right-2 text-green-400"
+                />
+                <ColorSchemePreview
+                  :scheme="scheme"
+                  :id="String(id)"
+                  @click="onSelectScheme(String(id))"
+                />
               </div>
-            </Popover.Content>
-          </Popover.Positioner>
-        </Teleport>
+            </div>
+          </Popover.Content>
+        </Popover.Positioner>
+        <!-- </Teleport> -->
       </Popover.Root>
     </div>
 

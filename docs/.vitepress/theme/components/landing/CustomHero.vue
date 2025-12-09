@@ -1,19 +1,6 @@
 <script setup>
-import { ref, onMounted } from 'vue';
 import EditorMockup from './EditorMockup.vue';
 import { VPButton } from 'vitepress/theme';
-
-const showTitle = ref(false);
-const showTagline = ref(false);
-const showButtons = ref(false);
-const showMockup = ref(false);
-
-onMounted(() => {
-  setTimeout(() => { showTitle.value = true; }, 0);
-  setTimeout(() => { showTagline.value = true; }, 100);
-  setTimeout(() => { showButtons.value = true; }, 200);
-  setTimeout(() => { showMockup.value = true; }, 0);
-});
 </script>
 
 <template>
@@ -29,64 +16,42 @@ onMounted(() => {
     <div class="hero-container">
       <!-- Left Column: Text -->
       <div class="hero-text">
-        <Transition name="fade-up">
-          <h1
-            v-if="showTitle"
-            class="hero-title"
-          >
-            <span class="gradient-text">Bagisto Visual</span>
-            <span class="title-white">Storefront Builder</span>
-          </h1>
-        </Transition>
+        <h1 class="hero-title">
+          <span class="gradient-text">Bagisto Visual</span>
+          <span class="title-white">Storefront Builder</span>
+        </h1>
 
-        <Transition name="fade-up">
-          <p
-            v-if="showTagline"
-            class="hero-tagline"
-          >
-            Next Generation Frontend Tooling for Bagisto.
-            <br class="line-break-responsive" />
-            Design, customize, and deploy bagisto storefronts without writing code.
-          </p>
-        </Transition>
+        <p class="hero-tagline">
+          Build beautiful Bagisto stores visually. A powerful visual theme builder that lets you design, customize, and deploy storefronts without writing code.
+        </p>
 
-        <Transition name="fade-up">
-          <div
-            v-if="showButtons"
-            class="hero-actions"
-          >
-            <VPButton
-              theme="brand"
-              size="big"
-              href="/introduction/getting-started"
-              text="Get Started"
-            />
-            <VPButton
-              theme="alt"
-              size="big"
-              href="/introduction/what-is-bagisto-visual"
-              text="Why Visual?"
-            />
-            <VPButton
-              theme="alt"
-              size="big"
-              href="https://github.com/bagistoplus/visual"
-              text="View on GitHub"
-            />
-          </div>
-        </Transition>
+        <div class="hero-actions">
+          <VPButton
+            theme="brand"
+            size="big"
+            href="/introduction/getting-started"
+            text="Get Started"
+          />
+          <VPButton
+            theme="alt"
+            size="big"
+            href="/introduction/what-is-bagisto-visual"
+            text="Why Visual?"
+          />
+          <VPButton
+            theme="alt"
+            size="big"
+            href="https://github.com/bagistoplus/visual"
+            text="View on GitHub"
+          />
+        </div>
       </div>
 
       <!-- Right Column: Visual/Image -->
       <div class="hero-visual">
-        <Transition name="scale-fade">
-          <div
-            v-if="showMockup"
-            class="mockup-wrapper"
-          >
-            <EditorMockup />
-          </div>
-        </Transition>
+        <div class="mockup-wrapper">
+          <EditorMockup />
+        </div>
       </div>
     </div>
   </section>
@@ -97,6 +62,7 @@ onMounted(() => {
   position: relative;
   padding: 128px 16px 80px;
   overflow: hidden;
+  z-index: 0;
   /* Use VitePress native background */
 }
 
@@ -147,14 +113,12 @@ onMounted(() => {
   align-items: center;
   gap: 48px;
   position: relative;
-  z-index: 1;
 }
 
 .hero-text {
   flex: 1;
   width: 100%;
   text-align: center;
-  z-index: 10;
 }
 
 .hero-title {
@@ -216,35 +180,6 @@ onMounted(() => {
 .mockup-wrapper {
   width: 100%;
   max-width: 512px;
-}
-
-/* Animations */
-.fade-up-enter-active {
-  transition: all 0.5s ease;
-}
-
-.fade-up-enter-from {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.fade-up-enter-to {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.scale-fade-enter-active {
-  transition: all 0.8s ease;
-}
-
-.scale-fade-enter-from {
-  opacity: 0;
-  transform: scale(0.8);
-}
-
-.scale-fade-enter-to {
-  opacity: 1;
-  transform: scale(1);
 }
 
 /* Responsive */
