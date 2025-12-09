@@ -1,3 +1,6 @@
+/* Landing Page - Import landing styles */
+@import './styles/landing.css';
+
 :root {
   --vp-home-hero-name-color: transparent;
   --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #bd34fe 30%, #41d1ff);
@@ -54,4 +57,29 @@
   .VPNav .VPNavBarMenuGroup:last-child::before {
     display: none;
   }
+}
+
+/* Landing Page - Glass Effect Navigation */
+.landing .VPNav {
+  background: color-mix(in srgb, var(--vp-nav-bg-color) 80%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+/* Landing Page - Hide default hero */
+.landing .VPHero {
+  display: none;
+}
+
+/* Landing Page - Hide default features */
+.landing .VPFeatures {
+  display: none;
+}
+
+/* Landing Page - Remove h2 top border */
+.landing .vp-doc h2 {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
 }
