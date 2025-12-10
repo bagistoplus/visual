@@ -6,6 +6,20 @@ import morphdom from 'morphdom';
 const previewClient = new PreviewClient();
 let shouldIgnoreLivewireError = false;
 
+const recentlyLiveUpdated = new Set<string>();
+const liveUpdatedProperties = new Map<string, string>();
+
+function markAsLiveUpdated(blockId: string, propertyKey: string): void {
+  const attrName = `data-live-update-${blockId}.${propertyKey}`;
+  liveUpdatedProperties.set(blockId, propertyKey);
+  recentlyLiveUpdated.add(attrName);
+}
+
+function hasRecentLiveUpdate(el: HTMLElement): boolean {
+  const attrs = Array.from(el.attributes);
+  return attrs.some((attr) => recentlyLiveUpdated.has(attr.name));
+}
+
 window.addEventListener('error', (event) => {
   if (!shouldIgnoreLivewireError) {
     return;
@@ -18,6 +32,10 @@ window.addEventListener('error', (event) => {
 
 function createMorphdomHandler() {
   return function onBeforeElUpdated(fromEl: Element, toEl: Element): boolean {
+    if (fromEl instanceof HTMLElement && hasRecentLiveUpdate(fromEl)) {
+      return false;
+    }
+
     if (fromEl instanceof HTMLElement && fromEl.hasAttribute('wire:id') && toEl.hasAttribute('wire:id')) {
       // @ts-ignore
       const livewireComponent = fromEl.__livewire;
@@ -47,6 +65,10 @@ function createMorphdomHandler() {
       window.Alpine.morph(fromEl, toEl, {
         updating(oldEl: Element, newEl: Element, childrenOnly: () => void) {
           if (oldEl instanceof HTMLElement && newEl instanceof HTMLElement) {
+            if (hasRecentLiveUpdate(oldEl)) {
+              return false;
+            }
+
             if (oldEl.hasAttribute('wire:id')) {
               return childrenOnly();
             }
@@ -72,12 +94,10 @@ previewClient.on('page.refresh', (data: { html: string }) => {
   const parser = new DOMParser();
   const newDoc = parser.parseFromString(data.html, 'text/html');
 
-  // Morph head first (styles, meta tags, etc.)
   morphdom(document.head, newDoc.head, {
     childrenOnly: true,
   });
 
-  // Then morph body (content)
   morphdom(document.body, newDoc.body, {
     childrenOnly: true,
     onBeforeElUpdated: createMorphdomHandler(),
@@ -86,6 +106,15 @@ previewClient.on('page.refresh', (data: { html: string }) => {
 
 function handlePropertyUpdate(data: { block: Block; key: string; value: any; oldValue: any }) {
   const { block, key, value } = data;
+
+  // Clear old property when any property updates (even non-live-update ones)
+  const lastUpdatedProperty = liveUpdatedProperties.get(block.id);
+  if (lastUpdatedProperty && lastUpdatedProperty !== key) {
+    const oldAttrName = `data-live-update-${block.id}.${lastUpdatedProperty}`;
+    recentlyLiveUpdated.delete(oldAttrName);
+    liveUpdatedProperties.delete(block.id);
+  }
+
   const likeUpdateKey = [block.id, key].filter(Boolean).join('.');
   const attrName = `data-live-update-${likeUpdateKey}`;
   const selector = `[${CSS.escape(attrName)}]`;
@@ -95,6 +124,8 @@ function handlePropertyUpdate(data: { block: Block; key: string; value: any; old
   if (!elements.length) {
     return;
   }
+
+  markAsLiveUpdated(block.id, key);
 
   for (const el of elements) {
     const type = el.getAttribute(attrName);

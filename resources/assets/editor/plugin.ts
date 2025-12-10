@@ -181,10 +181,7 @@ function hasChanges(updates: UpdatesEvent): boolean {
   );
 }
 
-function determineBlocksToProcess(
-  updatedBlocks: Record<string, any>,
-  allBlocks: Record<string, any>
-): string[] {
+function determineBlocksToProcess(updatedBlocks: Record<string, any>, allBlocks: Record<string, any>): string[] {
   const blocksToProcess: string[] = [];
 
   for (const [blockId, block] of Object.entries(updatedBlocks)) {
@@ -304,11 +301,10 @@ export default function (editorConfig: ThemeEditorConfig): CraftileEditorPlugin 
       try {
         const htmlResponse = await request.execute();
 
-        
         const allBlocks = editor.engine.getPage().blocks;
         const blocksToUpdate = determineBlocksToProcess(mergedUpdates.blocks, allBlocks);
 
-        const effects = computeEffects(htmlResponse, blocksToUpdate);
+        const effects = computeEffects(htmlResponse as string, blocksToUpdate);
 
         editor.preview.sendMessage('updates.effects', {
           effects,
@@ -335,7 +331,7 @@ export default function (editorConfig: ThemeEditorConfig): CraftileEditorPlugin 
           debouncedPersist();
         }
       }
-    }, 500);
+    }, 300);
 
     function handleUpdates(updates: UpdatesEvent) {
       if (!hasChanges(updates)) {
