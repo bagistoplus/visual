@@ -23,13 +23,13 @@ const persistThemeSettings = debounce(async () => {
 
   const request = persistThemeSettingsApi(updates);
 
-  request.onSuccess((result) => {
-    if (result?.effects?.html) {
+  request.onSuccess((html) => {
+    if (html) {
       editor.preview.sendMessage('page.refresh', {
-        html: result.effects.html,
+        html,
       });
     } else {
-      // Full page reload if no partial updates
+      // Full page reload if no HTML returned
       editor.preview.reload();
     }
   });

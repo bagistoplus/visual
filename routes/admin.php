@@ -5,7 +5,7 @@ use BagistoPlus\Visual\Http\Controllers\Admin\ThemesController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('/visual/editor')->group(function () {
-    Route::post('api/persist-theme', [ThemeEditorController::class, 'persistTheme'])
+    Route::post('api/persist-updates', [ThemeEditorController::class, 'persistUpdates'])
         ->name('visual.admin.editor.api.persist');
 
     Route::post('api/persist-settings', [ThemeEditorController::class, 'persistThemeSettings'])

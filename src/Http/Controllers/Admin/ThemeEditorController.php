@@ -67,7 +67,7 @@ class ThemeEditorController extends Controller
         ]);
     }
 
-    public function persistTheme(Request $request)
+    public function persistUpdates(Request $request)
     {
         $validated = $request->validate([
             'theme' => ['required', 'string', Rule::in($this->getVisualThemes())],
@@ -108,15 +108,8 @@ class ThemeEditorController extends Controller
         $this->persistThemeSettings->handle($validated);
 
         $url = $request->input('template.url');
-        $html = $this->renderPreview->execute($url);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Theme settings updated successfully',
-            'effects' => [
-                'html' => $html,
-            ],
-        ]);
+        return $this->renderPreview->execute($url);
     }
 
     public function publishTheme(Request $request)
