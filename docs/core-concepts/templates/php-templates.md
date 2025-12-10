@@ -1,6 +1,6 @@
 # PHP Templates
 
-PHP templates (`.visual.php`) provide a **programmatic, type-safe alternative** to JSON and YAML templates. They use the `TemplateBuilder` fluent API to define page structure while maintaining full compatibility with the Theme Editor.
+PHP templates (`.visual.php`) provide a **programmatic, type-safe, IDE-friendly alternative** to JSON and YAML templates. They use the `TemplateBuilder` fluent API to define page structure while maintaining full compatibility with the Theme Editor.
 
 ::: tip Alternative to JSON/YAML
 PHP templates are a **first-class alternative** to JSON/YAML templates, not a replacement. Choose the format that best fits your workflow:
@@ -64,7 +64,7 @@ use BagistoPlus\Visual\Support\TemplateBuilder;
 
 return TemplateBuilder::make()
     ->section('hero', 'visual-hero', fn($section) => $section
-        ->properties([
+        ->settings([
             'image' => 'https://example.com/hero.jpg',
             'size' => 'large',
         ])
@@ -91,7 +91,7 @@ use BagistoPlus\Visual\Support\TemplateBuilder;
 return TemplateBuilder::make()
     ->section('<section-id>', '<section-type>')
     ->section('<section-id>', '<section-type>', fn($section) => $section
-        ->properties([...])
+        ->settings([...])
         ->blocks([...])
     )
     ->order(['<section-id>', '<section-id>']);
@@ -113,7 +113,7 @@ The `TemplateBuilder` class provides these methods:
 
 | Method                          | Description                     |
 | ------------------------------- | ------------------------------- |
-| `properties(array $properties)` | Set section settings/properties |
+| `settings(array $settings)`     | Set section settings/properties |
 | `blocks(array $blocks)`         | Add child blocks to the section |
 
 ## Example: Simple Homepage
@@ -125,13 +125,13 @@ use BagistoPlus\Visual\Support\TemplateBuilder;
 
 return TemplateBuilder::make()
     ->section('hero', 'visual-hero', fn($section) => $section
-        ->properties([
+        ->settings([
             'image' => 'https://example.com/hero.jpg',
             'size' => 'large',
         ])
     )
     ->section('featured-products', 'visual-featured-products', fn($section) => $section
-        ->properties([
+        ->settings([
             'heading' => 'Featured Products',
             'nb_products' => 8,
         ])
@@ -174,7 +174,7 @@ use BagistoPlus\Visual\Support\PresetBlock;
 
 return TemplateBuilder::make()
     ->section('hero', 'visual-hero', fn($section) => $section
-        ->properties([
+        ->settings([
             'layout' => 'centered',
             'padding' => 'large',
         ])
@@ -239,7 +239,7 @@ return TemplateBuilder::make()
     ->section('breadcrumbs', 'visual-breadcrumbs')
 
     ->section('product-info', 'visual-product-information', fn($section) => $section
-        ->properties([
+        ->settings([
             'section_width' => 'container',
             'media_position' => 'left',
             'gap' => 8,
@@ -270,42 +270,6 @@ return TemplateBuilder::make()
     ->order(['breadcrumbs', 'product-info', 'product-reviews']);
 ```
 
-## Region Templates (Header/Footer)
-
-For header and footer regions, use `->id()` and `->name()` to define the region:
-
-```php
-<?php
-
-use BagistoPlus\Visual\Support\TemplateBuilder;
-use BagistoPlus\Visual\Support\PresetBlock;
-
-return TemplateBuilder::make()
-    ->id('header')
-    ->name('Header')
-
-    ->section('announcement-bar', 'visual-announcement-bar')
-
-    ->section('main-header', 'visual-header', fn($section) => $section
-        ->properties(['content_width' => 'container'])
-        ->blocks([
-            PresetBlock::make('logo')
-                ->id('logo')
-                ->name('Logo'),
-
-            PresetBlock::make('navigation')
-                ->id('nav')
-                ->name('Navigation'),
-
-            PresetBlock::make('cart')
-                ->id('cart')
-                ->name('Cart'),
-        ])
-    )
-
-    ->order(['announcement-bar', 'main-header']);
-```
-
 ## Using PHP Features
 
 PHP templates can leverage PHP's full power for dynamic configuration:
@@ -329,7 +293,7 @@ $categoryBlocks = array_map(
 
 return TemplateBuilder::make()
     ->section('categories', 'visual-category-list', fn($section) => $section
-        ->properties(['heading' => 'Shop by Category'])
+        ->settings(['heading' => 'Shop by Category'])
         ->blocks($categoryBlocks)
     )
     ->order(['categories']);
@@ -386,103 +350,26 @@ return TemplateBuilder::make()
     ->order(['features']);
 ```
 
-## When to Use PHP Templates
+## Choosing Between PHP and JSON/YAML
 
-| Use PHP Templates When                 | Use JSON/YAML When                    |
-| -------------------------------------- | ------------------------------------- |
-| Templates are complex with many blocks | Templates are simple                  |
-| Need IDE autocomplete and type safety  | Prefer visual editing of raw data     |
-| Using preset classes extensively       | Minimal configuration                 |
-| Need PHP logic (loops, conditions)     | Static configuration only             |
-| Developer-focused workflow             | Designer-focused workflow             |
-| Working in an IDE (PhpStorm, VSCode)   | Editing in text editor or admin panel |
-| Building reusable template patterns    | One-off page configurations           |
+Both formats are fully interchangeable and produce identical results. Choose based on your **editing experience preference**:
 
-## File Location
+| Choose PHP Templates When You Want    | Choose JSON/YAML When You Want  |
+| ------------------------------------- | ------------------------------- |
+| IDE autocomplete and IntelliSense     | Simple text file editing        |
+| Type safety and error checking        | Direct, minimal syntax          |
+| To use PHP variables and loops        | Quick manual editing            |
+| To reference preset classes directly  | No PHP knowledge required       |
+| Code refactoring tools                | Lightweight configuration files |
+| Inline PHP comments and documentation | Visual, declarative structure   |
+| Working in PhpStorm/VSCode with PHP   | Editing in any text editor      |
 
-PHP templates follow the same location convention as JSON/YAML templates:
+**Both formats:**
 
-```plaintext
-resources/views/templates/
-├── index.visual.php      # Homepage
-├── product.visual.php    # Product page
-├── category.visual.php   # Category page
-├── cart.visual.php       # Cart page
-└── checkout.visual.php   # Checkout page
-```
-
-## Best Practices
-
-### ✅ DO
-
-**Use Type Hints**
-
-```php
-use BagistoPlus\Visual\Support\TemplateBuilder;
-use BagistoPlus\Visual\Support\PresetBlock;
-
-// Clear imports at top of file
-```
-
-**Extract Complex Logic**
-
-```php
-// Helper functions for readability
-function buildCategoryBlocks(): array
-{
-    return array_map(
-        fn($cat) => PresetBlock::make('category')->settings(['id' => $cat]),
-        Category::featured()->pluck('id')->toArray()
-    );
-}
-```
-
-**Use Preset Classes**
-
-```php
-// Reusable configurations
-use Themes\MyTheme\Presets\HeroBanner;
-
-return TemplateBuilder::make()
-    ->section('hero', HeroBanner::class);
-```
-
-**Document Complex Templates**
-
-```php
-return TemplateBuilder::make()
-    // Main hero section with CTA
-    ->section('hero', 'visual-hero', fn($section) => ...)
-
-    // Featured products grid (shows 8 products)
-    ->section('products', 'visual-products', fn($section) => ...)
-
-    ->order(['hero', 'products']);
-```
-
-### ❌ DON'T
-
-**Don't Mix Database Queries Directly**
-
-```php
-// ❌ Avoid
-->properties(['products' => Product::where('featured', true)->get()])
-
-// ✅ Better - use static configuration
-->properties(['product_type' => 'featured', 'nb_products' => 8])
-```
-
-**Don't Over-Engineer**
-
-```php
-// ❌ Too complex
-if ($condition1 && $condition2 || (!$condition3 && $condition4)) {
-    // ...complex template logic
-}
-
-// ✅ Keep it simple - complexity belongs in preset classes
-->section('hero', ComplexHeroPreset::class)
-```
+- ✅ Are fully customizable by merchants in the Theme Editor
+- ✅ Support sections, blocks, settings, and all features
+- ✅ Generate the same output
+- ✅ Allow the same level of merchant control
 
 ## Migrating from JSON/YAML
 
@@ -491,7 +378,7 @@ To convert a JSON/YAML template to PHP:
 1. **Create new `.visual.php` file** with same name
 2. **Import TemplateBuilder**
 3. **Convert sections** to `->section()` calls
-4. **Convert settings** to `->properties()` arrays
+4. **Convert settings** to `->settings()` arrays
 5. **Convert blocks** to `PresetBlock::make()` calls
 6. **Add `->order()` at the end**
 
@@ -535,7 +422,7 @@ use BagistoPlus\Visual\Support\PresetBlock;
 
 return TemplateBuilder::make()
     ->section('hero', 'visual-hero', fn($section) => $section
-        ->properties(['size' => 'large'])
+        ->settings(['size' => 'large'])
         ->blocks([
             PresetBlock::make('heading')
                 ->id('title')

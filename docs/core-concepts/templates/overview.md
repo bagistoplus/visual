@@ -57,13 +57,15 @@ Example:
 
 ## Template Format Comparison
 
-| Format        | Description                                                                                                                                                                | When to Use                                                                        |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| **Blade**     | Full Laravel Blade templates. Allow dynamic PHP, Livewire components, and advanced logic. **Blade templates cannot be customized or rearranged through the Theme Editor.** | Use Blade when you need maximum flexibility, dynamic behavior, or complex layouts. |
-| **JSON/YAML** | Static templates that define a list of sections in order. **Sections can be added, removed, and reordered visually by merchants through the Theme Editor.**                | Use JSON/YAML for customizable, section-driven pages managed easily by merchants.  |
-| **PHP** (`.visual.php`) | Programmatic templates using `TemplateBuilder` API. Provide IDE support, type safety, and PHP features. **Fully compatible with Theme Editor like JSON/YAML.**  | Use PHP templates for complex configurations, preset class usage, and developer-focused workflows with IDE benefits. |
+| Format                  | Description                                                                                                                                                                | When to Use                                                                                                          |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Blade**               | Full Laravel Blade templates. Allow dynamic PHP, Livewire components, and advanced logic. **Blade templates cannot be customized or rearranged through the Theme Editor.** | Use Blade when you need maximum flexibility, dynamic behavior, or complex layouts.                                   |
+| **JSON/YAML**           | Static templates that define a list of sections in order. **Sections can be added, removed, and reordered visually by merchants through the Theme Editor.**                | Use JSON/YAML when you prefer simple text file syntax and direct editing.                                    |
+| **PHP** (`.visual.php`) | Interchangeable with JSON/YAML using `TemplateBuilder` API. Provides IDE support, type safety, and PHP features. **Fully compatible with Theme Editor like JSON/YAML.**             | Use PHP templates when you want IDE autocomplete, type safety, and the ability to use PHP features like variables and loops. |
 
-> **Tip:**
-> - **[JSON/YAML templates](./json-yaml.md)** are ideal for simple, declarative page structures where merchant customization is important.
-> - **[PHP templates](./php-templates.md)** are best for complex templates where IDE support and type safety are valuable.
-> - **Blade templates** are suited for pages with strict structure or advanced dynamic functionality.
+> [!TIP]
+>
+> - **[JSON/YAML templates](./json-yaml.md)** - Simple syntax, edit directly in text files
+> - **[PHP templates](./php-templates.md)** - Same result, but with IDE autocomplete, type safety, and PHP features
+> - Both JSON/YAML and PHP formats are fully interchangeable and produce identical results in the Theme Editor
+> - **Blade templates** are suited for pages with strict structure or advanced dynamic functionality

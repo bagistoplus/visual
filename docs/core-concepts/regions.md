@@ -4,51 +4,74 @@ Regions are **customizable zones shared across all templates** in your theme. Th
 
 ## What Are Regions?
 
-A **region** is a reusable template area that appears on multiple pages. Common examples include:
+Regions are layout zones where sections can be placed and rendered. Think of them as placeholders in your layouts that can contain one or more sections. Common examples include:
 
 - **Header** - Site navigation, logo, search, cart preview
 - **Footer** - Company info, links, newsletter signup
-- **Announcement Bar** - Promotional messages
-- **Sidebar** - Filters, widgets (for applicable layouts)
 
 Unlike page-specific templates, regions are **shared across your entire store**. When a merchant customizes the header region, those changes appear on every page that includes the header.
 
 ## Why Regions Matter
 
-### The Problem with v1 (Static Shared Sections)
+### The Problem with v1 (Single Static Section)
 
-In Visual v1, shared elements like headers and footers were **hardcoded in layout files**. Merchants couldn't:
-- Add new elements to the header
-- Remove unwanted navigation items
-- Reorder sections in the footer
-- Customize shared areas without developer help
+In Visual v1, shared elements like headers and footers were **single sections** that merchants could customize in the Visual Editor. However:
 
-**Example v1 limitation**: If a merchant wanted to add a promotional banner above the header, they needed a developer to modify the layout file.
+- Merchants could only configure the **one header section** provided by the developer
+- They couldn't **add additional sections** to the header/footer zones (e.g., announcement bar above header)
+- They couldn't **remove or reorder** multiple sections in these zones
+- Adding new elements required a developer to modify the header section code
+
+**Example v1 limitation**: If a merchant wanted to add a promotional announcement bar above the header, they needed a developer to either add it to the existing header section code or create a custom solution.
 
 ### The v2 Solution (Customizable Regions)
 
-Regions make shared areas **fully customizable** through the Visual Editor. Merchants can:
-- ✅ Add new sections to the header or footer
+Regions make shared areas **fully customizable** through the Visual Editor by allowing **multiple sections** in header/footer zones. Merchants can:
+
+- ✅ Add new sections to the header or footer region (announcement bars, promotional banners, etc.)
 - ✅ Remove or hide existing sections
-- ✅ Reorder sections visually
-- ✅ Configure section settings
+- ✅ Reorder sections visually within the region
+- ✅ Configure each section's settings independently
 - ✅ Create multiple header/footer variations
 
-**Same example in v2**: Merchants can simply add an announcement bar section to the header region themselves—no code required.
+**Same example in v2**: Merchants can simply add an announcement bar section to the header region themselves—no code required. The header region can contain multiple sections that merchants manage.
 
-## Regions vs Templates
+## Region Structure
 
-| Aspect | **Regions** | **Templates** |
-|--------|-------------|---------------|
-| **Scope** | Shared across all pages | Specific to one page type |
-| **Purpose** | Common elements (header, footer) | Page-specific content (homepage, product) |
-| **Customization** | Merchants customize once, applies everywhere | Merchants customize per page type |
-| **Location** | `resources/views/regions/` | `resources/views/templates/` |
-| **Usage** | Included in layouts via `@visualRegion()` | Rendered automatically per page type |
+Each region has the following structure:
 
-## Creating Region Templates
+```json
+{
+  "id": "header",              // Required unique identifier (used in @visualRegion('header'))
+  "name": "Header",            // Required display name (shown in editor)
+  "sections": {                // Sections in this region
+    "announcement": {
+      "type": "visual-announcement-bar",
+      "settings": { ... }
+    },
+    "main-header": {
+      "type": "visual-header",
+      "settings": { ... },
+      "blocks": { ... },
+      "order": [ ... ]
+    }
+  },
+  "order": ["announcement", "main-header"]  // Section render order
+}
+```
 
-Regions use the same template formats as pages: **JSON**, **YAML**, or **PHP**.
+**Properties:**
+
+| Property       | Required | Description                                                                                                                                                                                                                   | Example                           |
+| -------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| **`id`**       | Yes      | Unique identifier used in the `@visualRegion('id')` directive to render the region                                                                                                                                            | `"header"`, `"footer"`            |
+| **`name`**     | Yes      | Display name shown in the Visual Editor                                                                                                                                                                                       | `"Site Header"`, `"Main Footer"`  |
+| **`sections`** | No       | Object containing sections that belong to this region. Each section follows the same structure as sections in templates (with `type`, `settings`, `blocks`, and `order` properties). See [Templates](./templates/overview.md) | See examples below                |
+| **`order`**    | No       | Array of section IDs defining render order. If not defined, sections are rendered in the order they appear in the `sections` object.                                                                                          | `["announcement", "main-header"]` |
+
+## Defining Regions
+
+Regions use the same formats as templates: **JSON**, **YAML**, or **PHP**.
 
 ### Method 1: JSON Format
 
@@ -138,20 +161,8 @@ return TemplateBuilder::make()
     ->order(['announcement-bar', 'main-header']);
 ```
 
-## Required Properties
-
-Every region template must define:
-
-| Property | Description | Example |
-|----------|-------------|---------|
-| **`id`** | Unique identifier for the region | `"header"`, `"footer"` |
-| **`name`** | Display name in Visual Editor | `"Site Header"`, `"Main Footer"` |
-| **`blocks`** | Sections in the region | See examples above |
-| **`order`** | Rendering order of sections | `["announcement-bar", "main-header"]` |
-
-::: tip
-The `id` is used in the `@visualRegion()` directive, while `name` appears in the Visual Editor interface for merchants.
-:::
+> [!NOTE]
+> The region filename should match the `id` property. For example, a region with `"id": "header"` should be saved as `header.json`, `header.yaml`, or `header.visual.php`.
 
 ## Using Regions in Layouts
 
@@ -183,124 +194,30 @@ Include regions in your layout files using the `@visualRegion()` directive:
 
 The directive renders the customized region content that merchants configure in the Visual Editor.
 
-## Merchant Customization Experience
-
-When merchants edit their theme in the Visual Editor:
-
-1. **Navigate to Theme Editor** → **Regions** section
-2. **Select a region** (e.g., "Header")
-3. **Add sections** from the section library
-4. **Configure sections** using the settings panel
-5. **Reorder sections** by dragging and dropping
-6. **Remove sections** they don't need
-7. **Save changes** — updates appear across all pages immediately
-
-### Example Customization Flow
-
-**Scenario**: Merchant wants to add a promotional banner above the header.
-
-1. Open **Visual Editor** → **Regions** → **Header**
-2. Click **"Add Section"**
-3. Select **"Announcement Bar"** from the section library
-4. Configure the text: `"Free shipping on orders over $50!"`
-5. Drag the announcement bar above the main header
-6. Click **Save**
-7. ✅ Banner now appears on **every page** automatically
-
-## Common Use Cases
-
-### Header Region
-
-Typical header elements merchants can customize:
-
-- Logo and branding
-- Navigation menu
-- Search bar
-- User account dropdown
-- Shopping cart preview
-- Language/currency selectors
-- Promotional announcement bars
-
-### Footer Region
-
-Typical footer elements merchants can customize:
-
-- Company information
-- Link columns (About, Support, Legal)
-- Newsletter signup
-- Social media links
-- Payment method badges
-- Copyright notice
-
-### Announcement Bar Region
-
-A lightweight region for store-wide messages:
-
-- Sales and promotions
-- Shipping updates
-- Holiday hours
-- Important announcements
-
 ## Best Practices
 
 ### When to Use Regions
 
 ✅ **Use regions for:**
+
 - Elements that appear on multiple pages (header, footer)
 - Store-wide announcements
 - Shared sidebars or toolbars
 - Elements merchants should control globally
 
 ❌ **Don't use regions for:**
+
 - Page-specific content (use templates instead)
 - One-off elements on a single page
 - Content that varies by page type
 
 ### Naming Conventions
 
-- **IDs**: Use lowercase with hyphens: `header`, `main-footer`, `top-bar`
-- **Names**: Use descriptive titles: `"Site Header"`, `"Main Footer"`, `"Top Announcement Bar"`
-
-### Organization
-
-Keep regions focused and purposeful:
-
-```plaintext
-resources/views/regions/
-├── header.visual.php       # Main site header
-├── footer.visual.php       # Main site footer
-├── announcement.visual.php # Top announcement bar
-└── sidebar.visual.php      # Optional sidebar (for layouts that use it)
-```
-
-### Performance Considerations
-
-- Regions are cached and rendered efficiently
-- Avoid excessive nesting of sections within regions
-- Keep region sections focused on their specific purpose
+- **IDs**: Use lowercase with hyphens: `header`, `main-footer`
+- **Names**: Use descriptive titles: `"Site Header"`, `"Main Footer"`
 
 ## Related Concepts
 
 - **[Templates](./templates/overview.md)** - Page-specific structures (homepage, product page, etc.)
-- **[Sections](./sections/overview.md)** - Individual content blocks used in regions and templates
+- **[Sections](./sections.md)** - Individual content blocks used in regions and templates
 - **[PHP Templates](./templates/php-templates.md)** - Programmatic way to define regions with IDE support
-
-## Comparison with Shopify
-
-Regions in Bagisto Visual are similar to [Shopify's Section Groups](https://shopify.dev/docs/storefronts/themes/architecture/section-groups):
-
-| Shopify | Bagisto Visual |
-|---------|----------------|
-| Section Groups | Regions |
-| `{% sections 'header' %}` | `@visualRegion('header')` |
-| `sections/header-group.json` | `regions/header.visual.php` |
-
-Both concepts solve the same problem: **making shared layout areas customizable by merchants** without requiring code changes.
-
----
-
-::: tip Next Steps
-- Learn how to create [Templates](./templates/overview.md) for page-specific content
-- Explore [Sections](./sections/overview.md) available for use in regions
-- Review the [PHP Templates guide](./templates/php-templates.md) for IDE-supported region definitions
-:::

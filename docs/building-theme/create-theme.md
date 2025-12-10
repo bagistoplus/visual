@@ -50,12 +50,16 @@ AwesomeTheme/
 │   │   └── images/
 │   │       └── theme-preview.png # Theme preview image
 │   └── views/
+│       ├── blocks/             # Blade views for blocks
 │       ├── components/         # Blade components used inside sections
 │       ├── layouts/            # Main layouts (default.blade.php, account.blade.php)
 │       ├── sections/           # Blade views for each section
 │       └── templates/          # Page templates (Blade, JSON, or YAML)
 ├── src/
-│   ├── Sections/               # PHP classes defining sections and blocks
+│   ├── Blocks/                 # PHP classes defining blocks
+│   │   ├── ExampleBlock.php
+│   │   └── ...
+│   ├── Sections/               # PHP classes defining sections
 │   │   ├── ExampleSection.php
 │   │   └── ...
 │   └── ServiceProvider.php     # Registers the theme into Bagisto Visual

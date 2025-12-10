@@ -13,19 +13,24 @@ Container blocks are regular blocks with one key difference: they can accept oth
 
 ## Creating a Container Block
 
-To create a container block, implement the `blocks()` method:
+To create a container block, define the `$accepts` property:
 
 ```php
 <?php
 
 namespace Themes\YourTheme\Blocks;
 
-use BagistoPlus\Visual\Block\BladeBlock;
+use BagistoPlus\Visual\Block\SimpleBlock;
 use BagistoPlus\Visual\Settings\Select;
 
-class Columns extends BladeBlock
+class Columns extends SimpleBlock
 {
     protected static string $view = 'shop::blocks.columns';
+
+    /**
+     * Define which blocks can be nested
+     */
+    protected static array $accepts = ['@awesome-theme/*'];  // Accept all theme blocks
 
     public static function settings(): array
     {
@@ -38,14 +43,6 @@ class Columns extends BladeBlock
                 ])
                 ->default('3'),
         ];
-    }
-
-    /**
-     * Define which blocks can be nested
-     */
-    public static function blocks(): array
-    {
-        return ['@theme'];  // Accept all theme blocks
     }
 }
 ```
@@ -61,248 +58,142 @@ In the container block's view, use the `@children` directive to render child blo
 </div>
 ```
 
-> **Note**: The `@children` directive automatically renders all child blocks. For advanced layouts requiring custom wrappers per child block, consult the Visual package documentation for available rendering patterns.
+## Sharing Data with Child Blocks
 
-## Container Block Examples
+Container blocks can share data with their children using the `share()` method. Data returned from `share()` is automatically passed down the entire nested structure, making it available to all descendant blocks.
 
-### Example 1: Tabs Block
+### How It Works
 
-```php
-class Tabs extends BladeBlock
-{
-    protected static string $view = 'shop::blocks.tabs';
+The `share()` method returns an array of data that becomes available in:
 
-    public static function settings(): array
-    {
-        return [
-            Select::make('style', 'Tab Style')
-                ->options([
-                    'default' => 'Default',
-                    'pills' => 'Pills',
-                    'underline' => 'Underline',
-                ])
-                ->default('default'),
-        ];
-    }
+1. **Child block classes**: Access via `$this->context('key', 'default')`
+2. **Child block views**: Available as variables (e.g., `$product`, `$category`)
+3. **Child block presets**: Use dynamic sources with `@key` syntax (e.g., `'@product.name'`)
+4. **Deeply nested blocks**: Automatically cascades to grandchildren and beyond
 
-    public static function blocks(): array
-    {
-        return ['@theme'];
-    }
-}
-```
+### Example 1: Product Card Sharing Product Data
 
-```blade
-{{-- View: resources/views/blocks/tabs.blade.php --}}
-<div class="tabs tabs--{{ $block->settings->style }}">
-    {{-- Simple rendering --}}
-    @children
-</div>
-```
-
-> **Note**: For complex tab navigation with headers, consult the Visual package documentation for advanced rendering patterns.
-
-### Example 2: Accordion Block
+The ProductCard container shares the product object so child blocks don't need their own product settings:
 
 ```php
-class Accordion extends BladeBlock
-{
-    protected static string $view = 'shop::blocks.accordion';
-
-    public static function settings(): array
-    {
-        return [
-            Checkbox::make('allow_multiple', 'Allow Multiple Open')
-                ->default(false),
-        ];
-    }
-
-    public static function blocks(): array
-    {
-        return ['accordion-item'];  // Only accept specific block type
-    }
-}
-```
-
-```blade
-{{-- View: resources/views/blocks/accordion.blade.php --}}
-<div class="accordion"
-     data-allow-multiple="{{ $block->settings->allow_multiple ? 'true' : 'false' }}">
-    @children
-</div>
-```
-
-### Example 3: Generic Container
-
-```php
-class Container extends BladeBlock
-{
-    protected static string $view = 'shop::blocks.container';
-
-    public static function settings(): array
-    {
-        return [
-            Select::make('padding', 'Padding')
-                ->options([
-                    'none' => 'None',
-                    'small' => 'Small',
-                    'medium' => 'Medium',
-                    'large' => 'Large',
-                ])
-                ->default('medium'),
-
-            Color::make('background_color', 'Background Color'),
-        ];
-    }
-
-    public static function blocks(): array
-    {
-        return ['@theme'];
-    }
-}
-```
-
-```blade
-{{-- View: resources/views/blocks/container.blade.php --}}
-<div class="container container--padding-{{ $block->settings->padding }}"
-     @if($block->settings->background_color)
-     style="background-color: {{ $block->settings->background_color }}"
-     @endif>
-    @children
-</div>
-```
-
-## Controlling Accepted Block Types
-
-### Accept All Theme Blocks
-
-```php
-public static function blocks(): array
-{
-    return ['@theme'];
-}
-```
-
-### Accept Specific Block Types
-
-```php
-public static function blocks(): array
-{
-    return [
-        'button',
-        'image',
-        'heading',
-        'paragraph',
-    ];
-}
-```
-
-### Mix Both Approaches
-
-```php
-public static function blocks(): array
-{
-    return [
-        '@theme',          // All theme blocks
-        'custom-block',    // Plus custom blocks
-    ];
-}
-```
-
-
-## Deep Nesting
-
-Blocks can be nested up to **8 levels deep**, creating complex hierarchies:
-
-```
-Section
-└── Columns Block (Level 1)
-    ├── Column 1
-    │   └── Tabs Block (Level 2)
-    │       ├── Tab 1
-    │       │   └── Accordion Block (Level 3)
-    │       │       └── Accordion Items (Level 4)
-    │       └── Tab 2
-    │           └── Image Block (Level 3)
-    └── Column 2
-        └── Container Block (Level 2)
-            ├── Heading Block (Level 3)
-            └── Button Block (Level 3)
-```
-
-### Example: Multi-Level Nesting
-
-A merchant could build:
-
-1. **Columns** block with 2 columns
-2. Left column contains a **Tabs** block
-3. Each tab contains an **Accordion** block
-4. Inside accordions: images, text, buttons
-
-This creates a sophisticated, fully customizable layout without code.
-
-## Advanced Patterns
-
-The `@children` directive handles most rendering scenarios. For advanced patterns like conditional rendering, grouping, or custom wrappers, consult the Visual package documentation.
-
-## Real-World Use Case: Product Card Builder
-
-Allow merchants to build custom product cards using granular product blocks:
-
-```php
-class ProductCard extends BladeBlock
+class ProductCard extends SimpleBlock
 {
     protected static string $view = 'shop::blocks.product-card';
 
-    public static function blocks(): array
+    protected static array $accepts = [
+        '@awesome-theme/product-image',
+        '@awesome-theme/product-title',
+        '@awesome-theme/product-price',
+    ];
+
+    public static function settings(): array
     {
         return [
-            'product-image',
-            'product-title',
-            'product-price',
-            'product-rating',
-            'product-badge',
-            'button',
+            Product::make('product', 'Product'),
+        ];
+    }
+
+    public function share(): array
+    {
+        return [
+            'product' => $this->block->settings->product ?? $this->context('product')
         ];
     }
 }
 ```
 
-```blade
-<div class="product-card">
-    @children
-</div>
+Now child blocks can access the shared product data:
+
+**In child block classes:**
+```php
+class ProductImage extends SimpleBlock
+{
+    protected function getViewData(): array
+    {
+        $product = $this->context('product');
+
+        return [
+            'imageUrl' => $product?->base_image->url,
+        ];
+    }
+}
 ```
 
-Merchants can now create completely custom product cards:
-- Fashion store: Large image → Badge → Title → Price → Quick add
-- Electronics: Title → Image gallery → Price → Rating → Add to cart
-- Handmade: Image → Badge → Title → Artist name → Price
+**In child block views:**
+```blade
+{{-- In product-image.blade.php view --}}
+@if($product)
+    <img src="{{ $product->base_image->url }}" alt="{{ $product->name }}">
+@endif
+```
 
-## Best Practices
+**In child block presets using dynamic sources:**
+```php
+PresetBlock::make('@awesome-theme/product-image')
+    ->settings([
+        'src' => '@product.base_image.url',
+        'alt' => '@product.name',
+    ]),
+PresetBlock::make('@awesome-theme/product-title')
+    ->settings([
+        'text' => '@product.name',
+        'url' => '@product.url',
+    ]),
+```
 
-✅ **Provide sensible defaults**: Container should work empty or with children
-✅ **Set max blocks**: Prevent overly complex nesting that hurts performance
-✅ **Use semantic structure**: Container HTML should make sense
-✅ **Handle empty state**: Show placeholder or message when no children
-✅ **Test nesting**: Verify blocks render correctly when nested
-✅ **Document restrictions**: Make clear which blocks are accepted
-✅ **Style children appropriately**: Ensure child blocks fit the layout
+The `@` syntax automatically resolves to the shared data at runtime.
 
-## Debugging Container Blocks
+### Example 2: Accordion Sharing Icon Type
+
+The Accordion container shares its icon setting with all accordion items:
+
+```php
+class Accordion extends SimpleBlock
+{
+    protected static string $view = 'shop::blocks.accordion';
+
+    protected static array $accepts = ['@awesome-theme/accordion-item'];
+
+    public static function settings(): array
+    {
+        return [
+            Select::make('icon', 'Icon Type')
+                ->options([
+                    'caret' => 'Caret',
+                    'plus' => 'Plus/Minus',
+                ])
+                ->default('caret'),
+        ];
+    }
+
+    public function share(): array
+    {
+        return [
+            'accordionIconType' => $this->block->settings->icon ?? 'caret',
+        ];
+    }
+}
+```
+
+All accordion items automatically receive the icon type:
 
 ```blade
-{{-- See child block count --}}
-<div data-child-count="{{ $block->blocks->count() }}">
-    @children
-</div>
-
-{{-- Dump block data --}}
-@dump($block->blocks)
+{{-- In accordion-item.blade.php view --}}
+<button class="accordion-trigger">
+    <span>{{ $block->settings->title }}</span>
+    <span class="icon">
+        @if ($accordionIconType === 'caret')
+            <x-icon name="chevron-down" />
+        @else
+            <x-icon name="plus" />
+        @endif
+    </span>
+</button>
 ```
+
+---
 
 ## Next Steps
 
-- **[Using in Sections](/building-theme/adding-blocks/using-in-sections)**: How sections accept and render container blocks
-- **[Rendering Blocks](/building-theme/adding-blocks/rendering-blocks)**: Master block rendering techniques
-- **[Block Schema](/building-theme/adding-blocks/block-schema)**: Configure accepted blocks and limits
+- **[Block Attributes](/building-theme/adding-blocks/block-schema)**: Configure accepted blocks and limits
+- **[Section Attributes](/building-theme/adding-sections/section-attributes)**: Configure which blocks sections accept

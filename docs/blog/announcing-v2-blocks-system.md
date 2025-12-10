@@ -24,7 +24,7 @@ Nest blocks inside blocks to create sophisticated page structures. Put columns i
 **Customize Without Limits**
 The same Hero section that works for one page can be completely different on another - different blocks, different arrangement, different content. Your creativity is the only constraint.
 
-v2 ships with a comprehensive block library covering content (Heading, Paragraph, Rich Text, Quote), media (Image, Video, Gallery), interactive elements (Button, Accordion, Tabs, Forms), complete e-commerce components (Product Image, Title, Price, Rating, Variants, Add to Cart), social proof (Testimonials, Reviews, Ratings), and layout containers (Columns, Tabs, Accordion). Developers can create custom blocks for specific needs.
+v2 ships with a comprehensive block library covering content (Heading, Paragraph), media (Image, Gallery), interactive elements (Button, Accordion), complete e-commerce components (Product Image, Title, Price, Rating, Variants, Add to Cart), social proof (Testimonials, Reviews, Ratings), and layout containers (Container, Tabs, Accordion). Developers can create custom blocks for specific needs.
 
 ## Real Example: Design Your Perfect Product Card
 

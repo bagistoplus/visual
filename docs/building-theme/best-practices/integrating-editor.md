@@ -1,38 +1,87 @@
 # Integrating with the Visual Editor
 
-Bagisto Visual includes a live preview editor that allows merchants to build and customize storefront pages interactively, without reloading the page. When a section is added, updated, or removed through the editor, its HTML is dynamically re-rendered from the backend and injected into the DOM in place—without triggering a full page reload.
+Bagisto Visual includes a live preview editor that allows merchants to build and customize storefront pages interactively, without reloading the page. When a section or block is added, updated, or removed through the editor, its HTML is dynamically re-rendered from the backend and injected into the DOM in place—without triggering a full page reload.
 
-However, any JavaScript behavior associated with the section (like carousels, modals, or event listeners) is not automatically re-initialized. Additionally, some setting changes—such as text, image URLs, or inline styles—can be updated instantly in the browser, without requiring a backend re-render.
+However, any JavaScript behavior associated with sections or blocks (like carousels, modals, or event listeners) is not automatically re-initialized. Additionally, some setting changes—such as text, image URLs, or inline styles—can be updated instantly in the browser, without requiring a backend re-render.
 
 This guide explains how to:
 
-- Reinitialize JavaScript behavior when a section is re-rendered
+- Reinitialize JavaScript behavior when sections or blocks are re-rendered
 - Enable instant, client-side updates for simple setting types
 - Ensure blocks are visible and interactable when being edited
 
-By integrating with these editor behaviors, your sections will feel fast, predictable, and intuitive to customize.
+By integrating with these editor behaviors, your sections and blocks will feel fast, predictable, and intuitive to customize.
 
 ## 1. Reinitializing JavaScript
 
-When a section is updated in the editor, its DOM is replaced. Any interactive JavaScript (like sliders or dropdowns) must be reattached.
+When a section or block is updated in the editor, its DOM is replaced. Any interactive JavaScript (like sliders or dropdowns) must be reattached.
 
 Bagisto Visual emits events during this lifecycle:
+
+### Common Events
 
 | Event                   | Timing                                   | Use case                                                                                                                                                                    |
 | ----------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `visual:section:load`   | After section is added or re-rendered    | Re-run any necessary JavaScript to ensure the section functions and displays correctly, as if the page were freshly loaded. You may also want to restore the section state. |
 | `visual:section:unload` | Before section is removed or re-rendered | Make sure to clean up event listeners, variables, and anything else to prevent issues when interacting with the page and avoid memory leaks. Also, save the section state.  |
+| `visual:block:load`     | After block is added or re-rendered      | Re-run block-specific JavaScript behavior.                                                                                                                                  |
+| `visual:block:unload`   | Before block is removed or re-rendered   | Clean up block-specific event listeners and state.                                                                                                                          |
+
+### Lifecycle Events
+
+| Event                           | Timing                        |
+| ------------------------------- | ----------------------------- |
+| `visual:section:adding`         | Before section is added       |
+| `visual:section:added`          | After section is added        |
+| `visual:section:removing`       | Before section is removed     |
+| `visual:section:removed`        | After section is removed      |
+| `visual:section:updating`       | Before section is updated     |
+| `visual:section:updated`        | After section is updated      |
+| `visual:section:moving`         | Before section is moved       |
+| `visual:section:moved`          | After section is moved        |
+| `visual:section:setting:updated`| When a section setting changes|
+| `visual:block:adding`           | Before block is added         |
+| `visual:block:added`            | After block is added          |
+| `visual:block:removing`         | Before block is removed       |
+| `visual:block:removed`          | After block is removed        |
+| `visual:block:updating`         | Before block is updated       |
+| `visual:block:updated`          | After block is updated        |
+| `visual:block:moving`           | Before block is moved         |
+| `visual:block:moved`            | After block is moved          |
+| `visual:block:setting:updated`  | When a block setting changes  |
 
 Each event exposes:
 
 ```ts
 event.detail = {
-  section,
-  block,
+  sectionId,  // Section ID
+  section,    // Section object
+  blockId,    // Block ID (when applicable)
+  block,      // Block object (when applicable)
 };
 ```
 
-### Example
+### Detect the Theme Editor
+
+Use `@visual_design_mode` and `@end_visual_design_mode` directives to scope code that should only run in the Visual Editor live preview.
+
+```blade
+@visual_design_mode
+    <!-- This code only runs in the editor -->
+    <div class="editor-notice">You are in design mode</div>
+
+    @pushOnce('scripts')
+        <script>
+            // JavaScript that only runs in the editor
+            console.log('Editor mode active');
+        </script>
+    @endPushOnce
+@end_visual_design_mode
+```
+
+This prevents editor-specific code from running on the live storefront, keeping your production code clean and performant.
+
+### Section Example
 
 ```blade
 @visual_design_mode
@@ -54,7 +103,27 @@ event.detail = {
 @end_visual_design_mode
 ```
 
-`@visual_design_mode` ensure that this code is only injected when the section is rendered in the editor live preview
+### Block Example
+
+```blade
+@visual_design_mode
+    @pushOnce('scripts')
+        <script>
+            document.addEventListener('visual:block:unload', (event) => {
+                if (event.detail.block.type === '{{ $block->type }}') {
+                    // Clean up block-specific listeners, state, etc.
+                }
+            });
+
+            document.addEventListener('visual:block:load', (event) => {
+                if (event.detail.block.type === '{{ $block->type }}') {
+                    // Reinitialize block-specific JavaScript
+                }
+            });
+        </script>
+    @endPushOnce
+@end_visual_design_mode
+```
 
 If you are using `Alpine.js` or `Livewire`, your state will automatically persist between updates—no additional setup is needed. However, if you rely on vanilla JS or third-party libraries, you should reinitialize them after every update.
 
@@ -137,16 +206,22 @@ You can bind multiple settings fluently to different parts of the same element:
 </a>
 ```
 
-#### 🔹 Working Inside Blocks
+#### 🔹 Using with Blocks
 
-Works seamlessly inside dynamic or repeated blocks:
+The `liveUpdate()` method works with both sections and blocks:
 
+**In a section:**
 ```blade
-@foreach ($section->blocks as $block)
-  <p {{ $block->liveUpdate('text') }}>
-    {{ $block->settings->text }}
-  </p>
-@endforeach
+<h1 {{ $section->liveUpdate()->text('heading') }}>
+  {{ $section->settings->heading }}
+</h1>
+```
+
+**In a block:**
+```blade
+<p {{ $block->liveUpdate()->text('text') }}>
+  {{ $block->settings->text }}
+</p>
 ```
 
 ### Option 2: JavaScript API (`Visual.handleLiveUpdate()`)
@@ -221,7 +296,7 @@ No JavaScript is strictly required, but your UI logic should accommodate visibil
 - Use `@visual_design_mode` to scope editor-specific behavior
 - Use `liveUpdate()` for simple instant updates
 - Use `handleLiveUpdate()` for advanced DOM control
-- Reinitialize JavaScript using `visual:section:updated`
+- Reinitialize JavaScript using `visual:section:load` and `visual:block:load`
 - Make edited blocks clearly visible in the preview
 
-These patterns help ensure your section behaves consistently and responsively within the live editor environment.
+These patterns help ensure your sections and blocks behave consistently and responsively within the live editor environment.

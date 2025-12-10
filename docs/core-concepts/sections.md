@@ -26,7 +26,6 @@ A section consists of:
 
 - A **view** - Blade template defining the section's layout structure
 - **Settings** - Section-level configuration (colors, layout options, etc.)
-- **Block schema** - Defines which blocks the section accepts and how many
 - **Rendering logic** - How accepted blocks are arranged and displayed
 
 Sections provide structure; blocks fill that structure with content.
@@ -53,12 +52,12 @@ Sections provide structure; blocks fill that structure with content.
 ```php
 namespace Themes\YourTheme\Sections;
 
-use Bagisto\Visual\Section\BladeSection;
-use Bagisto\Visual\Settings\Text;
-use Bagisto\Visual\Settings\Link;
-use Bagisto\Visual\Settings\Color;
+use BagistoPlus\Visual\Section\SimpleSection;
+use BagistoPlus\Visual\Settings\Text;
+use BagistoPlus\Visual\Settings\Link;
+use BagistoPlus\Visual\Settings\Color;
 
-class AnnouncementBar extends BladeSection
+class AnnouncementBar extends SimpleSection
 {
     protected static string $view = 'shop::sections.announcement-bar';
 
@@ -85,11 +84,11 @@ class AnnouncementBar extends BladeSection
 ### Blade View Example
 
 ```blade
-<div class="announcement-bar" style="background-color: {{ $section->settings->background_color }}; color: {{ $section->settings->text_color }}">
+<div {{ $section->editor_attributes }} class="announcement-bar" style="background-color: {{ $section->settings->background_color }}; color: {{ $section->settings->text_color }}">
     <a href="{{ $section->settings->link ?? '#' }}">
         {{ $section->settings->text }}
     </a>
 </div>
 ```
 
-✅ A `$section` object representing the section is automatically injected into each Blade view. Settings can be accessed via `$section->settings`.
+✅ A `$section` object representing the section is automatically injected into each Blade view. Setting values can be accessed via `$section->settings`.

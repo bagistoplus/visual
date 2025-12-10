@@ -1,290 +1,382 @@
-# Block Schema
+# Block Attributes
 
-The block schema defines how your block behaves, what settings it exposes, and whether it can accept child blocks. This guide covers all schema configuration options.
+Block classes in Bagisto Visual can define a number of attributes that control how they are identified, rendered, and displayed in the editor.
 
-## Schema Components
+## type
 
-A block's schema consists of three main methods:
-
-- `settings()` - Define merchant-editable settings
-- `presets()` - Provide pre-configured block templates
-- `blocks()` - For container blocks, specify which child blocks are accepted
-
-## Settings
-
-Settings allow merchants to customize block appearance and content without code.
-
-### Basic Settings Example
+The block type identifier used to reference this block in sections and the Visual Editor.
 
 ```php
-public static function settings(): array
+protected static string $type = '@awesome-theme/product-card';
+```
+
+or
+
+```php
+public static function type(): string
 {
-    return [
-        Text::make('title', 'Title')
-            ->default('Default Title')
-            ->required(),
-
-        Textarea::make('description', 'Description')
-            ->default('Enter description here')
-            ->maxLength(500),
-
-        Image::make('image', 'Image'),
-
-        Select::make('alignment', 'Text Alignment')
-            ->options([
-                'left' => 'Left',
-                'center' => 'Center',
-                'right' => 'Right',
-            ])
-            ->default('left'),
-    ];
+    return '@awesome-theme/product-card';
 }
 ```
 
-### Available Setting Types
+**Default:**
+If omitted, the type is generated from the class name using kebab-case.
+`ProductCard` becomes `product-card`
 
-| Setting Type | Description | Example Use |
-|--------------|-------------|-------------|
-| `Text` | Single-line text input | Headings, labels, names |
-| `Textarea` | Multi-line text input | Descriptions, longer content |
-| `RichText` | WYSIWYG editor | Formatted content |
-| `Number` | Numeric input | Counts, sizes, limits |
-| `Range` | Slider input | Opacity, spacing |
-| `Color` | Color picker | Background, text colors |
-| `Image` | Image upload | Photos, icons, logos |
-| `Video` | Video upload/URL | Video content |
-| `Link` | URL builder | Links, CTAs |
-| `Select` | Dropdown selection | Predefined options |
-| `Radio` | Radio buttons | Exclusive choices |
-| `Checkbox` | True/false toggle | Enable/disable features |
-| `Icon` | Icon picker | Icons from icon libraries |
-| `Product` | Product selector | Link to products |
-| `Category` | Category selector | Link to categories |
-| `Page` | CMS page selector | Link to pages |
+**Recommended format:** `@vendor/block-type`
 
-### Setting Options
+It's recommended to include a vendor prefix (e.g., `@awesome-theme/product-card`) to avoid collisions, especially when blocks come from packages. This ensures uniqueness across different themes and packages.
 
-All settings support common options:
+## name
+
+Display name in the block picker.
 
 ```php
-Text::make('id', 'Label')
-    ->default('default value')          // Default value
-    ->required()                         // Make required
-    ->placeholder('Enter text...')      // Placeholder text
-    ->help('Help text for merchants')   // Help text
-    ->validation('required|max:100')    // Laravel validation rules
+protected static string $name = 'Product Card';
 ```
 
-### Conditional Settings
-
-Show/hide settings based on other settings:
+or
 
 ```php
-Select::make('type', 'Block Type')
-    ->options(['image' => 'Image', 'video' => 'Video']),
-
-Image::make('image', 'Image')
-    ->showIf('type', 'image'),  // Only show if type is 'image'
-
-Video::make('video', 'Video')
-    ->showIf('type', 'video'),  // Only show if type is 'video'
+public static function name(): string
+{
+    return __('Product Card');
+}
 ```
 
-## Presets
+**Default:**
+Derived from the class name, title-cased.
+Example: `ProductCard` becomes "Product Card".
 
-Presets provide pre-configured block templates that merchants can quickly add from the theme editor. They're "quick-start options" with predefined settings and child blocks.
+## view
 
-> **📖 See [Presets Guide](/core-concepts/presets)** for comprehensive documentation on creating presets for blocks and sections, including advanced features like nested children, categories, and preview images.
-
-### Basic Example
+Blade view used to render the block.
 
 ```php
+protected static string $view = 'shop::blocks.product-card';
+```
+
+**Default:**
+
+- For theme blocks: `shop::blocks.{slug}`
+- For non-theme blocks: `blocks.{slug}`
+
+## wrapper
+
+HTML wrapper using a simplified Emmet-style syntax. When a wrapper is defined, the necessary attributes for the Visual Editor are injected automatically.
+
+```php
+protected static string $wrapper = 'div.product-card>div.card-content';
+```
+
+Results in:
+
+```html
+<div class="product-card" data-block="generated-visual-id">
+  <div class="card-content">
+    <!-- Block blade view content -->
+  </div>
+</div>
+```
+
+**Default:** `div`
+
+### Without a wrapper
+
+When no wrapper is defined, you must manually add the editor attributes to the root element in your Blade view so the block can be handled in the Visual Editor:
+
+```blade
+<div {{ $block->editor_attributes }} class="product-card">
+  <div class="card-content">
+    <!-- Block content -->
+  </div>
+</div>
+```
+
+The editor_attributes helper injects the necessary data attributes required for the Visual Editor to identify and interact with the block.
+
+## description
+
+Short description shown in the block picker in the theme editor.
+
+```php
+protected static string $description = 'Displays a product with image, title, and price.';
+```
+
+or
+
+```php
+public static function description(): string
+{
+    return __('Displays a product with image, title, and price.');
+}
+```
+
+## category
+
+Groups blocks together in the block picker of the Visual Editor.
+
+```php
+protected static string $category = 'Product';
+```
+
+or
+
+```php
+public static function category(): string
+{
+    return __('Product');
+}
+```
+
+Blocks with the same category will be grouped together in the block picker, making it easier for merchants to find related blocks.
+
+Common categories: `Content`, `Product`, `Layout`, `Media`, `Forms`, `Marketing`
+
+## icon
+
+Icon displayed in the block picker in the Visual Editor. Must be a raw SVG string.
+
+```php
+protected static string $icon = '<svg>...</svg>';
+```
+
+or
+
+```php
+public static function icon(): string
+{
+    return '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    </svg>';
+}
+```
+
+**Default:** A default block icon is used if not specified.
+
+## previewImageUrl
+
+Path to a preview image, relative to the `public/` directory or a full URL.
+
+Displayed in the block picker in the theme editor.
+
+```php
+protected static string $previewImageUrl = 'images/blocks/product-card-preview.png';
+```
+
+or
+
+```php
+public static function previewImageUrl(): string
+{
+    return url('images/blocks/product-card-preview.png');
+}
+```
+
+**Default:**
+
+- Theme: `vendor/themes/awesome-theme/assets/images/blocks/{slug}-preview.png`
+- Non-theme: `images/blocks/{slug}-preview.png`
+
+## previewDescription
+
+Optional text shown below the preview image.
+
+```php
+protected static string $previewDescription = 'Shows product information in a card layout.';
+```
+
+or
+
+```php
+public static function previewDescription(): string
+{
+    return __('Shows product information in a card layout.');
+}
+```
+
+## presets
+
+Defines pre-configured variations of the block that merchants can choose from when adding the block. Presets allow you to provide quick-start templates with predefined settings.
+
+```php
+use BagistoPlus\Visual\Support\Preset;
+
 public static function presets(): array
 {
     return [
-        [
-            'name' => 'Primary Button',
-            'settings' => [
+        Preset::make('Primary Button')
+            ->description('Large primary call-to-action button')
+            ->settings([
                 'text' => 'Shop Now',
                 'style' => 'primary',
                 'size' => 'large',
-            ],
-        ],
-        [
-            'name' => 'Secondary Button',
-            'settings' => [
+            ]),
+
+        Preset::make('Secondary Button')
+            ->description('Standard secondary button')
+            ->settings([
                 'text' => 'Learn More',
                 'style' => 'secondary',
                 'size' => 'medium',
-            ],
-        ],
+            ]),
+
+        Preset::make('Outline Button')
+            ->description('Minimal outline style button')
+            ->settings([
+                'text' => 'View Details',
+                'style' => 'outline',
+                'size' => 'medium',
+            ]),
     ];
 }
 ```
 
-When merchants add this block, they'll see these preset options to choose from.
+Presets support:
 
-For more advanced preset features including icons, categories, preview images, and nested children, see the **[Presets Guide](/core-concepts/presets)**.
+- `name()` - Display name in the preset picker
+- `description()` - Optional description text
+- `settings()` - Default settings values
+- `icon()` - Optional icon (SVG string)
+- `category()` - Optional category for grouping
+- `previewImageUrl()` - Optional preview image URL
 
-## Container Blocks (Accepting Children)
+For comprehensive documentation on creating presets, see the [Presets Guide](../../core-concepts/presets.md).
 
-Container blocks can accept child blocks, enabling nesting. Define which blocks can be nested using the `blocks()` method:
+## settings
 
-### Accepting Specific Blocks
-
-```php
-public static function blocks(): array
-{
-    return [
-        'button',           // Only Button blocks
-        'image',            // Only Image blocks
-        'heading',          // Only Heading blocks
-    ];
-}
-```
-
-### Accepting All Theme Blocks
+Defines the configurable fields for the block that appear in the Visual Editor's settings panel.
 
 ```php
-public static function blocks(): array
-{
-    return [
-        '@theme',  // Accept all theme blocks
-    ];
-}
-```
-
-### Mixed Block Types
-
-```php
-public static function blocks(): array
-{
-    return [
-        '@theme',          // All theme blocks
-        'button',          // Explicitly include Button
-        'custom-block',    // Custom block type
-    ];
-}
-```
-
-## Complete Schema Example
-
-Here's a complete block showing all schema features:
-
-```php
-<?php
-
-namespace Themes\YourTheme\Blocks;
-
-use BagistoPlus\Visual\Block\BladeBlock;
 use BagistoPlus\Visual\Settings\Text;
 use BagistoPlus\Visual\Settings\Textarea;
-use BagistoPlus\Visual\Settings\Select;
 use BagistoPlus\Visual\Settings\Color;
-use BagistoPlus\Visual\Settings\Image;
+use BagistoPlus\Visual\Settings\Icon;
 
-class CallToAction extends BladeBlock
+public static function settings(): array
 {
-    protected static string $view = 'shop::blocks.call-to-action';
+    return [
+        Icon::make('icon', 'Feature icon')
+            ->default('heroicon-o-star'),
 
-    public static function name(): string
-    {
-        return 'Call to Action';
-    }
+        Text::make('heading', 'Heading')
+            ->default('Amazing Feature'),
 
-    public static function settings(): array
-    {
-        return [
-            Text::make('heading', 'Heading')
-                ->default('Ready to get started?')
-                ->required(),
+        Textarea::make('description', 'Description')
+            ->default('This feature will transform your business.'),
 
-            Textarea::make('description', 'Description')
-                ->default('Join thousands of satisfied customers')
-                ->maxLength(200),
-
-            Select::make('layout', 'Layout')
-                ->options([
-                    'centered' => 'Centered',
-                    'split' => 'Split',
-                ])
-                ->default('centered'),
-
-            Image::make('background_image', 'Background Image')
-                ->showIf('layout', 'split'),
-
-            Color::make('background_color', 'Background Color')
-                ->default('#4f46e5'),
-
-            Color::make('text_color', 'Text Color')
-                ->default('#ffffff'),
-        ];
-    }
-
-    public static function blocks(): array
-    {
-        return [
-            'button',  // Accept button blocks for CTAs
-        ];
-    }
-
-    public static function maxBlocks(): int
-    {
-        return 2;  // Max 2 buttons
-    }
-
-    public static function presets(): array
-    {
-        return [
-            [
-                'name' => 'Newsletter Signup',
-                'settings' => [
-                    'heading' => 'Subscribe to our newsletter',
-                    'description' => 'Get the latest updates and offers',
-                    'layout' => 'centered',
-                ],
-            ],
-            [
-                'name' => 'Product Launch',
-                'settings' => [
-                    'heading' => 'New Collection Available',
-                    'description' => 'Discover our latest products',
-                    'layout' => 'split',
-                ],
-            ],
-        ];
-    }
+        Color::make('icon_color', 'Icon color')
+            ->default('#4f46e5'),
+    ];
 }
 ```
 
-## Schema Validation
+For all available setting types and their options, see the [Settings documentation](../../core-concepts/settings/types.md).
 
-Settings support Laravel validation rules:
+## private
+
+Controls whether the block appears in the general block picker. Private blocks are hidden from the main picker but can be made available to specific parent blocks or sections through explicit accepts listing.
 
 ```php
-Text::make('email', 'Email')
-    ->validation('required|email'),
-
-Number::make('quantity', 'Quantity')
-    ->validation('required|integer|min:1|max:100'),
-
-Image::make('logo', 'Logo')
-    ->validation('required|image|max:2048'),  // Max 2MB
+protected static bool $private = true;
 ```
 
-## Best Practices
+**Default:** `false` (block is public and appears in pickers)
 
-✅ **Group related settings**: Keep related settings together
-✅ **Provide defaults**: Every setting should have a sensible default
-✅ **Use help text**: Explain non-obvious settings
-✅ **Limit options**: Don't overwhelm with too many choices
-✅ **Validation**: Validate user input appropriately
-✅ **Conditional display**: Hide irrelevant settings based on context
-✅ **Useful presets**: Provide practical, common-use presets
+### Visibility Rules
 
-## Next Steps
+Private blocks follow strict visibility rules:
 
-- **[Presets](/core-concepts/presets)**: Complete guide to creating block and section presets
-- **[Static vs Dynamic Blocks](/building-theme/adding-blocks/static-vs-dynamic-blocks)**: Learn when blocks are static or dynamic
-- **[Rendering Blocks](/building-theme/adding-blocks/rendering-blocks)**: How to render blocks in views
-- **[Container Blocks](/building-theme/adding-blocks/container-blocks)**: Deep dive into blocks that accept children
+1. **Hidden from General Picker**: Never appear in the main block picker
+2. **Explicit Accepts Required**: Only visible when explicitly listed in a parent's `accepts` array
+3. **Wildcards Don't Include Private**: Patterns like `'*'` or `'@vendor/*'` do NOT make private blocks visible
+
+**Example:**
+
+```php
+// Private block - only usable within specific contexts
+class TabItem extends SimpleBlock
+{
+    protected static bool $private = true;
+}
+
+// Section that explicitly accepts the private block
+class Tabs extends SimpleSection
+{
+    protected static array $accepts = [
+        '@awesome-theme/tab-item',  // Explicit - TabItem will appear
+    ];
+}
+
+// Section with wildcard - private block still hidden
+class Container extends SimpleSection
+{
+    protected static array $accepts = ['*'];  // TabItem NOT included
+}
+```
+
+Use private blocks for:
+- Component parts (like tab items, accordion panels)
+- Blocks that only make sense in specific contexts
+- Internal/structural blocks not meant for direct use
+
+## accepts
+
+For container blocks that can accept child blocks, defines which block types can be nested inside.
+
+```php
+protected static array $accepts = [
+    '@awesome-theme/heading',
+    '@awesome-theme/button',
+    '@awesome-theme/image',
+];
+```
+
+### Wildcards:
+
+Accept all blocks:
+
+```php
+protected static array $accepts = ['*'];
+```
+
+Accept all blocks from a specific vendor/package:
+
+```php
+protected static array $accepts = ['@awesome-theme/*'];
+```
+
+### Using block classes:
+
+You can also reference blocks using their PHP class names:
+
+```php
+use Themes\AwesomeTheme\Blocks\Heading;
+use Themes\AwesomeTheme\Blocks\Button;
+
+protected static array $accepts = [
+    Heading::class,
+    Button::class,
+];
+```
+
+**Default:** `[]` (does not accept children)
+
+### Rendering Children
+
+Render child blocks in your block view using `@children`:
+
+```blade
+<div {{ $block->editor_attributes }} class="card">
+    <div class="card-header">
+        <h3>{{ $block->settings->title }}</h3>
+    </div>
+    <div class="card-body">
+        @children
+    </div>
+</div>
+```
+
+---
+
+Next: [Static Blocks](./static-blocks.md)

@@ -74,8 +74,10 @@ export default defineConfig({
                 { text: 'Overview', link: '/core-concepts/settings/overview' },
                 { text: 'Setting types', link: '/core-concepts/settings/types' },
                 { text: 'Theme settings', link: '/core-concepts/settings/theme-settings' },
+                { text: 'Conditional visibility', link: '/core-concepts/settings/conditional-visibility' },
               ],
             },
+            { text: 'Dynamic Sources', link: '/core-concepts/dynamic-sources' },
           ],
         },
         {
@@ -85,35 +87,28 @@ export default defineConfig({
             { text: 'Adding Layouts', link: '/building-theme/adding-layouts' },
             { text: 'Adding Templates', link: '/building-theme/adding-templates' },
             {
-              text: 'Adding Blocks',
-              collapsed: true,
-              items: [
-                { text: 'Overview', link: '/building-theme/adding-blocks/overview' },
-                { text: 'Creating a block', link: '/building-theme/adding-blocks/creating-block' },
-                { text: 'Block schema', link: '/building-theme/adding-blocks/block-schema' },
-                { text: 'Static vs Dynamic blocks', link: '/building-theme/adding-blocks/static-vs-dynamic-blocks' },
-                { text: 'Rendering blocks', link: '/building-theme/adding-blocks/rendering-blocks' },
-                { text: 'Container blocks', link: '/building-theme/adding-blocks/container-blocks' },
-                { text: 'Using in sections', link: '/building-theme/adding-blocks/using-in-sections' },
-              ],
-            },
-            {
               text: 'Adding Sections',
               collapsed: true,
               items: [
                 { text: 'Overview', link: '/building-theme/adding-sections/overview' },
                 { text: 'Creating a section', link: '/building-theme/adding-sections/creating-section' },
                 { text: 'Section attributes', link: '/building-theme/adding-sections/section-attributes' },
-                {
-                  text: 'Defining settings and blocks',
-                  link: '/building-theme/adding-sections/defining-section-schema',
-                },
                 { text: 'Writing the section view', link: '/building-theme/adding-sections/writing-section-view' },
                 {
                   text: 'Using section in templates',
                   link: '/building-theme/adding-sections/using-section',
                 },
-                { text: 'Integrating with the editor', link: '/building-theme/adding-sections/integrating-editor' },
+              ],
+            },
+            {
+              text: 'Adding Blocks',
+              collapsed: true,
+              items: [
+                { text: 'Overview', link: '/building-theme/adding-blocks/overview' },
+                { text: 'Creating a block', link: '/building-theme/adding-blocks/creating-block' },
+                { text: 'Block schema', link: '/building-theme/adding-blocks/block-schema' },
+                { text: 'Static blocks', link: '/building-theme/adding-blocks/static-blocks' },
+                { text: 'Container blocks', link: '/building-theme/adding-blocks/container-blocks' },
               ],
             },
             {
@@ -121,6 +116,7 @@ export default defineConfig({
               collapsed: true,
               items: [
                 { text: 'Overview', link: '/building-theme/best-practices/overview' },
+                { text: 'Integrating with the editor', link: '/building-theme/best-practices/integrating-editor' },
                 { text: 'Styling and Color System', link: '/building-theme/best-practices/styling' },
                 { text: 'Accessibility', link: '/building-theme/best-practices/accessibility' },
                 { text: 'Performance', link: '/building-theme/best-practices/performance' },

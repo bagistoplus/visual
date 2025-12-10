@@ -4,6 +4,8 @@ Once a section is defined, it can be used in a page template a layout.
 
 ## Usage in JSON Templates
 
+Sections can be used in JSON or YAML template files. See [JSON/YAML Templates](../../core-concepts/templates/json-yaml.md) for more details.
+
 :::: tabs
 
 ::: tab JSON
@@ -12,7 +14,7 @@ Once a section is defined, it can be used in a page template a layout.
 {
   "sections": {
     "announcement-bar": {
-      "type": "awesome-theme::announcement-bar",
+      "type": "@awesome-theme/announcement-bar",
       "settings": {
         "text": "Free shipping on all orders",
         "background_color": "#facc15",
@@ -20,13 +22,13 @@ Once a section is defined, it can be used in a page template a layout.
       },
       "blocks": {
         "first": {
-          "type": "announcement",
+          "type": "@awesome-theme/announcement",
           "settings": {
             "text": "Extended returns until Jan 31"
           }
         },
         "second": {
-          "type": "announcement",
+          "type": "@awesome-theme/announcement",
           "settings": {
             "text": "Free delivery on orders over $50"
           }
@@ -45,18 +47,18 @@ Once a section is defined, it can be used in a page template a layout.
 ```yaml
 sections:
   announcement-bar:
-    type: awesome-theme::announcement-bar
+    type: '@awesome-theme/announcement-bar'
     settings:
       text: Free shipping on all orders
       background_color: '#facc15'
       text_color: '#000000'
     blocks:
       first:
-        type: announcement
+        type: '@awesome-theme/announcement'
         settings:
           text: Extended returns until Jan 31
       second:
-        type: announcement
+        type: '@awesome-theme/announcement'
         settings:
           text: Free delivery on orders over $50
 
@@ -74,81 +76,44 @@ order:
 | `sections` | Map of section instances keyed by a unique name                   |
 | `order`    | List of section keys (from `sections`) to control rendering order |
 |            |                                                                   |
-| `type`     | Section slug (use a vendor prefix for package-defined ones)       |
+| `type`     | Section type (e.g., `@awesome-theme/announcement-bar`)            |
 | `settings` | Section-level settings                                            |
 | `blocks`   | Named blocks, each with a `type` and `settings`                   |
 
----
+## Usage in PHP Templates
 
-### Referencing a Section
-
-Each section in the template is referenced using its `slug`:
+You can also use sections programmatically using the `TemplateBuilder` API in PHP templates. See [PHP Templates](../../core-concepts/templates/php-templates.md) for more details.
 
 ```php
-protected static string $slug = 'announcement-bar';
+<?php
+
+use BagistoPlus\Visual\Support\TemplateBuilder;
+
+return TemplateBuilder::make()
+    ->section('announcement-bar', '@awesome-theme/announcement-bar', fn($section) => $section
+        ->settings([
+            'text' => 'Free shipping on all orders',
+            'background_color' => '#facc15',
+            'text_color' => '#000000',
+        ])
+        ->blocks([
+            $section->block('first', '@awesome-theme/announcement', fn($block) => $block
+                ->settings(['text' => 'Extended returns until Jan 31'])
+            ),
+            $section->block('second', '@awesome-theme/announcement', fn($block) => $block
+                ->settings(['text' => 'Free delivery on orders over $50'])
+            ),
+        ])
+    )
+    ->order(['announcement-bar']);
 ```
 
-If the section belongs to a theme package, you should use a namespace prefix:
+The `section()` method accepts:
 
-```yaml
-type: awesome-theme::announcement-bar
-```
-
-This ensures the editor resolves the correct section, even when multiple packages define similar slugs.
-
-## Usage in Blade views
-
-In addition to JSON templates, sections can also be embedded **statically** in Blade views using the `<visual:section>` component.
-
-This renders the section in a fixed location on the page.
-These statically-included sections:
-
-- **Cannot be reordered or removed** via the Visual Editor
-- **Can still have their settings and blocks edited**
-- Are rendered at a fixed location in the layout
-
-### Syntax
-
-```blade
-<visual:section name="section-slug" />
-```
-
-For theme-based sections, use a vendor-prefixed slug:
-
-```blade
-<visual:section name="awesome-theme::footer" />
-```
+- A unique section key
+- The section type (`@vendor/section-name`)
+- A closure that configures the section's settings and blocks
 
 ---
 
-### Example: Static Header and Footer in Layout
-
-In your `default.blade.php` layout
-
-```blade
-<!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
-<head>
-    <title>Awesome Theme</title>
-    @bagisto_vite(['resources/assets/css/app.css', 'resources/assets/js/app.js'], 'awesome-theme')
-</head>
-<body>
-
-    <visual:section name="awesome-theme::header" />
-
-    <main>
-        @visual_layout_content
-    </main>
-
-    <visual:section name="awesome-theme::footer" />
-
-</body>
-</html>
-```
-
----
-
-### Notes
-
-- A section can only be used statically once per page (layout + template combined)
-- This is ideal for layout-bound sections like headers, footers, sidebars, banners
+Next: [Section Attributes](./section-attributes.md)

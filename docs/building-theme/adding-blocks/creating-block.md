@@ -1,15 +1,236 @@
 # Creating a Block
 
+A block is a reusable UI component that can be added to sections in Bagisto Visual.
 This guide walks you through creating a custom block step-by-step. We'll build a **Feature** block that displays an icon, heading, and description.
 
-## Step 1: Create the PHP Block Class
+## Generate a Block
 
-Create a new PHP file in `src/Blocks/Feature.php`:
+To generate a new block, use the `visual:make-block` Artisan command:
+
+```bash
+php artisan visual:make-block Feature --theme=awesome-theme
+```
+
+This will create a basic block class named `Feature` inside the awesome-theme package:
+
+```text
+packages/Themes/AwesomeTheme/src/Blocks/Feature.php
+packages/Themes/AwesomeTheme/resources/views/blocks/feature.blade.php
+```
+
+### Interactive Mode
+
+You can omit arguments to use interactive prompts:
+
+```bash
+php artisan visual:make-block
+```
+
+The command will prompt you for:
+- **Block name** (e.g., `Feature`)
+- **Target theme** (selects from installed Visual themes or `app/Visual`)
+
+## Command Options
+
+### Block Types
+
+The command generates different block types based on flags:
+
+| Option | Block Type | Description |
+|--------|------------|-------------|
+| *(none)* | `SimpleBlock` | **Default.** Lightweight block. Best for simple blocks that don't need component features. |
+| `--component` | `BladeBlock` | Blade component-based block. Use when you prefer Blade component patterns. |
+| `--livewire` | `LivewireBlock` | Livewire component-based block. Use when you need reactive behavior or real-time updates. |
+
+::: info
+The choice between `SimpleBlock`, `BladeBlock`, and `LivewireBlock` is based on your preferred development style and feature needs.
+:::
+
+::: warning
+You cannot use both `--component` and `--livewire` flags together.
+:::
+
+### Other Options
+
+| Option | Description |
+|--------|-------------|
+| `--theme=awesome-theme` | Target theme slug. Omit to use interactive selection. |
+| `--force` | Overwrite existing block files if they already exist. |
+
+## Generated Files
+
+### Default Block (SimpleBlock)
+
+**Command:**
+```bash
+php artisan visual:make-block Feature --theme=awesome-theme
+```
+
+**Generated class:**
+```php
+<?php
+
+namespace YourVendor\AwesomeTheme\Blocks;
+
+use BagistoPlus\Visual\Block\SimpleBlock;
+
+class Feature extends SimpleBlock
+{
+    protected static string $view = 'shop::blocks.feature';
+
+    public static function settings(): array
+    {
+        // block settings
+        return [];
+    }
+}
+```
+
+**Generated view** (`resources/views/blocks/feature.blade.php`):
+```blade
+<div>
+    <!-- Feature -->
+</div>
+```
+
+### Blade Component Block (BladeBlock)
+
+**Command:**
+```bash
+php artisan visual:make-block Feature --component --theme=awesome-theme
+```
+
+**Generated class:**
+```php
+<?php
+
+namespace YourVendor\AwesomeTheme\Blocks;
+
+use BagistoPlus\Visual\Block\BladeBlock;
+
+class Feature extends BladeBlock
+{
+    protected static string $view = 'shop::blocks.feature';
+
+    public static function settings(): array
+    {
+        // block settings
+        return [];
+    }
+}
+```
+
+### Livewire Block (LivewireBlock)
+
+**Command:**
+```bash
+php artisan visual:make-block AddToCart --livewire --theme=awesome-theme
+```
+
+**Generated class:**
+```php
+<?php
+
+namespace YourVendor\AwesomeTheme\Blocks;
+
+use BagistoPlus\Visual\Block\LivewireBlock;
+
+class AddToCart extends LivewireBlock
+{
+    protected static string $view = 'shop::blocks.add-to-cart';
+
+    public static function settings(): array
+    {
+        // block settings
+        return [];
+    }
+}
+```
+
+## Generate in `app/Visual`
+
+If you omit the `--theme` option, the command shows an interactive menu including an **"In default app"** option:
+
+```bash
+php artisan visual:make-block Feature
+```
+
+```
+🧱 Select the target theme:
+  awesome-theme
+  another-theme
+> In default app
+```
+
+This generates files in your application directory:
+
+```text
+app/Visual/Blocks/Feature.php
+resources/views/blocks/feature.blade.php
+```
+
+**Namespace:** `App\Visual\Blocks`
+
+::: info
+Blocks in `app/Visual` are useful for:
+- Quick prototyping
+- Application-specific blocks not tied to a theme
+- Shared blocks used across multiple themes
+:::
+
+## Overwriting Existing Files
+
+Use the `--force` flag to overwrite existing block files:
+
+```bash
+php artisan visual:make-block Feature --theme=awesome-theme --force
+```
+
+Without `--force`, the command will error if files already exist:
+
+```
+❌ Block class already exists: packages/.../Feature.php (use --force to overwrite)
+```
+
+## Registering Blocks
+
+Bagisto Visual automatically discovers blocks from:
+
+- `app/Visual/Blocks`
+- `packages/<Vendor>/<Theme>/src/Blocks`
+
+For other locations, you can manually register blocks in a service provider:
+
+### Discover a directory
+
+```php
+Visual::discoverBlocksIn(base_path('modules/Shared/Blocks'));
+```
+
+### Register a single class
+
+```php
+Visual::registerBlock(\App\Custom\Blocks\Feature::class);
+```
+
+Or for theme packages:
+
+```php
+Visual::registerBlock(\Themes\AwesomeTheme\Blocks\Feature::class);
+```
+
+## Complete Example
+
+Let's build a complete **Feature** block with settings and a view:
+
+### Step 1: Add Settings to the Block Class
+
+Edit the generated `Feature.php` class to add settings:
 
 ```php
 <?php
 
-namespace Themes\YourTheme\Blocks;
+namespace Themes\AwesomeTheme\Blocks;
 
 use BagistoPlus\Visual\Block\BladeBlock;
 use BagistoPlus\Visual\Settings\Text;
@@ -19,14 +240,8 @@ use BagistoPlus\Visual\Settings\Color;
 
 class Feature extends BladeBlock
 {
-    /**
-     * The Blade view to render this block
-     */
     protected static string $view = 'shop::blocks.feature';
 
-    /**
-     * Define the block's configurable settings
-     */
     public static function settings(): array
     {
         return [
@@ -46,19 +261,12 @@ class Feature extends BladeBlock
 }
 ```
 
-### Key Components
+### Step 2: Create the Blade View
 
-- **Namespace**: Must match your theme's namespace structure
-- **Extends BladeBlock**: The most common base class for blocks
-- **$view property**: Points to the Blade template (using dot notation)
-- **settings() method**: Defines the settings merchants can configure
-
-## Step 2: Create the Blade View
-
-Create the corresponding Blade view in `resources/views/blocks/feature.blade.php`:
+Update the generated view in `resources/views/blocks/feature.blade.php`:
 
 ```blade
-<div class="feature-block">
+<div {{ $block->editor_attributes }} class="feature-block">
     <div class="feature-block__icon" style="color: {{ $block->settings->icon_color }}">
         <x-icon name="{{ $block->settings->icon }}" class="w-12 h-12" />
     </div>
@@ -80,188 +288,9 @@ The `$block` variable is automatically injected into every block view:
 - `$block->settings` - Access block settings
 - `$block->id` - Unique block identifier
 - `$block->type` - Block type name
-- `$block->blocks` - Child blocks (for container blocks)
+- `$block->editor_attributes` - Required attributes for Visual Editor integration
+- `$block->index` - Block's position index (useful for conditional rendering)
 
-## Step 3: Register the Block (Optional)
+---
 
-Blocks are auto-discovered from the `src/Blocks/` directory. No manual registration needed!
-
-However, if you want to control the block's display name in the theme editor, add a `name()` method:
-
-```php
-public static function name(): string
-{
-    return 'Feature';
-}
-```
-
-## Step 4: Use the Block in a Section
-
-Now your block is ready to be used! Add it to a section's schema:
-
-```php
-// In your section class
-public static function schema(): array
-{
-    return [
-        'blocks' => [
-            'feature',  // Block type name (class name in kebab-case)
-        ],
-    ];
-}
-```
-
-## Complete Example: Product Badge Block
-
-Here's a more complete example showing a Product Badge block with presets:
-
-**PHP Class** (`src/Blocks/ProductBadge.php`):
-```php
-<?php
-
-namespace Themes\YourTheme\Blocks;
-
-use BagistoPlus\Visual\Block\BladeBlock;
-use BagistoPlus\Visual\Settings\Text;
-use BagistoPlus\Visual\Settings\Select;
-use BagistoPlus\Visual\Settings\Color;
-
-class ProductBadge extends BladeBlock
-{
-    protected static string $view = 'shop::blocks.product-badge';
-
-    public static function name(): string
-    {
-        return 'Product Badge';
-    }
-
-    public static function settings(): array
-    {
-        return [
-            Text::make('text', 'Badge text')
-                ->default('New'),
-
-            Select::make('style', 'Badge style')
-                ->options([
-                    'default' => 'Default',
-                    'success' => 'Success',
-                    'warning' => 'Warning',
-                    'danger' => 'Danger',
-                ])
-                ->default('default'),
-
-            Color::make('background_color', 'Background color'),
-            Color::make('text_color', 'Text color'),
-        ];
-    }
-
-    public static function presets(): array
-    {
-        return [
-            [
-                'name' => 'New',
-                'settings' => [
-                    'text' => 'New',
-                    'style' => 'success',
-                ],
-            ],
-            [
-                'name' => 'Sale',
-                'settings' => [
-                    'text' => 'Sale',
-                    'style' => 'danger',
-                ],
-            ],
-            [
-                'name' => 'Limited',
-                'settings' => [
-                    'text' => 'Limited Edition',
-                    'style' => 'warning',
-                ],
-            ],
-        ];
-    }
-}
-```
-
-**Blade View** (`resources/views/blocks/product-badge.blade.php`):
-```blade
-<span class="product-badge product-badge--{{ $block->settings->style }}"
-      @if($block->settings->background_color || $block->settings->text_color)
-      style="
-        @if($block->settings->background_color)
-            background-color: {{ $block->settings->background_color }};
-        @endif
-        @if($block->settings->text_color)
-            color: {{ $block->settings->text_color }};
-        @endif
-      "
-      @endif>
-    {{ $block->settings->text }}
-</span>
-```
-
-## Block Base Types
-
-Choose the right base class for your block:
-
-### BladeBlock
-
-Use for most blocks with settings and Blade views.
-
-```php
-class MyBlock extends BladeBlock
-{
-    protected static string $view = 'shop::blocks.my-block';
-
-    public static function settings(): array
-    {
-        return [/* settings */];
-    }
-}
-```
-
-### LivewireBlock
-
-Use for interactive blocks requiring JavaScript/AJAX functionality.
-
-```php
-class InteractiveBlock extends LivewireBlock
-{
-    protected static string $component = 'shop.blocks.interactive';
-
-    public $value = '';
-
-    public function updated($property)
-    {
-        // Livewire lifecycle methods
-    }
-}
-```
-
-### SimpleBlock
-
-Use for structural blocks without settings (dividers, spacers).
-
-```php
-class Divider extends SimpleBlock
-{
-    protected static string $view = 'shop::blocks.divider';
-}
-```
-
-## Best Practices
-
-✅ **One responsibility**: Each block should do one thing well
-✅ **Descriptive names**: Use clear, meaningful class and setting names
-✅ **Sensible defaults**: Provide good default values for all settings
-✅ **Validation**: Use setting validation for required fields
-✅ **Documentation**: Comment complex logic for future maintainers
-✅ **Responsive design**: Test blocks on mobile, tablet, and desktop
-✅ **Accessibility**: Include proper ARIA labels and semantic HTML
-
-## Next Steps
-
-- **[Block Schema](/building-theme/adding-blocks/block-schema)**: Learn about settings, presets, and advanced schema options
-- **[Static vs Dynamic Blocks](/building-theme/adding-blocks/static-vs-dynamic-blocks)**: Understand when to use each type
-- **[Container Blocks](/building-theme/adding-blocks/container-blocks)**: Create blocks that accept child blocks
+Next: [Block Schema](./block-schema.md)

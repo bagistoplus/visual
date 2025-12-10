@@ -1,17 +1,15 @@
 # Adding Blocks - Overview
 
-Blocks are the atomic building units of Bagisto Visual v2. This guide will walk you through creating custom blocks for your theme.
+Blocks are the atomic building units of Bagisto Visual. This guide will walk you through creating custom blocks for your theme.
 
 ## What You'll Learn
 
 This section covers everything you need to know about building blocks:
 
 - **[Creating a Block](/building-theme/adding-blocks/creating-block)**: Step-by-step guide to creating your first block
-- **[Block Schema](/building-theme/adding-blocks/block-schema)**: Configuring settings, presets, and nested blocks
-- **[Static vs Dynamic Blocks](/building-theme/adding-blocks/static-vs-dynamic-blocks)**: Understanding the two block types
-- **[Rendering Blocks](/building-theme/adding-blocks/rendering-blocks)**: How to render blocks in your views
+- **[Block Attributes](/building-theme/adding-blocks/block-schema)**: Configuring settings, presets, and nested blocks
+- **[Static Blocks](/building-theme/adding-blocks/static-blocks)**: Rendering blocks in Blade templates
 - **[Container Blocks](/building-theme/adding-blocks/container-blocks)**: Creating blocks that accept child blocks
-- **[Using in Sections](/building-theme/adding-blocks/using-in-sections)**: Integrating blocks into sections
 
 ## When to Create Custom Blocks
 
@@ -31,6 +29,7 @@ Bagisto Visual provides three base block types to extend:
 The most common block type. Uses Blade templates for rendering.
 
 **Best for:**
+
 - Standard content blocks (text, images, buttons)
 - Blocks with settings but no complex logic
 - Most use cases
@@ -40,6 +39,7 @@ The most common block type. Uses Blade templates for rendering.
 Dynamic blocks powered by Livewire components.
 
 **Best for:**
+
 - Interactive blocks (forms, calculators, live search)
 - Blocks that need real-time updates
 - AJAX-based functionality
@@ -49,6 +49,7 @@ Dynamic blocks powered by Livewire components.
 Minimal blocks without settings or logic.
 
 **Best for:**
+
 - Structural elements (dividers, spacers)
 - Static content
 - Pure presentation blocks
@@ -58,6 +59,7 @@ Minimal blocks without settings or logic.
 Here's a simple block to get you started:
 
 **PHP Class** (`src/Blocks/Testimonial.php`):
+
 ```php
 namespace Themes\YourTheme\Blocks;
 
@@ -82,6 +84,7 @@ class Testimonial extends BladeBlock
 ```
 
 **Blade View** (`resources/views/blocks/testimonial.blade.php`):
+
 ```blade
 <div class="testimonial">
     @if($block->settings->photo)
@@ -114,6 +117,7 @@ That's it! This Testimonial block can now be used in any section that accepts it
 ```
 
 **Key points:**
+
 - PHP classes go in `src/Blocks/`
 - Blade views go in `resources/views/blocks/`
 - One PHP class per block, one Blade view per block
