@@ -30,6 +30,46 @@ class VisualManager
     }
 
     /**
+     * Register a single section.
+     *
+     * @param  string  $sectionClass  The section class to register
+     */
+    public function registerSection(string $sectionClass): void
+    {
+        Craftile::registerBlock($sectionClass);
+    }
+
+    /**
+     * Register multiple sections.
+     *
+     * @param  array  $sectionClasses  Array of section classes to register
+     */
+    public function registerSections(array $sectionClasses): void
+    {
+        Craftile::registerBlocks($sectionClasses);
+    }
+
+    /**
+     * Register a single block.
+     *
+     * @param  string  $blockClass  The block class to register
+     */
+    public function registerBlock(string $blockClass): void
+    {
+        Craftile::registerBlock($blockClass);
+    }
+
+    /**
+     * Register multiple blocks.
+     *
+     * @param  array  $blockClasses  Array of block classes to register
+     */
+    public function registerBlocks(array $blockClasses): void
+    {
+        Craftile::registerBlocks($blockClasses);
+    }
+
+    /**
      * Register a custom setting transformer.
      *
      * @param  string  $type  The setting type to transform

@@ -1,48 +1,35 @@
 <script setup lang="ts">
-  import { Product } from '../types';
-  import { useState } from '../state';
-  import { useHttpClient } from '../composables/http';
-  import useI18n from '../composables/i18n';
+import { Product } from '../types';
+import { useState } from '../state';
+import { fetchProducts } from '../api';
+import useI18n from '../composables/i18n';
 
-  const { t } = useI18n();
-  const { get } = useHttpClient();
-  const { channel, locale } = useState();
-  const model = defineModel<Product | null>();
-  const search = ref('');
-  const products = ref<Product[]>([]);
+const { t } = useI18n();
+const { channel, locale, getProducts } = useState();
+const model = defineModel<Product | null>();
+const search = ref('');
 
-  const requestUrl = computed(() => {
-    const params = new URLSearchParams({
-      channel: channel.value,
-      locale: locale.value,
-    });
-    if (search.value) {
-      params.append('name', search.value);
-    }
-    return `/api/products?${params}`;
+const products = computed(() => getProducts());
+
+const { isFetching, execute } = fetchProducts();
+
+const debouncedFetch = useDebounceFn(() => {
+  execute({
+    channel: channel.value,
+    locale: locale.value,
+    search: search.value
   });
+}, 300);
 
-const { isFetching, execute, onSuccess, onError } = get(requestUrl);
+const onSearch = () => {
+  debouncedFetch();
+};
 
-  onSuccess((data) => {
-    products.value = data?.data || [];
-  });
+onMounted(() => execute({ channel: channel.value, locale: locale.value }));
 
-  onError((error) => {
-    console.error('Failed to fetch products:', error);
-  });
-
-  const debouncedFetch = useDebounceFn(() => {
-    execute();
-  }, 300);
-
-  const onSearch = () => {
-    debouncedFetch();
-  };
-
-  onMounted(() => execute());
-
-  watch([channel, locale], () => execute());
+watch([channel, locale], () => {
+  execute({ channel: channel.value, locale: locale.value });
+});
 </script>
 
 <template>

@@ -12,6 +12,11 @@
   },
   "devDependencies": {
     "@ark-ui/vue": "^5.25.1",
+    "@craftile/editor": "^0.10.0",
+    "@craftile/plugin-common-properties": "^0.10.0",
+    "@craftile/preview-client": "^0.10.0",
+    "@craftile/preview-client-html": "^0.10.0",
+    "@craftile/types": "^0.10.0",
     "@iconify-json/bi": "^1.2.6",
     "@iconify-json/heroicons": "^1.2.3",
     "@iconify-json/lucide": "^1.2.68",
@@ -36,6 +41,7 @@
     "@vitejs/plugin-vue": "^6.0.1",
     "@zag-js/file-upload": "^1.25.0",
     "@zag-js/vue": "^1.25.0",
+    "feed": "^5.1.0",
     "laravel-vite-plugin": "^2.0.1",
     "morphdom": "^2.7.7",
     "nprogress": "^0.2.0",
@@ -50,13 +56,7 @@
     "vite": "^7.1.8",
     "vitepress": "^1.6.4",
     "vitepress-plugin-llms": "^1.8.0",
-    "vue": "^3.5.22"
-  },
-  "dependencies": {
-    "@craftile/editor": "^0.9.0",
-    "@craftile/plugin-common-properties": "^0.9.0",
-    "@craftile/preview-client": "^0.9.0",
-    "@craftile/preview-client-html": "^0.9.0",
-    "@craftile/types": "^0.9.0"
+    "vue": "^3.5.22",
+    "vue3-tabs-component": "^1.3.7"
   }
 }

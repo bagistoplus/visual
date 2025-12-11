@@ -2,7 +2,7 @@
 import type { PropertyField } from '@craftile/types';
 import { Popover } from '@ark-ui/vue/popover';
 import { CmsPage } from '../types';
-import { useHttpClient } from '../composables/http';
+import { useState } from '../state';
 import useI18n from '../composables/i18n';
 
 interface Props {
@@ -12,46 +12,21 @@ interface Props {
 defineProps<Props>();
 
 const { t } = useI18n();
-const { get } = useHttpClient();
+const { getCmsPage } = useState();
 const model = defineModel<number | null>();
 const opened = ref(false);
 
-const pagesCache = ref<Map<number, CmsPage>>(new Map());
-const selectedPage = ref<CmsPage | null>(null);
-
-// Fetch page details when model changes
-watch(() => model.value, async (pageId) => {
-  if (!pageId) {
-    selectedPage.value = null;
-    return;
+const selectedPage = computed({
+  get: () => {
+    if (!model.value) {
+      return null;
+    }
+    return getCmsPage(model.value);
+  },
+  set: (page: CmsPage | null) => {
+    model.value = page ? page.id : null;
   }
-
-  if (pagesCache.value.has(pageId)) {
-    selectedPage.value = pagesCache.value.get(pageId)!;
-    return;
-  }
-
-  const request = get<CmsPage>(`${window.editorConfig.routes.getCmsPages}/${pageId}`);
-
-  request.onSuccess((data) => {
-    pagesCache.value.set(pageId, data);
-    selectedPage.value = data;
-  });
-
-  request.onError((error) => {
-    console.error('Failed to fetch page:', error);
-  });
-
-  await request.execute();
-}, { immediate: true });
-
-const updatePage = (page: CmsPage | null) => {
-  selectedPage.value = page;
-  model.value = page ? page.id : null;
-  if (page) {
-    pagesCache.value.set(page.id, page);
-  }
-};
+});
 </script>
 <template>
   <div>
@@ -73,7 +48,7 @@ const updatePage = (page: CmsPage | null) => {
             <span class="flex-1 w-0 truncate">{{ selectedPage.page_title }}</span>
             <button
               class="flex-none rounded-lg hover:bg-neutral-200 p-1"
-              @click.stop="selectedPage = null"
+              @click.stop="model = null"
             >
               <i-heroicons-x-mark />
             </button>
@@ -93,7 +68,7 @@ const updatePage = (page: CmsPage | null) => {
 
           <CmsPageListbox
             v-model="selectedPage"
-            @update:model-value="updatePage($event); opened = false"
+            @update:model-value="opened = false"
           />
         </Popover.Content>
       </Popover.Positioner>

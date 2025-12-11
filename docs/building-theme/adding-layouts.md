@@ -32,13 +32,13 @@ Example content for a basic `default.blade.php`:
 </head>
 <body>
 
-    <x-shop::header />
+    @visualRegion('header')
 
     <main>
         @visual_layout_content
     </main>
 
-    <x-shop::footer />
+    @visualRegion('footer')
 
     @stack('scripts')
 
@@ -46,41 +46,51 @@ Example content for a basic `default.blade.php`:
 </html>
 ```
 
-- `<x-shop::header />` loads the header component.
-- `<x-shop::footer />` loads the footer component.
+- `@visualRegion('header')` renders the header region (customizable by merchants).
+- `@visualRegion('footer')` renders the footer region (customizable by merchants).
 - `@visual_layout_content` renders the page content (templates and sections).
-- `@bagisto_vite([...], 'awesome-theme')` includes theme assets correctly.
+- `@bagistoVite([...])` includes theme assets correctly.
 
-## Header and Footer Components
+## Header and Footer Regions
 
-Create reusable header and footer components:
+Regions are customizable zones that merchants can control through the Visual Editor. Create header and footer regions:
 
 ```text
-resources/views/components/header.blade.php
-resources/views/components/footer.blade.php
+resources/views/regions/header.visual.php
+resources/views/regions/footer.visual.php
 ```
 
-Basic `header.blade.php` example:
+Basic `header.visual.php` example:
 
-```blade
-<header>
-  <nav>
-    <a href="/">Home</a>
-    <a href="/products">Products</a>
-    <a href="/contact">Contact</a>
-  </nav>
-</header>
+```php
+<?php
+
+use BagistoPlus\Visual\Support\TemplateBuilder;
+
+return TemplateBuilder::make()
+    ->id('header')
+    ->name('Header')
+    ->sections([
+        // Merchants can add sections here through the Visual Editor
+    ]);
 ```
 
-Basic `footer.blade.php` example:
+Basic `footer.visual.php` example:
 
-```blade
-<footer>
-  <p>&copy; {{ date('Y') }} Your Company Name</p>
-</footer>
+```php
+<?php
+
+use BagistoPlus\Visual\Support\TemplateBuilder;
+
+return TemplateBuilder::make()
+    ->id('footer')
+    ->name('Footer')
+    ->sections([
+        // Merchants can add sections here through the Visual Editor
+    ]);
 ```
 
-✅ Both components are automatically registered under the `shop::` namespace.
+✅ Regions allow merchants to customize header and footer areas without touching code. Learn more about [Regions](../core-concepts/regions.md).
 
 ## Views Namespace
 
@@ -92,38 +102,33 @@ All views inside your theme are automatically registered under two namespaces:
 For example:
 
 - `resources/views/layouts/default.blade.php` → `shop::layouts.default`
-- `resources/views/components/header.blade.php` → `<x-shop::header />`
-- `resources/views/pages/home.blade.php` → `shop::pages.home`
+- `resources/views/sections/hero.blade.php` → `shop::sections.hero`
+- `resources/views/components/button.blade.php` → `<x-shop::button />`
 
-Components must be included using **Blade component syntax**:
-
-```blade
-<x-shop::header />
-<x-shop::footer />
-```
-
-You could also use the `awesome-theme::` namespace (example: `<x-awesome-theme::header />`),
+You could also use the `awesome-theme::` namespace (example: `shop::layouts.default` becomes `awesome-theme::layouts.default`),
 but to keep it **simple and standard**, we always use the **`shop::` namespace** in this documentation.
 
 ## Checking Your Layout
 
-After setting up your layout and components:
+After setting up your layout and regions:
 
 1. Make sure you have created:
 
    - `resources/views/layouts/default.blade.php`
-   - `resources/views/components/header.blade.php`
-   - `resources/views/components/footer.blade.php`
+   - `resources/views/regions/header.visual.php`
+   - `resources/views/regions/footer.visual.php`
 
 2. Go to your store **homepage**.
 
 You should now see the default layout rendered —
-showing your basic **header**, **main area**, and **footer**.
+showing your **header region**, **main area**, and **footer region**.
 
 <!-- ![Default Layout Render](./screenshots/default-layout-render.png) -->
 
 ✅
 If you see this, it means your layout setup is working correctly!
+
+Merchants can now customize the header and footer regions through the Visual Editor by adding sections.
 
 # Next Steps
 

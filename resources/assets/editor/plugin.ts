@@ -25,6 +25,7 @@ import ImagePicker from './components/ImagePicker.vue';
 import RichtextEditor from './components/RichtextEditor.vue';
 import GradientPicker from './components/GradientPicker.vue';
 import PublishAction from './components/PublishAction.vue';
+import PreviewAction from './components/PreviewAction.vue';
 import useI18n from './composables/i18n';
 import ConfirmPublish from './components/ConfirmPublish.vue';
 import BackButton from './components/BackButton.vue';
@@ -50,6 +51,12 @@ function configureHeader(ui: PluginContext['editor']['ui']) {
     id: 'tools',
     slot: 'center',
     render: HeaderTools,
+  });
+
+  ui.registerHeaderAction({
+    id: 'preview',
+    slot: 'right',
+    render: PreviewAction,
   });
 
   ui.registerHeaderAction({
@@ -181,10 +188,7 @@ function hasChanges(updates: UpdatesEvent): boolean {
   );
 }
 
-function determineBlocksToProcess(
-  updatedBlocks: Record<string, any>,
-  allBlocks: Record<string, any>
-): string[] {
+function determineBlocksToProcess(updatedBlocks: Record<string, any>, allBlocks: Record<string, any>): string[] {
   const blocksToProcess: string[] = [];
 
   for (const [blockId, block] of Object.entries(updatedBlocks)) {
@@ -304,11 +308,10 @@ export default function (editorConfig: ThemeEditorConfig): CraftileEditorPlugin 
       try {
         const htmlResponse = await request.execute();
 
-        
         const allBlocks = editor.engine.getPage().blocks;
         const blocksToUpdate = determineBlocksToProcess(mergedUpdates.blocks, allBlocks);
 
-        const effects = computeEffects(htmlResponse, blocksToUpdate);
+        const effects = computeEffects(htmlResponse as string, blocksToUpdate);
 
         editor.preview.sendMessage('updates.effects', {
           effects,
@@ -335,7 +338,7 @@ export default function (editorConfig: ThemeEditorConfig): CraftileEditorPlugin 
           debouncedPersist();
         }
       }
-    }, 500);
+    }, 300);
 
     function handleUpdates(updates: UpdatesEvent) {
       if (!hasChanges(updates)) {

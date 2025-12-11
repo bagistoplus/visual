@@ -4,7 +4,7 @@ A fast storefront isn't just a nice-to-have — it drives conversions, improves 
 
 This guide provides practical tips for building performant Bagisto Visual themes and sections, with a focus on the **live storefront**.
 
-> 🧩 Editor preview performance is covered separately: [Integrating with the Editor](../adding-sections/integrating-editor.md)
+> 🧩 Editor preview performance is covered separately: [Integrating with the Editor](./integrating-editor.md)
 
 ## 1. Keep Your Markup Lean
 

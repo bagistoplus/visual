@@ -1,45 +1,50 @@
 # Features and Benefits
 
-Bagisto Visual simplifies theme development and customization in Bagisto — built for both **developers** and **merchants**.
-With a visual editor and structured framework, it makes building and managing storefronts faster, easier, and more collaborative.
+Bagisto Visual simplifies theme development and customization in Bagisto — built for both **developers** and **merchants**. With a visual editor and structured framework, it makes building and managing storefronts faster, easier, and more collaborative.
 
 ## Key Features
 
-### 1. **Standard Theme Framework**
+### 1. **Visual Theme Editor**
 
-Bagisto Visual provides a **modular, standardized theme architecture** that ensures consistency and maintainability.
+A powerful drag-and-drop interface where merchants customize their storefront without touching code.
 
-- **Organized Structure** – Clean folder layout for layouts, templates, sections, and assets.
-- **Reusable Components** – Build once, use across templates and themes.
-- **Scalable Design** – Ideal for custom projects, agencies, or marketplace distribution.
+**Key capabilities:**
 
----
+- **Real-Time Preview** – See exactly what you're building as you build it
+- **Drag-and-Drop Interface** – Add, remove, and reorder content visually
+- **No Code Required** – Designed for non-technical users
 
-### 2. **JSON-Based Templates**
-
-Bagisto Visual introduce **JSON templates**, which provide flexibility and control over your store’s layout. Developers can create custom templates that allow for easy and consistent customization in the visual editor.
-
-- **Flexibility**: JSON templates make it easy to adjust layout and sections as needed.
-- **Consistency**: Maintain a consistent theme across your store by reusing templates and sections.
+**What merchants can do:** Customize layouts, rearrange content, change colors and typography, manage sections, and build unique storefronts — all visually in the editor.
 
 ---
 
-### 3. **Drag-and-Drop Theme Editor**
+### 2. **Modern Theme Framework**
 
-A built-in **visual editor** make it easy for merchants to customize their storefront without touching code.
+A structured, maintainable foundation for building Bagisto themes that scale.
 
-- **Real-Time Preview** – Instantly see changes before saving.
-- **Section Configuration** – Add, remove, and reorder content blocks visually.
-- **No Code Required** – Designed for non-technical users.
+**Architecture benefits:**
+
+- **Modular Structure** – Clean folder layout for layouts, templates, sections, and assets
+- **Section-Based Architecture** – Organize your theme into reusable sections (Hero, Features, Product Grid, Footer)
+- **Blade & Livewire Support** – Build custom sections using familiar Laravel tools
+
+**For developers:** Build themes faster with less code duplication. Create reusable components that work across multiple projects. Maintain consistency while enabling merchant customization.
 
 ---
 
-### 4. **Prebuilt & Custom Sections**
+### 3. **Reusable Components**
 
-Quickly build out pages with **ready-to-use sections** like headers, banners, product grids, and more — or build your own.
+Build once, use everywhere. Create components that work across your entire theme.
 
-- **Customizable Settings** – Control layout, content, and design through fields.
-- **Developer Extensible** – Define new sections in Blade or Livewire.
+**Component features:**
+
+- **Blocks System** – Reusable building blocks that work in any section
+- **Custom Sections** – Build new sections in Blade or Livewire
+- **Settings & Configuration** – Define what merchants can customize
+- **Cross-Theme Compatibility** – Share components between projects
+- **Update Once, Change Everywhere** – Modifications propagate automatically
+
+**Real example:** Create a button component once, use it in Hero sections, product pages, banners, and CTAs. Update the style once, every instance updates automatically.
 
 ## Benefits
 

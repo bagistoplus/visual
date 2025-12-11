@@ -56,6 +56,7 @@ declare module 'vue' {
     LinkPicker: typeof import('./components/LinkPicker.vue')['default']
     LocaleSelector: typeof import('./components/LocaleSelector.vue')['default']
     MediaPanel: typeof import('./components/MediaPanel.vue')['default']
+    PreviewAction: typeof import('./components/PreviewAction.vue')['default']
     ProductListbox: typeof import('./components/ProductListbox.vue')['default']
     ProductPicker: typeof import('./components/ProductPicker.vue')['default']
     PublishAction: typeof import('./components/PublishAction.vue')['default']

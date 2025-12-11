@@ -4,6 +4,7 @@ namespace BagistoPlus\Visual\Providers;
 
 use BagistoPlus\Visual\Commands;
 use BagistoPlus\Visual\Components\Svg;
+use BagistoPlus\Visual\Data\BlockData;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Middlewares\DisableResponseCacheInDesignMode;
@@ -103,6 +104,16 @@ class CoreServiceProvider extends ServiceProvider
 
         Craftile::normalizeTemplateUsing(new \BagistoPlus\Visual\Support\TemplateNormalizer);
 
+        Craftile::checkIfBlockCanRenderUsing(function (BlockData $blockData) {
+            if (ThemeEditor::inDesignMode() && request()->has('_blocks')) {
+                $blocksToRender = explode(',', request()->query('_blocks'));
+
+                return in_array($blockData->id, $blocksToRender);
+            }
+
+            return ! $blockData->disabled;
+        });
+
         $this->registerPropertyTransformers();
         $this->registerBlockCompilers();
     }
@@ -138,7 +149,7 @@ class CoreServiceProvider extends ServiceProvider
             // Register Livewire blocks as Livewire components when they're discovered
             Event::listen(BlockSchemaRegistered::class, function (BlockSchemaRegistered $event) {
                 if ($event->schema->class && is_subclass_of($event->schema->class, \Livewire\Component::class)) {
-                    $componentName = 'craftile-'.$event->schema->slug;
+                    $componentName = 'craftile-' . $event->schema->slug;
                     \Livewire\Livewire::component($componentName, $event->schema->class);
                 }
             });
@@ -149,13 +160,13 @@ class CoreServiceProvider extends ServiceProvider
     {
         Route::prefix('/visual/template-preview')
             ->middleware(['web', 'locale', 'theme', 'currency'])
-            ->group(__DIR__.'/../../routes/shop.php');
+            ->group(__DIR__ . '/../../routes/shop.php');
     }
 
     protected function bootViewsAndTranslations(): void
     {
-        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
-        $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'visual');
+        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'visual');
+        $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'visual');
     }
 
     protected function bootMiddlewares(): void
@@ -201,11 +212,11 @@ class CoreServiceProvider extends ServiceProvider
     protected function bootPublishAssets(): void
     {
         $this->publishes([
-            __DIR__.'/../../public/vendor/bagistoplus' => public_path('vendor/bagistoplus'),
+            __DIR__ . '/../../public/vendor/bagistoplus' => public_path('vendor/bagistoplus'),
         ], ['public', 'visual', 'visual-assets']);
 
         $this->publishes([
-            __DIR__.'/../../config/bagisto-visual.php' => config_path('bagisto_visual.php'),
+            __DIR__ . '/../../config/bagisto-visual.php' => config_path('bagisto_visual.php'),
         ], ['config', 'visual', 'visual-config']);
     }
 
@@ -229,8 +240,8 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function registerConfigs(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../../config/bagisto-visual.php', 'bagisto_visual');
-        $this->mergeConfigFrom(__DIR__.'/../../config/svg-iconmap.php', 'bagisto_visual_iconmap');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/bagisto-visual.php', 'bagisto_visual');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/svg-iconmap.php', 'bagisto_visual_iconmap');
     }
 
     protected function registerSingletons(): void
@@ -250,7 +261,7 @@ class CoreServiceProvider extends ServiceProvider
 
             return new UrlGenerator(
                 $routes,
-                $app->rebinding('request', fn ($app, $request) => $app['url']->setRequest($request)),
+                $app->rebinding('request', fn($app, $request) => $app['url']->setRequest($request)),
                 $app['config']['app.asset_url']
             );
         });

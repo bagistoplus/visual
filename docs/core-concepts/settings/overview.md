@@ -1,6 +1,8 @@
 # Settings
 
-## What Are Settings?
+Settings define the configurable attributes of your sections and blocks. Each setting has a type, label, and optional configuration like defaults,and conditional visibility.
+
+## Overview
 
 Settings are the backbone of how customization works in Bagisto Visual.
 They allow merchants to configure sections, blocks, and even the entire storefront layout visually through the Theme Editor — without touching code.
@@ -46,6 +48,29 @@ Each input type improves merchant experience by offering the most natural way to
 - **Theme Settings** affect the layout and design globally across the storefront.
 
 Settings changes are safe, reversible, and visual, making customization intuitive even for non-technical users.
+
+## Dynamic Defaults
+
+Settings can use **dynamic sources** to set default values from runtime context:
+
+```php
+Text::make('productName', 'Product Name')
+    ->default('@product.name'),  // Resolves from $product variable
+
+Number::make('price', 'Price')
+    ->default('@product.price'),
+
+Image::make('image', 'Image')
+    ->default('@product.base_image.url'),
+```
+
+The `@path.to.value` syntax allows settings to automatically populate from:
+- Page context (variables from controllers/views)
+- Parent-shared data (via the `share()` method)
+
+This is especially useful for static blocks that need to display different data based on context while maintaining merchant-customizable settings.
+
+**Learn more:** [Dynamic Sources](/core-concepts/dynamic-sources)
 
 ---
 
