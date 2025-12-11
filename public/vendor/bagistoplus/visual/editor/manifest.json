@@ -4,7 +4,9 @@
     "name": "index",
     "src": "resources/assets/editor/index.ts",
     "isEntry": true,
-    "css": ["assets/index-DfikcMFy.css"]
+    "css": [
+      "assets/index-DfikcMFy.css"
+    ]
   },
   "resources/assets/editor/injected.ts": {
     "file": "assets/injected-BOBpCF-0.js",
