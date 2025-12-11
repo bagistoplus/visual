@@ -2,7 +2,7 @@
 import type { PropertyField } from '@craftile/types';
 import { Popover } from '@ark-ui/vue/popover';
 import { Category } from '../types';
-import { useHttpClient } from '../composables/http';
+import { useState } from '../state';
 import useI18n from '../composables/i18n';
 
 interface Props {
@@ -12,46 +12,21 @@ interface Props {
 defineProps<Props>();
 
 const { t } = useI18n();
-const { get } = useHttpClient();
+const { getCategory } = useState();
 const model = defineModel<number | null>();
 const opened = ref(false);
 
-const categoriesCache = ref<Map<number, Category>>(new Map());
-const selectedCategory = ref<Category | null>(null);
-
-// Fetch category details when model changes
-watch(() => model.value, async (categoryId) => {
-  if (!categoryId) {
-    selectedCategory.value = null;
-    return;
+const selectedCategory = computed({
+  get: () => {
+    if (!model.value) {
+      return null;
+    }
+    return getCategory(model.value);
+  },
+  set: (category: Category | null) => {
+    model.value = category ? category.id : null;
   }
-
-  if (categoriesCache.value.has(categoryId)) {
-    selectedCategory.value = categoriesCache.value.get(categoryId)!;
-    return;
-  }
-
-  const request = get<Category>(`/api/categories/${categoryId}`);
-
-  request.onSuccess((data) => {
-    categoriesCache.value.set(categoryId, data);
-    selectedCategory.value = data;
-  });
-
-  request.onError((error) => {
-    console.error('Failed to fetch category:', error);
-  });
-
-  await request.execute();
-}, { immediate: true });
-
-const updateCategory = (category: Category | null) => {
-  selectedCategory.value = category;
-  model.value = category ? category.id : null;
-  if (category) {
-    categoriesCache.value.set(category.id, category);
-  }
-};
+});
 </script>
 
 <template>
@@ -98,7 +73,7 @@ const updateCategory = (category: Category | null) => {
 
           <CategoryListbox
             v-model="selectedCategory"
-            @update:model-value="updateCategory($event); opened = false"
+            @update:model-value="opened = false"
           />
         </Popover.Content>
       </Popover.Positioner>

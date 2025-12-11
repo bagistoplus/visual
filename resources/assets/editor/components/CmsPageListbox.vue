@@ -1,55 +1,42 @@
 <script setup lang="ts">
   import { CmsPage } from '../types';
   import { useState } from '../state';
-  import { useHttpClient } from '../composables/http';
+  import { fetchCmsPages } from '../api';
   import useI18n from '../composables/i18n';
 
   const { t } = useI18n();
-  const { get } = useHttpClient();
-  const { channel, locale } = useState();
+  const { channel, locale, getCmsPages } = useState();
   const model = defineModel<CmsPage | null>();
   const search = ref('');
-  const pages = ref<CmsPage[]>([]);
 
-  const requestUrl = computed(() => {
-    const params = new URLSearchParams({
-      channel: channel.value,
-      locale: locale.value,
-    });
-    if (search.value) {
-      params.append('title', search.value);
+  const pages = computed(() => {
+    const allPages = getCmsPages();
+    if (!search.value) {
+      return allPages;
     }
-    return `${window.editorConfig.routes.getCmsPages}?${params}`;
+    const searchLower = search.value.toLowerCase();
+    return allPages.filter(page => page.page_title.toLowerCase().includes(searchLower));
   });
 
-  const { isFetching, execute, onSuccess, onError } = get(requestUrl);
-
-  onSuccess((data) => {
-    pages.value = (data || []).map((page: CmsPage) => {
-      const trans = page.translations?.find(t => t.locale === locale.value);
-      if (trans) {
-        page.url_key = trans.url_key;
-        page.page_title = trans.page_title;
-      }
-      return page;
-    });
-  });
-
-  onError((error) => {
-    console.error('Failed to fetch pages:', error);
-  });
+  const { isFetching, execute } = fetchCmsPages();
 
   const debouncedFetch = useDebounceFn(() => {
-    execute();
+    execute({
+      channel: channel.value,
+      locale: locale.value,
+      search: search.value
+    });
   }, 300);
 
   const onSearch = () => {
     debouncedFetch();
   };
 
-  onMounted(() => execute());
+  onMounted(() => execute({ channel: channel.value, locale: locale.value }));
 
-  watch([channel, locale], () => execute());
+  watch([channel, locale], () => {
+    execute({ channel: channel.value, locale: locale.value });
+  });
 </script>
 
 <template>

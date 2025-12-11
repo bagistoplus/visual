@@ -1,48 +1,28 @@
 <script setup lang="ts">
 import { Category } from '../types';
 import { useState } from '../state';
-import { useHttpClient } from '../composables/http';
+import { fetchCategories } from '../api';
 import useI18n from '../composables/i18n';
 
 const { t } = useI18n();
-const { get } = useHttpClient();
-const { channel, locale } = useState();
+const { channel, locale, getCategories } = useState();
 const model = defineModel<Category | null>();
 const search = ref('');
-const categories = ref<Category[]>([]);
 
-const requestUrl = computed(() => {
-  const params = new URLSearchParams({
-    channel: channel.value,
-    locale: locale.value,
-  });
-  if (search.value) {
-    params.append('name', search.value);
-  }
-  return `/api/categories?${params}`;
+const categories = computed(() => getCategories());
+
+const { isFetching, execute } = fetchCategories();
+
+const onSearch = useDebounceFn(() => {
+  execute({ search: search.value });
 });
 
-const { isFetching, execute, onSuccess, onError } = get(requestUrl);
-
-onSuccess((data) => {
-  categories.value = data?.data || [];
-});
-
-onError((error) => {
-  console.error('Failed to fetch categories:', error);
-});
-
-const debouncedFetch = useDebounceFn(() => {
-  execute();
-}, 300);
-
-const onSearch = () => {
-  debouncedFetch();
-};
 
 onMounted(() => execute());
 
-watch([channel, locale], () => execute());
+watch([channel, locale], () => {
+  execute();
+});
 </script>
 <template>
   <div class="flex flex-col overflow-y-hidden">
