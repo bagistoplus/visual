@@ -6,6 +6,7 @@ use BagistoPlus\Visual\ThemeSettingsLoader;
 use Craftile\Laravel\Facades\Craftile;
 use Craftile\Laravel\View\JsonViewParser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class RenderPreview
 {
@@ -20,15 +21,18 @@ class RenderPreview
         $baseUrl = rtrim(config('app.url'));
         $basePath = parse_url($baseUrl, PHP_URL_PATH);
 
+        // Store block IDs in session with unique key if provided
+        if ($blockIds !== null && count($blockIds) > 0) {
+            $key = Str::random(16);
+            session()->put("visual.render.{$key}", $blockIds);
+
+            $separator = str_contains($url, '?') ? '&' : '?';
+            $url .= $separator.'_vkey='.$key;
+        }
+
         // Handle subdirectory installs by redirecting
         if ($basePath !== null) {
             return redirect($url);
-        }
-
-        // Append _blocks query parameter if specific blocks are requested
-        if ($blockIds !== null && count($blockIds) > 0) {
-            $separator = str_contains($url, '?') ? '&' : '?';
-            $url .= $separator.'_blocks='.implode(',', $blockIds);
         }
 
         // Reset Craftile's preview mode cache before sub-request
