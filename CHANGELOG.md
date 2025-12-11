@@ -2,7 +2,62 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
-##  v1.0.0 - 2025-12-11
+## v2.0.0-alpha - 2025-12-11
+
+### 🎉 Bagisto Visual v2.0.0-alpha
+
+We're excited to announce the first alpha release of **Bagisto Visual v2**! This is a complete rewrite featuring a new **blocks system** - independent, reusable components that transform how Bagisto themes are built.
+
+#### ⚠️ Breaking Changes
+
+This is a **major version** with breaking changes. v2 is **not compatible** with v1 themes and requires:
+
+- PHP 8.2 or later
+- Bagisto 2.3 or later
+
+#### ✨ The Blocks System
+
+v2 introduces a fundamental architectural shift: blocks are no longer scoped to individual sections. They're independent, reusable components shared across your entire theme.
+
+**What This Means:**
+
+- **Design Once, Use Everywhere**: Create a button or testimonial block and use it across your entire site. Update once, changes reflect everywhere.
+- **Deep Nesting**: Build sophisticated layouts by nesting blocks inside blocks - columns inside tabs, galleries inside accordions.
+- **Page Builder Capability**: Build completely different page layouts from the same sections by composing different blocks - minimal or rich, your choice.
+
+#### 📦 Installation
+
+```bash
+# Ensure your project accepts dev packages
+composer config minimum-stability dev && composer config prefer-stable true
+
+# Install Bagisto Visual v2
+composer require bagistoplus/visual:^2.0@dev
+
+# Publish assets
+php artisan vendor:publish --tag=visual-assets
+
+# Install the default theme
+composer require bagistoplus/visual-debut:^2.0@dev
+php artisan vendor:publish --tag=visual-debut-assets
+
+```
+#### 🔗 Links
+
+- [Documentation](https://visual.bagisto.plus/introduction/getting-started)
+
+#### ⚡ Next Steps
+
+This alpha release is ready for testing and development. Please report any issues on [GitHub Issues](https://github.com/bagistoplus/visual/issues).
+
+We're working towards a stable v2.0.0 release with additional features, improved documentation, and comprehensive testing.
+
+
+---
+
+**Full Changelog**: https://github.com/bagistoplus/visual/compare/v1.0.0...v2.0.0-alpha
+
+## v1.0.0 - 2025-12-11
 
 ### Bagisto Visual 1.0 release
 
