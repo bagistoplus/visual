@@ -39,6 +39,7 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
                     'sources' => encrypt($this->themeEditor->jsonViews()),
                 ],
                 'settings' => $settingsBag->toArray(),
+                'preloadedModels' => $this->themeEditor->preloadedModels(),
             ],
         ])->render();
     }

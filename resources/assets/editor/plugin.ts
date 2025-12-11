@@ -3,7 +3,7 @@ import { CraftileEditorPlugin, PluginContext } from '@craftile/editor';
 import { UpdatesEvent } from '@craftile/types';
 import { debounce } from 'perfect-debounce';
 
-import { useState } from './state';
+import { useState, populatePreloadedModels } from './state';
 import { persistUpdates } from './api';
 import { ThemeEditorConfig } from './types';
 
@@ -284,6 +284,10 @@ export default function (editorConfig: ThemeEditorConfig): CraftileEditorPlugin 
 
         if (state.theme && pageData.settings) {
           state.theme.settings = pageData.settings;
+        }
+
+        if (pageData.preloadedModels) {
+          populatePreloadedModels(pageData.preloadedModels);
         }
       });
     });

@@ -135,3 +135,30 @@ export function useState() {
     getCmsPages,
   };
 }
+
+/**
+ * Populate global state with preloaded models from pageData.
+ */
+export function populatePreloadedModels(preloadedModels: {
+  categories?: Category[];
+  products?: Product[];
+  cms_pages?: CmsPage[];
+}): void {
+  if (preloadedModels.categories) {
+    preloadedModels.categories.forEach((category) => {
+      state!.categories.set(category.id, category);
+    });
+  }
+
+  if (preloadedModels.products) {
+    preloadedModels.products.forEach((product) => {
+      state!.products.set(product.id, product);
+    });
+  }
+
+  if (preloadedModels.cms_pages) {
+    preloadedModels.cms_pages.forEach((page) => {
+      state!.cmsPages.set(page.id, page);
+    });
+  }
+}
