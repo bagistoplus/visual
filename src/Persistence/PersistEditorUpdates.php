@@ -22,8 +22,8 @@ class PersistEditorUpdates
         $sources = decrypt($data['template']['sources']);
         $updateRequest = UpdateRequest::make($data['updates']);
 
-        $sharedRegions = collect($updateRequest->regions)->filter(fn($region) => isset($region['shared']) && $region['shared'] === true);
-        $nonSharedRegions = collect($updateRequest->regions)->filter(fn($region) => ! isset($region['shared']) || $region['shared'] === false);
+        $sharedRegions = collect($updateRequest->regions)->filter(fn ($region) => isset($region['shared']) && $region['shared'] === true);
+        $nonSharedRegions = collect($updateRequest->regions)->filter(fn ($region) => ! isset($region['shared']) || $region['shared'] === false);
 
         $allBlocks = [];
 
@@ -132,12 +132,12 @@ class PersistEditorUpdates
     protected function getRegionSourcePath(string $regionName, array $sources): ?string
     {
         return collect($sources)
-            ->first(fn($sourcePath) => str_contains($sourcePath, "/regions/{$regionName}."));
+            ->first(fn ($sourcePath) => str_contains($sourcePath, "/regions/{$regionName}."));
     }
 
     protected function getTemplateSourcePath(string $template, array $sources): ?string
     {
         return collect($sources)
-            ->first(fn($sourcePath) => str_contains($sourcePath, "/templates/{$template}."));
+            ->first(fn ($sourcePath) => str_contains($sourcePath, "/templates/{$template}."));
     }
 }
