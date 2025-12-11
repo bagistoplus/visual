@@ -12,12 +12,14 @@ use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
+    protected static $latestResponse;
+
     protected function setUp(): void
     {
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'BagistoPlus\\Visual\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn(string $modelName) => 'BagistoPlus\\Visual\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
         );
     }
 
