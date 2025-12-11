@@ -14,8 +14,8 @@ This guide will help you:
 
 Before you begin, make sure you have:
 
-- PHP version **8.1 or later**
-- A running Bagisto store (version **2.2.0 or later**)
+- PHP version **8.2 or later**
+- A running Bagisto store (version **2.3 or later**)
 
 ## Step 1: Install Bagisto Visual
 
@@ -25,15 +25,14 @@ Install the package via Composer:
 If you're installing an alpha/beta version, ensure your project accepts dev packages:
 
 ```bash
-composer config minimum-stability dev
-composer config prefer-stable true
+composer config minimum-stability dev && composer config prefer-stable true
 ```
 
 This allows Composer to install pre-release versions of Bagisto Visual.
 :::
 
 ```bash
-composer require bagistoplus/visual
+composer require bagistoplus/visual:^2.0@dev
 ```
 
 Then publish the assets:
@@ -49,7 +48,7 @@ This installs the Bagisto Visual and prepares your store for theme customization
 Install the default theme package:
 
 ```bash
-composer require bagistoplus/visual-debut
+composer require bagistoplus/visual-debut:^2.0@dev
 ```
 
 And publish its assets:
