@@ -3,7 +3,6 @@
 namespace BagistoPlus\Visual\Support;
 
 use BagistoPlus\Visual\Data\BlockData;
-use Craftile\Laravel\Facades\BlockDatastore;
 
 class BlockRenderFilter
 {
