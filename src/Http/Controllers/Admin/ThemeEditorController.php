@@ -87,13 +87,9 @@ class ThemeEditorController extends Controller
             'updates.regions' => ['present', 'array'],
         ]);
 
-        $result = $this->persistEditorUpdates->handle($validated);
-        $loadedBlocks = $result['loadedBlocks'] ?? [];
+        $this->persistEditorUpdates->handle($validated);
 
-        $changedBlockIds = $this->extractChangedBlockIds(
-            $validated['updates'],
-            $loadedBlocks
-        );
+        $changedBlockIds = $this->extractChangedBlockIds($validated['updates']);
 
         $url = $request->input('template.url');
 
@@ -370,36 +366,16 @@ class ThemeEditorController extends Controller
     }
 
     /**
-     * Extract changed block IDs from updates and include all parent blocks.
+     * Extract changed block IDs from updates.
+     * Tree expansion (parents + children) happens during render via BlockRenderFilter.
      */
-    protected function extractChangedBlockIds(array $updates, array $loadedBlocks): array
+    protected function extractChangedBlockIds(array $updates): array
     {
         $changes = $updates['changes'] ?? [];
 
-        $changedIds = array_merge($changes['added'] ?? [], $changes['updated'] ?? []);
-
-        return $this->includeParentBlocks($changedIds, $loadedBlocks);
-    }
-
-    /**
-     * Include all parent blocks for the given block IDs.
-     */
-    protected function includeParentBlocks(array $blockIds, array $loadedBlocks): array
-    {
-        $result = [];
-
-        foreach ($blockIds as $id) {
-            $result[] = $id;
-
-            // Walk up the parent chain using parentId
-            $currentId = $id;
-            while (isset($loadedBlocks[$currentId]['parentId']) && $loadedBlocks[$currentId]['parentId'] !== null) {
-                $parentId = $loadedBlocks[$currentId]['parentId'];
-                $result[] = $parentId;
-                $currentId = $parentId;
-            }
-        }
-
-        return array_unique($result);
+        return array_merge(
+            $changes['added'] ?? [],
+            $changes['updated'] ?? []
+        );
     }
 }

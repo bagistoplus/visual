@@ -10,6 +10,7 @@ use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Middlewares\DisableResponseCacheInDesignMode;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
 use BagistoPlus\Visual\Settings\Support as SettingTransformers;
+use BagistoPlus\Visual\Support\BlockRenderFilter;
 use BagistoPlus\Visual\Support\UrlGenerator;
 use BagistoPlus\Visual\TemplateRegistrar;
 use BagistoPlus\Visual\ThemePathsResolver;
@@ -105,13 +106,13 @@ class CoreServiceProvider extends ServiceProvider
         Craftile::normalizeTemplateUsing(new \BagistoPlus\Visual\Support\TemplateNormalizer);
 
         Craftile::checkIfBlockCanRenderUsing(function (BlockData $blockData) {
-            if (ThemeEditor::inDesignMode() && request()->has('_blocks')) {
-                $blocksToRender = explode(',', request()->query('_blocks'));
-
-                return in_array($blockData->id, $blocksToRender);
+            if (! ThemeEditor::inDesignMode() || ! request()->has('_blocks')) {
+                return ! $blockData->disabled;
             }
 
-            return ! $blockData->disabled;
+            $filter = app(BlockRenderFilter::class);
+
+            return $filter->shouldRender($blockData);
         });
 
         $this->registerPropertyTransformers();
@@ -252,6 +253,9 @@ class CoreServiceProvider extends ServiceProvider
                 $app->get('files')
             );
         });
+
+        // Register BlockRenderFilter as singleton for request-scoped caching
+        $this->app->singleton(BlockRenderFilter::class);
     }
 
     protected function registerCustomUrlGenerator(): void
