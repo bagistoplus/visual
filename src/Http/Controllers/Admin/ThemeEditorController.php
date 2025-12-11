@@ -44,7 +44,7 @@ class ThemeEditorController extends Controller
             'config' => [
                 'baseUrl' => parse_url(route('visual.admin.editor', ['theme' => $themeCode]), PHP_URL_PATH),
                 'imagesBaseUrl' => Storage::disk(config('bagisto_visual.images_storage'))->url(''),
-                'storefrontUrl' => url('/').'?'.http_build_query(['_designMode' => $themeCode]),
+                'storefrontUrl' => url('/') . '?' . http_build_query(['_designMode' => $themeCode]),
                 'channels' => $this->getChannels(),
                 'defaultChannel' => core()->getDefaultChannelCode(),
                 'blockSchemas' => $this->loadBlocks(),
@@ -87,11 +87,17 @@ class ThemeEditorController extends Controller
             'updates.regions' => ['present', 'array'],
         ]);
 
-        $this->persistEditorUpdates->handle($validated);
+        $result = $this->persistEditorUpdates->handle($validated);
+        $loadedBlocks = $result['loadedBlocks'] ?? [];
+
+        $changedBlockIds = $this->extractChangedBlockIds(
+            $validated['updates'],
+            $loadedBlocks
+        );
 
         $url = $request->input('template.url');
 
-        return $this->renderPreview->execute($url);
+        return $this->renderPreview->execute($url, $changedBlockIds);
     }
 
     public function persistThemeSettings(Request $request)
@@ -134,7 +140,7 @@ class ThemeEditorController extends Controller
         return $images->map(function ($image) {
             $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $image->guessExtension();
-            $storedName = bin2hex($originalName).'_'.uniqid().'.'.$extension;
+            $storedName = bin2hex($originalName) . '_' . uniqid() . '.' . $extension;
 
             $path = $image->storeAs(
                 config('bagisto_visual.images_directory'),
@@ -209,7 +215,7 @@ class ThemeEditorController extends Controller
 
                 $icons->push([
                     'name' => $name,
-                    'id' => $set['prefix'].'-'.$name,
+                    'id' => $set['prefix'] . '-' . $name,
                     'svg' => File::get($file->getRealPath()),
                 ]);
             }
@@ -217,7 +223,7 @@ class ThemeEditorController extends Controller
 
         return [
             'currentSet' => $selectedSet,
-            'sets' => collect($sets)->map(fn ($set, $key) => ['id' => $key, 'prefix' => $set['prefix'], 'name' => Str::headline($key)])->values(),
+            'sets' => collect($sets)->map(fn($set, $key) => ['id' => $key, 'prefix' => $set['prefix'], 'name' => Str::headline($key)])->values(),
             'icons' => $icons->values(),
         ];
     }
@@ -260,7 +266,7 @@ class ThemeEditorController extends Controller
                     'category' => $blockSchema->category,
                     'description' => $blockSchema->description,
                     'previewImageUrl' => asset($blockSchema->previewImageUrl),
-                    'isSection' => collect([SimpleSection::class, BladeSection::class, LivewireSection::class])->some(fn ($class) => is_subclass_of($blockSchema->class, $class)),
+                    'isSection' => collect([SimpleSection::class, BladeSection::class, LivewireSection::class])->some(fn($class) => is_subclass_of($blockSchema->class, $class)),
                     'enabledOn' => $blockSchema->enabledOn ?? [],
                     'disabledOn' => $blockSchema->disabledOn ?? [],
                 ],
@@ -292,7 +298,7 @@ class ThemeEditorController extends Controller
     protected function loadTemplates()
     {
         return collect(app(\BagistoPlus\Visual\ThemeEditor::class)->getTemplates())
-            ->map(fn ($template) => [
+            ->map(fn($template) => [
                 'template' => $template->template,
                 'label' => $template->label,
                 'icon' => $template->icon,
@@ -329,7 +335,7 @@ class ThemeEditorController extends Controller
 
     protected function getChannels()
     {
-        return core()->getAllChannels()->map(fn ($channel) => [
+        return core()->getAllChannels()->map(fn($channel) => [
             'code' => $channel->code,
             'name' => $channel->name,
             'locales' => $channel->locales,
@@ -340,7 +346,7 @@ class ThemeEditorController extends Controller
     protected function getChannelCodes(): array
     {
         return $this->getChannels()
-            ->map(fn ($channel) => $channel['code'])
+            ->map(fn($channel) => $channel['code'])
             ->toArray();
     }
 
@@ -352,14 +358,48 @@ class ThemeEditorController extends Controller
             return [];
         }
 
-        return $channel['locales']->map(fn ($locale) => $locale['code'])->toArray();
+        return $channel['locales']->map(fn($locale) => $locale['code'])->toArray();
     }
 
     protected function getVisualThemes(): array
     {
         return collect(config('themes.shop', []))
-            ->filter(fn ($config) => $config['visual_theme'] ?? false)
-            ->map(fn ($config) => $config['code'])
+            ->filter(fn($config) => $config['visual_theme'] ?? false)
+            ->map(fn($config) => $config['code'])
             ->toArray();
+    }
+
+    /**
+     * Extract changed block IDs from updates and include all parent blocks.
+     */
+    protected function extractChangedBlockIds(array $updates, array $loadedBlocks): array
+    {
+        $changes = $updates['changes'] ?? [];
+
+        $changedIds = array_merge($changes['added'] ?? [], $changes['updated'] ?? []);
+
+        return $this->includeParentBlocks($changedIds, $loadedBlocks);
+    }
+
+    /**
+     * Include all parent blocks for the given block IDs.
+     */
+    protected function includeParentBlocks(array $blockIds, array $loadedBlocks): array
+    {
+        $result = [];
+
+        foreach ($blockIds as $id) {
+            $result[] = $id;
+
+            // Walk up the parent chain using parentId
+            $currentId = $id;
+            while (isset($loadedBlocks[$currentId]['parentId']) && $loadedBlocks[$currentId]['parentId'] !== null) {
+                $parentId = $loadedBlocks[$currentId]['parentId'];
+                $result[] = $parentId;
+                $currentId = $parentId;
+            }
+        }
+
+        return array_unique($result);
     }
 }
