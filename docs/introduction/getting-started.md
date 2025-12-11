@@ -14,26 +14,15 @@ This guide will help you:
 
 Before you begin, make sure you have:
 
-- PHP version **8.1 or later**
-- A running Bagisto store (version **2.2.0 or later**)
+- PHP version **8.2 or later**
+- A running Bagisto store (version **2.3 or later**)
 
 ## Step 1: Install Bagisto Visual
 
 Install the package via Composer:
 
-::: info
-Make sure your `composer.json` includes:
-
-```json
-"minimum-stability": "dev",
-"prefer-stable": true
-```
-
-This ensures the alpha version of Bagito Visual can be installed properly.
-:::
-
 ```bash
-composer require bagistoplus/visual
+composer require bagistoplus/visual:^1.0
 ```
 
 Then publish the assets:

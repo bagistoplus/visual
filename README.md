@@ -21,17 +21,8 @@ Bagisto Visual provides everything you need to build powerful, customizable them
 You can install the package via composer:
 
 ```bash
-composer require bagistoplus/visual
+composer require bagistoplus/visual:^1.0
 ```
-
-> **ℹ️ Note:** Make sure your `composer.json` includes:
->
-> ```json
-> "minimum-stability": "dev",
-> "prefer-stable": true
-> ```
->
-> This ensures the alpha version of Bagito Visual can be installed properly.
 
 You can publish the config file with:
 
@@ -41,12 +32,12 @@ php artisan vendor:publish --tag="visual-assets"
 
 ## Documentation
 
-Visit the official documentation for full guides at: [https://visual.bagistoplus.com](https://visual.bagistoplus.com)
+Visit the official documentation for full guides at: [https://visual-v1.bagistoplus.com](https://visual-v1.bagistoplus.com)
 
 ## Requirements
 
-- Bagisto version: ^2.2
-- PHP version: ^8.1
+- Bagisto version: ^2.3
+- PHP version: ^8.2
 
 ## Changelog
 

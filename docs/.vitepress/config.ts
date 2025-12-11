@@ -151,6 +151,6 @@ export default defineConfig({
   ],
 
   sitemap: {
-    hostname: 'https://visual.bagistoplus.com',
+    hostname: 'https://visual-v1.bagistoplus.com',
   },
 });
