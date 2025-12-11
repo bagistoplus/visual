@@ -16,7 +16,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn(string $modelName) => 'BagistoPlus\\Visual\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
+            fn (string $modelName) => 'BagistoPlus\\Visual\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
     }
 
@@ -32,7 +32,7 @@ class TestCase extends Orchestra
     protected function defineEnvironment($app)
     {
         // Load Bagisto's concord configuration BEFORE providers boot
-        $concordConfig = require dirname(__DIR__) . '/vendor/bagisto/bagisto/config/concord.php';
+        $concordConfig = require dirname(__DIR__).'/vendor/bagisto/bagisto/config/concord.php';
         $app['config']->set('concord', $concordConfig);
     }
 
@@ -50,6 +50,6 @@ class TestCase extends Orchestra
 
     public static function applicationBasePath()
     {
-        return dirname(__DIR__) . '/vendor/bagisto/bagisto';
+        return dirname(__DIR__).'/vendor/bagisto/bagisto';
     }
 }
