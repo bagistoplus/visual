@@ -49,7 +49,7 @@
       </div>
     @empty
       <div class="card">
-        {{ __('visual::theme-editor.themes.no-themes') }}
+        {{ __('visual::admin.themes.no-themes') }}
       </div>
     @endforelse
   </div>
