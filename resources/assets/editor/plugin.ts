@@ -25,6 +25,7 @@ import ImagePicker from './components/ImagePicker.vue';
 import RichtextEditor from './components/RichtextEditor.vue';
 import GradientPicker from './components/GradientPicker.vue';
 import PublishAction from './components/PublishAction.vue';
+import PreviewAction from './components/PreviewAction.vue';
 import useI18n from './composables/i18n';
 import ConfirmPublish from './components/ConfirmPublish.vue';
 import BackButton from './components/BackButton.vue';
@@ -50,6 +51,12 @@ function configureHeader(ui: PluginContext['editor']['ui']) {
     id: 'tools',
     slot: 'center',
     render: HeaderTools,
+  });
+
+  ui.registerHeaderAction({
+    id: 'preview',
+    slot: 'right',
+    render: PreviewAction,
   });
 
   ui.registerHeaderAction({
