@@ -9,7 +9,16 @@ const { channel, locale, getCategories } = useState();
 const model = defineModel<Category | null>();
 const search = ref('');
 
-const categories = computed(() => getCategories());
+const categories = computed(() => {
+  const allCategories = getCategories();
+  if (!search.value) {
+    return allCategories;
+  }
+  const searchLower = search.value.toLowerCase();
+  return allCategories.filter(category =>
+    category.name.toLowerCase().includes(searchLower)
+  );
+});
 
 const { isFetching, execute } = fetchCategories();
 

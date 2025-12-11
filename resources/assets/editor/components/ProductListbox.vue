@@ -9,7 +9,16 @@ const { channel, locale, getProducts } = useState();
 const model = defineModel<Product | null>();
 const search = ref('');
 
-const products = computed(() => getProducts());
+const products = computed(() => {
+  const allProducts = getProducts();
+  if (!search.value) {
+    return allProducts;
+  }
+  const searchLower = search.value.toLowerCase();
+  return allProducts.filter(product =>
+    product.name.toLowerCase().includes(searchLower)
+  );
+});
 
 const { isFetching, execute } = fetchProducts();
 
