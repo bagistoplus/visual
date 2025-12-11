@@ -1,8 +1,11 @@
 {
   "resources/assets/admin/css/admin.css": {
-    "file": "assets/admin-DVslIxF6.css",
+    "file": "assets/admin-DG7nhQX9.css",
     "src": "resources/assets/admin/css/admin.css",
-    "isEntry": true
+    "isEntry": true,
+    "names": [
+      "admin.css"
+    ]
   },
   "resources/assets/admin/images/default_theme_preview.png": {
     "file": "assets/default_theme_preview-BkZ1bWrW.png",

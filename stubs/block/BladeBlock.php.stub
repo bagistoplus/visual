@@ -1,0 +1,22 @@
+<?php
+
+namespace {{ namespace }};
+
+use BagistoPlus\Visual\Blocks\BladeBlock;
+
+class {{ class }} extends BladeBlock
+{
+    protected static string $view = '{{ view }}';
+
+    public static function settings(): array
+    {
+        // block settings
+        return [];
+    }
+
+    public static function blocks(): array
+    {
+        // nested blocks
+        return [];
+    }
+}

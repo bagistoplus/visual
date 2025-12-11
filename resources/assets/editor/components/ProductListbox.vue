@@ -1,32 +1,53 @@
 <script setup lang="ts">
-  import { useStore } from '../store';
-  import { Product } from '../types';
+import { Product } from '../types';
+import { useState } from '../state';
+import { fetchProducts } from '../api';
+import useI18n from '../composables/i18n';
 
-  const store = useStore();
-  const model = defineModel<Product | null>();
-  const search = ref('');
-  const { isFetching, data, execute } = store.fetchProducts();
+const { t } = useI18n();
+const { channel, locale, getProducts } = useState();
+const model = defineModel<Product | null>();
+const search = ref('');
 
-  const products = computed<Product[]>(() => {
-    return data.value ? data.value.data : [];
+const products = computed(() => {
+  const allProducts = getProducts();
+  if (!search.value) {
+    return allProducts;
+  }
+  const searchLower = search.value.toLowerCase();
+  return allProducts.filter(product =>
+    product.name.toLowerCase().includes(searchLower)
+  );
+});
+
+const { isFetching, execute } = fetchProducts();
+
+const debouncedFetch = useDebounceFn(() => {
+  execute({
+    channel: channel.value,
+    locale: locale.value,
+    search: search.value
   });
+}, 300);
 
-  onMounted(() => execute());
+const onSearch = () => {
+  debouncedFetch();
+};
 
-  const onSearch = useDebounceFn(() => {
-    execute({ query: search.value });
-  });
+onMounted(() => execute({ channel: channel.value, locale: locale.value }));
 
-  watch([() => store.themeData.channel, () => store.themeData.locale], () => execute());
+watch([channel, locale], () => {
+  execute({ channel: channel.value, locale: locale.value });
+});
 </script>
 
 <template>
   <div class="flex flex-col overflow-y-hidden">
-    <div class="flex items-center mx-2 my-2 px-3 py-1 gap-3 border rounded-lg focus-within:ring focus-within:ring-gray-700">
+    <div class="flex items-center mx-2 my-2 px-3 py-1 gap-3 border rounded-lg focus-within:ring focus-within:ring-zinc-700">
       <i-heroicons-magnifying-glass class="w-4 h-4 flex-none" />
       <input
-        class="flex-1 w-0 focus:outline-none text-gray-600 text-sm"
-        :placeholder="$t('Search product')"
+        class="flex-1 w-0 focus:outline-none text-zinc-600 text-sm"
+        :placeholder="t('Search product')"
         v-model="search"
         @input="onSearch"
       />
@@ -36,7 +57,7 @@
         v-if="isFetching"
         class="h-20 flex items-center justify-center"
       >
-        <Spinner class="h-6 w-6 text-gray-700" />
+        <Spinner class="h-6 w-6 text-zinc-700" />
       </div>
       <div v-else>
         <a

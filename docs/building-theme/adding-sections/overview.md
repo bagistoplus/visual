@@ -10,10 +10,7 @@ This guide walks you through everything you need to know about creating, configu
   Generate a new section using Artisan and understand where the files are placed.
 
 - [Section Attributes](./section-attributes.md)
-  Learn about common properties like `slug`, `name`, `view`, `wrapper`, and how their defaults are derived.
-
-- [Defining Settings and Blocks](./defining-section-schema.md)
-  Declare editable fields and repeatable block structures using `settings()` and `blocks()`.
+  Learn about common properties like `type`, `name`, `view`, `wrapper`, settings, and how to configure blocks.
 
 - [Writing section view](./writing-section-view.md)
   Use settings and blocks in the Blade view to produce structured and styled HTML output.

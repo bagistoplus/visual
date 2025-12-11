@@ -2,12 +2,22 @@
 
 namespace BagistoPlus\Visual\Http\Controllers\Admin;
 
-use BagistoPlus\Visual\Facades\Sections;
+use BagistoPlus\Visual\Blocks\BladeSection;
+use BagistoPlus\Visual\Blocks\LivewireSection;
+use BagistoPlus\Visual\Blocks\SimpleSection;
+use BagistoPlus\Visual\Data\BlockSchema;
+use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use BagistoPlus\Visual\Http\Controllers\Controller;
+use BagistoPlus\Visual\Persistence\PersistEditorUpdates;
+use BagistoPlus\Visual\Persistence\PersistThemeSettings;
+use BagistoPlus\Visual\Persistence\PublishTheme;
+use BagistoPlus\Visual\Persistence\RenderPreview;
 use BagistoPlus\Visual\Settings\Support\ImageTransformer;
-use BagistoPlus\Visual\ThemePersister;
+use BagistoPlus\Visual\Theme\Theme;
+use BagistoPlus\Visual\ThemeSettingsLoader;
 use BladeUI\Icons\Factory;
 use BladeUI\Icons\IconsManifest;
+use Craftile\Laravel\BlockSchemaRegistry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Lang;
@@ -19,7 +29,14 @@ use Webkul\CMS\Repositories\PageRepository;
 
 class ThemeEditorController extends Controller
 {
-    public function __construct(protected ThemePersister $themePersister, protected PageRepository $pageRepository) {}
+    public function __construct(
+        protected PageRepository $pageRepository,
+        protected PersistEditorUpdates $persistEditorUpdates,
+        protected PersistThemeSettings $persistThemeSettings,
+        protected PublishTheme $publishTheme,
+        protected RenderPreview $renderPreview,
+        protected ThemeSettingsLoader $themeSettingsLoader
+    ) {}
 
     public function index($themeCode)
     {
@@ -30,10 +47,13 @@ class ThemeEditorController extends Controller
                 'storefrontUrl' => url('/').'?'.http_build_query(['_designMode' => $themeCode]),
                 'channels' => $this->getChannels(),
                 'defaultChannel' => core()->getDefaultChannelCode(),
-                'sections' => Sections::all(),
+                'blockSchemas' => $this->loadBlocks(),
+                'theme' => $this->loadTheme($themeCode),
+                'templates' => $this->loadTemplates(),
                 'routes' => [
                     'themesIndex' => route('visual.admin.themes.index'),
-                    'persistTheme' => route('visual.admin.editor.api.persist'),
+                    'persistUpdates' => route('visual.admin.editor.api.persist'),
+                    'persistThemeSettings' => route('visual.admin.editor.api.persist_settings'),
                     'publishTheme' => route('visual.admin.editor.api.publish'),
                     'uploadImage' => route('visual.admin.editor.api.upload'),
                     'listImages' => route('visual.admin.editor.api.images'),
@@ -42,42 +62,71 @@ class ThemeEditorController extends Controller
                 ],
                 'messages' => Lang::get('visual::theme-editor'),
                 'editorLocale' => app()->getLocale(),
+                'haveEdits' => $this->checkIfHaveEdits($themeCode),
             ],
         ]);
     }
 
-    public function persistTheme(Request $request)
+    public function persistUpdates(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'theme' => ['required', 'string', Rule::in($this->getVisualThemes())],
             'channel' => ['required', 'string', Rule::in($this->getChannelCodes())],
             'locale' => ['required', 'string', Rule::in($this->getLocaleCodes($request->input('channel')))],
+            'template' => ['required', 'array'],
+            'template.url' => ['required', 'string'],
+            'template.name' => ['required', 'string'],
+            'template.sources' => ['required', 'string'],
+            'updates' => ['required', 'array'],
+            'updates.changes' => ['required', 'array'],
+            'updates.changes.added' => ['present', 'array'],
+            'updates.changes.updated' => ['present', 'array'],
+            'updates.changes.removed' => ['present', 'array'],
+            'updates.changes.moved' => ['nullable', 'array'],
+            'updates.blocks' => ['present', 'array'],
+            'updates.regions' => ['present', 'array'],
         ]);
 
-        $this->themePersister->persist($request->all());
+        $result = $this->persistEditorUpdates->handle($validated);
+        $loadedBlocks = $result['loadedBlocks'] ?? [];
 
-        $baseUrl = rtrim(config('app.url'));
-        $url = $request->input('url');
+        $allBlockIds = $this->buildRenderSet($validated['updates'], $loadedBlocks);
 
-        if (! empty($sections = $request->input('updatedSections', []))) {
-            $url .= '&'.http_build_query(['_sections' => implode(',', $sections)]);
-        }
+        $url = $request->input('template.url');
 
-        if (parse_url($baseUrl, PHP_URL_PATH) !== null) {
-            return redirect($url);
-        }
+        return $this->renderPreview->execute($url, $allBlockIds);
+    }
 
-        $request = Request::create($url, 'GET');
-        $response = app()->handle($request);
+    public function persistThemeSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'theme' => ['required', 'string', Rule::in($this->getVisualThemes())],
+            'channel' => ['required', 'string', Rule::in($this->getChannelCodes())],
+            'locale' => ['required', 'string', Rule::in($this->getLocaleCodes($request->input('channel')))],
+            'template' => ['required', 'array'],
+            'template.url' => ['required', 'string'],
+            'updates' => ['required', 'array'],
+        ]);
 
-        return $response->getContent();
+        $this->persistThemeSettings->handle($validated);
+
+        $url = $request->input('template.url');
+
+        return $this->renderPreview->execute($url);
     }
 
     public function publishTheme(Request $request)
     {
-        $this->themePersister->publish($request->input('theme'));
+        $validated = $request->validate([
+            'theme' => ['required', 'string'],
+        ]);
 
-        return 'Done';
+        $this->publishTheme->handle($validated['theme']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Theme published successfully',
+        ]);
     }
 
     public function uploadImages(Request $request)
@@ -127,14 +176,10 @@ class ThemeEditorController extends Controller
 
         return Page::query()
             ->select('cms_pages.id')
-            // ->addSelect(DB::raw('GROUP_CONCAT(DISTINCT code) as channel'))
             ->join('cms_page_translations', function ($join) use ($currentLocale) {
                 $join->on('cms_pages.id', '=', 'cms_page_translations.cms_page_id')
                     ->where('cms_page_translations.locale', '=', $currentLocale);
             })
-            // ->leftJoin('cms_page_channels', 'cms_pages.id', '=', 'cms_page_channels.cms_page_id')
-            // ->leftJoin('channels', 'cms_page_channels.channel_id', '=', 'channels.id')
-            // ->groupBy('cms_pages.id', 'cms_page_translations.locale')
             ->when($request->has('query'), function ($query) use ($request) {
                 $query->where('cms_page_translations.page_title', 'LIKE', "%{$request->query('query')}%");
             })
@@ -180,6 +225,111 @@ class ThemeEditorController extends Controller
         ];
     }
 
+    protected function loadBlocks()
+    {
+        /** @var \Illuminate\Support\Collection<string, BlockSchema> $schemas */
+        $schemas = collect(app(BlockSchemaRegistry::class)->all());
+
+        return $schemas->map(function (BlockSchema $blockSchema) {
+            $currentGroup = null;
+            $properties = collect($blockSchema->properties)
+                ->map(function ($prop) use (&$currentGroup) {
+                    $propArray = $prop->toArray();
+
+                    if ($propArray['type'] === 'header') {
+                        $currentGroup = $propArray['label'];
+
+                        return null;
+                    }
+
+                    if ($currentGroup !== null) {
+                        $propArray['group'] = $currentGroup;
+                    }
+
+                    return $propArray;
+                })
+                ->filter()
+                ->values();
+
+            return [
+                'type' => $blockSchema->type,
+                'properties' => $properties,
+                'accepts' => $blockSchema->accepts,
+                'presets' => $blockSchema->presets,
+                'private' => $blockSchema->private,
+                'meta' => [
+                    'name' => $blockSchema->name,
+                    'icon' => $blockSchema->icon,
+                    'category' => $blockSchema->category,
+                    'description' => $blockSchema->description,
+                    'previewImageUrl' => asset($blockSchema->previewImageUrl),
+                    'isSection' => collect([SimpleSection::class, BladeSection::class, LivewireSection::class])->some(fn ($class) => is_subclass_of($blockSchema->class, $class)),
+                    'enabledOn' => $blockSchema->enabledOn ?? [],
+                    'disabledOn' => $blockSchema->disabledOn ?? [],
+                ],
+            ];
+        })
+            ->values();
+    }
+
+    protected function loadTheme($themeCode)
+    {
+        $themeConfig = config("themes.shop.{$themeCode}");
+
+        if (! $themeConfig) {
+            abort(404, "Theme {$themeCode} not found");
+        }
+
+        $theme = Theme::make($themeConfig);
+        $settingsBag = $this->themeSettingsLoader->loadThemeSettings($theme);
+
+        return [
+            'name' => $theme->name,
+            'code' => $theme->code,
+            'version' => $theme->version ?? '1.0.0',
+            'settings' => $settingsBag->toArray(),
+            'settingsSchema' => $this->translateSettingsSchema($theme->settingsSchema),
+        ];
+    }
+
+    protected function loadTemplates()
+    {
+        return collect(app(\BagistoPlus\Visual\ThemeEditor::class)->getTemplates())
+            ->map(fn ($template) => [
+                'template' => $template->template,
+                'label' => $template->label,
+                'icon' => $template->icon,
+                'previewUrl' => $template->previewUrl,
+            ])
+            ->values()
+            ->toArray();
+    }
+
+    protected function checkIfHaveEdits(string $themeCode): bool
+    {
+        $lastEditFile = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'editor/.last-edit');
+
+        return file_exists($lastEditFile);
+    }
+
+    protected function translateSettingsSchema(array $settingsSchema): array
+    {
+        return collect($settingsSchema)->map(function ($group) {
+            $group['name'] = trans($group['name']);
+
+            $group['settings'] = collect($group['settings'])->map(function ($setting) {
+                $setting['label'] = trans($setting['label']);
+                if (isset($setting['info'])) {
+                    $setting['info'] = trans($setting['info']);
+                }
+
+                return $setting;
+            })->all();
+
+            return $group;
+        })->all();
+    }
+
     protected function getChannels()
     {
         return core()->getAllChannels()->map(fn ($channel) => [
@@ -214,5 +364,59 @@ class ThemeEditorController extends Controller
             ->filter(fn ($config) => $config['visual_theme'] ?? false)
             ->map(fn ($config) => $config['code'])
             ->toArray();
+    }
+
+    /**
+     * Build complete render set: changed blocks + all their parents + all their children.
+     */
+    protected function buildRenderSet(array $updates, array $loadedBlocks): array
+    {
+        $changes = $updates['changes'] ?? [];
+        $changedIds = array_merge(
+            $changes['added'] ?? [],
+            $changes['updated'] ?? []
+        );
+
+        $renderSet = [];
+
+        foreach ($changedIds as $id) {
+            $renderSet[] = $id;
+
+            // Walk up parent chain
+            $currentId = $id;
+            while (isset($loadedBlocks[$currentId]['parentId']) && $loadedBlocks[$currentId]['parentId']) {
+                $parentId = $loadedBlocks[$currentId]['parentId'];
+                $renderSet[] = $parentId;
+
+                // If parent is a repeated block, include children of the repeated block's parent
+                if (isset($loadedBlocks[$parentId]['repeated']) && $loadedBlocks[$parentId]['repeated']) {
+                    if (isset($loadedBlocks[$parentId]['parentId']) && $loadedBlocks[$parentId]['parentId']) {
+                        $this->addChildren($loadedBlocks[$parentId]['parentId'], $loadedBlocks, $renderSet);
+                    }
+                }
+
+                $currentId = $parentId;
+            }
+
+            // Walk down children
+            $this->addChildren($id, $loadedBlocks, $renderSet);
+        }
+
+        return array_unique($renderSet);
+    }
+
+    /**
+     * Recursively add all children to the render set.
+     */
+    protected function addChildren(string $blockId, array $loadedBlocks, array &$renderSet): void
+    {
+        if (! isset($loadedBlocks[$blockId]['children'])) {
+            return;
+        }
+
+        foreach ($loadedBlocks[$blockId]['children'] as $childId) {
+            $renderSet[] = $childId;
+            $this->addChildren($childId, $loadedBlocks, $renderSet);
+        }
     }
 }

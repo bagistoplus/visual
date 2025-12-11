@@ -4,5 +4,5 @@ namespace BagistoPlus\Visual\Settings;
 
 class ColorScheme extends Base
 {
-    public static string $component = 'color-scheme-setting';
+    protected static string $type = 'color-scheme';
 }

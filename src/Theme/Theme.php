@@ -3,12 +3,12 @@
 namespace BagistoPlus\Visual\Theme;
 
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
-use BagistoPlus\Visual\Settings\Support\SettingsValues;
+use Craftile\Laravel\PropertyBag;
 use Webkul\Theme\Theme as BagistoTheme;
 
 class Theme extends BagistoTheme
 {
-    public SettingsValues $settings;
+    public PropertyBag $settings;
 
     public static function make(array $attributes): self
     {
@@ -44,25 +44,13 @@ class Theme extends BagistoTheme
         public bool $isVisualTheme = false,
         public array $settingsSchema = []
     ) {
-        if (version_compare(core()->version(), '2.3.6', '<=')) {
-            parent::__construct(
-                code: $code,
-                name: $name,
-                assetsPath: $assetsPath,
-                viewsPath: $viewsPath,
-                vite: $vite,
-            );
-        } else {
-            parent::__construct(
-                code: $code,
-                name: $name,
-                assetsPath: $assetsPath,
-                viewsPath: $viewsPath,
-                vite: $vite,
-                // @phpstan-ignore-next-line
-                viewsNamespace: $viewsNamespace
-            );
-        }
+        parent::__construct(
+            code: $code,
+            name: $name,
+            assetsPath: $assetsPath,
+            viewsPath: $viewsPath,
+            vite: $vite
+        );
     }
 
     public function isVisualTheme(): bool

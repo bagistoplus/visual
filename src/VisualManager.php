@@ -2,124 +2,122 @@
 
 namespace BagistoPlus\Visual;
 
-use BagistoPlus\Visual\Facades\Sections;
-use BagistoPlus\Visual\Facades\ThemeEditor;
-use BagistoPlus\Visual\Sections\Section;
-use BagistoPlus\Visual\Sections\SectionInterface;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\File;
-use Livewire\Livewire;
-use ReflectionClass;
-use Symfony\Component\Finder\Finder;
+use BagistoPlus\Visual\Contracts\SettingTransformerInterface;
+use BagistoPlus\Visual\LivewireFeatures\BlockDataSynth;
+use BagistoPlus\Visual\LivewireFeatures\SupportsBlockData;
+use BagistoPlus\Visual\LivewireFeatures\SupportsComponentAttributes;
+use Craftile\Laravel\Facades\Craftile;
 
 class VisualManager
 {
-    public function __construct(protected ThemeDataCollector $themeDataCollector) {}
+    protected array $livewireContextFilters = [];
 
-    public function themeDataCollector(): ThemeDataCollector
+    public function __construct(protected ThemeSettingsLoader $themeSettingsLoader) {}
+
+    public function themeSettingsLoader(): ThemeSettingsLoader
     {
-        return $this->themeDataCollector;
+        return $this->themeSettingsLoader;
+    }
+
+    public function discoverSectionsIn(string $path, string $namespace = 'App\\Sections'): void
+    {
+        Craftile::discoverBlocksIn($namespace, $path);
+    }
+
+    public function discoverBlocksIn(string $path, string $namespace = 'App\\Blocks'): void
+    {
+        Craftile::discoverBlocksIn($namespace, $path);
     }
 
     /**
-     * Discover sections in the given path.
-     */
-    public function discoverSectionsIn(string $path, string $vendorPreix = ''): void
-    {
-        if (! File::isDirectory($path)) {
-            return;
-        }
-
-        $finder = new Finder;
-        $finder->files()->in($path)->name('*.php');
-
-        foreach ($finder as $file) {
-            $class = $this->extractFullyQualifiedClassName($file->getRealPath());
-
-            if (! $class || ! class_exists($class)) {
-                continue;
-            }
-
-            $reflection = new ReflectionClass($class);
-
-            if (
-                $reflection->implementsInterface(SectionInterface::class) &&
-                $reflection->isInstantiable()
-            ) {
-                $this->registerSection($class, $vendorPreix);
-            }
-        }
-    }
-
-    /**
-     * Register a section with the given component class and vendor prefix.
-     */
-    public function registerSection(string $componentClass, string $vendorPrefix = ''): void
-    {
-        $section = Section::createFromComponent($componentClass);
-        $slug = $section->slug;
-
-        if ($vendorPrefix) {
-            $section->slug = $vendorPrefix.'::'.$section->slug;
-        }
-
-        Sections::add($section);
-
-        if ($section->isLivewire) {
-            Livewire::component("visual-section-{$vendorPrefix}-$slug", $componentClass);
-        } else {
-            Blade::component($componentClass, $slug, "visual-section-{$vendorPrefix}");
-        }
-    }
-
-    /**
-     * Register multiple sections with the given component classes and vendor prefix.
-     */
-    public function registerSections(array $sections, string $vendorPrefix = ''): void
-    {
-        foreach ($sections as $section) {
-            $this->registerSection($section, $vendorPrefix);
-        }
-    }
-
-    /**
-     * Collect section data for the given section ID.
+     * Register a single section.
      *
-     * @param  string|null  $renderPath  path to the  json view file
+     * @param  string  $sectionClass  The section class to register
      */
-    public function collectSectionData(string $sectionId, ?string $renderPath = null, ?string $type = null): void
+    public function registerSection(string $sectionClass): void
     {
-        $this->themeDataCollector->collectSectionData($sectionId, $renderPath, $type);
+        Craftile::registerBlock($sectionClass);
     }
 
     /**
-     * Check if a section is enabled.
+     * Register multiple sections.
      *
-     * @param  string  $sectionId
+     * @param  array  $sectionClasses  Array of section classes to register
      */
-    public function isSectionEnabled($sectionId): bool
+    public function registerSections(array $sectionClasses): void
     {
-        if (ThemeEditor::inDesignMode() && request()->has('_sections')) {
-            $sectionsToRender = explode(',', request()->input('_sections', ''));
-
-            return in_array($sectionId, $sectionsToRender);
-        }
-
-        return ! $this->themeDataCollector->getSectionData($sectionId)->disabled;
+        Craftile::registerBlocks($sectionClasses);
     }
 
-    protected function extractFullyQualifiedClassName(string $path): ?string
+    /**
+     * Register a single block.
+     *
+     * @param  string  $blockClass  The block class to register
+     */
+    public function registerBlock(string $blockClass): void
     {
-        $contents = File::get($path);
+        Craftile::registerBlock($blockClass);
+    }
 
-        if (! preg_match('/^namespace\s+(.+?);/m', $contents, $nsMatch)) {
-            return null;
+    /**
+     * Register multiple blocks.
+     *
+     * @param  array  $blockClasses  Array of block classes to register
+     */
+    public function registerBlocks(array $blockClasses): void
+    {
+        Craftile::registerBlocks($blockClasses);
+    }
+
+    /**
+     * Register a custom setting transformer.
+     *
+     * @param  string  $type  The setting type to transform
+     * @param  \BagistoPlus\Visual\Contracts\SettingTransformerInterface  $transformerClass  The transformer class
+     */
+    public function registerSettingTransformer(string $type, SettingTransformerInterface $transformerClass): void
+    {
+        Craftile::registerPropertyTransformer($type, $transformerClass);
+    }
+
+    /**
+     * Register a custom filter for Livewire block context.
+     *
+     * @param  callable(\Illuminate\Support\Collection): \Illuminate\Support\Collection  $filter
+     */
+    public function filterLivewireContextUsing(callable $filter): void
+    {
+        $this->livewireContextFilters[] = $filter;
+    }
+
+    /**
+     * Get all registered Livewire context filters.
+     *
+     * @return array<callable>
+     */
+    public function getLivewireContextFilters(): array
+    {
+        return $this->livewireContextFilters;
+    }
+
+    /**
+     * Enable Livewire support by adding persistent middleware.
+     */
+    public function supportLivewire(): void
+    {
+        if (! class_exists(\Livewire\Livewire::class)) {
+            throw new \RuntimeException('Livewire is not installed. Please install it first: composer require livewire/livewire');
         }
 
-        if (! preg_match('/^class\s+([^\s]+)/m', $contents, $classMatch)) {
-            return null;
-        }
+        \Livewire\Livewire::addPersistentMiddleware([
+            \Webkul\Shop\Http\Middleware\Locale::class,
+            \Webkul\Shop\Http\Middleware\Currency::class,
+            \Webkul\Shop\Http\Middleware\Theme::class,
+        ]);
 
-        return trim($nsMatch[1]).'\\'.trim($classMatch[1]);
+        \Livewire\Livewire::propertySynthesizer(BlockDataSynth::class);
+
+        \Livewire\Livewire::componentHook(SupportsBlockData::class);
+        \Livewire\Livewire::componentHook(SupportsComponentAttributes::class);
     }
 }

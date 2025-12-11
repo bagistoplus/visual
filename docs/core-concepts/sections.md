@@ -1,28 +1,34 @@
 # Sections
 
-Sections are **modular, reusable building blocks** that define the content and layout of storefront pages in Bagisto Visual.
+Sections are **containers that compose blocks into cohesive layouts** on storefront pages. They define structure and accept blocks that provide the content.
+
 Each section is built as a **PHP class** and paired with a **Blade view** for rendering.
 
-Sections expose configurable settings and optional blocks, making it easy for both developers and merchants to customize storefront pages dynamically.
+## Sections vs Blocks
+
+Understanding the relationship between sections and blocks is key to v2:
+
+- **Blocks** are atomic, reusable components (buttons, images, testimonials)
+- **Sections** are containers that arrange blocks into layouts (hero, product grid, features)
+
+Think of blocks as LEGO bricks and sections as the base plates you build on.
 
 ## Why Sections Matter
 
-- **For Developers**: Create flexible, reusable UI components that can be configured without modifying the code.
-- **For Merchants**: Easily customize and rearrange sections using the Bagisto Visual Theme Editor, without needing a developer.
+- **For Developers**: Create flexible containers that accept and arrange blocks without hardcoding content.
+- **For Merchants**: Build custom layouts by adding, removing, and arranging blocks within sections using the Theme Editor.
 
-Sections empower a truly dynamic storefront experience where layout and content can evolve over time.
+Sections empower merchants to build custom page layouts without code.
 
 ## Anatomy of a Section
 
-A section is made up of three main parts:
+A section consists of:
 
-- A **view**, responsible for displaying the content. Typically built using Blade templates, the view controls the HTML and structure seen by customers.
-- A **set of configurable settings**, which define how merchants can customize the section’s behavior and appearance without touching the code.
-- **Blocks**, a set of customizable items that merchants can arrange in the Theme Editor to personalize the section, such as creating multiple categories in a list or slides in a carousel.
+- A **view** - Blade template defining the section's layout structure
+- **Settings** - Section-level configuration (colors, layout options, etc.)
+- **Rendering logic** - How accepted blocks are arranged and displayed
 
-Settings allow merchants to change things like text, colors, images, or layout options directly from the Theme Editor. Blocks make sections dynamic and flexible, allowing merchants to customize the internal structure of the section itself.
-
-Sections are designed to be simple for developers to create and highly flexible for merchants to personalize.
+Sections provide structure; blocks fill that structure with content.
 
 ## Section Directory Structure
 
@@ -46,12 +52,12 @@ Sections are designed to be simple for developers to create and highly flexible 
 ```php
 namespace Themes\YourTheme\Sections;
 
-use Bagisto\Visual\Section\BladeSection;
-use Bagisto\Visual\Settings\Text;
-use Bagisto\Visual\Settings\Link;
-use Bagisto\Visual\Settings\Color;
+use BagistoPlus\Visual\Section\SimpleSection;
+use BagistoPlus\Visual\Settings\Text;
+use BagistoPlus\Visual\Settings\Link;
+use BagistoPlus\Visual\Settings\Color;
 
-class AnnouncementBar extends BladeSection
+class AnnouncementBar extends SimpleSection
 {
     protected static string $view = 'shop::sections.announcement-bar';
 
@@ -78,11 +84,11 @@ class AnnouncementBar extends BladeSection
 ### Blade View Example
 
 ```blade
-<div class="announcement-bar" style="background-color: {{ $section->settings->background_color }}; color: {{ $section->settings->text_color }}">
+<div {{ $section->editor_attributes }} class="announcement-bar" style="background-color: {{ $section->settings->background_color }}; color: {{ $section->settings->text_color }}">
     <a href="{{ $section->settings->link ?? '#' }}">
         {{ $section->settings->text }}
     </a>
 </div>
 ```
 
-✅ A `$section` object representing the section is automatically injected into each Blade view. Settings can be accessed via `$section->settings`.
+✅ A `$section` object representing the section is automatically injected into each Blade view. Setting values can be accessed via `$section->settings`.

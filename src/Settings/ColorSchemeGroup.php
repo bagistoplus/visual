@@ -4,7 +4,7 @@ namespace BagistoPlus\Visual\Settings;
 
 class ColorSchemeGroup extends Base
 {
-    public static string $component = 'color-scheme-group-setting';
+    protected static string $type = 'color-scheme-group';
 
     public const REQUIRED_TOKENS = [
         'background',
@@ -43,16 +43,9 @@ class ColorSchemeGroup extends Base
             }
         }
 
-        $this->schemes = $schemes;
+        $this->meta['schemes'] = $schemes;
         $this->default($schemes);
 
         return $this;
-    }
-
-    public function toArray(): array
-    {
-        return array_merge(parent::toArray(), [
-            'schemes' => $this->schemes,
-        ]);
     }
 }

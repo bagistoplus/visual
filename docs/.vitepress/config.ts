@@ -1,6 +1,10 @@
 import { defineConfig } from 'vitepress';
 import tabsPlugin from '@red-asuka/vitepress-plugin-tabs';
 import llmstxt from 'vitepress-plugin-llms';
+import { genFeed } from './genFeed';
+import { getVersion } from './version';
+
+const version = getVersion();
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -14,8 +18,22 @@ export default defineConfig({
     nav: [
       { text: 'Guide', link: '/introduction/getting-started' },
       { text: 'Theme Editor', link: '/theme-editor/overview' },
+      { text: 'Blog', link: '/blog/' },
       { text: 'Demo', link: 'https://visual-debut-demo.bagistoplus.com' },
       { text: 'Sections Pack', link: 'https://bagistosectionspro.com/?ref=doc' },
+      {
+        text: version,
+        items: [
+          {
+            text: 'v1 Docs',
+            link: 'https://visual-v1.bagistoplus.com',
+          },
+          {
+            text: 'Changelog',
+            link: 'https://github.com/bagistoplus/visual/blob/main/CHANGELOG.md',
+          },
+        ],
+      },
       // { text: 'GitHub', link: 'https://github.com/bagistoplus/visual' },
     ],
 
@@ -40,11 +58,15 @@ export default defineConfig({
               collapsed: true,
               items: [
                 { text: 'Overview', link: '/core-concepts/templates/overview' },
-                { text: 'JSON Template', link: '/core-concepts/templates/json-template' },
+                { text: 'JSON & YAML', link: '/core-concepts/templates/json-yaml' },
+                { text: 'PHP Templates', link: '/core-concepts/templates/php-templates' },
                 { text: 'Available templates', link: '/core-concepts/templates/available' },
               ],
             },
             { text: 'Sections', link: '/core-concepts/sections' },
+            { text: 'Regions', link: '/core-concepts/regions' },
+            { text: 'Blocks', link: '/core-concepts/blocks' },
+            { text: 'Presets', link: '/core-concepts/presets' },
             {
               text: 'Settings',
               collapsed: true,
@@ -52,8 +74,10 @@ export default defineConfig({
                 { text: 'Overview', link: '/core-concepts/settings/overview' },
                 { text: 'Setting types', link: '/core-concepts/settings/types' },
                 { text: 'Theme settings', link: '/core-concepts/settings/theme-settings' },
+                { text: 'Conditional visibility', link: '/core-concepts/settings/conditional-visibility' },
               ],
             },
+            { text: 'Dynamic Sources', link: '/core-concepts/dynamic-sources' },
           ],
         },
         {
@@ -69,16 +93,22 @@ export default defineConfig({
                 { text: 'Overview', link: '/building-theme/adding-sections/overview' },
                 { text: 'Creating a section', link: '/building-theme/adding-sections/creating-section' },
                 { text: 'Section attributes', link: '/building-theme/adding-sections/section-attributes' },
-                {
-                  text: 'Defining settings and blocks',
-                  link: '/building-theme/adding-sections/defining-section-schema',
-                },
                 { text: 'Writing the section view', link: '/building-theme/adding-sections/writing-section-view' },
                 {
                   text: 'Using section in templates',
                   link: '/building-theme/adding-sections/using-section',
                 },
-                { text: 'Integrating with the editor', link: '/building-theme/adding-sections/integrating-editor' },
+              ],
+            },
+            {
+              text: 'Adding Blocks',
+              collapsed: true,
+              items: [
+                { text: 'Overview', link: '/building-theme/adding-blocks/overview' },
+                { text: 'Creating a block', link: '/building-theme/adding-blocks/creating-block' },
+                { text: 'Block schema', link: '/building-theme/adding-blocks/block-schema' },
+                { text: 'Static blocks', link: '/building-theme/adding-blocks/static-blocks' },
+                { text: 'Container blocks', link: '/building-theme/adding-blocks/container-blocks' },
               ],
             },
             {
@@ -86,6 +116,7 @@ export default defineConfig({
               collapsed: true,
               items: [
                 { text: 'Overview', link: '/building-theme/best-practices/overview' },
+                { text: 'Integrating with the editor', link: '/building-theme/best-practices/integrating-editor' },
                 { text: 'Styling and Color System', link: '/building-theme/best-practices/styling' },
                 { text: 'Accessibility', link: '/building-theme/best-practices/accessibility' },
                 { text: 'Performance', link: '/building-theme/best-practices/performance' },
@@ -153,4 +184,6 @@ export default defineConfig({
   sitemap: {
     hostname: 'https://visual.bagistoplus.com',
   },
+
+  buildEnd: genFeed,
 });

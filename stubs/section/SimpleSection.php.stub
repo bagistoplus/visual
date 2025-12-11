@@ -1,0 +1,16 @@
+<?php
+
+namespace {{ namespace }};
+
+use BagistoPlus\Visual\Blocks\SimpleSection;
+
+class {{ class }} extends SimpleSection
+{
+    protected static string $view = '{{ view }}';
+
+    public static function settings(): array
+    {
+        // section settings
+        return [];
+    }
+}

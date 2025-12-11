@@ -14,13 +14,7 @@
     "sourceMap": false,
     "jsx": "preserve",
     "allowJs": true,
-    "types": [
-      "node",
-      "vite/client",
-      "unplugin-vue-macros/macros-global",
-      "unplugin-vue-router/client",
-      "unplugin-icons/types/vue"
-    ]
+    "types": ["node", "vite/client", "unplugin-vue-macros/macros-global", "unplugin-icons/types/vue"]
   },
   "vueCompilerOptions": {
     "target": 3

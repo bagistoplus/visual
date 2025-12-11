@@ -18,7 +18,7 @@
       <link
         rel="icon"
         sizes="16x16"
-        href="{{ asset('vendor/webkul/ui/assets/images/favicon.ico') }}"
+        href="{{ bagisto_asset('images/favicon.ico') }}"
       />
     @endif
 
@@ -39,9 +39,9 @@
     {{ ThemeEditor::renderScripts() }}
   </head>
 
-  <body @if (core()->getCurrentLocale()->direction == 'rtl') class="rtl" @endif style="scroll-behavior: smooth;">
+  <body @if (core()->getCurrentLocale()->direction == 'rtl') class="rtl" @endif style="margin:0; padding: 0; position: relative">
 
-    <div id="app"></div>
+    <div id="app" style="width: 100vw; height: 100vh; position: absolute; top: 0; left: 0;"></div>
 
   </body>
 

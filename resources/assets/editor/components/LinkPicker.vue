@@ -1,113 +1,128 @@
 <script setup lang="ts">
-  import { Popover } from '@ark-ui/vue/popover';
-  import { Category, Product, CmsPage } from '../types';
+import type { PropertyField } from '@craftile/types';
+import { Popover } from '@ark-ui/vue/popover';
+import { Category, Product, CmsPage } from '../types';
+import useI18n from '../composables/i18n';
 
-  const model = defineModel<string | null>();
-  const valueType = ref('link');
-  const realLink = ref('');
-  const displayedValue = ref('');
-  const activePanel = ref('');
-  const popoverOpen = ref(false);
-  const inputRef = ref<HTMLInputElement | null>(null);
+interface Props {
+  field: PropertyField;
+}
 
-  onMounted(() => {
-    parseModelValue(model.value!);
-  })
+defineProps<Props>();
 
-  function parseModelValue(value?: string) {
-    if (!value) {
-      return;
-    }
+const { t } = useI18n();
+const model = defineModel<string | null>();
+const valueType = ref('link');
+const realLink = ref('');
+const displayedValue = ref('');
+const activePanel = ref('');
+const popoverOpen = ref(false);
+const inputRef = ref<HTMLInputElement | null>(null);
 
-    if (!value.startsWith('visual://')) {
-      valueType.value = 'link';
+onMounted(() => {
+  parseModelValue(model.value!);
+})
 
-      if (!value.startsWith('/')) {
-        value = '/' + value;
-      }
-
-      realLink.value = value;
-      displayedValue.value = value;
-      model.value = value;
-
-      return;
-    }
-
-    const matches = value.match(/^visual:\/\/([^:]+):([^\/]+)\/(.*)?$/);
-
-    if (matches) {
-      valueType.value = matches[1];
-      realLink.value = computeRealLink(matches[3], matches[1] === 'cms_pages' ? 'page/' : '');
-      displayedValue.value = decodeURIComponent(matches[2]);
-    }
+function parseModelValue(value?: string) {
+  if (!value) {
+    return;
   }
 
-  function computeRealLink(slug: string, path: string = '') {
-    const url = new URL(path + slug, new URL(window.ThemeEditor.storefrontUrl()).origin);
-    return url.href;
-  }
-
-  function onCategorySelected(category: Category) {
-    model.value = `visual://categories:${encodeURIComponent(category.name)}/${category.slug}`;
-    valueType.value = 'categories';
-    realLink.value = computeRealLink(category.slug);
-    displayedValue.value = category.name;
-    popoverOpen.value = false;
-  }
-
-  function onProductSelected(product: Product) {
-    model.value = `visual://products:${encodeURIComponent(product.name)}/${product.url_key}`;
-    valueType.value = 'products';
-    realLink.value = computeRealLink(product.url_key);
-    displayedValue.value = product.name;
-    popoverOpen.value = false;
-  }
-
-  function onPageSelected(page: CmsPage) {
-    model.value = `visual://cms_pages:${encodeURIComponent(page.page_title)}/${page.url_key}`;
-    valueType.value = 'cms_pages';
-    realLink.value = computeRealLink(page.url_key, 'page/');
-    displayedValue.value = page.page_title;
-    popoverOpen.value = false;
-  }
-
-  function onClear() {
+  if (!value.startsWith('visual://')) {
     valueType.value = 'link';
-    realLink.value = '';
-    model.value = '';
-    displayedValue.value = '';
+
+    if (!value.startsWith('/')) {
+      value = '/' + value;
+    }
+
+    realLink.value = value;
+    displayedValue.value = value;
+    model.value = value;
+
+    return;
   }
 
-  function onInput(event: Event) {
-    try {
-      const url = new URL((event.target as HTMLInputElement).value);
-      valueType.value = 'link';
-      model.value = url.href;
-      realLink.value = url.href;
-      displayedValue.value = url.href;
-    } catch (e) {
-      parseModelValue((event.target as HTMLInputElement).value);
-    }
-  }
+  const matches = value.match(/^visual:\/\/([^:]+):([^\/]+)\/(.*)?$/);
 
-  function onPopoverChange(open: boolean) {
-    if (open) {
-      setTimeout(() => {
-        inputRef.value?.focus();
-      }, 0);
-    }
+  if (matches) {
+    valueType.value = matches[1];
+    realLink.value = computeRealLink(matches[3], matches[1] === 'cms_pages' ? 'page/' : '');
+    displayedValue.value = decodeURIComponent(matches[2]);
   }
+}
+
+function computeRealLink(slug: string, path: string = '') {
+  const url = new URL(path + slug, new URL(window.editorConfig.storefrontUrl).origin);
+  return url.href;
+}
+
+function onCategorySelected(category: Category) {
+  model.value = `visual://categories:${encodeURIComponent(category.name)}/${category.slug}`;
+  valueType.value = 'categories';
+  realLink.value = computeRealLink(category.slug);
+  displayedValue.value = category.name;
+  popoverOpen.value = false;
+}
+
+function onProductSelected(product: Product) {
+  model.value = `visual://products:${encodeURIComponent(product.name)}/${product.url_key}`;
+  valueType.value = 'products';
+  realLink.value = computeRealLink(product.url_key);
+  displayedValue.value = product.name;
+  popoverOpen.value = false;
+}
+
+function onPageSelected(page: CmsPage) {
+  model.value = `visual://cms_pages:${encodeURIComponent(page.page_title)}/${page.url_key}`;
+  valueType.value = 'cms_pages';
+  realLink.value = computeRealLink(page.url_key, 'page/');
+  displayedValue.value = page.page_title;
+  popoverOpen.value = false;
+}
+
+function onClear() {
+  valueType.value = 'link';
+  realLink.value = '';
+  model.value = '';
+  displayedValue.value = '';
+}
+
+function onInput(event: Event) {
+  try {
+    const url = new URL((event.target as HTMLInputElement).value);
+    valueType.value = 'link';
+    model.value = url.href;
+    realLink.value = url.href;
+    displayedValue.value = url.href;
+  } catch (e) {
+    parseModelValue((event.target as HTMLInputElement).value);
+  }
+}
+
+function onPopoverChange(open: boolean) {
+  if (open) {
+    setTimeout(() => {
+      inputRef.value?.focus();
+    }, 0);
+  }
+}
 </script>
 
 <template>
   <div>
+    <label
+      v-if="field.label"
+      class="text-sm block mb-1 font-medium text-gray-700"
+    >
+      {{ field.label }}
+    </label>
     <Popover.Root
       v-model:open="popoverOpen"
       @open-change="onPopoverChange"
     >
       <Popover.Trigger as-child>
         <div
-          class="relative flex border px-3 h-10 gap-3 text-sm w-full cursor-pointer rounded outline-0 items-center appearance-none justify-between focus-within:shadow focus-within:ring focus-within:ring-gray-700"
+          class="relative flex border px-3 h-10 gap-3 text-sm w-full cursor-pointer rounded outline-0 items-center appearance-none justify-between focus-within:shadow focus-within:ring focus-within:ring-zinc-700"
         >
           <a
             v-if="realLink"
@@ -143,7 +158,7 @@
           />
           <button
             v-if="model"
-            class="flex-none text-gray-700 hover:bg-gray-200 p-1 rounded-lg"
+            class="flex-none text-zinc-700 hover:bg-zinc-200 p-1 rounded-lg"
             @click.prevent="onClear"
           >
             <i-heroicons-x-mark class="w-4 h-4" />
@@ -167,25 +182,25 @@
         >
           <div v-if="!activePanel">
             <button
-              class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-gray-200"
+              class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-zinc-200"
               @mousedown.prevent="activePanel = 'categories'"
             >
               <i-bi-tags class="w-4 h-4 transform rotate-90" />
-              {{ $t('Categories') }}
+              {{ t('Categories') }}
             </button>
             <button
-              class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-gray-200"
+              class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-zinc-200"
               @mousedown.prevent="activePanel = 'products'"
             >
               <i-bi-tag class="w-4 h-4 transform rotate-90" />
-              {{ $t('Products') }}
+              {{ t('Products') }}
             </button>
             <button
-              class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-gray-200"
+              class="appearance-none w-full h-9 px-3 flex gap-3 items-center hover:bg-zinc-200"
               @mousedown.prevent="activePanel = 'cms_pages'"
             >
-              <i-mdi-file-document-outline class="w-4 h-4 text-gray-700" />
-              {{ $t('Cms Pages') }}
+              <i-mdi-file-document-outline class="w-4 h-4 text-zinc-700" />
+              {{ t('Cms Pages') }}
             </button>
           </div>
 
@@ -194,11 +209,11 @@
             class="flex flex-col h-full overflow-hidden"
           >
             <button
-              class="h-9 flex-none bg-gray-200 flex gap-3 w-full items-center rounded-t-lg text-left px-3"
+              class="h-9 flex-none bg-zinc-200 flex gap-3 w-full items-center rounded-t-lg text-left px-3"
               @click="activePanel = ''"
             >
               <i-heroicons-arrow-left class="w-4 h-4" />
-              {{ $t('Back') }}
+              {{ t('Back') }}
             </button>
             <CategoryListbox
               v-if="activePanel === 'categories'"

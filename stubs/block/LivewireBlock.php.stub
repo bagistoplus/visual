@@ -1,0 +1,16 @@
+<?php
+
+namespace {{ namespace }};
+
+use BagistoPlus\Visual\Blocks\LivewireBlock;
+
+class {{ class }} extends LivewireBlock
+{
+    protected static string $view = '{{ view }}';
+
+    public static function settings(): array
+    {
+        // block settings
+        return [];
+    }
+}

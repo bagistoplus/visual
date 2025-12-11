@@ -22,8 +22,6 @@ class AdminServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
-
         $this->bootRoutes();
         $this->bootMiddlewares();
         $this->bootViewEventListeners();

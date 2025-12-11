@@ -1,22 +1,42 @@
 <script setup lang="ts">
-  import { Popover } from '@ark-ui/vue/popover';
-  import { useStore } from '../store';
-  import { Category } from '../types';
+import type { PropertyField } from '@craftile/types';
+import { Popover } from '@ark-ui/vue/popover';
+import { Category } from '../types';
+import { useState } from '../state';
+import useI18n from '../composables/i18n';
 
-  const store = useStore();
-  const model = defineModel<number | null>();
-  const opened = ref(false);
+interface Props {
+  field: PropertyField;
+}
 
-  const selectedCategory = computed<Category | null>({
-    get: () => model.value ? store.getCategory(model.value) : null,
-    set: (category: Category | null) => {
-      model.value = category ? category.id : null;
+defineProps<Props>();
+
+const { t } = useI18n();
+const { getCategory } = useState();
+const model = defineModel<number | null>();
+const opened = ref(false);
+
+const selectedCategory = computed({
+  get: () => {
+    if (!model.value) {
+      return null;
     }
-  });
+    return getCategory(model.value);
+  },
+  set: (category: Category | null) => {
+    model.value = category ? category.id : null;
+  }
+});
 </script>
 
 <template>
   <div>
+    <label
+      v-if="field.label"
+      class="text-sm block mb-1 font-medium text-gray-700"
+    >
+      {{ field.label }}
+    </label>
     <Popover.Root v-model:open="opened">
       <Popover.Trigger as-child>
         <div class="flex items-center w-full gap-3 cursor-pointer border rounded px-3 h-10 text-sm">
@@ -39,7 +59,7 @@
               <i-heroicons-x-mark />
             </button>
           </template>
-          <span v-else>{{ $t('Select category') }}</span>
+          <span v-else>{{ t('Select category') }}</span>
         </div>
       </Popover.Trigger>
       <Popover.Positioner class="w-[var(--reference-width)] !z-10">

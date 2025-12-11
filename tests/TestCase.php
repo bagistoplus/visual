@@ -4,6 +4,7 @@ namespace BagistoPlus\Visual\Tests;
 
 use BagistoPlus\Visual\Providers\VisualServiceProvider;
 use BagistoPlus\Visual\Tests\Fixtures\FakeTheme\FakeThemeServiceProvider;
+use Craftile\Laravel\CraftileServiceProvider;
 use Illuminate\Config\Repository;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Livewire\LivewireServiceProvider;
@@ -11,6 +12,8 @@ use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
+    protected static $latestResponse;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -24,6 +27,7 @@ class TestCase extends Orchestra
     {
         return [
             LivewireServiceProvider::class,
+            CraftileServiceProvider::class,
             VisualServiceProvider::class,
             FakeThemeServiceProvider::class,
         ];
@@ -39,10 +43,5 @@ class TestCase extends Orchestra
                 'prefix' => '',
             ]);
         });
-    }
-
-    public static function applicationBasePath()
-    {
-        return dirname(__DIR__).'/vendor/bagisto/bagisto';
     }
 }

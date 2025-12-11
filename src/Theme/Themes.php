@@ -17,7 +17,9 @@ class Themes extends BagistoThemes
     {
         $parentThemes = [];
 
-        if (Str::contains(request()->url(), config('app.admin_url').'/')) {
+        $isAdmin = request()->url() && Str::contains(request()->url(), config('app.admin_url').'/');
+
+        if ($isAdmin) {
             $themes = config('themes.admin', []);
         } else {
             $themes = config('themes.shop', []);

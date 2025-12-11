@@ -1,24 +1,43 @@
 <script setup lang="ts">
-  import { Popover } from '@ark-ui/vue/popover';
-  import ProductListbox from './ProductListbox.vue'
-  import { useStore } from '../store';
-  import { Product } from '../types';
+import type { PropertyField } from '@craftile/types';
+import { Popover } from '@ark-ui/vue/popover';
+import ProductListbox from './ProductListbox.vue'
+import { Product } from '../types';
+import { useState } from '../state';
+import useI18n from '../composables/i18n';
 
-  const store = useStore();
-  const model = defineModel<number | null>();
-  const opened = ref(false);
+interface Props {
+  field: PropertyField;
+}
 
-  const selectedProduct = computed<Product | null>({
-    get: () => model.value ? store.getProduct(model.value) : null,
-    set: (product: Product | null) => {
-      model.value = product ? product.id : null;
+defineProps<Props>();
+
+const { t } = useI18n();
+const { getProduct } = useState();
+const model = defineModel<number | null>();
+const opened = ref(false);
+
+const selectedProduct = computed({
+  get: () => {
+    if (!model.value) {
+      return null;
     }
-  });
-
+    return getProduct(model.value);
+  },
+  set: (product: Product | null) => {
+    model.value = product ? product.id : null;
+  }
+});
 </script>
 
 <template>
   <div>
+    <label
+      v-if="field.label"
+      class="text-sm block mb-1 font-medium text-gray-700"
+    >
+      {{ field.label }}
+    </label>
     <Popover.Root v-model:open="opened">
       <Popover.Trigger as-child>
         <div
@@ -44,7 +63,7 @@
               <i-heroicons-x-mark />
             </button>
           </template>
-          <span v-else>{{ $t('Select product') }}</span>
+          <span v-else>{{ t('Select product') }}</span>
         </div>
       </Popover.Trigger>
       <Popover.Positioner class="w-[var(--reference-width)] !z-10">
@@ -58,7 +77,7 @@
 
           <ProductListbox
             v-model="selectedProduct"
-            @update:model-value="(opened = false)"
+            @update:model-value="opened = false"
           />
         </Popover.Content>
       </Popover.Positioner>

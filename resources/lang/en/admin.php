@@ -10,5 +10,6 @@ return [
         'title' => 'Themes',
         'customize' => 'Customize',
         'preview' => 'Preview',
+        'no-themes' => 'No themes found',
     ],
 ];

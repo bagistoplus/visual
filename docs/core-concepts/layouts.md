@@ -25,7 +25,7 @@ default.blade.php
 ## Core Responsibilities of a Layout
 
 - **Render the page structure** (HTML skeleton, head, body).
-- **Include reusable parts** (header, footer, modals, toasts).
+- **Include regions** for shared areas (header, footer) using `@visualRegion()`.
 - **Define placeholders** for dynamic template content.
 - **Load styles and scripts** correctly.
 
@@ -37,7 +37,7 @@ At minimum, every layout must include:
 - `@visual_layout_content` inside `<body>` — where template and section content is rendered.
 - `@stack('scripts')` at the bottom of `<body>` — to inject page-specific scripts.
 
-Here’s a minimal working example:
+Here's a minimal working example:
 
 ```blade
 <!DOCTYPE html>
@@ -48,7 +48,14 @@ Here’s a minimal working example:
 <body>
 
   <main>
+    {{-- Header region (shared across all pages) --}}
+    @visualRegion('header')
+
+    {{-- Page-specific template content --}}
     @visual_layout_content
+
+    {{-- Footer region (shared across all pages) --}}
+    @visualRegion('footer')
   </main>
 
   @stack('scripts')
@@ -74,10 +81,20 @@ The `@stack('scripts')` directive is used to inject page-specific JavaScript at 
 
 The `@visual_layout_content` directive is a Bagisto Visual special directive that renders the content of the selected template.
 
-- It dynamically outputs the page’s sections based on the currently active template (e.g., homepage, product page).
+- It dynamically outputs the page's sections based on the currently active template (e.g., homepage, product page).
 - Without @visual_layout_content, the storefront will not display the page-specific content.
 
 Important: Every layout must include @visual_layout_content inside the `<main>` (or equivalent) block.
+
+### `@visualRegion()`
+
+The `@visualRegion()` directive renders a region template (e.g., header, footer) that is shared across all pages.
+
+- Regions are customizable by merchants through the Visual Editor.
+- Common regions include `header` and `footer`.
+- Example: `@visualRegion('header')` renders the header region.
+
+See [Regions](./regions.md) for detailed documentation on creating and using regions.
 
 ## Special Layout for Customer Accounts
 

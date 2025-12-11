@@ -1,37 +1,50 @@
 <script setup lang="ts">
-  import { useStore } from '../store';
-  import { Category } from '../types';
+import { Category } from '../types';
+import { useState } from '../state';
+import { fetchCategories } from '../api';
+import useI18n from '../composables/i18n';
 
-  const store = useStore();
-  const model = defineModel<Category | null>();
-  const search = ref('');
+const { t } = useI18n();
+const { channel, locale, getCategories } = useState();
+const model = defineModel<Category | null>();
+const search = ref('');
 
-  const { isFetching, data, execute } = store.fetchCategories();
+const categories = computed(() => {
+  const allCategories = getCategories();
+  if (!search.value) {
+    return allCategories;
+  }
+  const searchLower = search.value.toLowerCase();
+  return allCategories.filter(category =>
+    category.name.toLowerCase().includes(searchLower)
+  );
+});
 
-  const categories = computed(() => {
-    return data.value ? data.value.data : [];
-  });
+const { isFetching, execute } = fetchCategories();
 
-  const onSearch = useDebounceFn(() => {
-    execute({ name: search.value });
-  });
+const onSearch = useDebounceFn(() => {
+  execute({ search: search.value });
+});
 
-  onMounted(() => execute());
 
-  watch([() => store.themeData.channel, () => store.themeData.locale], () => execute());
+onMounted(() => execute());
+
+watch([channel, locale], () => {
+  execute();
+});
 </script>
 <template>
   <div class="flex flex-col overflow-y-hidden">
     <div
       v-if="search || categories.length > 2"
-      class="flex items-center mx-2 my-2 px-3 py-1 gap-3 border rounded-lg focus-within:ring focus-within:ring-gray-700"
+      class="flex items-center mx-2 my-2 px-3 py-1 gap-3 border rounded-lg focus-within:ring-2 focus-within:ring-zinc-700"
     >
       <i-heroicons-magnifying-glass class="w-4 h-4" />
       <input
         v-model="search"
         type="text"
-        class="focus:outline-none text-gray-600"
-        :placeholder="$t('Search category')"
+        class="focus:outline-none text-zinc-600"
+        :placeholder="t('Search category')"
         @input="onSearch"
       >
     </div>
@@ -40,7 +53,7 @@
         v-if="isFetching"
         class="h-20 flex items-center justify-center"
       >
-        <Spinner class="h-6 w-6 text-gray-700" />
+        <Spinner class="h-6 w-6 text-zinc-700" />
       </div>
       <div v-else>
         <a

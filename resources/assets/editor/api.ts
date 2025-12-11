@@ -1,110 +1,173 @@
-import { createFetch } from '@vueuse/core';
-import { ThemeData } from './types';
+import { UpdatesEvent } from '@craftile/types';
+import { useHttpClient } from './composables/http';
+import { useState } from './state';
 
-const routes = window.editorConfig.routes;
+export function persistUpdates(updates: UpdatesEvent) {
+  const { state } = useState();
+  const { post } = useHttpClient();
 
-const useFetch = createFetch({
-  options: {
-    beforeFetch({ options }) {
-      const headers = new Headers(options.headers || []);
-
-      headers.append(
-        'X-CSRF-Token',
-        document.querySelector('meta[name="csrf-token"]')!.getAttribute('content') as string
-      );
-
-      options.headers = headers;
-
-      return { options };
+  const request = post(window.editorConfig.routes.persistUpdates, {
+    theme: state.theme?.code,
+    channel: window.editorConfig.defaultChannel,
+    locale: window.editorConfig.editorLocale,
+    template: {
+      url: state.pageData?.url || '',
+      name: state.pageData?.template || 'index',
+      sources: state.pageData?.sources,
     },
-  },
-  fetchOptions: {
-    mode: 'cors',
-  },
-});
+    updates,
+  }).text();
 
-export function useUploadImage(formData: FormData) {
-  return useFetch(routes.uploadImage).post(formData).json();
+  request.onError((error) => {
+    console.error('Failed to persist updates:', error);
+  });
+
+  return request;
 }
 
-export function useFetchImages() {
-  return useFetch(routes.listImages, { immediate: false }).get().json();
+export function persistThemeSettings(updates: Record<string, any>) {
+  const { state } = useState();
+  const { post } = useHttpClient();
+
+  const request = post(window.editorConfig.routes.persistThemeSettings, {
+    theme: state.theme?.code || 'sections-pro',
+    channel: state.channel || window.editorConfig.defaultChannel,
+    locale: state.locale || window.editorConfig.editorLocale,
+    template: {
+      url: state.pageData?.url || '',
+      name: state.pageData?.template || 'index',
+      sources: state.pageData?.sources,
+    },
+    updates,
+  }).text();
+
+  request.onError((error) => {
+    console.error('Failed to persist theme settings:', error);
+  });
+
+  return request;
 }
 
-export function useFetchCategories() {
+export function publishTheme() {
+  const { state } = useState();
+  const { post } = useHttpClient();
+
+  const request = post(window.editorConfig.routes.publishTheme, {
+    theme: state.theme?.code || 'sections-pro',
+  });
+
+  request.onError((error) => {
+    console.error('Failed to publish theme:', error);
+  });
+
+  return request;
+}
+
+export function fetchCategories() {
+  const { state } = useState();
   const url = ref('/api/categories');
-  const context = useFetch(url, { refetch: true, immediate: false }).get().json();
+  const { get } = useHttpClient();
 
-  function execute(params: Record<string, any>) {
-    const newUrl = new URL(url.value, window.location.origin);
+  const request = get(url);
 
-    for (const [key, value] of Object.entries(params)) {
-      newUrl.searchParams.append(key, value);
+  request.onSuccess((data: any) => {
+    const categories = data?.data || [];
+    categories.forEach((category: any) => {
+      state.categories.set(category.id, category);
+    });
+  });
+
+  request.onError((error) => {
+    console.error('Failed to fetch categories:', error);
+  });
+
+  function execute(params: { channel?: string; locale?: string; search?: string } = {}) {
+    const newUrl = new URL('/api/categories', window.location.origin);
+
+    newUrl.searchParams.append('channel', params.channel || state.channel);
+    newUrl.searchParams.append('locale', params.locale || state.locale);
+
+    if (params.search) {
+      newUrl.searchParams.append('name', params.search);
     }
 
-    newUrl.searchParams.append('limit', '10');
-
     url.value = newUrl.href;
+
+    return request.execute();
   }
 
-  return { ...context, execute };
+  return { ...request, execute };
 }
 
-export function useFetchProducts() {
+export function fetchProducts() {
+  const { state } = useState();
   const url = ref('/api/products');
-  const context = useFetch(url, { refetch: true, immediate: false }).get().json();
+  const { get } = useHttpClient();
 
-  function execute(params: Record<string, any>) {
+  const request = get(url);
+
+  request.onSuccess((data: any) => {
+    const products = data?.data || [];
+    products.forEach((product: any) => {
+      state.products.set(product.id, product);
+    });
+  });
+
+  request.onError((error) => {
+    console.error('Failed to fetch products:', error);
+  });
+
+  function execute(params: { channel?: string; locale?: string; search?: string } = {}) {
     const newUrl = new URL('/api/products', window.location.origin);
 
-    for (const [key, value] of Object.entries(params)) {
-      newUrl.searchParams.append(key, value);
+    newUrl.searchParams.append('channel', params.channel || state.channel);
+    newUrl.searchParams.append('locale', params.locale || state.locale);
+
+    if (params.search) {
+      newUrl.searchParams.append('name', params.search);
     }
 
-    newUrl.searchParams.append('limit', '10');
-
     url.value = newUrl.href;
+
+    return request.execute();
   }
 
-  return { ...context, execute };
+  return { ...request, execute };
 }
 
-export function useFetchCmsPages() {
+export function fetchCmsPages() {
+  const { state } = useState();
   const url = ref(window.editorConfig.routes.getCmsPages);
-  const context = useFetch(url, { refetch: true, immediate: false }).get().json();
+  const { get } = useHttpClient();
 
-  function execute(params: Record<string, any>) {
-    const newUrl = new URL(window.editorConfig.routes.getCmsPages, window.location.origin);
+  const request = get(url);
 
-    for (const [key, value] of Object.entries(params)) {
-      newUrl.searchParams.append(key, value);
+  request.onSuccess((data: any) => {
+    const pages = data || [];
+    pages.forEach((page: any) => {
+      state.cmsPages.set(page.id, page);
+    });
+  });
+
+  request.onError((error) => {
+    console.error('Failed to fetch CMS pages:', error);
+  });
+
+  function execute(params: { channel?: string; locale?: string; search?: string } = {}) {
+    const baseUrl = window.editorConfig.routes.getCmsPages;
+    const newUrl = new URL(baseUrl, window.location.origin);
+
+    newUrl.searchParams.append('channel', params.channel || state.channel);
+    newUrl.searchParams.append('locale', params.locale || state.locale);
+
+    if (params.search) {
+      newUrl.searchParams.append('title', params.search);
     }
 
     url.value = newUrl.href;
+
+    return request.execute();
   }
 
-  return { ...context, execute };
-}
-
-export function useFetchIcons(options = { immediate: false }) {
-  const url = ref(window.editorConfig.routes.getIcons);
-  const context = useFetch(url, { refetch: true, ...options })
-    .get()
-    .json();
-
-  function execute(params: Record<string, any>) {
-    const newUrl = new URL(window.editorConfig.routes.getIcons, window.location.origin);
-
-    for (const [key, value] of Object.entries(params)) {
-      newUrl.searchParams.append(key, value);
-    }
-
-    url.value = newUrl.href;
-  }
-
-  return { ...context, execute };
-}
-
-export function usePublishTheme(data: any) {
-  return useFetch(window.editorConfig.routes.publishTheme).post(data);
+  return { ...request, execute };
 }

@@ -1,17 +1,18 @@
 # LLMs.txt
 
-Helping AI tools like GitHub Copilot, Cursor, ChatGPT, and Claude understand **Bagisto Visual**.
+Make AI coding assistants and chat interfaces understand Bagisto Visual's architecture, conventions, and patterns.
 
 ## What is `llms.txt`?
 
-Bagisto Visual provides `llms.txt` files to support language models and AI-powered tools that interact with our documentation and developer experience.
+`llms.txt` is a standardized format that helps AI tools understand your framework or project. Bagisto Visual provides these files so AI assistants like GitHub Copilot, Cursor, ChatGPT, and Claude can:
 
-These files help large language models:
+- **Suggest better code** – Autocomplete section structures, settings, and Blade templates accurately
+- **Follow conventions** – Use correct naming patterns, file locations, and API methods
+- **Understand context** – Know about blocks, sections, templates, and how they relate
+- **Provide accurate help** – Answer questions about Bagisto Visual with up-to-date information
+- **Generate valid code** – Create sections and blocks that follow framework patterns
 
-- Understand how Bagisto Visual works
-- Suggest accurate code completions and section structures
-- Reference correct naming conventions and architecture
-- Improve search, retrieval, and autocomplete when used in IDEs or chat-based assistants
+Instead of generic suggestions, AI tools can provide recommendations specific to Bagisto Visual's architecture.
 
 ## Available Files
 
@@ -22,32 +23,52 @@ We provide the following routes:
 
 These files are designed for easy ingestion by AI tools and indexing systems.
 
-## Usage with AI Tools
+## Using with AI Tools
 
-### GitHub Copilot / ChatGPT / Claude
+### Code Assistants (Copilot, Cursor, etc.)
 
-These tools can use `llms.txt` files to:
+AI code completion tools can reference llms.txt for context-aware suggestions:
 
-- Recommend valid section structure using Blade or Livewire
-- Autocomplete field definitions and settings
-- Suggest markup that respects Bagisto Visual’s layout and theming conventions
+**In Cursor:**
+
+```
+@Docs https://visual.bagistoplus.com/llms-full.txt
+```
+
+This loads Bagisto Visual documentation into Cursor's context, enabling:
+
+- Accurate section/block scaffolding
+- Correct settings field syntax
+- Proper Blade directive usage
+- Convention-following code generation
+
+Learn more: [Cursor @Docs](https://docs.cursor.com/context/@-symbols/@-docs)
 
 ---
 
-### Cursor
+### Chat Interfaces (ChatGPT, Claude)
 
-If you're using Cursor, you can include `llms.txt` files in your workspace via the `@Docs` directive. This helps Cursor learn from the Bagisto Visual documentation directly for faster, more accurate suggestions.
+When asking AI chat tools about Bagisto Visual:
 
-Learn more at [cursor.sh](https://docs.cursor.com/context/@-symbols/@-docs)
+**Share the context:**
+"I'm working with Bagisto Visual. Reference https://visual.bagistoplus.com/llms-full.txt for documentation."
+
+The AI will then:
+
+- Understand framework-specific terminology
+- Suggest code that matches conventions
+- Reference actual API methods
+- Provide accurate troubleshooting
 
 ---
 
-### Other Tools
+### Custom Integrations
 
-Any AI tool that supports `llms.txt` indexing or document injection can use these files to build:
+Building tools that work with Bagisto Visual? Use llms.txt files for:
 
-- Better code generators
-- Custom autocomplete providers
-- Enhanced prompts for RAG pipelines
+- **RAG Pipelines** – Embed framework knowledge in your AI system
+- **Code Generators** – Generate valid sections/blocks/templates automatically
+- **Documentation Chatbots** – Answer framework questions accurately
+- **IDE Extensions** – Power autocomplete with framework context
 
-Simply include these files alongside your theme or development project.
+Parse the files to extract structure, examples, and patterns for your use case.

@@ -1,21 +1,42 @@
 <script setup lang="ts">
-  import { Popover } from '@ark-ui/vue/popover';
-  import { CmsPage } from '../types';
-  import { useStore } from '../store';
+import type { PropertyField } from '@craftile/types';
+import { Popover } from '@ark-ui/vue/popover';
+import { CmsPage } from '../types';
+import { useState } from '../state';
+import useI18n from '../composables/i18n';
 
-  const store = useStore();
-  const model = defineModel<number | null>();
-  const opened = ref(false);
+interface Props {
+  field: PropertyField;
+}
 
-  const selectedPage = computed<CmsPage | null>({
-    get: () => (model.value ? store.getCmsPage(model.value) : null),
-    set: (page: CmsPage | null) => {
-      model.value = page ? page.id : null;
+defineProps<Props>();
+
+const { t } = useI18n();
+const { getCmsPage } = useState();
+const model = defineModel<number | null>();
+const opened = ref(false);
+
+const selectedPage = computed({
+  get: () => {
+    if (!model.value) {
+      return null;
     }
-  });
+    return getCmsPage(model.value);
+  },
+  set: (page: CmsPage | null) => {
+    model.value = page ? page.id : null;
+  }
+});
 </script>
 <template>
   <div>
+    <label
+      v-if="field.label"
+      class="text-sm block mb-1 font-medium text-gray-700"
+    >
+      {{ field.label }}
+    </label>
+
     <Popover.Root v-model:open="opened">
       <Popover.Trigger as-child>
         <div
@@ -27,12 +48,12 @@
             <span class="flex-1 w-0 truncate">{{ selectedPage.page_title }}</span>
             <button
               class="flex-none rounded-lg hover:bg-neutral-200 p-1"
-              @click.stop="selectedPage = null"
+              @click.stop="model = null"
             >
               <i-heroicons-x-mark />
             </button>
           </template>
-          <span v-else>{{ $t('Select page') }}</span>
+          <span v-else>{{ t('Select page') }}</span>
         </div>
       </Popover.Trigger>
 

@@ -15,3 +15,13 @@ if (! function_exists('visual_is_menu_active')) {
         return str(request()->url())->is($menuUrl.'*');
     }
 }
+
+if (! function_exists('visual_is_responsive_value')) {
+    /**
+     * Check if a value is a ResponsiveValue instance.
+     */
+    function visual_is_responsive_value(mixed $value): bool
+    {
+        return $value instanceof \Craftile\Core\Data\ResponsiveValue;
+    }
+}

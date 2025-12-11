@@ -16,7 +16,8 @@ class MakeSectionCommand extends Command
     protected $signature = 'visual:make-section
                             {name? : The name of the section}
                             {--theme= : The theme slug (optional)}
-                            {--livewire : Create a Livewire-based section}
+                            {--component : Create a Blade component-based section}
+                            {--livewire : Create a Livewire component-based section}
                             {--force : Overwrite existing section if it exists}';
 
     protected $description = 'Create a new section for a Bagisto Visual theme';
@@ -26,8 +27,15 @@ class MakeSectionCommand extends Command
         $name = $this->argument('name') ?? text('🧱 Section name (e.g., AnnouncementBar)');
         $slug = Str::kebab($name);
         $class = Str::studly($name);
+        $component = $this->option('component');
         $livewire = $this->option('livewire');
         $force = $this->option('force');
+
+        if ($component && $livewire) {
+            error('❌ Cannot use both --component and --livewire flags');
+
+            return 1;
+        }
 
         // Resolve theme
         $theme = $this->option('theme');
@@ -114,7 +122,7 @@ class MakeSectionCommand extends Command
             'theme' => $theme ?? 'app',
         ];
 
-        $classStub = $livewire ? 'LivewireSection.php' : 'BladeSection.php';
+        $classStub = $livewire ? 'LivewireSection.php' : ($component ? 'BladeSection.php' : 'SimpleSection.php');
 
         $files = [
             $classStub => $classPath,
