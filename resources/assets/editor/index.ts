@@ -2,10 +2,14 @@ import { Block, BlockSchema } from '@craftile/types';
 import { createCraftileEditor } from '@craftile/editor';
 import CommonPropertiesPlugin from '@craftile/plugin-common-properties';
 import VisualPlugin from './plugin';
+
 import './css/index.css';
+import './css/nprogress.css';
+
 import * as Vue from 'vue';
 import { createState } from './state';
 import { matchesCondition } from './utils/patternMatcher';
+import NProgress from 'nprogress';
 
 const { blockSchemas } = window.editorConfig;
 
@@ -15,6 +19,14 @@ const state = createState({
   theme: window.editorConfig.theme,
   templates: window.editorConfig.templates || [],
   haveEdits: window.editorConfig.haveEdits,
+});
+
+// Configure NProgress
+NProgress.configure({
+  showSpinner: false,
+  minimum: 0.1,
+  speed: 400,
+  trickleSpeed: 500,
 });
 
 const editorInstance = createCraftileEditor({
@@ -72,6 +84,7 @@ window.craftileEditor = editorInstance;
 window.Vue = Vue;
 
 document.addEventListener('DOMContentLoaded', () => {
+  NProgress.start();
   document.dispatchEvent(
     new CustomEvent('visual:editor:ready', {
       detail: {

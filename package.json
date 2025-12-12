@@ -38,6 +38,7 @@
     "@tiptap/pm": "^3.6.2",
     "@tiptap/vue-3": "^3.6.2",
     "@types/node": "^24.6.2",
+    "@types/nprogress": "^0.2.3",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vueuse/core": "^14.1.0",
     "@zag-js/file-upload": "^1.25.0",

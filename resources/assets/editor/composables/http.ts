@@ -1,4 +1,5 @@
 import { Ref, ref, MaybeRefOrGetter, toValue } from 'vue';
+import NProgress from 'nprogress';
 
 export interface UseFetchOptions {
   immediate?: boolean;
@@ -50,6 +51,9 @@ function createUseFetch<T = any, D = any>(
   const finishCallbacks: Array<() => void> = [];
 
   const execute = async (dataOverride?: D, throwOnFail = false): Promise<T | null> => {
+    // Start progress bar
+    NProgress.start();
+
     // Reset state
     isFetching.value = true;
     isFinished.value = false;
@@ -88,6 +92,9 @@ function createUseFetch<T = any, D = any>(
     } finally {
       isFetching.value = false;
       isFinished.value = true;
+
+      // Complete progress bar
+      NProgress.done();
 
       // Call finish callbacks
       finishCallbacks.forEach((cb) => cb());

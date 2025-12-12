@@ -2,6 +2,7 @@ import type { EngineEvents } from '@craftile/core';
 import { CraftileEditorPlugin, PluginContext } from '@craftile/editor';
 import { UpdatesEvent } from '@craftile/types';
 import { debounce } from 'perfect-debounce';
+import NProgress from 'nprogress';
 
 import { useState, populatePreloadedModels } from './state';
 import { persistUpdates } from './api';
@@ -273,6 +274,7 @@ export default function (editorConfig: ThemeEditorConfig): CraftileEditorPlugin 
 
     editor.preview.onReady(() => {
       editor.preview.onMessage('craftile.preview.page-data', ({ pageData }: any) => {
+        NProgress.done();
         editor.engine.setPage(pageData.content);
 
         state.pageData = {

@@ -62,7 +62,11 @@ export default defineConfig({
 
   css: {
     postcss: {
-      plugins: [PrefixWrap('.__craftile')],
+      plugins: [
+        PrefixWrap('.__craftile', {
+          blacklist: ['nprogress.css'],
+        }),
+      ],
     },
   },
 });

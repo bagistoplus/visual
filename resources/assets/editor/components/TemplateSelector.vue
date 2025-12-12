@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Menu } from '@ark-ui/vue/menu';
 import { Button } from '@craftile/editor/ui';
+import NProgress from 'nprogress';
 
 import { useState } from '../state';
 
@@ -21,6 +22,8 @@ function onSelect({ value }: { value: string }) {
         blocks: {},
       });
     }
+
+    NProgress.start();
 
     const url = new URL(template.previewUrl);
     url.searchParams.set('_designMode', theme.value!.code as string);
