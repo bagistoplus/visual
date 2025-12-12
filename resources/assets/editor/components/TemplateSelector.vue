@@ -5,12 +5,23 @@ import { Button } from '@craftile/editor/ui';
 import { useState } from '../state';
 
 const editor = useCraftileEditor();
-const { currentTemplate, templates, theme, channel, locale } = useState();
+const { currentTemplate, templates, theme, channel, locale, state } = useState();
 
 function onSelect({ value }: { value: string }) {
   const template = templates.value.find(t => t.template === value);
 
-  if (template) {
+  if (template && editor) {
+    if (state.pageData?.template !== value) {
+      if (state.pageData) {
+        state.pageData.template = value;
+      }
+
+      editor.engine.setPage({
+        regions: [],
+        blocks: {},
+      });
+    }
+
     const url = new URL(template.previewUrl);
     url.searchParams.set('_designMode', theme.value!.code as string);
     url.searchParams.set('channel', channel.value);
