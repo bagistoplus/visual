@@ -19,7 +19,7 @@ export default defineConfig({
       { text: 'Guide', link: '/introduction/getting-started' },
       { text: 'Theme Editor', link: '/theme-editor/overview' },
       { text: 'Blog', link: '/blog/' },
-      { text: 'Demo', link: 'https://visual-debut-demo.bagistoplus.com' },
+      { text: 'Demo', link: 'https://demo-v2.bagistoplus.com' },
       { text: 'Sections Pack', link: 'https://bagistosectionspro.com/?ref=doc' },
       {
         text: version,

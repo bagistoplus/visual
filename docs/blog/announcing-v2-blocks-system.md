@@ -1,6 +1,6 @@
 ---
 title: 'Announcing Bagisto Visual v2: The Blocks System'
-date: 2025-01-25
+date: 2025-12-08
 author: Bagisto Visual Team
 excerpt: 'Bagisto Visual v2 introduces the blocks system - shared, reusable components that transform how themes are built. Define blocks once, use them across multiple sections, update once and see changes everywhere.'
 ---
