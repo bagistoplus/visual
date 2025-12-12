@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/build-assets.yml'
       - 'resources/assets/**'
+      - 'resources/views/admin/**'
       - 'vite.editor.config.ts'
       - 'vite.admin.config.ts'
       - 'package.json'
