@@ -372,15 +372,20 @@ class ThemeEditorController extends Controller
     protected function buildRenderSet(array $updates, array $loadedBlocks): array
     {
         $changes = $updates['changes'] ?? [];
-        $changedIds = array_merge(
-            $changes['added'] ?? [],
-            $changes['updated'] ?? []
-        );
+        $addedIds = $changes['added'] ?? [];
+        $updatedIds = $changes['updated'] ?? [];
+        $changedIds = array_merge($addedIds, $updatedIds);
 
         $renderSet = [];
 
         foreach ($changedIds as $id) {
             $renderSet[] = $id;
+
+            // If block is in added and has a parent, include parent's children
+            if (in_array($id, $addedIds) && isset($loadedBlocks[$id]['parentId']) && $loadedBlocks[$id]['parentId']) {
+                $parentId = $loadedBlocks[$id]['parentId'];
+                $this->addChildren($parentId, $loadedBlocks, $renderSet);
+            }
 
             // Walk up parent chain
             $currentId = $id;
