@@ -138,6 +138,7 @@ class CoreServiceProvider extends ServiceProvider
             'color-scheme' => SettingTransformers\ColorSchemeTransformer::class,
             'color-scheme-group' => SettingTransformers\ColorSchemeGroupTransformer::class,
             'gradient' => SettingTransformers\GradientTransformer::class,
+            'spacing' => SettingTransformers\SpacingTransformer::class,
         ];
 
         foreach ($transformers as $type => $transformerClass) {

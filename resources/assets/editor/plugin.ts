@@ -25,6 +25,7 @@ import IconPicker from './components/IconPicker.vue';
 import ImagePicker from './components/ImagePicker.vue';
 import RichtextEditor from './components/RichtextEditor.vue';
 import GradientPicker from './components/GradientPicker.vue';
+import SpacingField from './components/SpacingField.vue';
 import PublishAction from './components/PublishAction.vue';
 import PreviewAction from './components/PreviewAction.vue';
 import useI18n from './composables/i18n';
@@ -142,6 +143,11 @@ function registerPropertyFields(ui: PluginContext['editor']['ui']) {
   ui.registerPropertyField({
     type: 'gradient',
     render: GradientPicker,
+  });
+
+  ui.registerPropertyField({
+    type: 'spacing',
+    render: SpacingField,
   });
 }
 
