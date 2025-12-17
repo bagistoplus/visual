@@ -16,7 +16,7 @@ class RenderPreview
      * @param  string  $url  The URL to render
      * @param  array|null  $blockIds  Optional array of block IDs to render (null = render all)
      */
-    public function execute(string $url, ?array $blockIds = null): string
+    public function execute(string $url, ?array $blockIds = null): string|\Illuminate\Http\RedirectResponse
     {
         $baseUrl = rtrim(config('app.url'));
         $basePath = parse_url($baseUrl, PHP_URL_PATH);
@@ -29,7 +29,6 @@ class RenderPreview
             $separator = str_contains($url, '?') ? '&' : '?';
             $url .= $separator.'_vkey='.$key;
         }
-
         // Handle subdirectory installs by redirecting
         if ($basePath !== null) {
             return redirect($url);

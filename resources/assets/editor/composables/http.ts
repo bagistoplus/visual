@@ -24,7 +24,11 @@ export interface UseFetchReturn<T = any, D = any> {
 export type HttpClient = {
   get<T = any>(url: MaybeRefOrGetter<string>, options?: UseFetchOptions): UseFetchReturn<T>;
   post<T = any>(url: MaybeRefOrGetter<string>, data?: any, options?: UseFetchOptions): UseFetchReturn<T, any>;
-  postFormData<T = any>(url: MaybeRefOrGetter<string>, formData?: FormData, options?: UseFetchOptions): UseFetchReturn<T, FormData>;
+  postFormData<T = any>(
+    url: MaybeRefOrGetter<string>,
+    formData?: FormData,
+    options?: UseFetchOptions
+  ): UseFetchReturn<T, FormData>;
 };
 
 function getCsrfToken(): string {
@@ -170,39 +174,33 @@ function createHttpClientInstance(): HttpClient {
     },
 
     post<T = any>(url: MaybeRefOrGetter<string>, data?: any, options: UseFetchOptions = {}) {
-      return createUseFetch<T, any>(
-        (signal, dataOverride) => {
-          const requestData = dataOverride !== undefined ? dataOverride : data;
-          return fetch(toValue(url), {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRF-TOKEN': csrfToken,
-              Accept: 'application/json',
-            },
-            body: requestData ? JSON.stringify(requestData) : undefined,
-            signal,
-          });
-        },
-        options
-      );
+      return createUseFetch<T, any>((signal, dataOverride) => {
+        const requestData = dataOverride !== undefined ? dataOverride : data;
+        return fetch(toValue(url), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            Accept: 'application/json',
+          },
+          body: requestData ? JSON.stringify(requestData) : undefined,
+          signal,
+        });
+      }, options);
     },
 
     postFormData<T = any>(url: MaybeRefOrGetter<string>, formData?: FormData, options: UseFetchOptions = {}) {
-      return createUseFetch<T, FormData>(
-        (signal, dataOverride) => {
-          const requestFormData = dataOverride !== undefined ? dataOverride : formData;
-          return fetch(toValue(url), {
-            method: 'POST',
-            headers: {
-              'X-CSRF-TOKEN': csrfToken,
-            },
-            body: requestFormData,
-            signal,
-          });
-        },
-        options
-      );
+      return createUseFetch<T, FormData>((signal, dataOverride) => {
+        const requestFormData = dataOverride !== undefined ? dataOverride : formData;
+        return fetch(toValue(url), {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': csrfToken,
+          },
+          body: requestFormData,
+          signal,
+        });
+      }, options);
     },
   };
 }

@@ -313,7 +313,6 @@ export default function (editorConfig: ThemeEditorConfig): CraftileEditorPlugin 
 
       try {
         const htmlResponse = await request.execute();
-
         const allBlocks = editor.engine.getPage().blocks;
         const blocksToUpdate = determineBlocksToProcess(mergedUpdates.blocks, allBlocks);
 
