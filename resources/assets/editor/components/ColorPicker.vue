@@ -12,7 +12,6 @@ const value = defineModel({
     try {
       return parseColor(val);
     } catch (e) {
-      // Fallback to default color if parsing fails
       console.error('Invalid color value:', val, e);
       return parseColor('#000000ff');
     }
@@ -136,7 +135,7 @@ function onSelect({ value: color }: any) {
             <ColorPicker.SwatchTrigger
               v-for="color in usedColors"
               :value="color"
-              :key="color"
+              :key="color.toString('hexa')"
             >
               <ColorPicker.Swatch
                 :value="color"

@@ -21,15 +21,22 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-const model = defineModel<GradientValue>({
-  default: () => ({
-    type: 'linear',
-    angle: 90,
-    stops: [
-      { color: '#000000ff', position: 0 },
-      { color: '#ffffffff', position: 100 },
-    ],
-  }),
+const modelValue = defineModel<GradientValue | null>();
+
+const defaultGradient: GradientValue = {
+  type: 'linear',
+  angle: 90,
+  stops: [
+    { color: '#000000ff', position: 0 },
+    { color: '#ffffffff', position: 100 },
+  ],
+};
+
+const model = computed({
+  get: () => modelValue.value || defaultGradient,
+  set: (value: GradientValue) => {
+    modelValue.value = value;
+  },
 });
 
 // Helper to trigger emit after mutation
@@ -39,21 +46,6 @@ function triggerUpdate() {
 
 const opened = ref(false);
 const selectedStopIndex = ref<number | null>(0);
-
-// Initialize with default if null
-onBeforeMount(() => {
-  console.log(model.value)
-  if (!model.value) {
-    model.value = {
-      type: 'linear',
-      angle: 90,
-      stops: [
-        { color: '#000000ff', position: 0 },
-        { color: '#ffffffff', position: 100 },
-      ],
-    };
-  }
-});
 
 // Gradient preview style
 const gradientPreview = computed(() => {
