@@ -5,8 +5,11 @@ namespace BagistoPlus\Visual\Settings\Support;
 class SpacingValue
 {
     public readonly int $top;
+
     public readonly int $right;
+
     public readonly int $bottom;
+
     public readonly int $left;
 
     public function __construct(array $data)
