@@ -96,7 +96,6 @@ const fileUpload = computed(() => connect(service, normalizeProps));
 
 function onImageSelect(image: Image) {
   model.value = image;
-  opened.value = false;
 }
 
 function onCancel() {
