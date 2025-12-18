@@ -37,7 +37,7 @@ function onSelect({ value }: { value: string }) {
 <template>
   <Menu.Root
     @select="onSelect"
-    :positioning="{ gutter: 4 }"
+    :positioning="{ gutter: 4, strategy: 'fixed', placement: 'bottom' }"
   >
     <Menu.Trigger asChild>
       <Button>
