@@ -25,6 +25,8 @@ return [
     'Image Picker' => 'छवि चयनकर्ता',
     'Drop your images here' => 'अपनी छवियाँ यहाँ छोड़ें',
     'Add images' => 'छवियाँ जोड़ें',
+    'Image uploaded successfully' => 'छवि सफलतापूर्वक अपलोड हुई',
+    'Failed to upload image' => 'छवि अपलोड करने में विफल',
 
     'Search a section' => 'अनुभाग खोजें...',
     'Layout Header Sections' => 'हेडर अनुभाग',

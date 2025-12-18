@@ -25,6 +25,8 @@ return [
     'Image Picker' => 'منتقي الصور',
     'Drop your images here' => 'قم بإسقاط صورك هنا',
     'Add images' => 'إضافة صور',
+    'Image uploaded successfully' => 'تم تحميل الصورة بنجاح',
+    'Failed to upload image' => 'فشل تحميل الصورة',
 
     'Search a section' => 'البحث عن قسم...',
     'Layout Header Sections' => 'أقسام رأس الصفحة',

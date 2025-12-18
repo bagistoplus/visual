@@ -25,6 +25,8 @@ return [
     'Image Picker' => 'Image Picker',
     'Drop your images here' => 'Drop your images here',
     'Add images' => 'Add images',
+    'Image uploaded successfully' => 'Image uploaded successfully',
+    'Failed to upload image' => 'Failed to upload image',
 
     'Search a section' => 'Search a section...',
     'Layout Header Sections' => 'Layout Header Sections',

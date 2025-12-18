@@ -25,6 +25,8 @@ return [
     'Image Picker' => 'Selector de imagen',
     'Drop your images here' => 'Suelta tus imágenes aquí',
     'Add images' => 'Agregar imágenes',
+    'Image uploaded successfully' => 'Imagen subida con éxito',
+    'Failed to upload image' => 'Error al subir la imagen',
 
     'Search a section' => 'Buscar una sección...',
     'Layout Header Sections' => 'Secciones del encabezado',

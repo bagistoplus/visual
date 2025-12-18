@@ -33,6 +33,7 @@ defineProps<Props>();
 const { t } = useI18n();
 const { state } = useState();
 const { get, postFormData } = useHttpClient();
+const editor = useCraftileEditor()!;
 
 const model = defineModel({
   set(value: Image | null) {
@@ -57,7 +58,9 @@ const service = useMachine(machine, {
   accept: "image/*",
   maxFiles: 10,
   onFileAccept(details) {
-    fileUpload.value.clearFiles();
+    if (details.files.length === 0) {
+      return;
+    }
 
     uploadingImages.value = details.files.map(file => ({
       url: URL.createObjectURL(file),
@@ -76,23 +79,31 @@ const service = useMachine(machine, {
   },
 });
 
+const fileUpload = computed(() => connect(service, normalizeProps));
+
 const uploadRequest = postFormData<Image[]>(window.editorConfig.routes.uploadImage);
 
 uploadRequest.onSuccess((data) => {
   state.images = [...data, ...state.images];
   uploadingImages.value = [];
   onImageSelect(state.images[0]);
+  fileUpload.value.clearFiles();
 });
 
 uploadRequest.onError((error) => {
-  console.error('Failed to upload image:', error);
+  uploadingImages.value = [];
+  fileUpload.value.clearFiles();
+
+  editor.ui.toast({
+    type: 'error',
+    title: t('Failed to upload image'),
+    description: error.message || error.toString(),
+  });
 });
 
 async function uploadImage(formData: FormData) {
-  await uploadRequest.execute(formData);
+  uploadRequest.execute(formData);
 }
-
-const fileUpload = computed(() => connect(service, normalizeProps));
 
 function onImageSelect(image: Image) {
   model.value = image;
@@ -120,7 +131,6 @@ watch(images, (newImages) => {
 });
 
 onMounted(() => {
-  // Fetch images if not already loaded
   if (!state.images || state.images.length === 0) {
     fetchImages();
   }

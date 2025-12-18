@@ -25,6 +25,8 @@ return [
     'Image Picker' => 'Sélecteur d\'image',
     'Drop your images here' => 'Déposez vos images ici',
     'Add images' => 'Ajouter des images',
+    'Image uploaded successfully' => 'Image téléchargée avec succès',
+    'Failed to upload image' => 'Échec du téléchargement de l\'image',
 
     'Search a section' => 'Rechercher une section...',
     'Layout Header Sections' => 'Sections de l\'en-tête',

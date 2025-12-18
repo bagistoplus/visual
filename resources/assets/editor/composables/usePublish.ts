@@ -4,11 +4,13 @@ import { useState } from '../state';
 const isPublishing = ref(false);
 
 export function usePublish() {
-  const editor = useCraftileEditor();
+  const editor = useCraftileEditor()!;
   const { state } = useState();
 
   async function publish() {
-    if (isPublishing.value) return;
+    if (isPublishing.value) {
+      return;
+    }
 
     isPublishing.value = true;
 
