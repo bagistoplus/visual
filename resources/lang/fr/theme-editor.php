@@ -19,6 +19,7 @@ return [
     'publish_warning_line2' => 'Ne publiez que lorsque vous êtes prêt pour que vos modifications soient en ligne sur la vitrine.',
     'Theme published successfully' => 'Thème publié avec succès',
     'Failed to publish theme' => 'Échec de la publication du thème',
+    'Failed to save changes' => 'Échec de l\'enregistrement des modifications',
 
     'Select image' => 'Sélectionner une image',
     'Change image' => 'Changer l\'image',

@@ -14,7 +14,9 @@ export function usePublish() {
 
     isPublishing.value = true;
 
-    const request = publishTheme();
+    const pageData = editor.engine.getPage();
+
+    const request = publishTheme(pageData);
 
     request.onSuccess(() => {
       editor.ui.toast({
@@ -23,7 +25,6 @@ export function usePublish() {
       });
       editor.ui.closeModal('confirm-publish');
 
-      // Mark that all edits are published
       state.haveEdits = false;
     });
 

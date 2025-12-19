@@ -19,6 +19,7 @@ return [
     'publish_warning_line2' => 'केवल तभी प्रकाशित करें जब आप अपने संपादनों को स्टोरफ्रंट पर लाइव करने के लिए तैयार हों।',
     'Theme published successfully' => 'थीम सफलतापूर्वक प्रकाशित हुई',
     'Failed to publish theme' => 'थीम प्रकाशित करने में विफल',
+    'Failed to save changes' => 'परिवर्तन सहेजने में विफल',
 
     'Select image' => 'छवि चुनें',
     'Change image' => 'छवि बदलें',

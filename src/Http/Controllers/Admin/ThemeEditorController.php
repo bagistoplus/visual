@@ -119,7 +119,16 @@ class ThemeEditorController extends Controller
     {
         $validated = $request->validate([
             'theme' => ['required', 'string'],
+            'channel' => ['nullable', 'string', Rule::in($this->getChannelCodes())],
+            'locale' => ['nullable', 'string'],
+            'template' => ['nullable', 'string'],
+            'page' => ['nullable', 'array'],
         ]);
+
+        // If page data is provided, persist it first before publishing
+        if (isset($validated['page'])) {
+            $this->persistEditorUpdates->handleFullPage($validated);
+        }
 
         $this->publishTheme->handle($validated['theme']);
 

@@ -73,7 +73,7 @@ function createUseFetch<T = any, D = any>(
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      console.log('Fetch response received:', response);
+
       const result = options.responseType === 'text' ? await response.text() : await response.json();
       data.value = result as T;
 

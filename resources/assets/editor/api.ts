@@ -18,10 +18,6 @@ export function persistUpdates(updates: UpdatesEvent) {
     updates,
   }).text();
 
-  request.onError((error) => {
-    console.error('Failed to persist updates:', error);
-  });
-
   return request;
 }
 
@@ -30,7 +26,7 @@ export function persistThemeSettings(updates: Record<string, any>) {
   const { post } = useHttpClient();
 
   const request = post(window.editorConfig.routes.persistThemeSettings, {
-    theme: state.theme?.code || 'sections-pro',
+    theme: state.theme!.code,
     channel: state.channel || window.editorConfig.defaultChannel,
     locale: state.locale || window.editorConfig.editorLocale,
     template: {
@@ -48,12 +44,16 @@ export function persistThemeSettings(updates: Record<string, any>) {
   return request;
 }
 
-export function publishTheme() {
+export function publishTheme(pageData?: any) {
   const { state } = useState();
   const { post } = useHttpClient();
 
   const request = post(window.editorConfig.routes.publishTheme, {
-    theme: state.theme?.code || 'sections-pro',
+    theme: state.theme!.code,
+    channel: state.channel || window.editorConfig.defaultChannel,
+    locale: state.locale || window.editorConfig.editorLocale,
+    template: state.pageData?.template || 'index',
+    page: pageData,
   });
 
   request.onError((error) => {

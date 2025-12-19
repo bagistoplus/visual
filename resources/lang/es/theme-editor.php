@@ -19,6 +19,7 @@ return [
     'publish_warning_line2' => 'Solo publique cuando esté listo para que sus cambios estén en vivo en la tienda.',
     'Theme published successfully' => 'Tema publicado con éxito',
     'Failed to publish theme' => 'Error al publicar el tema',
+    'Failed to save changes' => 'Error al guardar los cambios',
 
     'Select image' => 'Seleccionar imagen',
     'Change image' => 'Cambiar imagen',

@@ -22,8 +22,8 @@ class PersistEditorUpdates
         $sources = decrypt($data['template']['sources']);
         $updateRequest = UpdateRequest::make($data['updates']);
 
-        $sharedRegions = collect($updateRequest->regions)->filter(fn ($region) => isset($region['shared']) && $region['shared'] === true);
-        $nonSharedRegions = collect($updateRequest->regions)->filter(fn ($region) => ! isset($region['shared']) || $region['shared'] === false);
+        $sharedRegions = collect($updateRequest->regions)->filter(fn($region) => isset($region['shared']) && $region['shared'] === true);
+        $nonSharedRegions = collect($updateRequest->regions)->filter(fn($region) => ! isset($region['shared']) || $region['shared'] === false);
 
         $allBlocks = [];
 
@@ -34,7 +34,6 @@ class PersistEditorUpdates
             }
         }
 
-        // Process template regions
         if ($nonSharedRegions->isNotEmpty()) {
             $result = $this->persistTemplateRegions(
                 $nonSharedRegions->toArray(),
@@ -53,6 +52,67 @@ class PersistEditorUpdates
         return [
             'loadedBlocks' => $allBlocks,
         ];
+    }
+
+    public function handleFullPage(array $data): void
+    {
+        $theme = $data['theme'];
+        $channel = $data['channel'];
+        $locale = $data['locale'];
+        $template = $data['template'];
+        $page = $data['page'];
+
+        $allBlocks = $page['blocks'] ?? [];
+        $regions = collect($page['regions'] ?? []);
+        $sharedRegions = $regions->filter(fn($region) => isset($region['shared']) && $region['shared'] === true);
+        $nonSharedRegions = $regions->filter(fn($region) => ! isset($region['shared']) || $region['shared'] === false);
+
+
+        foreach ($sharedRegions as $region) {
+            $regionPath = $this->getRegionFilePath($theme, $channel, $locale, $region['name']);
+
+            $regionBlocks = $this->collectRegionBlocks($allBlocks, $region['blocks'] ?? []);
+            $regionData = [
+                'blocks' => $regionBlocks,
+                'regions' => [$region],
+            ];
+
+            $this->saveFlattened($regionData, $regionPath, $theme);
+        }
+
+        if ($nonSharedRegions->isNotEmpty()) {
+            $templatePath = $this->getTemplateFilePath($theme, $channel, $locale, $template);
+
+            $rootBlockIds = $nonSharedRegions->flatMap(fn($region) => $region['blocks'] ?? [])->unique()->toArray();
+            $templateBlocks = $this->collectRegionBlocks($allBlocks, $rootBlockIds);
+            $templateData = [
+                'blocks' => $templateBlocks,
+                'regions' => $nonSharedRegions->toArray(),
+            ];
+
+            $this->saveFlattened($templateData, $templatePath, $theme);
+        }
+    }
+
+    public function collectRegionBlocks(array $allBlocks, array $rootBlockIds): array
+    {
+        $collectedBlocks = [];
+        $toProcess = $rootBlockIds;
+
+        while (!empty($toProcess)) {
+            $blockId = array_shift($toProcess);
+
+            if (isset($allBlocks[$blockId]) && !isset($collectedBlocks[$blockId])) {
+                $block = $allBlocks[$blockId];
+                $collectedBlocks[$blockId] = $block;
+
+                if (isset($block['children']) && is_array($block['children'])) {
+                    $toProcess = array_merge($toProcess, $block['children']);
+                }
+            }
+        }
+
+        return $collectedBlocks;
     }
 
     protected function persistSharedRegion(array $region, UpdateRequest $updateRequest, string $theme, string $channel, string $locale, array $sources): array
@@ -132,12 +192,12 @@ class PersistEditorUpdates
     protected function getRegionSourcePath(string $regionName, array $sources): ?string
     {
         return collect($sources)
-            ->first(fn ($sourcePath) => str_contains($sourcePath, "/regions/{$regionName}."));
+            ->first(fn($sourcePath) => str_contains($sourcePath, "/regions/{$regionName}."));
     }
 
     protected function getTemplateSourcePath(string $template, array $sources): ?string
     {
         return collect($sources)
-            ->first(fn ($sourcePath) => str_contains($sourcePath, "/templates/{$template}."));
+            ->first(fn($sourcePath) => str_contains($sourcePath, "/templates/{$template}."));
     }
 }

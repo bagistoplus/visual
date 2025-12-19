@@ -19,6 +19,7 @@ return [
     'publish_warning_line2' => 'Only publish when you\'re ready for your edits to go live on the storefront.',
     'Theme published successfully' => 'Theme published successfully',
     'Failed to publish theme' => 'Failed to publish theme',
+    'Failed to save changes' => 'Failed to save changes',
 
     'Select image' => 'Select image',
     'Change image' => 'Change image',

@@ -301,6 +301,7 @@ export default function (editorConfig: ThemeEditorConfig): CraftileEditorPlugin 
     });
 
     let pendingUpdates: UpdatesEvent[] = [];
+    let failedUpdates: UpdatesEvent[] = [];
     let isPersisting = false;
 
     const debouncedPersist = debounce(async () => {
@@ -308,8 +309,13 @@ export default function (editorConfig: ThemeEditorConfig): CraftileEditorPlugin 
         return;
       }
 
-      // Take a snapshot of pending updates and clear the queue
       const updatesToProcess = [...pendingUpdates];
+
+      if (failedUpdates.length > 0) {
+        updatesToProcess.unshift(...failedUpdates);
+        failedUpdates = [];
+      }
+
       pendingUpdates = [];
       isPersisting = true;
 
@@ -317,38 +323,42 @@ export default function (editorConfig: ThemeEditorConfig): CraftileEditorPlugin 
 
       const request = persistUpdates(mergedUpdates);
 
-      try {
-        const htmlResponse = await request.execute();
+      request.onSuccess((htmlResponse) => {
         const allBlocks = editor.engine.getPage().blocks;
         const blocksToUpdate = determineBlocksToProcess(mergedUpdates.blocks, allBlocks);
 
-        const effects = computeEffects(htmlResponse as string, blocksToUpdate);
+        const effects = computeEffects(htmlResponse, blocksToUpdate);
 
         editor.preview.sendMessage('updates.effects', {
           effects,
           ...mergedUpdates,
         });
-      } catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') {
+      });
+
+      request.onError((error) => {
+        if (error.name === 'AbortError') {
           return;
         }
 
         console.error('Failed to persist changes', error);
+
         editor.ui.toast({
           type: 'error',
-          title: 'Failed to save changes',
+          title: t('Failed to save changes'),
         });
 
-        // Re-add failed updates back to queue
-        pendingUpdates.unshift(...updatesToProcess);
-      } finally {
+        failedUpdates = updatesToProcess;
+      });
+
+      request.onFinish(() => {
         isPersisting = false;
 
-        // Process any updates that came in while we were persisting
         if (pendingUpdates.length > 0) {
           debouncedPersist();
         }
-      }
+      });
+
+      await request.execute();
     }, 300);
 
     function handleUpdates(updates: UpdatesEvent) {

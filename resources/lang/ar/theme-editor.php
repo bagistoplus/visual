@@ -19,6 +19,7 @@ return [
     'publish_warning_line2' => 'انشر فقط عندما تكون مستعداً لجعل تعديلاتك مباشرة على المتجر.',
     'Theme published successfully' => 'تم نشر السمة بنجاح',
     'Failed to publish theme' => 'فشل نشر السمة',
+    'Failed to save changes' => 'فشل حفظ التغييرات',
 
     'Select image' => 'اختر صورة',
     'Change image' => 'تغيير الصورة',
