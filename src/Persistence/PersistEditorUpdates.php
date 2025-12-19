@@ -22,8 +22,8 @@ class PersistEditorUpdates
         $sources = decrypt($data['template']['sources']);
         $updateRequest = UpdateRequest::make($data['updates']);
 
-        $sharedRegions = collect($updateRequest->regions)->filter(fn($region) => isset($region['shared']) && $region['shared'] === true);
-        $nonSharedRegions = collect($updateRequest->regions)->filter(fn($region) => ! isset($region['shared']) || $region['shared'] === false);
+        $sharedRegions = collect($updateRequest->regions)->filter(fn ($region) => isset($region['shared']) && $region['shared'] === true);
+        $nonSharedRegions = collect($updateRequest->regions)->filter(fn ($region) => ! isset($region['shared']) || $region['shared'] === false);
 
         $allBlocks = [];
 
@@ -64,9 +64,8 @@ class PersistEditorUpdates
 
         $allBlocks = $page['blocks'] ?? [];
         $regions = collect($page['regions'] ?? []);
-        $sharedRegions = $regions->filter(fn($region) => isset($region['shared']) && $region['shared'] === true);
-        $nonSharedRegions = $regions->filter(fn($region) => ! isset($region['shared']) || $region['shared'] === false);
-
+        $sharedRegions = $regions->filter(fn ($region) => isset($region['shared']) && $region['shared'] === true);
+        $nonSharedRegions = $regions->filter(fn ($region) => ! isset($region['shared']) || $region['shared'] === false);
 
         foreach ($sharedRegions as $region) {
             $regionPath = $this->getRegionFilePath($theme, $channel, $locale, $region['name']);
@@ -83,7 +82,7 @@ class PersistEditorUpdates
         if ($nonSharedRegions->isNotEmpty()) {
             $templatePath = $this->getTemplateFilePath($theme, $channel, $locale, $template);
 
-            $rootBlockIds = $nonSharedRegions->flatMap(fn($region) => $region['blocks'] ?? [])->unique()->toArray();
+            $rootBlockIds = $nonSharedRegions->flatMap(fn ($region) => $region['blocks'] ?? [])->unique()->toArray();
             $templateBlocks = $this->collectRegionBlocks($allBlocks, $rootBlockIds);
             $templateData = [
                 'blocks' => $templateBlocks,
@@ -99,10 +98,10 @@ class PersistEditorUpdates
         $collectedBlocks = [];
         $toProcess = $rootBlockIds;
 
-        while (!empty($toProcess)) {
+        while (! empty($toProcess)) {
             $blockId = array_shift($toProcess);
 
-            if (isset($allBlocks[$blockId]) && !isset($collectedBlocks[$blockId])) {
+            if (isset($allBlocks[$blockId]) && ! isset($collectedBlocks[$blockId])) {
                 $block = $allBlocks[$blockId];
                 $collectedBlocks[$blockId] = $block;
 
@@ -192,12 +191,12 @@ class PersistEditorUpdates
     protected function getRegionSourcePath(string $regionName, array $sources): ?string
     {
         return collect($sources)
-            ->first(fn($sourcePath) => str_contains($sourcePath, "/regions/{$regionName}."));
+            ->first(fn ($sourcePath) => str_contains($sourcePath, "/regions/{$regionName}."));
     }
 
     protected function getTemplateSourcePath(string $template, array $sources): ?string
     {
         return collect($sources)
-            ->first(fn($sourcePath) => str_contains($sourcePath, "/templates/{$template}."));
+            ->first(fn ($sourcePath) => str_contains($sourcePath, "/templates/{$template}."));
     }
 }

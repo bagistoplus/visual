@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     if (empty(config('app.key'))) {
-        config(['app.key' => 'base64:' . base64_encode(str_repeat('a', 32))]);
+        config(['app.key' => 'base64:'.base64_encode(str_repeat('a', 32))]);
     }
 
     Storage::fake('themes-data');
@@ -87,15 +87,15 @@ describe('handleFullPage', function () {
 
         ThemePathsResolver::shouldReceive('resolvePath')
             ->with('test-theme', 'default', 'en', 'editor', 'regions/header.json')
-            ->andReturn(Storage::path($basePath . '/regions/header.json'));
+            ->andReturn(Storage::path($basePath.'/regions/header.json'));
 
         ThemePathsResolver::shouldReceive('resolvePath')
             ->with('test-theme', 'default', 'en', 'editor', 'templates/index.json')
-            ->andReturn(Storage::path($basePath . '/templates/index.json'));
+            ->andReturn(Storage::path($basePath.'/templates/index.json'));
 
         ThemePathsResolver::shouldReceive('getThemeBaseDataPath')
             ->with('test-theme', 'editor/.last-edit')
-            ->andReturn(Storage::path($basePath . '/.last-edit'));
+            ->andReturn(Storage::path($basePath.'/.last-edit'));
 
         $data = [
             'theme' => 'test-theme',
@@ -116,11 +116,11 @@ describe('handleFullPage', function () {
 
         $this->persistEditorUpdates->handleFullPage($data);
 
-        expect(Storage::exists($basePath . '/regions/header.json'))->toBeTrue()
-            ->and(Storage::exists($basePath . '/templates/index.json'))->toBeTrue();
+        expect(Storage::exists($basePath.'/regions/header.json'))->toBeTrue()
+            ->and(Storage::exists($basePath.'/templates/index.json'))->toBeTrue();
 
-        $headerData = json_decode(Storage::get($basePath . '/regions/header.json'), true);
-        $templateData = json_decode(Storage::get($basePath . '/templates/index.json'), true);
+        $headerData = json_decode(Storage::get($basePath.'/regions/header.json'), true);
+        $templateData = json_decode(Storage::get($basePath.'/templates/index.json'), true);
 
         expect($headerData['blocks'])->toHaveKey('block-1')
             ->and($headerData['blocks'])->not->toHaveKey('block-2')
@@ -135,11 +135,11 @@ describe('handleFullPage', function () {
 
         ThemePathsResolver::shouldReceive('resolvePath')
             ->with('test-theme', 'default', 'en', 'editor', 'regions/header.json')
-            ->andReturn(Storage::path($basePath . '/regions/header.json'));
+            ->andReturn(Storage::path($basePath.'/regions/header.json'));
 
         ThemePathsResolver::shouldReceive('getThemeBaseDataPath')
             ->with('test-theme', 'editor/.last-edit')
-            ->andReturn(Storage::path($basePath . '/.last-edit'));
+            ->andReturn(Storage::path($basePath.'/.last-edit'));
 
         $data = [
             'theme' => 'test-theme',
@@ -160,7 +160,7 @@ describe('handleFullPage', function () {
 
         $this->persistEditorUpdates->handleFullPage($data);
 
-        $headerData = json_decode(Storage::get($basePath . '/regions/header.json'), true);
+        $headerData = json_decode(Storage::get($basePath.'/regions/header.json'), true);
 
         expect($headerData['blocks'])->toHaveKeys(['block-1', 'block-2'])
             ->and($headerData['blocks'])->not->toHaveKey('block-3');
@@ -173,11 +173,11 @@ describe('handleFullPage', function () {
 
         ThemePathsResolver::shouldReceive('resolvePath')
             ->with('test-theme', 'default', 'en', 'editor', 'regions/header.json')
-            ->andReturn(Storage::path($basePath . '/regions/header.json'));
+            ->andReturn(Storage::path($basePath.'/regions/header.json'));
 
         ThemePathsResolver::shouldReceive('getThemeBaseDataPath')
             ->with('test-theme', 'editor/.last-edit')
-            ->andReturn(Storage::path($basePath . '/.last-edit'));
+            ->andReturn(Storage::path($basePath.'/.last-edit'));
 
         $data = [
             'theme' => 'test-theme',
@@ -196,8 +196,8 @@ describe('handleFullPage', function () {
 
         $this->persistEditorUpdates->handleFullPage($data);
 
-        expect(Storage::exists($basePath . '/regions/header.json'))->toBeTrue()
-            ->and(Storage::exists($basePath . '/templates/index.json'))->toBeFalse();
+        expect(Storage::exists($basePath.'/regions/header.json'))->toBeTrue()
+            ->and(Storage::exists($basePath.'/templates/index.json'))->toBeFalse();
     });
 
     test('handles only non-shared regions', function () {
@@ -207,11 +207,11 @@ describe('handleFullPage', function () {
 
         ThemePathsResolver::shouldReceive('resolvePath')
             ->with('test-theme', 'default', 'en', 'editor', 'templates/index.json')
-            ->andReturn(Storage::path($basePath . '/templates/index.json'));
+            ->andReturn(Storage::path($basePath.'/templates/index.json'));
 
         ThemePathsResolver::shouldReceive('getThemeBaseDataPath')
             ->with('test-theme', 'editor/.last-edit')
-            ->andReturn(Storage::path($basePath . '/.last-edit'));
+            ->andReturn(Storage::path($basePath.'/.last-edit'));
 
         $data = [
             'theme' => 'test-theme',
@@ -230,9 +230,9 @@ describe('handleFullPage', function () {
 
         $this->persistEditorUpdates->handleFullPage($data);
 
-        expect(Storage::exists($basePath . '/templates/index.json'))->toBeTrue();
+        expect(Storage::exists($basePath.'/templates/index.json'))->toBeTrue();
 
-        $templateData = json_decode(Storage::get($basePath . '/templates/index.json'), true);
+        $templateData = json_decode(Storage::get($basePath.'/templates/index.json'), true);
 
         expect($templateData['blocks'])->toHaveKey('block-1')
             ->and($templateData['regions'])->toHaveCount(1)
@@ -246,15 +246,15 @@ describe('handleFullPage', function () {
 
         ThemePathsResolver::shouldReceive('resolvePath')
             ->with('test-theme', 'default', 'en', 'editor', 'regions/header.json')
-            ->andReturn(Storage::path($basePath . '/regions/header.json'));
+            ->andReturn(Storage::path($basePath.'/regions/header.json'));
 
         ThemePathsResolver::shouldReceive('resolvePath')
             ->with('test-theme', 'default', 'en', 'editor', 'regions/footer.json')
-            ->andReturn(Storage::path($basePath . '/regions/footer.json'));
+            ->andReturn(Storage::path($basePath.'/regions/footer.json'));
 
         ThemePathsResolver::shouldReceive('getThemeBaseDataPath')
             ->with('test-theme', 'editor/.last-edit')
-            ->andReturn(Storage::path($basePath . '/.last-edit'));
+            ->andReturn(Storage::path($basePath.'/.last-edit'));
 
         $data = [
             'theme' => 'test-theme',
@@ -275,11 +275,11 @@ describe('handleFullPage', function () {
 
         $this->persistEditorUpdates->handleFullPage($data);
 
-        expect(Storage::exists($basePath . '/regions/header.json'))->toBeTrue()
-            ->and(Storage::exists($basePath . '/regions/footer.json'))->toBeTrue();
+        expect(Storage::exists($basePath.'/regions/header.json'))->toBeTrue()
+            ->and(Storage::exists($basePath.'/regions/footer.json'))->toBeTrue();
 
-        $headerData = json_decode(Storage::get($basePath . '/regions/header.json'), true);
-        $footerData = json_decode(Storage::get($basePath . '/regions/footer.json'), true);
+        $headerData = json_decode(Storage::get($basePath.'/regions/header.json'), true);
+        $footerData = json_decode(Storage::get($basePath.'/regions/footer.json'), true);
 
         expect($headerData['blocks'])->toHaveKey('block-1')
             ->and($footerData['blocks'])->toHaveKey('block-2');
