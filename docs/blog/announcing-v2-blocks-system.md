@@ -9,7 +9,9 @@ Bagisto Visual v1 brought a visual theme editor and section-based architecture t
 
 We're excited to announce **Bagisto Visual v2**, featuring **the blocks system** - a fundamental architectural shift that makes blocks independent, reusable components shared across multiple sections. Define a block once, use it everywhere.
 
-![New visual editor](/visual-editor-v2.webp)
+<iframe style="aspect-ratio: 16 / 9;" src="https://www.youtube.com/embed/NjwTi3JkDDc" title="👉 Bagisto Visual v2, Build Any Store Layout with the New Block System" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+<!-- ![New visual editor](/visual-editor-v2.webp) -->
 
 ## What You Can Build Now
 

@@ -10,7 +10,7 @@ The Visual Editor is where you build and customize your storefront in real time 
 - Preview how your store looks on desktop, tablet, and mobile
 - Customize each page individually (like homepage, contact, etc.)
 
-![The Visual Editor screenshot](/editor-screenshot-callout.png)
+<iframe style="aspect-ratio: 16 / 9;" src="https://www.youtube.com/embed/NjwTi3JkDDc" title="👉 Bagisto Visual v2, Build Any Store Layout with the New Block System" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Sections, Pages & Themes
 
