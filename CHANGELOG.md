@@ -2,6 +2,31 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+## Release v2.0.0-alpha.1 - 2025-12-27
+
+### Features
+
+- Initialize editor with empty page when switching templates
+- Make themes list responsive on mobile
+- Configure NProgress loading indicators
+- Add Spacing settings type for margin/padding control
+- Improve editor persistence and publishing flow
+
+### Bug Fixes
+
+- Improve TemplateSelector menu positioning
+- Keep ImagePicker dialog open after image selection
+- Improve ImagePicker error handling
+- Include parent children to render set when adding new blocks for live preview
+- Handle null values in GradientPicker component
+- Fix enable/disable rendering logic in the visual editor
+- Fix blocks rendering logic in design mode
+
+### Documentation
+
+- Replace screenshot with video embed in theme editor overview
+- Update requirements and demo link for v2
+
 ## v2.0.0-alpha - 2025-12-11
 
 ### 🎉 Bagisto Visual v2.0.0-alpha
@@ -40,6 +65,7 @@ php artisan vendor:publish --tag=visual-assets
 # Install the default theme
 composer require bagistoplus/visual-debut:^2.0@dev
 php artisan vendor:publish --tag=visual-debut-assets
+
 
 ```
 #### 🔗 Links
