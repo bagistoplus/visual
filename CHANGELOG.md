@@ -2,6 +2,20 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+## v2.0.0-alpha.2 - 2025-12-30
+
+### v2.0.0-alpha.2
+
+#### Changes
+
+##### Chores
+
+- Update craftile/laravel version constraint from ^0.4.2 to ^0.4 to allow automatic updates to newer patch versions
+
+#### Notes
+
+This alpha release relaxes the craftile/laravel version constraint to enable automatic patch version updates.
+
 ## Release v2.0.0-alpha.1 - 2025-12-27
 
 ### Features
@@ -65,6 +79,7 @@ php artisan vendor:publish --tag=visual-assets
 # Install the default theme
 composer require bagistoplus/visual-debut:^2.0@dev
 php artisan vendor:publish --tag=visual-debut-assets
+
 
 
 ```
