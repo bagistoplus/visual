@@ -5,7 +5,7 @@ import { debounce } from 'perfect-debounce';
 import useI18n from '../composables/i18n';
 import { useState } from '../state';
 import { persistThemeSettings as persistThemeSettingsApi } from '../api';
-import { CRAFTILE_EDITOR } from '../plugin';
+import { CRAFTILE_EDITOR } from '../craftile/plugin';
 
 const { t } = useI18n();
 const { theme } = useState();

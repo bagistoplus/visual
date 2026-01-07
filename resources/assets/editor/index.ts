@@ -1,7 +1,7 @@
 import { Block, BlockSchema } from '@craftile/types';
 import { createCraftileEditor } from '@craftile/editor';
 import CommonPropertiesPlugin from '@craftile/plugin-common-properties';
-import VisualPlugin from './plugin';
+import VisualPlugin from './craftile/plugin';
 
 import './css/index.css';
 import './css/nprogress.css';
