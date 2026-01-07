@@ -7,6 +7,7 @@ import NProgress from 'nprogress';
 import { useState, populatePreloadedModels } from './state';
 import { persistUpdates } from './api';
 import { ThemeEditorConfig } from './types';
+import { updateUrlParam, removeUrlParam, getUrlParam } from './utils/urlState';
 
 import HeroiconsCog6Tooth from '~icons/heroicons/cog-6-tooth';
 import HeroiconsPhoto from '~icons/heroicons/photo';
@@ -281,6 +282,7 @@ export default function (editorConfig: ThemeEditorConfig): CraftileEditorPlugin 
     editor.preview.onReady(() => {
       editor.preview.onMessage('craftile.preview.page-data', ({ pageData }: any) => {
         NProgress.done();
+
         editor.engine.setPage(pageData.content);
 
         state.pageData = {
@@ -296,6 +298,17 @@ export default function (editorConfig: ThemeEditorConfig): CraftileEditorPlugin 
 
         if (pageData.preloadedModels) {
           populatePreloadedModels(pageData.preloadedModels);
+        }
+
+        const blockIdToRestore = getUrlParam('block');
+
+        if (blockIdToRestore) {
+          const block = editor.engine.getBlockById(blockIdToRestore);
+          if (block) {
+            editor.ui.setSelectedBlock(blockIdToRestore);
+          } else {
+            removeUrlParam('block');
+          }
         }
       });
     });
@@ -388,6 +401,26 @@ export default function (editorConfig: ThemeEditorConfig): CraftileEditorPlugin 
 
     editor.engine.on('block:property:set', handlePropertyUpdate);
     editor.events.on('updates', handleUpdates);
-    editor.preview.loadUrl(editorConfig.storefrontUrl);
+
+    editor.events.on('ui:block:select', ({ blockId }: { blockId: string }) => {
+      updateUrlParam('block', blockId);
+    });
+
+    editor.events.on('ui:block:clear-selection', () => {
+      removeUrlParam('block');
+    });
+
+    const urlTemplate = getUrlParam('template');
+    const template = urlTemplate && editorConfig.templates?.find((t) => t.template === urlTemplate);
+
+    if (template) {
+      const url = new URL(template.previewUrl);
+      url.searchParams.set('_designMode', state.theme?.code as string);
+      url.searchParams.set('channel', state.channel);
+      url.searchParams.set('locale', state.locale);
+      editor.preview.loadUrl(url.href);
+    } else {
+      editor.preview.loadUrl(editorConfig.storefrontUrl);
+    }
   };
 }
