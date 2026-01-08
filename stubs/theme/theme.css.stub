@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @source "../../views";
 
+
+@custom-variant mobile (@media (max-width: 639px));
+@custom-variant tablet (@media (min-width: 640px) and (max-width: 1023px));
+@custom-variant desktop (@media (min-width: 1024px));
+
 /* Define color scheme tokens */
 @theme inline {
     --color-on-background: var(--color-on-background);

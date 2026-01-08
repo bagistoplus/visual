@@ -11,7 +11,7 @@ use function Laravel\Prompts\text;
 
 class MakeThemeCommand extends Command
 {
-    protected $signature = 'visual:make-theme {name?} {--vendor=Themes}';
+    protected $signature = 'visual:make-theme {name?} {--vendor=Themes} {--author=}';
 
     protected $description = 'Create a new Bagisto Visual theme structure';
 
@@ -19,11 +19,11 @@ class MakeThemeCommand extends Command
     {
         $name = $this->argument('name') ?? text('🎨 What is the theme name?');
         $vendor = $this->option('vendor') ?? text('🏷️ What is the vendor namespace?', 'Themes');
-        $author = text('✍️ Who is the theme author?', 'Your Company Name');
+        $author = $this->option('author') ?: text('✍️ Who is the theme author?', 'Your Company Name');
 
-        $name = Str::studly($this->argument('name'));
-        $vendor = Str::studly($this->option('vendor'));
-        $title = Str::headline($this->argument('name'));
+        $name = Str::studly($name);
+        $vendor = Str::studly($vendor);
+        $title = Str::headline($name);
         $slug = Str::kebab($name);
         $vendorSlug = Str::kebab($vendor);
 
@@ -35,7 +35,7 @@ class MakeThemeCommand extends Command
             'vendor' => $vendor,
             'vendor_slug' => $vendorSlug,
             'namespace' => "{$vendor}\\{$name}",
-            'author' => 'Your Company Name',
+            'author' => $author,
         ];
 
         if (File::exists($basePath)) {
@@ -49,11 +49,13 @@ class MakeThemeCommand extends Command
         File::makeDirectory("{$basePath}/resources/views/components", 0755, true);
         File::makeDirectory("{$basePath}/resources/views/templates", 0755, true);
         File::makeDirectory("{$basePath}/resources/views/sections", 0755, true);
+        File::makeDirectory("{$basePath}/resources/views/blocks", 0755, true);
         File::makeDirectory("{$basePath}/resources/assets/images", 0755, true);
         File::makeDirectory("{$basePath}/resources/assets/css", 0755, true);
         File::makeDirectory("{$basePath}/resources/assets/js", 0755, true);
         File::makeDirectory("{$basePath}/config", 0755, true);
         File::makeDirectory("{$basePath}/src/Sections", 0755, true);
+        File::makeDirectory("{$basePath}/src/Blocks", 0755, true);
         File::makeDirectory("{$basePath}/public/themes/shop/{$slug}", 0755, true);
 
         // Files to generate from stubs
