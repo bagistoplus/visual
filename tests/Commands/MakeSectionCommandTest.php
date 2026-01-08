@@ -100,3 +100,80 @@ it('converts section name to proper case formats', function () {
     $content = File::get($classPath);
     expect($content)->toContain('class AnnouncementBar extends SimpleSection');
 });
+
+it('creates nested section with subfolder support', function () {
+    $this->artisan(MakeSectionCommand::class, [
+        'name' => 'Hero/Banner',
+        '--theme' => '__app',
+    ])->assertExitCode(0);
+
+    $classPath = base_path('app/Visual/Sections/Hero/Banner.php');
+    $viewPath = resource_path('views/sections/hero/banner.blade.php');
+
+    expect(File::exists($classPath))->toBeTrue();
+    expect(File::exists($viewPath))->toBeTrue();
+
+    $content = File::get($classPath);
+    expect($content)->toContain('namespace App\Visual\Sections\Hero');
+    expect($content)->toContain('class Banner extends SimpleSection');
+});
+
+it('creates deeply nested section with multiple subfolders', function () {
+    $this->artisan(MakeSectionCommand::class, [
+        'name' => 'Components/Hero/Banner',
+        '--theme' => '__app',
+    ])->assertExitCode(0);
+
+    $classPath = base_path('app/Visual/Sections/Components/Hero/Banner.php');
+    $viewPath = resource_path('views/sections/components/hero/banner.blade.php');
+
+    expect(File::exists($classPath))->toBeTrue();
+    expect(File::exists($viewPath))->toBeTrue();
+
+    $content = File::get($classPath);
+    expect($content)->toContain('namespace App\Visual\Sections\Components\Hero');
+    expect($content)->toContain('class Banner extends SimpleSection');
+});
+
+it('generates correct view reference for nested sections', function () {
+    $this->artisan(MakeSectionCommand::class, [
+        'name' => 'Hero/Banner',
+        '--theme' => '__app',
+    ])->assertExitCode(0);
+
+    $classPath = base_path('app/Visual/Sections/Hero/Banner.php');
+    $content = File::get($classPath);
+
+    expect($content)->toContain("'sections.hero.banner'");
+    expect($content)->not->toContain("'shop::sections");
+});
+
+it('generates view with editor attributes', function () {
+    $this->artisan(MakeSectionCommand::class, [
+        'name' => 'TestSection',
+        '--theme' => '__app',
+    ])->assertExitCode(0);
+
+    $viewPath = resource_path('views/sections/test-section.blade.php');
+    $content = File::get($viewPath);
+
+    expect($content)->toContain('{{ $section->editor_attributes }}');
+});
+
+it('handles kebab-case in nested section names', function () {
+    $this->artisan(MakeSectionCommand::class, [
+        'name' => 'FeaturedHero/MainBanner',
+        '--theme' => '__app',
+    ])->assertExitCode(0);
+
+    $classPath = base_path('app/Visual/Sections/FeaturedHero/MainBanner.php');
+    $viewPath = resource_path('views/sections/featured-hero/main-banner.blade.php');
+
+    expect(File::exists($classPath))->toBeTrue();
+    expect(File::exists($viewPath))->toBeTrue();
+
+    $content = File::get($classPath);
+    expect($content)->toContain('namespace App\Visual\Sections\FeaturedHero');
+    expect($content)->toContain('class MainBanner extends SimpleSection');
+    expect($content)->toContain("'sections.featured-hero.main-banner'");
+});

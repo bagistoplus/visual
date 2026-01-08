@@ -24,9 +24,18 @@ class MakeSectionCommand extends Command
 
     public function handle(): int
     {
-        $name = $this->argument('name') ?? text('🧱 Section name (e.g., AnnouncementBar)');
-        $slug = Str::kebab($name);
-        $class = Str::studly($name);
+        $name = $this->argument('name') ?? text('🧱 Section name (e.g., AnnouncementBar or Hero/Banner)');
+
+        $parts = explode('/', $name);
+        $className = Str::studly(array_pop($parts));
+        $folderParts = array_map(fn ($part) => Str::studly($part), $parts);
+        $folderPath = $folderParts ? implode('/', $folderParts) : '';
+        $folderNamespace = $folderParts ? '\\'.implode('\\', $folderParts) : '';
+
+        $slugParts = array_map(fn ($part) => Str::kebab($part), explode('/', $name));
+        $slug = implode('/', $slugParts);
+        $viewSlug = str_replace('/', '.', $slug);
+
         $component = $this->option('component');
         $livewire = $this->option('livewire');
         $force = $this->option('force');
@@ -37,7 +46,6 @@ class MakeSectionCommand extends Command
             return 1;
         }
 
-        // Resolve theme
         $theme = $this->option('theme');
 
         if (! $theme) {
@@ -62,11 +70,10 @@ class MakeSectionCommand extends Command
         $viewPath = '';
 
         if ($generateInApp) {
-            $namespace = 'App\\Visual\\Sections';
-            $classPath = base_path("app/Visual/Sections/{$class}.php");
+            $namespace = 'App\\Visual\\Sections'.$folderNamespace;
+            $classPath = base_path("app/Visual/Sections/{$folderPath}".($folderPath ? '/' : '')."{$className}.php");
             $viewPath = resource_path("views/sections/{$slug}.blade.php");
         } else {
-            // Resolve theme path and namespace
             $themeConfig = config("themes.shop.$theme");
 
             if (! $themeConfig || ! isset($themeConfig['base_path'])) {
@@ -97,8 +104,8 @@ class MakeSectionCommand extends Command
                 return 1;
             }
 
-            $namespace = rtrim($namespace, '\\').'\\Sections';
-            $classPath = "{$themePath}/src/Sections/{$class}.php";
+            $namespace = rtrim($namespace, '\\').'\\Sections'.$folderNamespace;
+            $classPath = "{$themePath}/src/Sections/{$folderPath}".($folderPath ? '/' : '')."{$className}.php";
             $viewPath = "{$themePath}/resources/views/sections/{$slug}.blade.php";
         }
 
@@ -115,9 +122,9 @@ class MakeSectionCommand extends Command
         }
 
         $vars = [
-            'class' => $class,
+            'class' => $className,
             'slug' => $slug,
-            'view' => "shop::sections.{$slug}",
+            'view' => $generateInApp ? "sections.{$viewSlug}" : "shop::sections.{$viewSlug}",
             'namespace' => $namespace,
             'theme' => $theme ?? 'app',
         ];
@@ -140,7 +147,7 @@ class MakeSectionCommand extends Command
 
         $this->info(" Created {$classPath}");
         $this->info(" Created {$viewPath}");
-        info("✅ Section '{$class}' created successfully in ".($generateInApp ? 'app/Visual' : "theme '{$theme}'"));
+        info("✅ Section '{$className}' created successfully in ".($generateInApp ? 'app/Visual' : "theme '{$theme}'"));
 
         return 0;
     }
