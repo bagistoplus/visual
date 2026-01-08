@@ -283,11 +283,14 @@ If default is unspecified, it defaults to the minimum value.
 
 Single-line numeric input. Useful for entering quantities, prices, padding, margins, and other number-based configurations.
 
-In addition to the standard attributes, Number type settings have the following attribute:
+In addition to the standard attributes, Number type settings have the following attributes:
 
 | Attribute     | Description                        | Required |
 | :------------ | :--------------------------------- | :------- |
 | `placeholder` | A placeholder value for the input. | No       |
+| `min`         | Minimum value allowed              | No       |
+| `max`         | Maximum value allowed              | No       |
+| `step`        | Increment steps (default `1`)      | No       |
 
 ```php
 use BagistoPlus\Visual\Settings\Number;
@@ -296,6 +299,9 @@ public static function settings(): array
 {
     return [
         Number::make('max_width', 'Max Width')
+            ->min(320)
+            ->max(1920)
+            ->step(10)
             ->default(1200)
             ->placeholder('Enter a maximum width...'),
     ];
