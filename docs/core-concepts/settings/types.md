@@ -330,6 +330,58 @@ In Blade:
 
 ---
 
+### Spacing
+
+Four-sided spacing input. Useful for controlling padding and margin values independently for each side (top, right, bottom, left).
+
+The visual editor provides an intuitive interface with four individual number inputs and a link toggle button that allows merchants to sync all sides to the same value when enabled.
+
+In addition to the standard attributes, Spacing type settings have the following attributes:
+
+| Attribute | Description                    | Required |
+| :-------- | :----------------------------- | :------- |
+| `min`     | Minimum value for each side    | No       |
+| `max`     | Maximum value for each side    | No       |
+
+```php
+use BagistoPlus\Visual\Settings\Spacing;
+
+public static function settings(): array
+{
+    return [
+        Spacing::make('padding', 'Padding')
+            ->min(0)
+            ->max(100)
+            ->default(['top' => 16, 'right' => 16, 'bottom' => 16, 'left' => 16]),
+
+        Spacing::make('margin', 'Margin')
+            ->min(-50)
+            ->max(100),
+    ];
+}
+```
+
+In Blade:
+
+```blade
+<div style="padding: {{ $section->settings->padding->top }}px
+                      {{ $section->settings->padding->right }}px
+                      {{ $section->settings->padding->bottom }}px
+                      {{ $section->settings->padding->left }}px;">
+    <!-- Content -->
+</div>
+```
+
+<SettingPreview image="/setting-spacing.png" title="Spacing setting type preview"/>
+
+::: info
+- Default values: All sides default to `0` if not specified
+- The visual editor includes a link toggle to sync all sides
+- Negative values are supported for margins (set appropriate min value)
+:::
+
+---
+
 ### Color
 
 Color picker input. Useful for background colors, text colors, or brand-related customization.
