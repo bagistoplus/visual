@@ -94,7 +94,7 @@ In Blade:
 
 Simple true/false toggle. Useful for enabling or disabling features.
 
-Checkbox settings do not have any additional attributes beyond the standard attributes.
+Checkbox settings do not have any additional attributes beyond the standard attributes, but support an alternative switch variant for a different visual style.
 
 ```php
 use BagistoPlus\Visual\Settings\Checkbox;
@@ -106,6 +106,16 @@ public static function settings(): array
             ->default(true),
     ];
 }
+```
+
+#### Switch Variant
+
+Use the `asSwitch()` method to display the checkbox as a toggle switch instead of a standard checkbox:
+
+```php
+Checkbox::make('enable_feature', 'Enable Feature')
+    ->asSwitch()
+    ->default(false),
 ```
 
 In Blade:

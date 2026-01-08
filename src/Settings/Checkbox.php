@@ -8,7 +8,7 @@ class Checkbox extends Base
 
     public function asSwitch(): self
     {
-        $this->meta['switch'] = true;
+        $this->meta['variant'] = 'switch';
 
         return $this;
     }
