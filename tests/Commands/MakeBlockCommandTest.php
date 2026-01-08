@@ -100,3 +100,80 @@ it('converts block name to proper case formats', function () {
     $content = File::get($classPath);
     expect($content)->toContain('class ProductCard extends SimpleBlock');
 });
+
+it('creates nested block with subfolder support', function () {
+    $this->artisan(MakeBlockCommand::class, [
+        'name' => 'Carousel/Slide',
+        '--theme' => '__app',
+    ])->assertExitCode(0);
+
+    $classPath = base_path('app/Visual/Blocks/Carousel/Slide.php');
+    $viewPath = resource_path('views/blocks/carousel/slide.blade.php');
+
+    expect(File::exists($classPath))->toBeTrue();
+    expect(File::exists($viewPath))->toBeTrue();
+
+    $content = File::get($classPath);
+    expect($content)->toContain('namespace App\Visual\Blocks\Carousel');
+    expect($content)->toContain('class Slide extends SimpleBlock');
+});
+
+it('creates deeply nested block with multiple subfolders', function () {
+    $this->artisan(MakeBlockCommand::class, [
+        'name' => 'Components/Carousel/Slide',
+        '--theme' => '__app',
+    ])->assertExitCode(0);
+
+    $classPath = base_path('app/Visual/Blocks/Components/Carousel/Slide.php');
+    $viewPath = resource_path('views/blocks/components/carousel/slide.blade.php');
+
+    expect(File::exists($classPath))->toBeTrue();
+    expect(File::exists($viewPath))->toBeTrue();
+
+    $content = File::get($classPath);
+    expect($content)->toContain('namespace App\Visual\Blocks\Components\Carousel');
+    expect($content)->toContain('class Slide extends SimpleBlock');
+});
+
+it('generates correct view reference for nested blocks', function () {
+    $this->artisan(MakeBlockCommand::class, [
+        'name' => 'Carousel/Slide',
+        '--theme' => '__app',
+    ])->assertExitCode(0);
+
+    $classPath = base_path('app/Visual/Blocks/Carousel/Slide.php');
+    $content = File::get($classPath);
+
+    expect($content)->toContain("'blocks.carousel.slide'");
+    expect($content)->not->toContain("'shop::blocks");
+});
+
+it('generates view with editor attributes', function () {
+    $this->artisan(MakeBlockCommand::class, [
+        'name' => 'TestBlock',
+        '--theme' => '__app',
+    ])->assertExitCode(0);
+
+    $viewPath = resource_path('views/blocks/test-block.blade.php');
+    $content = File::get($viewPath);
+
+    expect($content)->toContain('{{ $block->editor_attributes }}');
+});
+
+it('handles kebab-case in nested block names', function () {
+    $this->artisan(MakeBlockCommand::class, [
+        'name' => 'ProductCarousel/FeaturedSlide',
+        '--theme' => '__app',
+    ])->assertExitCode(0);
+
+    $classPath = base_path('app/Visual/Blocks/ProductCarousel/FeaturedSlide.php');
+    $viewPath = resource_path('views/blocks/product-carousel/featured-slide.blade.php');
+
+    expect(File::exists($classPath))->toBeTrue();
+    expect(File::exists($viewPath))->toBeTrue();
+
+    $content = File::get($classPath);
+    expect($content)->toContain('namespace App\Visual\Blocks\ProductCarousel');
+    expect($content)->toContain('class FeaturedSlide extends SimpleBlock');
+    expect($content)->toContain("'blocks.product-carousel.featured-slide'");
+});
