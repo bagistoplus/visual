@@ -2,6 +2,27 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+## v2.0.0-alpha.3 - 2026-01-09
+
+### Features
+
+- Add Typography and TypographyPresets setting types with visual editor support
+- Add subfolder support and editor attributes to block and section generation commands
+- Add min, max, and step methods to Number setting class
+- Persist current template and selected block across page reloads
+
+### Bug Fixes
+
+- Resolve critical bugs in theme generation command
+
+### Documentation
+
+- Add Spacing setting type documentation
+
+### Testing
+
+- Add tests for frontend code
+
 ## v2.0.0-alpha.2 - 2025-12-30
 
 ### v2.0.0-alpha.2
@@ -79,6 +100,7 @@ php artisan vendor:publish --tag=visual-assets
 # Install the default theme
 composer require bagistoplus/visual-debut:^2.0@dev
 php artisan vendor:publish --tag=visual-debut-assets
+
 
 
 
