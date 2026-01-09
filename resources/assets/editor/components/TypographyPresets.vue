@@ -20,7 +20,6 @@ interface Props {
 
 const props = defineProps<Props>();
 const model = defineModel<Record<string, TypographyPresetData>>();
-const emit = defineEmits(['update:modelValue']);
 
 const { t } = useI18n();
 
@@ -40,7 +39,7 @@ const editingPresetValue = computed({
   },
   set(value: TypographyPresetData | null) {
     if (!editingPreset.value || !value) return;
-    model.value![editingPreset.value] = value;
+    model.value = { ...model.value, [editingPreset.value]: value };
   }
 });
 
@@ -49,17 +48,15 @@ function onEditPreset(id: string) {
   editModalOpen.value = true;
 }
 
-function onUpdate() {
-  emit('update:modelValue', model.value);
-}
-
 function onAddPreset() {
   const keys = Object.keys(model.value!);
   const id = `typography-${keys.length + 1}`;
 
-  model.value![id] = structuredClone(toRaw(model.value![keys[0]]));
+  model.value = {
+    ...model.value,
+    [id]: structuredClone(toRaw(model.value![keys[0]]))
+  };
 
-  onUpdate();
   onEditPreset(id);
 }
 
@@ -153,7 +150,6 @@ const canDeleteCurrentPreset = computed(() => {
               v-if="editingPreset && editingPresetValue"
               v-model="editingPresetValue"
               :can-delete="canDeleteCurrentPreset"
-              @update="onUpdate"
               @delete="handleEditorDelete"
             />
           </div>

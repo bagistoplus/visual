@@ -116,6 +116,41 @@ const fontPickerModel = computed({
   },
 });
 
+const fontStyleModel = computed({
+  get: () => model.value.fontStyle,
+  set: (value) => {
+    model.value = { ...model.value, fontStyle: value };
+  },
+});
+
+const fontSizeModel = computed({
+  get: () => model.value.fontSize,
+  set: (value) => {
+    model.value = { ...model.value, fontSize: value };
+  },
+});
+
+const lineHeightModel = computed({
+  get: () => model.value.lineHeight,
+  set: (value) => {
+    model.value = { ...model.value, lineHeight: value };
+  },
+});
+
+const letterSpacingModel = computed({
+  get: () => model.value.letterSpacing,
+  set: (value) => {
+    model.value = { ...model.value, letterSpacing: value };
+  },
+});
+
+const textTransformModel = computed({
+  get: () => model.value.textTransform,
+  set: (value) => {
+    model.value = { ...model.value, textTransform: value };
+  },
+});
+
 </script>
 
 <template>
@@ -129,31 +164,31 @@ const fontPickerModel = computed({
     <!-- Font Style -->
     <PropertyField
       :field="fontStyleField"
-      v-model="model.fontStyle"
+      v-model="fontStyleModel"
     />
 
     <!-- Font Size (Responsive via PropertyField) -->
     <PropertyField
       :field="fontSizeField"
-      v-model="model.fontSize"
+      v-model="fontSizeModel"
     />
 
     <!-- Line Height (Responsive via PropertyField) -->
     <PropertyField
       :field="lineHeightField"
-      v-model="model.lineHeight"
+      v-model="lineHeightModel"
     />
 
     <!-- Letter Spacing -->
     <PropertyField
       :field="letterSpacingField"
-      v-model="model.letterSpacing"
+      v-model="letterSpacingModel"
     />
 
     <!-- Text Transform -->
     <PropertyField
       :field="textTransformField"
-      v-model="model.textTransform"
+      v-model="textTransformModel"
     />
 
     <!-- Delete Preset Button -->
