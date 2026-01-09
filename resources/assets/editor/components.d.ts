@@ -44,6 +44,7 @@ declare module 'vue' {
     IHeroiconsMagnifyingGlass: typeof import('~icons/heroicons/magnifying-glass')['default']
     IHeroiconsPlus: typeof import('~icons/heroicons/plus')['default']
     IHeroiconsQuestionMarkCircle: typeof import('~icons/heroicons/question-mark-circle')['default']
+    IHeroiconsTrash: typeof import('~icons/heroicons/trash')['default']
     IHeroiconsXMark: typeof import('~icons/heroicons/x-mark')['default']
     ILucideLoader2: typeof import('~icons/lucide/loader2')['default']
     ImagePicker: typeof import('./components/ImagePicker.vue')['default']
@@ -66,5 +67,9 @@ declare module 'vue' {
     Spinner: typeof import('./components/Spinner.vue')['default']
     TemplateSelector: typeof import('./components/TemplateSelector.vue')['default']
     ThemeSettingsPanel: typeof import('./components/ThemeSettingsPanel.vue')['default']
+    TypographyPicker: typeof import('./components/TypographyPicker.vue')['default']
+    TypographyPresetEditor: typeof import('./components/TypographyPresetEditor.vue')['default']
+    TypographyPresetPreview: typeof import('./components/TypographyPresetPreview.vue')['default']
+    TypographyPresets: typeof import('./components/TypographyPresets.vue')['default']
   }
 }

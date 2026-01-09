@@ -18,6 +18,8 @@ import ImagePicker from '../../components/ImagePicker.vue';
 import RichtextEditor from '../../components/RichtextEditor.vue';
 import GradientPicker from '../../components/GradientPicker.vue';
 import SpacingField from '../../components/SpacingField.vue';
+import TypographyPresets from '../../components/TypographyPresets.vue';
+import TypographyPicker from '../../components/TypographyPicker.vue';
 import PublishAction from '../../components/PublishAction.vue';
 import PreviewAction from '../../components/PreviewAction.vue';
 import ConfirmPublish from '../../components/ConfirmPublish.vue';
@@ -141,6 +143,16 @@ function registerPropertyFields(ui: PluginContext['editor']['ui']) {
   ui.registerPropertyField({
     type: 'spacing',
     render: SpacingField,
+  });
+
+  ui.registerPropertyField({
+    type: 'typography_presets',
+    render: TypographyPresets,
+  });
+
+  ui.registerPropertyField({
+    type: 'typography',
+    render: TypographyPicker,
   });
 }
 

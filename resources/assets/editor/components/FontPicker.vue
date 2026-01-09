@@ -144,7 +144,7 @@ function onCancel() {
       :close-on-interact-outside="false"
       @open-change="onOpenChange"
     >
-      <Dialog.Trigger class="flex items-center px-3 py-2.5 gap-4 border rounded w-full">
+      <Dialog.Trigger class="flex items-center px-3 h-10 gap-4 border rounded w-full">
         <i-ri-font-size class="flex-none w-4 h-4 text-zinc-500" />
         <span class="flex-1 text-left capitalize line-clamp-1">{{ model?.name }}</span>
         <i-heroicons-chevron-up-down class="flex-none w-4 h-4 text-zinc-500" />

@@ -70,6 +70,60 @@ return [
     'Font Picker' => 'Font Picker',
     'Icon Picker' => 'Icon Picker',
 
+    // Typography-related translations
+    'Add preset' => 'Add preset',
+    'Delete preset' => 'Delete preset',
+    'Delete Preset' => 'Delete Preset',
+    'Editing' => 'Editing',
+    'Configure typography' => 'Configure typography',
+    'Select a typography preset' => 'Select a typography preset',
+    'No typography presets defined in theme settings.' => 'No typography presets defined in theme settings.',
+
+    // Typography field labels
+    'Font Family' => 'Font Family',
+    'Font Style' => 'Font Style',
+    'Font Size' => 'Font Size',
+    'Line Height' => 'Line Height',
+    'Letter Spacing' => 'Letter Spacing',
+    'Text Transform' => 'Text Transform',
+
+    // Font size options
+    'Extra Small' => 'Extra Small',
+    'Small' => 'Small',
+    'Base' => 'Base',
+    'Large' => 'Large',
+    'Extra Large' => 'Extra Large',
+    '2XL' => '2XL',
+    '3XL' => '3XL',
+    '4XL' => '4XL',
+    '5XL' => '5XL',
+    '6XL' => '6XL',
+    '7XL' => '7XL',
+    '8XL' => '8XL',
+    '9XL' => '9XL',
+
+    // Line height options
+    'None' => 'None',
+    'Tight' => 'Tight',
+    'Snug' => 'Snug',
+    'Normal' => 'Normal',
+    'Relaxed' => 'Relaxed',
+    'Loose' => 'Loose',
+
+    // Letter spacing options
+    'Tighter' => 'Tighter',
+    'Wide' => 'Wide',
+    'Wider' => 'Wider',
+    'Widest' => 'Widest',
+
+    // Font style options
+    'Italic' => 'Italic',
+
+    // Text transform options
+    'Capitalize' => 'Capitalize',
+    'Uppercase' => 'Uppercase',
+    'Lowercase' => 'Lowercase',
+
     'templates' => [
         'homepage' => 'Home page',
         'category' => 'Category Page',
