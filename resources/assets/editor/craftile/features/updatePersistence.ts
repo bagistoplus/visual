@@ -52,11 +52,17 @@ export function hasChanges(updates: UpdatesEvent): boolean {
   );
 }
 
-export function determineBlocksToProcess(updatedBlocks: Record<string, any>, allBlocks: Record<string, any>): string[] {
+export function determineBlocksToProcess(blockIds: string[], allBlocks: Record<string, any>): string[] {
   const blocksToProcess: string[] = [];
 
-  for (const [blockId, block] of Object.entries(updatedBlocks)) {
-    if (block.parentId && updatedBlocks[block.parentId]) {
+  for (const blockId of blockIds) {
+    const block = allBlocks[blockId];
+
+    if (!block) {
+      continue;
+    }
+
+    if (block.parentId && blockIds.includes(block.parentId)) {
       continue;
     }
 
@@ -69,8 +75,8 @@ export function determineBlocksToProcess(updatedBlocks: Record<string, any>, all
       continue;
     }
 
-    if (allBlocks[blockId]?.ghost === true) {
-      const parentOfGhost = allBlocks[blockId]?.parentId;
+    if (block.ghost === true) {
+      const parentOfGhost = block.parentId;
       if (parentOfGhost) {
         blocksToProcess.push(parentOfGhost);
       }
@@ -85,16 +91,21 @@ export function determineBlocksToProcess(updatedBlocks: Record<string, any>, all
 
 export function findRepeatedAncestor(blockId: string, allBlocks: Record<string, any>): string | null {
   let currentId = blockId;
+
   while (allBlocks[currentId]?.parentId) {
     const parentId = allBlocks[currentId].parentId;
+
     if (!allBlocks[parentId]) {
       break;
     }
+
     if (allBlocks[parentId]?.repeated === true) {
       return parentId;
     }
+
     currentId = parentId;
   }
+
   return null;
 }
 
@@ -156,10 +167,11 @@ export function setupUpdatePersistence(editor: CraftileEditor, state: State) {
 
     request.onSuccess((htmlResponse) => {
       const allBlocks = editor.engine.getPage().blocks;
-      const blocksToUpdate = determineBlocksToProcess(mergedUpdates.blocks, allBlocks);
+      const directlyModifiedIds = [...(mergedUpdates.changes.added || []), ...(mergedUpdates.changes.updated || [])];
+      const blocksToUpdate = determineBlocksToProcess(directlyModifiedIds, allBlocks);
 
       const effects = computeEffects(htmlResponse, blocksToUpdate);
-
+      console.log(effects);
       editor.preview.sendMessage('updates.effects', {
         effects,
         ...mergedUpdates,
