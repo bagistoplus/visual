@@ -1,11 +1,11 @@
 {
   "resources/assets/editor/index.ts": {
-    "file": "assets/index-DZtyfOp0.js",
+    "file": "assets/index-8mi9mpE0.js",
     "name": "index",
     "src": "resources/assets/editor/index.ts",
     "isEntry": true,
     "css": [
-      "assets/index-BNtQKq0f.css"
+      "assets/index-BTu3EsuQ.css"
     ]
   },
   "resources/assets/editor/injected.ts": {
