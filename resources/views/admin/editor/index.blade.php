@@ -25,7 +25,7 @@
     {{ ThemeEditor::renderStyles() }}
 
     <script type="text/javascript">
-      window.editorConfig = @json($config)
+      window.editorConfig = @json($config);
     </script>
 
     {{-- blade-formatter-disable --}}

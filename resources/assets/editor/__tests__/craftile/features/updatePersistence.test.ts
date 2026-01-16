@@ -205,7 +205,7 @@ describe('updatePersistence utilities', () => {
         block2: { id: 'block2', parentId: 'block1' },
       };
 
-      const result = determineBlocksToProcess(updatedBlocks, allBlocks);
+      const result = determineBlocksToProcess(Object.keys(updatedBlocks), allBlocks);
 
       expect(result).toEqual(['block1']);
     });
@@ -220,7 +220,7 @@ describe('updatePersistence utilities', () => {
         block3: { id: 'block3', parentId: null },
       };
 
-      const result = determineBlocksToProcess(updatedBlocks, allBlocks);
+      const result = determineBlocksToProcess(Object.keys(updatedBlocks), allBlocks);
 
       expect(result).toEqual(['block3']);
     });
@@ -234,7 +234,7 @@ describe('updatePersistence utilities', () => {
         block2: { id: 'block2', parentId: null },
       };
 
-      const result = determineBlocksToProcess(updatedBlocks, allBlocks);
+      const result = determineBlocksToProcess(Object.keys(updatedBlocks), allBlocks);
 
       expect(result).toEqual(['block2']);
     });
@@ -250,7 +250,7 @@ describe('updatePersistence utilities', () => {
         block3: { id: 'block3', parentId: null },
       };
 
-      const result = determineBlocksToProcess(updatedBlocks, allBlocks);
+      const result = determineBlocksToProcess(Object.keys(updatedBlocks), allBlocks);
 
       expect(result).toEqual(['block3']);
     });

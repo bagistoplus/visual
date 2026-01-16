@@ -5,9 +5,17 @@ import useI18n from '../composables/i18n';
 import TypographyPresetEditor from './TypographyPresetEditor.vue';
 import TypographyPresetPreview from './TypographyPresetPreview.vue';
 
+interface Font {
+  slug: string;
+  name: string;
+  weights: string[];
+  styles: string[];
+}
+
 interface TypographyPresetData {
-  fontFamily: string | null;
-  fontStyle: 'normal' | 'italic';
+  fontFamily: Font | null;
+  fontStyle: string;
+  fontWeight: string;
   fontSize: string | Record<string, string>;
   lineHeight: string | Record<string, string>;
   letterSpacing: string;

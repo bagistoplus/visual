@@ -82,6 +82,7 @@ return [
     // Typography field labels
     'Font Family' => 'Font Family',
     'Font Style' => 'Font Style',
+    'Font Weight' => 'Font Weight',
     'Font Size' => 'Font Size',
     'Line Height' => 'Line Height',
     'Letter Spacing' => 'Letter Spacing',

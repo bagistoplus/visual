@@ -68,8 +68,10 @@ it('converts to array', function () {
 
     expect($array)
         ->toBeArray()
-        ->toHaveKeys(['fontFamily', 'fontStyle', 'fontSize', 'lineHeight', 'letterSpacing', 'textTransform'])
-        ->and($array['fontFamily'])->toBe('Roboto')
+        ->toHaveKeys(['fontFamily', 'fontStyle', 'fontWeight', 'fontSize', 'lineHeight', 'letterSpacing', 'textTransform'])
+        ->and($array['fontFamily'])->toBeArray()
+        ->and($array['fontFamily']['name'])->toBe('Roboto')
+        ->and($array['fontWeight'])->toBe('400')
         ->and($array['fontSize'])->toBe('lg')
         ->and($array['lineHeight'])->toBe('relaxed')
         ->and($array['fontStyle'])->toBe('normal')
@@ -367,7 +369,7 @@ it('returns empty string for toHtml() when no fontFamily', function () {
     expect($html)->toBe('');
 });
 
-it('converts fontFamily to name in toArray()', function () {
+it('converts fontFamily to object in toArray()', function () {
     $data = ['fontFamily' => 'Inter', 'fontSize' => 'base'];
 
     $value = new TypographyValue($data, 'test');
@@ -376,7 +378,11 @@ it('converts fontFamily to name in toArray()', function () {
     expect($array)
         ->toHaveKey('fontFamily')
         ->and($array['fontFamily'])
-        ->toBe('Inter');
+        ->toBeArray()
+        ->and($array['fontFamily']['name'])
+        ->toBe('Inter')
+        ->and($array['fontFamily']['slug'])
+        ->toBe('inter');
 });
 
 it('converts IDs to kebab-case in attributes and CSS', function () {

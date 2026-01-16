@@ -4,11 +4,13 @@ import { Button } from '@craftile/editor/ui';
 import { Dialog } from '@ark-ui/vue/dialog';
 import { Field } from '@ark-ui/vue/field';
 import useI18n from '../composables/i18n';
+import { useBunnyFonts } from '../composables/useBunnyFonts';
+import { toTitleCase } from '../utils/strings';
 
 interface Font {
   slug: string;
   name: string;
-  weights: string[];
+  weights: number[];
   styles: string[];
 }
 
@@ -27,7 +29,12 @@ const model = defineModel({
       return v;
     }
 
-    return { slug: v, name: v.replace(/-/g, ' '), weights: [], styles: [] };
+    return {
+      slug: v,
+      name: toTitleCase(v),
+      weights: [],
+      styles: []
+    };
   },
 });
 
@@ -37,33 +44,8 @@ const initialValue = ref<Font | null>(null);
 const isDirty = ref(false);
 const opened = ref(false);
 const search = ref('');
-const isFetching = ref(false);
-const fonts = ref<Font[]>([]);
 
-const fetchFonts = async () => {
-  isFetching.value = true;
-  try {
-    const response = await fetch('https://fonts.bunny.net/list');
-    const data = await response.json();
-
-    const formatted: Font[] = [];
-    Object.keys(data).forEach((key) => {
-      formatted.push({
-        slug: key,
-        name: key.replace(/-/g, ' '),
-        ...(data as any)[key],
-      });
-    });
-
-    fonts.value = formatted;
-  } catch (error) {
-    console.error('Failed to fetch fonts:', error);
-  } finally {
-    isFetching.value = false;
-  }
-};
-
-onMounted(() => fetchFonts());
+const { fonts, isFetching } = useBunnyFonts();
 
 const displayedFonts = computed(() => {
   if (!fonts.value) {

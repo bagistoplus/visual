@@ -9,6 +9,7 @@ import './css/nprogress.css';
 import * as Vue from 'vue';
 import { createState } from './state';
 import { matchesCondition } from './utils/patternMatcher';
+import { useBunnyFonts } from './composables/useBunnyFonts';
 import NProgress from 'nprogress';
 
 const { blockSchemas } = window.editorConfig;
@@ -20,6 +21,9 @@ const state = createState({
   templates: window.editorConfig.templates || [],
   haveEdits: window.editorConfig.haveEdits,
 });
+
+const { fetchFonts } = useBunnyFonts();
+fetchFonts();
 
 // Configure NProgress
 NProgress.configure({

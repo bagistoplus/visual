@@ -987,6 +987,7 @@ return [
         ->presets([
             'heading' => [
                 'fontFamily' => 'Inter',
+                'fontWeight' => '700',
                 'fontSize' => '2xl',
                 'lineHeight' => 'tight',
                 'fontStyle' => 'normal',
@@ -995,6 +996,7 @@ return [
             ],
             'body' => [
                 'fontFamily' => 'Inter',
+                'fontWeight' => '400',
                 'fontSize' => 'base',
                 'lineHeight' => 'normal',
                 'fontStyle' => 'normal',
@@ -1035,6 +1037,7 @@ This generates CSS for typography styles:
 [data-typography='heading'] {
   --typography-font-family: 'Inter', sans-serif;
   --typography-font-style: normal;
+  --typography-font-weight: 700;
   --typography-font-size: 1.5rem;
   --typography-line-height: 1.25;
   --typography-letter-spacing: 0em;
@@ -1044,6 +1047,7 @@ This generates CSS for typography styles:
 [data-typography='body'] {
   --typography-font-family: 'Inter', sans-serif;
   --typography-font-style: normal;
+  --typography-font-weight: 400;
   --typography-font-size: 1rem;
   --typography-line-height: 1.5;
   --typography-letter-spacing: 0em;
@@ -1079,6 +1083,7 @@ h2,
 h3 {
   --typography-font-family: 'Inter', sans-serif;
   --typography-font-style: normal;
+  --typography-font-weight: 700;
   --typography-font-size: 1.5rem;
   --typography-line-height: 1.25;
   --typography-letter-spacing: 0em;
@@ -1091,6 +1096,7 @@ li,
 td {
   --typography-font-family: 'Inter', sans-serif;
   --typography-font-style: normal;
+  --typography-font-weight: 400;
   --typography-font-size: 1rem;
   --typography-line-height: 1.5;
   --typography-letter-spacing: 0em;
@@ -1106,6 +1112,7 @@ In your theme's CSS, apply the generated CSS variables to elements:
 [data-typography] {
   font-family: var(--typography-font-family);
   font-style: var(--typography-font-style);
+  font-weight: var(--typography-font-weight);
   font-size: var(--typography-font-size);
   line-height: var(--typography-line-height);
   letter-spacing: var(--typography-letter-spacing);
@@ -1120,6 +1127,7 @@ Each preset is an array with the following properties:
 | Property        | Type          | Description                            | Required | Values                                                                                 |
 | --------------- | ------------- | -------------------------------------- | -------- | -------------------------------------------------------------------------------------- |
 | `fontFamily`    | string\|null  | Font family name                       | No       | Any font family name                                                                   |
+| `fontWeight`    | string        | Font weight                            | Yes      | `100`, `200`, `300`, `400`, `500`, `600`, `700`, `800`, `900`                          |
 | `fontSize`      | string\|array | Font size token or responsive config   | Yes      | `xs`, `sm`, `base`, `lg`, `xl`, `2xl`, `3xl`, `4xl`, `5xl`, `6xl`, `7xl`, `8xl`, `9xl` |
 | `lineHeight`    | string\|array | Line height token or responsive config | Yes      | `none`, `tight`, `snug`, `normal`, `relaxed`, `loose`                                  |
 | `fontStyle`     | string        | Font style                             | Yes      | `normal`, `italic`                                                                     |
@@ -1175,6 +1183,7 @@ TypographyPresets::make('typography_presets', 'Typography Presets')
     ->presets([
         'responsive-heading' => [
             'fontFamily' => 'Inter',
+            'fontWeight' => '700',
             'fontSize' => [
                 '_default' => '2xl',  // Default size
                 'mobile' => 'xl',     // max-width: 639px

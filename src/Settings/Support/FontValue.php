@@ -3,7 +3,6 @@
 namespace BagistoPlus\Visual\Settings\Support;
 
 use Illuminate\Support\HtmlString;
-use Illuminate\Support\Str;
 
 class FontValue
 {
@@ -11,7 +10,27 @@ class FontValue
 
     public function __toString()
     {
-        return Str::headline($this->name);
+        return $this->name;
+    }
+
+    public function getDefaultWeight(): string
+    {
+        return in_array('400', $this->weights) ? '400' : ($this->weights[0] ?? '400');
+    }
+
+    public function hasWeight(string $weight): bool
+    {
+        return in_array($weight, $this->weights);
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'slug' => $this->slug,
+            'name' => $this->name,
+            'weights' => $this->weights,
+            'styles' => $this->styles,
+        ];
     }
 
     public function toHtml()
