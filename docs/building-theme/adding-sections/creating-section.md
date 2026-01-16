@@ -203,9 +203,18 @@ For other locations, you can manually register sections in a service provider:
 
 ### Discover a directory
 
+Use `discoverSectionsIn()` to auto-discover all sections in a directory. The method requires two parameters:
+- The directory path containing your section classes
+- The base namespace for those sections (defaults to `'App\\Sections'`)
+
 ```php
-Visual::discoverSectionsIn(base_path('modules/Shared/Sections'));
+Visual::discoverSectionsIn(
+    base_path('modules/Shared/Sections'),
+    'Modules\\Shared\\Sections'
+);
 ```
+
+This will automatically discover and register all section classes in the specified directory, matching the namespace structure to the folder structure.
 
 ### Register a single class
 
