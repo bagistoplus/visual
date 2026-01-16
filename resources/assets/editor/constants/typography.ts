@@ -45,3 +45,28 @@ export const getTextTransformOptions = (t: TranslateFunction) => [
   { value: 'uppercase', label: t('Uppercase') },
   { value: 'lowercase', label: t('Lowercase') },
 ];
+
+/**
+ * Map font weights to display labels
+ */
+export const getFontWeightLabel = (weight: string): string => {
+  const labels: Record<string, string> = {
+    '100': 'Thin',
+    '200': 'Extra Light',
+    '300': 'Light',
+    '400': 'Regular',
+    '500': 'Medium',
+    '600': 'Semi Bold',
+    '700': 'Bold',
+    '800': 'Extra Bold',
+    '900': 'Black',
+  };
+  return labels[weight] || weight;
+};
+
+/**
+ * Format weight for display (e.g., "400 - Regular")
+ */
+export const formatFontWeight = (weight: string): string => {
+  return `${weight} - ${getFontWeightLabel(weight)}`;
+};

@@ -6,6 +6,7 @@ import {
   getLineHeightOptions,
   getLetterSpacingOptions,
   getTextTransformOptions,
+  formatFontWeight,
 } from '../constants/typography';
 
 interface Props {
@@ -27,14 +28,18 @@ const displayLabel = computed(() => {
     return '';
   }
 
-  return toTitleCase(props.label);
+  return props.preset?.name || toTitleCase(props.label);
 });
 
 const summary = computed(() => {
   const parts: string[] = [];
 
-  if (props.preset?.fontFamily) {
-    parts.push(props.preset.fontFamily);
+  if (props.preset?.fontFamily?.name) {
+    parts.push(props.preset.fontFamily.name);
+  }
+
+  if (props.preset?.fontWeight) {
+    parts.push(formatFontWeight(props.preset.fontWeight));
   }
 
   if (props.preset?.fontSize) {
@@ -83,7 +88,10 @@ const summary = computed(() => {
 
 <template>
   <div class="flex flex-col gap-1">
-    <div v-if="displayLabel" class="text-sm font-medium">{{ displayLabel }}</div>
+    <div
+      v-if="displayLabel"
+      class="text-sm font-medium"
+    >{{ displayLabel }}</div>
     <div class="text-xs text-gray-500">{{ summary }}</div>
   </div>
 </template>

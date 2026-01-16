@@ -2,12 +2,22 @@
 import type { PropertyField } from '@craftile/types';
 import { Dialog } from '@ark-ui/vue/dialog';
 import useI18n from '../composables/i18n';
+import { toTitleCase } from '../utils/strings';
 import TypographyPresetEditor from './TypographyPresetEditor.vue';
 import TypographyPresetPreview from './TypographyPresetPreview.vue';
 
+interface Font {
+  slug: string;
+  name: string;
+  weights: string[];
+  styles: string[];
+}
+
 interface TypographyPresetData {
-  fontFamily: string | null;
-  fontStyle: 'normal' | 'italic';
+  name?: string;
+  fontFamily: Font | null;
+  fontStyle: string;
+  fontWeight: string;
   fontSize: string | Record<string, string>;
   lineHeight: string | Record<string, string>;
   letterSpacing: string;
@@ -25,6 +35,8 @@ const { t } = useI18n();
 
 const editingPreset = ref<string | null>(null);
 const editModalOpen = ref(false);
+const isEditingName = ref(false);
+const editingNameValue = ref('');
 
 const themePresetIds = computed(() => {
   return Object.keys(props.field.presets || {});
@@ -41,6 +53,18 @@ const editingPresetValue = computed({
     if (!editingPreset.value || !value) return;
     model.value = { ...model.value, [editingPreset.value]: value };
   }
+});
+
+const editingPresetDisplayName = computed(() => {
+  if (!editingPreset.value || !editingPresetValue.value) {
+    return '';
+  }
+  return editingPresetValue.value.name || toTitleCase(editingPreset.value);
+});
+
+const canRenameCurrentPreset = computed(() => {
+  if (!editingPreset.value) return false;
+  return !themePresetIds.value.includes(editingPreset.value);
 });
 
 function onEditPreset(id: string) {
@@ -75,6 +99,47 @@ function onDeletePreset(id: string) {
 
   const { [id]: removed, ...rest } = model.value;
   model.value = rest;
+}
+
+function startEditingName() {
+  if (!canRenameCurrentPreset.value) {
+    return;
+  }
+
+  isEditingName.value = true;
+  editingNameValue.value = editingPresetValue.value?.name || editingPresetDisplayName.value;
+
+  nextTick(() => {
+    const input = document.querySelector('.preset-name-input') as HTMLInputElement;
+    input?.focus();
+    input?.select();
+  });
+}
+
+function saveEditingName() {
+  if (!editingPresetValue.value) {
+    return;
+  }
+
+  editingPresetValue.value = {
+    ...editingPresetValue.value,
+    name: editingNameValue.value?.trim(),
+  };
+
+  isEditingName.value = false;
+}
+
+function cancelEditingName() {
+  isEditingName.value = false;
+  editingNameValue.value = '';
+}
+
+function handleNameKeydown(e: KeyboardEvent) {
+  if (e.key === 'Enter') {
+    saveEditingName();
+  } else if (e.key === 'Escape') {
+    cancelEditingName();
+  }
 }
 
 function handleEditorDelete() {
@@ -140,7 +205,35 @@ const canDeleteCurrentPreset = computed(() => {
       <Dialog.Positioner class="flex fixed z-50 top-14 left-14 bottom-0 w-75 items-center justify-center">
         <Dialog.Content class="bg-white shadow flex flex-col w-full h-full overflow-hidden">
           <header class="flex-none h-12 border-b border-neutral-200 flex gap-3 px-4 items-center justify-between">
-            <Dialog.Title class="capitalize">{{ t('Editing') }} {{ editingPreset?.replace('-', ' ') }}</Dialog.Title>
+            <div class="flex items-center gap-2 flex-1 min-w-0">
+              <span class="text-sm text-gray-600 flex-none">{{ t('Editing') }}</span>
+
+              <input
+                v-if="isEditingName"
+                v-model="editingNameValue"
+                type="text"
+                maxlength="50"
+                class="preset-name-input flex-1 min-w-0 px-2 py-1 text-sm font-medium border border-blue-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                @blur="saveEditingName"
+                @keydown="handleNameKeydown"
+              />
+
+              <button
+                v-else
+                type="button"
+                class="flex-1 min-w-0 text-left px-2 py-1 text-sm font-medium rounded truncate"
+                :class="canRenameCurrentPreset ? 'hover:bg-gray-100 cursor-pointer' : 'cursor-default'"
+                :title="canRenameCurrentPreset ? t('Click to rename') : t('Theme preset (cannot be renamed)')"
+                @click="startEditingName"
+              >
+                {{ editingPresetDisplayName }}
+                <i-heroicons-pencil
+                  v-if="canRenameCurrentPreset"
+                  class="inline-block w-3 h-3 ml-1 text-gray-400"
+                />
+              </button>
+            </div>
+
             <Dialog.CloseTrigger class="cursor-pointer rounded-lg p-0.5 text-neutral-700 hover:bg-neutral-300">
               <i-heroicons-x-mark class="w-5 h-5" />
             </Dialog.CloseTrigger>

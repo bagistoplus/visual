@@ -68,8 +68,10 @@ it('converts to array', function () {
 
     expect($array)
         ->toBeArray()
-        ->toHaveKeys(['fontFamily', 'fontStyle', 'fontSize', 'lineHeight', 'letterSpacing', 'textTransform'])
-        ->and($array['fontFamily'])->toBe('Roboto')
+        ->toHaveKeys(['fontFamily', 'fontStyle', 'fontWeight', 'fontSize', 'lineHeight', 'letterSpacing', 'textTransform'])
+        ->and($array['fontFamily'])->toBeArray()
+        ->and($array['fontFamily']['name'])->toBe('Roboto')
+        ->and($array['fontWeight'])->toBe('400')
         ->and($array['fontSize'])->toBe('lg')
         ->and($array['lineHeight'])->toBe('relaxed')
         ->and($array['fontStyle'])->toBe('normal')
@@ -367,7 +369,7 @@ it('returns empty string for toHtml() when no fontFamily', function () {
     expect($html)->toBe('');
 });
 
-it('converts fontFamily to name in toArray()', function () {
+it('converts fontFamily to object in toArray()', function () {
     $data = ['fontFamily' => 'Inter', 'fontSize' => 'base'];
 
     $value = new TypographyValue($data, 'test');
@@ -376,7 +378,11 @@ it('converts fontFamily to name in toArray()', function () {
     expect($array)
         ->toHaveKey('fontFamily')
         ->and($array['fontFamily'])
-        ->toBe('Inter');
+        ->toBeArray()
+        ->and($array['fontFamily']['name'])
+        ->toBe('Inter')
+        ->and($array['fontFamily']['slug'])
+        ->toBe('inter');
 });
 
 it('converts IDs to kebab-case in attributes and CSS', function () {
@@ -388,4 +394,46 @@ it('converts IDs to kebab-case in attributes and CSS', function () {
 
     expect($value->toCss()->toHtml())
         ->toContain('[data-typography="heading1"]');
+});
+
+it('constructs with name', function () {
+    $data = [
+        'name' => 'My Custom Heading',
+        'fontSize' => 'xl',
+    ];
+
+    $value = new TypographyValue($data, 'heading');
+
+    expect($value->name)->toBe('My Custom Heading');
+});
+
+it('handles missing name', function () {
+    $value = new TypographyValue([], 'test');
+
+    expect($value->name)->toBeNull();
+});
+
+it('includes name in toArray', function () {
+    $data = [
+        'name' => 'Test Preset Name',
+        'fontSize' => 'base',
+    ];
+
+    $value = new TypographyValue($data, 'test');
+    $array = $value->toArray();
+
+    expect($array)
+        ->toHaveKey('name')
+        ->and($array['name'])->toBe('Test Preset Name');
+});
+
+it('includes null name in toArray when not provided', function () {
+    $data = ['fontSize' => 'base'];
+
+    $value = new TypographyValue($data, 'test');
+    $array = $value->toArray();
+
+    expect($array)
+        ->toHaveKey('name')
+        ->and($array['name'])->toBeNull();
 });

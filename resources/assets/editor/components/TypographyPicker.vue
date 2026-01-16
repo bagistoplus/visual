@@ -18,7 +18,6 @@ const typographyPresets = computed(() => {
     return {};
   }
 
-  // Find the TypographyPresets group setting
   const settingId = theme.value.settingsSchema
     .flatMap((obj) => obj.settings)
     .find((setting) => setting.type === 'typography_presets')?.id;
@@ -27,7 +26,6 @@ const typographyPresets = computed(() => {
     return {};
   }
 
-  // Return the presets from the group
   return theme.value.settings[settingId] || {};
 });
 
@@ -45,11 +43,11 @@ const selectedPreset = computed(() => {
 });
 
 const selectedLabel = computed(() => {
-  if (!model.value) {
+  if (!model.value || !selectedPreset.value) {
     return null;
   }
 
-  return toTitleCase(model.value);
+  return selectedPreset.value.name || toTitleCase(model.value);
 });
 
 function onSelectPreset(id: string) {

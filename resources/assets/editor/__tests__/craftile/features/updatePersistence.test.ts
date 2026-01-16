@@ -196,51 +196,61 @@ describe('updatePersistence utilities', () => {
 
   describe('determineBlocksToProcess', () => {
     it('should return block IDs that are not children of other updated blocks', () => {
-      const blockIds = ['block1', 'block2'];
+      const updatedBlocks = {
+        block1: { id: 'block1', parentId: null },
+        block2: { id: 'block2', parentId: 'block1' },
+      };
       const allBlocks = {
         block1: { id: 'block1', parentId: null },
         block2: { id: 'block2', parentId: 'block1' },
       };
 
-      const result = determineBlocksToProcess(blockIds, allBlocks);
+      const result = determineBlocksToProcess(Object.keys(updatedBlocks), allBlocks);
 
       expect(result).toEqual(['block1']);
     });
 
     it('should return parent of repeated ancestor', () => {
-      const blockIds = ['block1'];
+      const updatedBlocks = {
+        block1: { id: 'block1', parentId: 'block2' },
+      };
       const allBlocks = {
         block1: { id: 'block1', parentId: 'block2' },
         block2: { id: 'block2', parentId: 'block3', repeated: true },
         block3: { id: 'block3', parentId: null },
       };
 
-      const result = determineBlocksToProcess(blockIds, allBlocks);
+      const result = determineBlocksToProcess(Object.keys(updatedBlocks), allBlocks);
 
       expect(result).toEqual(['block3']);
     });
 
     it('should return parent of ghost blocks', () => {
-      const blockIds = ['block1'];
+      const updatedBlocks = {
+        block1: { id: 'block1', parentId: 'block2' },
+      };
       const allBlocks = {
         block1: { id: 'block1', parentId: 'block2', ghost: true },
         block2: { id: 'block2', parentId: null },
       };
 
-      const result = determineBlocksToProcess(blockIds, allBlocks);
+      const result = determineBlocksToProcess(Object.keys(updatedBlocks), allBlocks);
 
       expect(result).toEqual(['block2']);
     });
 
     it('should remove duplicates from result', () => {
-      const blockIds = ['block1', 'block2'];
+      const updatedBlocks = {
+        block1: { id: 'block1', parentId: 'block3' },
+        block2: { id: 'block2', parentId: 'block3' },
+      };
       const allBlocks = {
         block1: { id: 'block1', parentId: 'block3', ghost: true },
         block2: { id: 'block2', parentId: 'block3', ghost: true },
         block3: { id: 'block3', parentId: null },
       };
 
-      const result = determineBlocksToProcess(blockIds, allBlocks);
+      const result = determineBlocksToProcess(Object.keys(updatedBlocks), allBlocks);
 
       expect(result).toEqual(['block3']);
     });

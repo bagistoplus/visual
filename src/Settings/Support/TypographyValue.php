@@ -7,9 +7,13 @@ use Illuminate\Support\Str;
 
 class TypographyValue
 {
+    public readonly ?string $name;
+
     public readonly ?FontValue $fontFamily;
 
     public readonly string $fontStyle;
+
+    public readonly string $fontWeight;
 
     public readonly string|array $fontSize;
 
@@ -25,8 +29,11 @@ class TypographyValue
     {
         $this->id = $id;
 
+        $this->name = $data['name'] ?? null;
+
         $this->fontFamily = $this->transformFontFamily($data['fontFamily'] ?? null);
         $this->fontStyle = $data['fontStyle'] ?? 'normal';
+        $this->fontWeight = $data['fontWeight'] ?? '400';
         $this->fontSize = $data['fontSize'] ?? 'text-base';
         $this->lineHeight = $data['lineHeight'] ?? 'leading-normal';
 
@@ -54,6 +61,7 @@ class TypographyValue
         }
 
         $css .= "  --typography-font-style: {$this->fontStyle};\n";
+        $css .= "  --typography-font-weight: {$this->fontWeight};\n";
 
         $defaultFontSize = $this->getDefaultValue($this->fontSize);
         $defaultLineHeight = $this->getDefaultValue($this->lineHeight);
@@ -78,8 +86,10 @@ class TypographyValue
     public function toArray(): array
     {
         return [
-            'fontFamily' => $this->fontFamily?->name,
+            'name' => $this->name,
+            'fontFamily' => $this->fontFamily?->toArray(),
             'fontStyle' => $this->fontStyle,
+            'fontWeight' => $this->fontWeight,
             'fontSize' => $this->fontSize,
             'lineHeight' => $this->lineHeight,
             'letterSpacing' => $this->letterSpacing,

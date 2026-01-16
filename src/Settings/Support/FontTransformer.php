@@ -15,12 +15,12 @@ class FontTransformer
         if (is_string($font)) {
             $font = [
                 'slug' => Str::kebab($font),
-                'name' => Str::title($font),
+                'name' => Str::headline($font),
             ];
         }
 
-        $font['weights'] = $font['weights'] ?? [];
-        $font['styles'] = $font['styles'] ?? [];
+        $font['weights'] = $font['weights'] ?? ['400'];
+        $font['styles'] = $font['styles'] ?? ['normal'];
 
         return new FontValue(
             slug: $font['slug'],

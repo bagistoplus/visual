@@ -82,10 +82,15 @@ return [
     // Typography field labels
     'Font Family' => 'Font Family',
     'Font Style' => 'Font Style',
+    'Font Weight' => 'Font Weight',
     'Font Size' => 'Font Size',
     'Line Height' => 'Line Height',
     'Letter Spacing' => 'Letter Spacing',
     'Text Transform' => 'Text Transform',
+
+    // Typography preset rename (inline editing)
+    'Click to rename' => 'Click to rename',
+    'Theme preset (cannot be renamed)' => 'Theme preset (cannot be renamed)',
 
     // Font size options
     'Extra Small' => 'Extra Small',
