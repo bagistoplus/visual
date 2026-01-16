@@ -28,7 +28,7 @@ const displayLabel = computed(() => {
     return '';
   }
 
-  return toTitleCase(props.label);
+  return props.preset?.name || toTitleCase(props.label);
 });
 
 const summary = computed(() => {

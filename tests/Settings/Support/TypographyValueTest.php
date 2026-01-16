@@ -395,3 +395,45 @@ it('converts IDs to kebab-case in attributes and CSS', function () {
     expect($value->toCss()->toHtml())
         ->toContain('[data-typography="heading1"]');
 });
+
+it('constructs with name', function () {
+    $data = [
+        'name' => 'My Custom Heading',
+        'fontSize' => 'xl',
+    ];
+
+    $value = new TypographyValue($data, 'heading');
+
+    expect($value->name)->toBe('My Custom Heading');
+});
+
+it('handles missing name', function () {
+    $value = new TypographyValue([], 'test');
+
+    expect($value->name)->toBeNull();
+});
+
+it('includes name in toArray', function () {
+    $data = [
+        'name' => 'Test Preset Name',
+        'fontSize' => 'base',
+    ];
+
+    $value = new TypographyValue($data, 'test');
+    $array = $value->toArray();
+
+    expect($array)
+        ->toHaveKey('name')
+        ->and($array['name'])->toBe('Test Preset Name');
+});
+
+it('includes null name in toArray when not provided', function () {
+    $data = ['fontSize' => 'base'];
+
+    $value = new TypographyValue($data, 'test');
+    $array = $value->toArray();
+
+    expect($array)
+        ->toHaveKey('name')
+        ->and($array['name'])->toBeNull();
+});

@@ -42,6 +42,7 @@ declare module 'vue' {
     IHeroiconsItalic: typeof import('~icons/heroicons/italic')['default']
     IHeroiconsLink: typeof import('~icons/heroicons/link')['default']
     IHeroiconsMagnifyingGlass: typeof import('~icons/heroicons/magnifying-glass')['default']
+    IHeroiconsPencil: typeof import('~icons/heroicons/pencil')['default']
     IHeroiconsPlus: typeof import('~icons/heroicons/plus')['default']
     IHeroiconsQuestionMarkCircle: typeof import('~icons/heroicons/question-mark-circle')['default']
     IHeroiconsTrash: typeof import('~icons/heroicons/trash')['default']

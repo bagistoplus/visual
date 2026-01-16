@@ -88,6 +88,10 @@ return [
     'Letter Spacing' => 'Letter Spacing',
     'Text Transform' => 'Text Transform',
 
+    // Typography preset rename (inline editing)
+    'Click to rename' => 'Click to rename',
+    'Theme preset (cannot be renamed)' => 'Theme preset (cannot be renamed)',
+
     // Font size options
     'Extra Small' => 'Extra Small',
     'Small' => 'Small',

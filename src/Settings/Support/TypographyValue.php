@@ -7,6 +7,8 @@ use Illuminate\Support\Str;
 
 class TypographyValue
 {
+    public readonly ?string $name;
+
     public readonly ?FontValue $fontFamily;
 
     public readonly string $fontStyle;
@@ -26,6 +28,8 @@ class TypographyValue
     public function __construct(array $data, string $id)
     {
         $this->id = $id;
+
+        $this->name = $data['name'] ?? null;
 
         $this->fontFamily = $this->transformFontFamily($data['fontFamily'] ?? null);
         $this->fontStyle = $data['fontStyle'] ?? 'normal';
@@ -82,6 +86,7 @@ class TypographyValue
     public function toArray(): array
     {
         return [
+            'name' => $this->name,
             'fontFamily' => $this->fontFamily?->toArray(),
             'fontStyle' => $this->fontStyle,
             'fontWeight' => $this->fontWeight,

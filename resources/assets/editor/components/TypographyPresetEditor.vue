@@ -20,6 +20,7 @@ interface Font {
 }
 
 interface TypographyPresetValue {
+  name?: string;
   fontFamily: Font | null;
   fontStyle: string;
   fontWeight: number;
