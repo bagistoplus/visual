@@ -171,7 +171,7 @@ export function setupUpdatePersistence(editor: CraftileEditor, state: State) {
       const blocksToUpdate = determineBlocksToProcess(directlyModifiedIds, allBlocks);
 
       const effects = computeEffects(htmlResponse, blocksToUpdate);
-      console.log(effects);
+
       editor.preview.sendMessage('updates.effects', {
         effects,
         ...mergedUpdates,

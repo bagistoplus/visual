@@ -67,6 +67,7 @@ class CoreServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->registerConfigs();
+        $this->registerCraftileConfig();
         $this->registerSingletons();
         $this->registerCustomUrlGenerator();
     }
@@ -79,22 +80,6 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function bootCraftile(): void
     {
-        config([
-            'craftile.directives' => [
-                'craftileBlock' => 'visualBlock',
-                'craftileRegion' => 'visualRegion',
-                'craftileContent' => 'visualContent',
-                'craftileLayoutContent' => 'visualLayoutContent',
-            ],
-
-            'craftile.components.namespace' => 'visual',
-
-            'craftile.block_data_class' => \BagistoPlus\Visual\Data\BlockData::class,
-            'craftile.block_schema_class' => \BagistoPlus\Visual\Data\BlockSchema::class,
-
-            'craftile.php_template_extensions' => ['visual.php'],
-        ]);
-
         Craftile::resolveRegionViewUsing(function ($name) {
             return "shop::regions.$name";
         });
@@ -250,6 +235,25 @@ class CoreServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../../config/bagisto-visual.php', 'bagisto_visual');
         $this->mergeConfigFrom(__DIR__.'/../../config/svg-iconmap.php', 'bagisto_visual_iconmap');
+    }
+
+    protected function registerCraftileConfig(): void
+    {
+        config([
+            'craftile.directives' => [
+                'craftileBlock' => 'visualBlock',
+                'craftileRegion' => 'visualRegion',
+                'craftileContent' => 'visualContent',
+                'craftileLayoutContent' => 'visualLayoutContent',
+            ],
+
+            'craftile.components.namespace' => 'visual',
+
+            'craftile.block_data_class' => \BagistoPlus\Visual\Data\BlockData::class,
+            'craftile.block_schema_class' => \BagistoPlus\Visual\Data\BlockSchema::class,
+
+            'craftile.php_template_extensions' => ['visual.php'],
+        ]);
     }
 
     protected function registerSingletons(): void
