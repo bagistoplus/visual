@@ -5,6 +5,12 @@ namespace BagistoPlus\Visual\Data;
 use BagistoPlus\Visual\Support\LiveUpdatesBuilder;
 use Craftile\Laravel\BlockData as LaravelBlockData;
 
+/**
+ * Block data with Visual-specific magic properties.
+ *
+ * @property array $settings Access to block properties (alias for $properties)
+ * @property \Illuminate\Contracts\Support\Htmlable $editorAttributes Craftile editor attributes for rendering
+ */
 class BlockData extends LaravelBlockData
 {
     public function __get($key)
