@@ -4,6 +4,7 @@ import { Button } from '@craftile/editor/ui';
 import NProgress from 'nprogress';
 
 import { useState } from '../state';
+import { updateUrlParam, removeUrlParam } from '../utils/urlState';
 
 const editor = useCraftileEditor();
 const { currentTemplate, templates, theme, channel, locale, state } = useState();
@@ -22,6 +23,9 @@ function onSelect({ value }: { value: string }) {
         blocks: {},
       });
     }
+
+    updateUrlParam('template', value);
+    removeUrlParam('block');
 
     NProgress.start();
 

@@ -203,9 +203,18 @@ For other locations, you can manually register blocks in a service provider:
 
 ### Discover a directory
 
+Use `discoverBlocksIn()` to auto-discover all blocks in a directory. The method requires two parameters:
+- The directory path containing your block classes
+- The base namespace for those blocks (defaults to `'App\\Blocks'`)
+
 ```php
-Visual::discoverBlocksIn(base_path('modules/Shared/Blocks'));
+Visual::discoverBlocksIn(
+    base_path('modules/Shared/Blocks'),
+    'Modules\\Shared\\Blocks'
+);
 ```
+
+This will automatically discover and register all block classes in the specified directory, matching the namespace structure to the folder structure.
 
 ### Register a single class
 

@@ -251,6 +251,11 @@ class ThemeEditorController extends Controller
                         return null;
                     }
 
+                    // Filter out typography_presets as it's theme settings only
+                    if ($propArray['type'] === 'typography_presets') {
+                        return null;
+                    }
+
                     if ($currentGroup !== null) {
                         $propArray['group'] = $currentGroup;
                     }

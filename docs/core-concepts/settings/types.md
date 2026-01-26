@@ -94,7 +94,7 @@ In Blade:
 
 Simple true/false toggle. Useful for enabling or disabling features.
 
-Checkbox settings do not have any additional attributes beyond the standard attributes.
+Checkbox settings do not have any additional attributes beyond the standard attributes, but support an alternative switch variant for a different visual style.
 
 ```php
 use BagistoPlus\Visual\Settings\Checkbox;
@@ -106,6 +106,16 @@ public static function settings(): array
             ->default(true),
     ];
 }
+```
+
+#### Switch Variant
+
+Use the `asSwitch()` method to display the checkbox as a toggle switch instead of a standard checkbox:
+
+```php
+Checkbox::make('enable_feature', 'Enable Feature')
+    ->asSwitch()
+    ->default(false),
 ```
 
 In Blade:
@@ -283,11 +293,14 @@ If default is unspecified, it defaults to the minimum value.
 
 Single-line numeric input. Useful for entering quantities, prices, padding, margins, and other number-based configurations.
 
-In addition to the standard attributes, Number type settings have the following attribute:
+In addition to the standard attributes, Number type settings have the following attributes:
 
 | Attribute     | Description                        | Required |
 | :------------ | :--------------------------------- | :------- |
 | `placeholder` | A placeholder value for the input. | No       |
+| `min`         | Minimum value allowed              | No       |
+| `max`         | Maximum value allowed              | No       |
+| `step`        | Increment steps (default `1`)      | No       |
 
 ```php
 use BagistoPlus\Visual\Settings\Number;
@@ -296,6 +309,9 @@ public static function settings(): array
 {
     return [
         Number::make('max_width', 'Max Width')
+            ->min(320)
+            ->max(1920)
+            ->step(10)
             ->default(1200)
             ->placeholder('Enter a maximum width...'),
     ];
@@ -311,6 +327,59 @@ In Blade:
 ```
 
 <SettingPreview image="/setting-number.png" title="Number setting type preview"/>
+
+---
+
+### Spacing
+
+Four-sided spacing input. Useful for controlling padding and margin values independently for each side (top, right, bottom, left).
+
+The visual editor provides an intuitive interface with four individual number inputs and a link toggle button that allows merchants to sync all sides to the same value when enabled.
+
+In addition to the standard attributes, Spacing type settings have the following attributes:
+
+| Attribute | Description                 | Required |
+| :-------- | :-------------------------- | :------- |
+| `min`     | Minimum value for each side | No       |
+| `max`     | Maximum value for each side | No       |
+
+```php
+use BagistoPlus\Visual\Settings\Spacing;
+
+public static function settings(): array
+{
+    return [
+        Spacing::make('padding', 'Padding')
+            ->min(0)
+            ->max(100)
+            ->default(['top' => 16, 'right' => 16, 'bottom' => 16, 'left' => 16]),
+
+        Spacing::make('margin', 'Margin')
+            ->min(-50)
+            ->max(100),
+    ];
+}
+```
+
+In Blade:
+
+```blade
+<div style="padding: {{ $section->settings->padding->top }}px
+                      {{ $section->settings->padding->right }}px
+                      {{ $section->settings->padding->bottom }}px
+                      {{ $section->settings->padding->left }}px;">
+    <!-- Content -->
+</div>
+```
+
+<SettingPreview image="/setting-spacing.png" title="Spacing setting type preview"/>
+
+::: info
+
+- Default values: All sides default to `0` if not specified
+- The visual editor includes a link toggle to sync all sides
+- Negative values are supported for margins (set appropriate min value)
+  :::
 
 ---
 
@@ -854,6 +923,333 @@ Bagisto Visual provides a helper method to generate the full CSS output automati
 - If no `ColorSchemeGroup` is defined, `ColorScheme` fields will not be functional
 
 -> [Read more about color schemes](../../building-theme/best-practices/styling.md)
+
+---
+
+### Typography
+
+The `Typography` setting allows merchants to select a typography preset for text styling. Typography presets are defined once in the theme's settings using [TypographyPresets](#typographypresets), and sections or blocks can reference them using this setting.
+
+```php
+use BagistoPlus\Visual\Settings\Typography;
+
+public static function settings(): array
+{
+    return [
+        Typography::make('heading_typography', 'Heading Typography'),
+        Typography::make('body_typography', 'Body Typography'),
+    ];
+}
+```
+
+This creates a dropdown in the visual editor populated with all typography presets defined by the theme.
+
+**In Blade:**
+
+Apply the selected typography using the `attributes()` method:
+
+```blade
+<h1 {{ $section->settings->heading_typography->attributes() }}>
+    Welcome to our store
+</h1>
+```
+
+This outputs:
+
+```html
+<h1 data-typography="heading">Welcome to our store</h1>
+```
+
+The `data-typography` attribute scopes typography CSS variables to this element.
+
+<SettingPreview image="/setting-typography.png" title="Typography setting type preview"/>
+
+---
+
+### TypographyPresets
+
+The `TypographyPresets` setting type allows theme developers to define a **set of named typography presets** that merchants can reuse across multiple sections. Each typography preset is a collection of font properties (fontFamily, fontSize, lineHeight, etc.) that can be selected using a [Typography](#typography) setting.
+
+This is typically defined once in your theme's `config/settings.php` and is **editable by the merchant**.
+
+- Acts as the **central registry of available typography presets**
+- Enables consistency in text styling across sections
+- Supports responsive typography for fontSize and lineHeight
+- Merchants can add, edit, or remove presets in the theme editor
+
+#### Usage in `config/settings.php`
+
+```php
+use BagistoPlus\Visual\Settings\TypographyPresets;
+
+return [
+    TypographyPresets::make('typography_presets', 'Typography Presets')
+        ->presets([
+            'heading' => [
+                'fontFamily' => 'Inter',
+                'fontWeight' => '700',
+                'fontSize' => '2xl',
+                'lineHeight' => 'tight',
+                'fontStyle' => 'normal',
+                'letterSpacing' => 'normal',
+                'textTransform' => 'none',
+            ],
+            'body' => [
+                'fontFamily' => 'Inter',
+                'fontWeight' => '400',
+                'fontSize' => 'base',
+                'lineHeight' => 'normal',
+                'fontStyle' => 'normal',
+                'letterSpacing' => 'normal',
+                'textTransform' => 'none',
+            ]
+        ]),
+];
+```
+
+<SettingPreview image="/setting-typography-presets.png" title="Typography presets setting type preview"/>
+
+#### Generating CSS
+
+After defining typography presets, you must generate the CSS in your theme's layout file. This makes the typography styles available to all sections using the `Typography` setting.
+
+**Basic Usage:**
+
+```blade
+{{-- layouts/default.blade.php --}}
+<style>
+  @foreach ($theme->settings->typography_presets as $typography)
+    {!! $typography->toCss() !!}
+  @endforeach
+</style>
+
+{{-- Load fonts from Bunny Fonts --}}
+@pushOnce('styles')
+  @foreach ($theme->settings->typography_presets as $typography)
+    {!! $typography->toHtml() !!}
+  @endforeach
+@endPushOnce
+```
+
+This generates CSS for typography styles:
+
+```css
+[data-typography='heading'] {
+  --typography-font-family: 'Inter', sans-serif;
+  --typography-font-style: normal;
+  --typography-font-weight: 700;
+  --typography-font-size: 1.5rem;
+  --typography-line-height: 1.25;
+  --typography-letter-spacing: 0em;
+  --typography-text-transform: none;
+}
+
+[data-typography='body'] {
+  --typography-font-family: 'Inter', sans-serif;
+  --typography-font-style: normal;
+  --typography-font-weight: 400;
+  --typography-font-size: 1rem;
+  --typography-line-height: 1.5;
+  --typography-letter-spacing: 0em;
+  --typography-text-transform: none;
+}
+```
+
+And generates HTML to load fonts from Bunny Fonts:
+
+```html
+<link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
+<link href="https://fonts.bunny.net/css?family=inter:" rel="preload" as="style" />
+<link href="https://fonts.bunny.net/css?family=inter:" rel="stylesheet" />
+```
+
+**With Custom Selectors:**
+
+You can also apply typography directly to HTML elements by passing a custom selector:
+
+```blade
+<style>
+  {!! $theme->settings->typography_presets['heading']->toCss('h1, h2, h3') !!}
+  {!! $theme->settings->typography_presets['body']->toCss('p, li, td') !!}
+</style>
+```
+
+This generates CSS that applies to both the `data-typography` attribute AND the custom selector:
+
+```css
+[data-typography='heading'],
+h1,
+h2,
+h3 {
+  --typography-font-family: 'Inter', sans-serif;
+  --typography-font-style: normal;
+  --typography-font-weight: 700;
+  --typography-font-size: 1.5rem;
+  --typography-line-height: 1.25;
+  --typography-letter-spacing: 0em;
+  --typography-text-transform: none;
+}
+
+[data-typography='body'],
+p,
+li,
+td {
+  --typography-font-family: 'Inter', sans-serif;
+  --typography-font-style: normal;
+  --typography-font-weight: 400;
+  --typography-font-size: 1rem;
+  --typography-line-height: 1.5;
+  --typography-letter-spacing: 0em;
+  --typography-text-transform: none;
+}
+```
+
+**Applying CSS Variables:**
+
+In your theme's CSS, apply the generated CSS variables to elements:
+
+```css
+[data-typography] {
+  font-family: var(--typography-font-family);
+  font-style: var(--typography-font-style);
+  font-weight: var(--typography-font-weight);
+  font-size: var(--typography-font-size);
+  line-height: var(--typography-line-height);
+  letter-spacing: var(--typography-letter-spacing);
+  text-transform: var(--typography-text-transform);
+}
+```
+
+#### Preset Format
+
+Each preset is an array with the following properties:
+
+| Property        | Type          | Description                            | Required | Values                                                                                 |
+| --------------- | ------------- | -------------------------------------- | -------- | -------------------------------------------------------------------------------------- |
+| `fontFamily`    | string\|null  | Font family name                       | No       | Any font family name                                                                   |
+| `fontWeight`    | string        | Font weight                            | Yes      | `100`, `200`, `300`, `400`, `500`, `600`, `700`, `800`, `900`                          |
+| `fontSize`      | string\|array | Font size token or responsive config   | Yes      | `xs`, `sm`, `base`, `lg`, `xl`, `2xl`, `3xl`, `4xl`, `5xl`, `6xl`, `7xl`, `8xl`, `9xl` |
+| `lineHeight`    | string\|array | Line height token or responsive config | Yes      | `none`, `tight`, `snug`, `normal`, `relaxed`, `loose`                                  |
+| `fontStyle`     | string        | Font style                             | Yes      | `normal`, `italic`                                                                     |
+| `letterSpacing` | string        | Letter spacing token                   | Yes      | `tighter`, `tight`, `normal`, `wide`, `wider`, `widest`                                |
+| `textTransform` | string        | Text transform                         | Yes      | `none`, `uppercase`, `lowercase`, `capitalize`                                         |
+
+**Font Size Tokens:**
+
+| Token  | CSS Value | Description        |
+| ------ | --------- | ------------------ |
+| `xs`   | 0.75rem   | Extra small (12px) |
+| `sm`   | 0.875rem  | Small (14px)       |
+| `base` | 1rem      | Base size (16px)   |
+| `lg`   | 1.125rem  | Large (18px)       |
+| `xl`   | 1.25rem   | Extra large (20px) |
+| `2xl`  | 1.5rem    | 2x large (24px)    |
+| `3xl`  | 1.875rem  | 3x large (30px)    |
+| `4xl`  | 2.25rem   | 4x large (36px)    |
+| `5xl`  | 3rem      | 5x large (48px)    |
+| `6xl`  | 3.75rem   | 6x large (60px)    |
+| `7xl`  | 4.5rem    | 7x large (72px)    |
+| `8xl`  | 6rem      | 8x large (96px)    |
+| `9xl`  | 8rem      | 9x large (128px)   |
+
+**Line Height Tokens:**
+
+| Token     | CSS Value |
+| --------- | --------- |
+| `none`    | 1         |
+| `tight`   | 1.25      |
+| `snug`    | 1.375     |
+| `normal`  | 1.5       |
+| `relaxed` | 1.625     |
+| `loose`   | 2         |
+
+**Letter Spacing Tokens:**
+
+| Token     | CSS Value |
+| --------- | --------- |
+| `tighter` | -0.05em   |
+| `tight`   | -0.025em  |
+| `normal`  | 0em       |
+| `wide`    | 0.025em   |
+| `wider`   | 0.05em    |
+| `widest`  | 0.1em     |
+
+#### Responsive Typography
+
+Typography supports responsive configurations for `fontSize` and `lineHeight` using an array format with breakpoint keys:
+
+```php
+TypographyPresets::make('typography_presets', 'Typography Presets')
+    ->presets([
+        'responsive-heading' => [
+            'fontFamily' => 'Inter',
+            'fontWeight' => '700',
+            'fontSize' => [
+                '_default' => '2xl',  // Default size
+                'mobile' => 'xl',     // max-width: 639px
+                'tablet' => '2xl',    // 640px - 1023px
+                'desktop' => '3xl',   // min-width: 1024px
+            ],
+            'lineHeight' => [
+                '_default' => 'tight',
+                'mobile' => 'snug',
+                'desktop' => 'tight',
+            ],
+            'fontStyle' => 'normal',
+            'letterSpacing' => 'normal',
+            'textTransform' => 'none',
+        ],
+    ]);
+```
+
+**Breakpoints:**
+
+| Breakpoint | Media Query                              | Description     |
+| ---------- | ---------------------------------------- | --------------- |
+| `_default` | (none)                                   | Default value   |
+| `mobile`   | `max-width: 639px`                       | Mobile devices  |
+| `tablet`   | `min-width: 640px and max-width: 1023px` | Tablet devices  |
+| `desktop`  | `min-width: 1024px`                      | Desktop devices |
+
+Generated responsive CSS:
+
+```css
+[data-typography='responsive-heading'] {
+  --typography-font-size: 1.5rem;
+  --typography-line-height: 1.25;
+}
+
+@media (max-width: 639px) {
+  [data-typography='responsive-heading'] {
+    --typography-font-size: 1.25rem;
+    --typography-line-height: 1.375;
+  }
+}
+
+@media (min-width: 1024px) {
+  [data-typography='responsive-heading'] {
+    --typography-font-size: 1.875rem;
+    --typography-line-height: 1.25;
+  }
+}
+```
+
+#### Behavior in the Theme Editor
+
+- Merchants can **add, edit, or remove** typography presets
+- Custom presets are assigned IDs like `typography-1`, `typography-2`, etc.
+- Theme-defined presets cannot be deleted (only custom ones can be removed)
+- Changes are immediately reflected in sections using the `Typography` setting
+
+<SettingPreview image="/setting-edit-typography-preset.png" title="Edit typography preset setting type preview"/>
+
+#### Notes
+
+- Only one `TypographyPresets` setting should be defined per theme
+- Sections reference presets via the `Typography` setting, not directly
+- If no `TypographyPresets` is defined, `Typography` fields will not be functional
+- Font families are automatically loaded from Bunny Fonts using the `toHtml()` method
+- Bunny Fonts is the only supported font provider. See the [Font](#font) setting type for more details on font loading
 
 ---
 

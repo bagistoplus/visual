@@ -1,8 +1,9 @@
 {
   "resources/assets/admin/css/admin.css": {
-    "file": "assets/admin-2wVYSiLo.css",
+    "file": "assets/admin-BgkT9tVx.css",
     "src": "resources/assets/admin/css/admin.css",
     "isEntry": true,
+    "name": "admin",
     "names": [
       "admin.css"
     ]

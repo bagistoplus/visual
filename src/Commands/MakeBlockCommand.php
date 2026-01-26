@@ -24,9 +24,18 @@ class MakeBlockCommand extends Command
 
     public function handle(): int
     {
-        $name = $this->argument('name') ?? text('🧱 Block name (e.g., ProductCard)');
-        $slug = Str::kebab($name);
-        $class = Str::studly($name);
+        $name = $this->argument('name') ?? text('🧱 Block name (e.g., ProductCard or Carousel/Slide)');
+
+        $parts = explode('/', $name);
+        $className = Str::studly(array_pop($parts));
+        $folderParts = array_map(fn ($part) => Str::studly($part), $parts);
+        $folderPath = $folderParts ? implode('/', $folderParts) : '';
+        $folderNamespace = $folderParts ? '\\'.implode('\\', $folderParts) : '';
+
+        $slugParts = array_map(fn ($part) => Str::kebab($part), explode('/', $name));
+        $slug = implode('/', $slugParts);
+        $viewSlug = str_replace('/', '.', $slug);
+
         $component = $this->option('component');
         $livewire = $this->option('livewire');
         $force = $this->option('force');
@@ -37,7 +46,6 @@ class MakeBlockCommand extends Command
             return 1;
         }
 
-        // Resolve theme
         $theme = $this->option('theme');
 
         if (! $theme) {
@@ -47,7 +55,7 @@ class MakeBlockCommand extends Command
 
             if ($themes->isNotEmpty()) {
                 $theme = select(
-                    label: '🎨 Select the target theme (leave blank to use app/Visual)',
+                    label: '🎨 Select the target theme (\'In default app\' to use app/Visual)',
                     options: array_merge($themes->toArray(), [
                         '__app' => 'In default app',
                     ]),
@@ -62,11 +70,10 @@ class MakeBlockCommand extends Command
         $viewPath = '';
 
         if ($generateInApp) {
-            $namespace = 'App\\Visual\\Blocks';
-            $classPath = base_path("app/Visual/Blocks/{$class}.php");
+            $namespace = 'App\\Visual\\Blocks'.$folderNamespace;
+            $classPath = base_path("app/Visual/Blocks/{$folderPath}".($folderPath ? '/' : '')."{$className}.php");
             $viewPath = resource_path("views/blocks/{$slug}.blade.php");
         } else {
-            // Resolve theme path and namespace
             $themeConfig = config("themes.shop.$theme");
 
             if (! $themeConfig || ! isset($themeConfig['base_path'])) {
@@ -97,8 +104,8 @@ class MakeBlockCommand extends Command
                 return 1;
             }
 
-            $namespace = rtrim($namespace, '\\').'\\Blocks';
-            $classPath = "{$themePath}/src/Blocks/{$class}.php";
+            $namespace = rtrim($namespace, '\\').'\\Blocks'.$folderNamespace;
+            $classPath = "{$themePath}/src/Blocks/{$folderPath}".($folderPath ? '/' : '')."{$className}.php";
             $viewPath = "{$themePath}/resources/views/blocks/{$slug}.blade.php";
         }
 
@@ -115,9 +122,9 @@ class MakeBlockCommand extends Command
         }
 
         $vars = [
-            'class' => $class,
+            'class' => $className,
             'slug' => $slug,
-            'view' => "shop::blocks.{$slug}",
+            'view' => $generateInApp ? "blocks.{$viewSlug}" : "shop::blocks.{$viewSlug}",
             'namespace' => $namespace,
             'theme' => $theme ?? 'app',
         ];
@@ -140,7 +147,7 @@ class MakeBlockCommand extends Command
 
         $this->info(" Created {$classPath}");
         $this->info(" Created {$viewPath}");
-        info("✅ Block '{$class}' created successfully in ".($generateInApp ? 'app/Visual' : "theme '{$theme}'"));
+        info("✅ Block '{$className}' created successfully in ".($generateInApp ? 'app/Visual' : "theme '{$theme}'"));
 
         return 0;
     }
