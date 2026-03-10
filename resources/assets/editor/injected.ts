@@ -195,6 +195,19 @@ class VisualObject {
     document.dispatchEvent(new CustomEvent(event, { detail: data }));
   }
 
+  isResponsiveValue(value: unknown): boolean {
+    return typeof value === 'object' && value !== null && '_default' in value;
+  }
+
+  getResponsiveValue<T = any>(value: unknown, deviceId: string, fallback?: T): T {
+    if (typeof value === 'object' && value !== null && '_default' in value) {
+      return ((value as Record<string, any>)[deviceId]
+        ?? (value as Record<string, any>)._default
+        ?? fallback) as T;
+    }
+    return (value ?? fallback) as T;
+  }
+
   handleLiveUpdate(blockId: string, key: string, value: any): void {
     // Custom live update - delegates to existing handlePropertyUpdate
     handlePropertyUpdate({
