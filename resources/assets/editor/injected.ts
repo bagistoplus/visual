@@ -32,6 +32,10 @@ window.addEventListener('error', (event) => {
 
 function createMorphdomHandler() {
   return function onBeforeElUpdated(fromEl: Element, toEl: Element): boolean {
+    if (fromEl instanceof HTMLElement && fromEl.hasAttribute('data-morph-ignore')) {
+      return false;
+    }
+
     if (fromEl instanceof HTMLElement && hasRecentLiveUpdate(fromEl)) {
       return false;
     }
