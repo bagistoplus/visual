@@ -59,7 +59,7 @@ const editorInstance = createCraftileEditor({
   blockFilterFunction(schema, context) {
     const pageContext = {
       template: state.pageData?.template,
-      region: context.regionName,
+      region: context.regionId,
     };
 
     // Check if block is explicitly disabled (takes precedence)
