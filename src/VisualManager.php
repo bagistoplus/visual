@@ -29,6 +29,11 @@ class VisualManager
         Craftile::discoverBlocksIn($namespace, $path);
     }
 
+    public function discoverPresetsIn(string $path, string $namespace = 'App\\Presets'): void
+    {
+        Craftile::discoverPresetsIn($namespace, $path);
+    }
+
     /**
      * Register a single section.
      *

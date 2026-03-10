@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static \BagistoPlus\Visual\ThemeSettingsLoader themeSettingsLoader()
  * @method static void discoverSectionsIn(string $path, string $namespace = 'App\\Sections')
  * @method static void discoverBlocksIn(string $path, string $namespace = 'App\\Blocks')
+ * @method static void discoverPresetsIn(string $path, string $namespace = 'App\\Presets')
  * @method static void registerSection(string $sectionClass)
  * @method static void registerSections(array $sectionClasses)
  * @method static void registerBlock(string $blockClass)
