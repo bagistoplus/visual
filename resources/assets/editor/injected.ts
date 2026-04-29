@@ -201,9 +201,7 @@ class VisualObject {
 
   getResponsiveValue<T = any>(value: unknown, deviceId: string, fallback?: T): T {
     if (typeof value === 'object' && value !== null && '_default' in value) {
-      return ((value as Record<string, any>)[deviceId]
-        ?? (value as Record<string, any>)._default
-        ?? fallback) as T;
+      return ((value as Record<string, any>)[deviceId] ?? (value as Record<string, any>)._default ?? fallback) as T;
     }
     return (value ?? fallback) as T;
   }
