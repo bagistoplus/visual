@@ -25,12 +25,12 @@
   "require": {
     "php": "^8.2",
     "andreiio/blade-remix-icon": "^3.6",
+    "bagistoplus/couleur": "^0.2.0",
     "blade-ui-kit/blade-heroicons": "^2.4",
     "blade-ui-kit/blade-icons": "^1.7",
     "craftile/laravel": "^0.6",
     "illuminate/contracts": "^11.0||^12.0",
     "mallardduck/blade-lucide-icons": "^1.23",
-    "matthieumastadenis/couleur": "^0.1.2",
     "mews/purifier": "^3.4",
     "spatie/browsershot": "^3.61||^5.0",
     "spatie/once": "^3.1",
