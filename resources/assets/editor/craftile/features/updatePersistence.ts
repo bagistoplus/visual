@@ -16,6 +16,7 @@ export function mergeUpdates(updates: UpdatesEvent[]): UpdatesEvent {
       updated: [],
       removed: [],
       moved: {},
+      positions: {},
     },
     blocks: {},
     regions: [],
@@ -26,6 +27,7 @@ export function mergeUpdates(updates: UpdatesEvent[]): UpdatesEvent {
     merged.changes.updated.push(...update.changes.updated);
     merged.changes.removed.push(...update.changes.removed);
     Object.assign(merged.changes.moved, update.changes.moved || {});
+    Object.assign(merged.changes.positions!, update.changes.positions || {});
     Object.assign(merged.blocks, update.blocks);
 
     if (update.regions && update.regions.length > 0) {

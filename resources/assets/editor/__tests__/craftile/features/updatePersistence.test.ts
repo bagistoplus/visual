@@ -9,7 +9,13 @@ import {
 } from '../../../craftile/features/updatePersistence';
 
 function createUpdatesEvent(
-  changes: { added?: string[]; updated?: string[]; removed?: string[]; moved?: Record<string, any> },
+  changes: {
+    added?: string[];
+    updated?: string[];
+    removed?: string[];
+    moved?: Record<string, any>;
+    positions?: Record<string, any>;
+  },
   blocks: Record<string, any> = {},
   regions: any[] = []
 ): UpdatesEvent {
@@ -19,6 +25,7 @@ function createUpdatesEvent(
       updated: changes.updated || [],
       removed: changes.removed || [],
       moved: changes.moved as any || {},
+      positions: changes.positions as any || {},
     },
     blocks: blocks as any,
     regions: regions as any,
@@ -104,6 +111,45 @@ describe('updatePersistence utilities', () => {
       expect(result.changes.moved).toEqual({
         block1: 'newParent1',
         block2: 'newParent2',
+      });
+    });
+
+    it('should merge positions objects', () => {
+      const updates: UpdatesEvent[] = [
+        createUpdatesEvent(
+          { positions: { block1: { parentId: 'parent1', afterId: 'sibling1' } } },
+          {}
+        ),
+        createUpdatesEvent(
+          { positions: { block2: { regionId: 'header' } } },
+          {}
+        ),
+      ];
+
+      const result = mergeUpdates(updates);
+
+      expect(result.changes.positions).toEqual({
+        block1: { parentId: 'parent1', afterId: 'sibling1' },
+        block2: { regionId: 'header' },
+      });
+    });
+
+    it('should overwrite earlier positions for the same block with later ones', () => {
+      const updates: UpdatesEvent[] = [
+        createUpdatesEvent(
+          { positions: { block1: { parentId: 'oldParent' } } },
+          {}
+        ),
+        createUpdatesEvent(
+          { positions: { block1: { parentId: 'newParent' } } },
+          {}
+        ),
+      ];
+
+      const result = mergeUpdates(updates);
+
+      expect(result.changes.positions).toEqual({
+        block1: { parentId: 'newParent' },
       });
     });
 
