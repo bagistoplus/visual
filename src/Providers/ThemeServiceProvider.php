@@ -60,7 +60,7 @@ abstract class ThemeServiceProvider extends ServiceProvider
         $this->loadTranslationsFrom($this->getBasePath().'/resources/lang', $theme['code']);
 
         if ($this->app->runningInConsole()) {
-            $this->app['view']->prependNamespace('shop', $this->getBasePath().'/resources/views');
+            $this->app->get('view')->prependNamespace('shop', $this->getBasePath().'/resources/views');
 
             $this->publishes([
                 $this->getBasePath().'/resources/views' => resource_path("themes/{$theme['code']}/views"),

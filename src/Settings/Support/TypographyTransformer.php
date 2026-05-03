@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Settings\Support;
 
 use BagistoPlus\Visual\Contracts\SettingTransformerInterface;
+use BagistoPlus\Visual\Theme\Theme;
 
 class TypographyTransformer implements SettingTransformerInterface
 {
@@ -18,7 +19,7 @@ class TypographyTransformer implements SettingTransformerInterface
         }
 
         // Find the TypographyPresets and get the preset data
-        /** @var \BagistoPlus\Visual\Theme\Theme $theme */
+        /** @var Theme $theme */
         $theme = themes()->current();
 
         $presetsSetting = collect($theme->settingsSchema)

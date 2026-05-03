@@ -3,6 +3,7 @@
 use BagistoPlus\Visual\Contracts\SettingTransformerInterface;
 use BagistoPlus\Visual\Settings\Support\TypographyPresetsTransformer;
 use BagistoPlus\Visual\Settings\Support\TypographyValue;
+use Illuminate\Support\Collection;
 
 it('implements SettingTransformerInterface', function () {
     expect(TypographyPresetsTransformer::class)
@@ -13,7 +14,7 @@ it('returns empty collection for null value', function () {
     $transformer = new TypographyPresetsTransformer;
 
     expect($transformer->transform(null))
-        ->toBeInstanceOf(\Illuminate\Support\Collection::class)
+        ->toBeInstanceOf(Collection::class)
         ->toBeEmpty();
 });
 
@@ -21,7 +22,7 @@ it('returns empty collection for non-array value', function () {
     $transformer = new TypographyPresetsTransformer;
 
     expect($transformer->transform('invalid'))
-        ->toBeInstanceOf(\Illuminate\Support\Collection::class)
+        ->toBeInstanceOf(Collection::class)
         ->toBeEmpty();
 });
 
@@ -50,7 +51,7 @@ it('transforms array to collection of TypographyValue objects', function () {
     $result = $transformer->transform($presets);
 
     expect($result)
-        ->toBeInstanceOf(\Illuminate\Support\Collection::class)
+        ->toBeInstanceOf(Collection::class)
         ->toHaveCount(2)
         ->each(fn ($item) => $item->toBeInstanceOf(TypographyValue::class));
 

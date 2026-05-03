@@ -1,5 +1,7 @@
 <?php
 
+use Craftile\Core\Data\ResponsiveValue;
+
 if (! function_exists('visual_clear_inline_styles')) {
     function visual_clear_inline_styles($html)
     {
@@ -22,6 +24,6 @@ if (! function_exists('visual_is_responsive_value')) {
      */
     function visual_is_responsive_value(mixed $value): bool
     {
-        return $value instanceof \Craftile\Core\Data\ResponsiveValue;
+        return $value instanceof ResponsiveValue;
     }
 }

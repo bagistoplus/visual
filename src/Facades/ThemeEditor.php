@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static \Illuminate\Support\HtmlString renderScripts()
  * @method static \Illuminate\Support\HtmlString renderStyles()
  *
- * @see \BagistoPlus\Visual\ThemeEditor
+ * @see ThemeEditorManager
  */
 class ThemeEditor extends Facade
 {

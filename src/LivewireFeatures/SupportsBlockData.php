@@ -5,6 +5,11 @@ namespace BagistoPlus\Visual\LivewireFeatures;
 use BagistoPlus\Visual\Blocks\LivewireBlock;
 use BagistoPlus\Visual\Blocks\LivewireSection;
 use BagistoPlus\Visual\Facades\Visual;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\View\ComponentAttributeBag;
+use Illuminate\View\ComponentSlot;
+use Illuminate\View\InvokableComponentVariable;
 use Livewire\ComponentHook;
 
 class SupportsBlockData extends ComponentHook
@@ -24,11 +29,11 @@ class SupportsBlockData extends ComponentHook
         }
 
         // Remove Laravel component objects
-        $context = $context->reject(fn ($value) => $value instanceof \Illuminate\View\ComponentAttributeBag
-            || $value instanceof \Illuminate\View\InvokableComponentVariable
-            || $value instanceof \Illuminate\View\ComponentSlot
-            || $value instanceof \Illuminate\Http\Resources\Json\AnonymousResourceCollection
-            || $value instanceof \Illuminate\Http\Resources\Json\JsonResource)
+        $context = $context->reject(fn ($value) => $value instanceof ComponentAttributeBag
+            || $value instanceof InvokableComponentVariable
+            || $value instanceof ComponentSlot
+            || $value instanceof AnonymousResourceCollection
+            || $value instanceof JsonResource)
             ->all();
 
         $context['comparableAttributes'] = [];

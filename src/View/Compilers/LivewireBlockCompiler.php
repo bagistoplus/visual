@@ -4,12 +4,13 @@ namespace BagistoPlus\Visual\View\Compilers;
 
 use Craftile\Core\Data\BlockSchema;
 use Craftile\Laravel\Contracts\BlockCompilerInterface;
+use Livewire\Component;
 
 class LivewireBlockCompiler implements BlockCompilerInterface
 {
     public function supports(BlockSchema $blockSchema): bool
     {
-        return is_subclass_of($blockSchema->class, \Livewire\Component::class);
+        return is_subclass_of($blockSchema->class, Component::class);
     }
 
     public function compile(BlockSchema $schema, string $hash, string $customAttributesExpr = ''): string

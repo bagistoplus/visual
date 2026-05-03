@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Facades;
 
+use BagistoPlus\Visual\VisualManager;
 use Illuminate\Support\Facades\Facade;
 
 /**
@@ -18,12 +19,12 @@ use Illuminate\Support\Facades\Facade;
  * @method static array getLivewireContextFilters()
  * @method static void supportLivewire()
  *
- * @see \BagistoPlus\Visual\VisualManager
+ * @see VisualManager
  */
 class Visual extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \BagistoPlus\Visual\VisualManager::class;
+        return VisualManager::class;
     }
 }

@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Persistence;
 
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
+use BagistoPlus\Visual\Theme\Theme;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
@@ -69,7 +70,7 @@ class PersistThemeSettings
             return [];
         }
 
-        $theme = \BagistoPlus\Visual\Theme\Theme::make($themeConfig);
+        $theme = Theme::make($themeConfig);
 
         // Try to find existing settings file using fallback hierarchy
         $settingsPath = ThemePathsResolver::resolveThemeSettingsPath(
