@@ -76,6 +76,7 @@ abstract class ThemeServiceProvider extends ServiceProvider
                 $namespace = $this->getThemeNamespace();
                 Visual::discoverSectionsIn("{$theme['base_path']}/src/Sections", "{$namespace}\\Sections");
                 Visual::discoverBlocksIn("{$theme['base_path']}/src/Blocks", "{$namespace}\\Blocks");
+                Visual::discoverPresetsIn("{$theme['base_path']}/src/Presets", "{$namespace}\\Presets");
             });
 
             return;
@@ -85,6 +86,7 @@ abstract class ThemeServiceProvider extends ServiceProvider
             $namespace = $this->getThemeNamespace();
             Visual::discoverSectionsIn("{$theme->basePath}/src/Sections", "{$namespace}\\Sections");
             Visual::discoverBlocksIn("{$theme->basePath}/src/Blocks", "{$namespace}\\Blocks");
+            Visual::discoverPresetsIn("{$theme->basePath}/src/Presets", "{$namespace}\\Presets");
         });
     }
 

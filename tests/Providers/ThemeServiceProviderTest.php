@@ -1,5 +1,6 @@
 <?php
 
+use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Providers\ThemeServiceProvider;
 use BagistoPlus\Visual\Tests\Fixtures\FakeTheme\FakeThemeServiceProvider;
 use BagistoPlus\Visual\Tests\Fixtures\FakeTheme2\Providers\FakeTheme2ServiceProvider;
@@ -35,6 +36,28 @@ it('should mark theme as visual theme', function () {
     $config = config('themes.shop.fake-theme');
     expect($config)->toHaveKey('visual_theme');
     expect($config['visual_theme'])->toBeTrue();
+});
+
+it('should discover sections blocks and presets from the theme source directories', function () {
+    Visual::spy();
+
+    $serviceProvider = new FakeThemeServiceProvider($this->app);
+    $serviceProvider->boot();
+
+    $basePath = dirname(__DIR__).'/Fixtures/FakeTheme';
+    $namespace = 'BagistoPlus\\Visual\\Tests\\Fixtures\\FakeTheme';
+
+    Visual::shouldHaveReceived('discoverSectionsIn')
+        ->with("{$basePath}/src/Sections", "{$namespace}\\Sections")
+        ->once();
+
+    Visual::shouldHaveReceived('discoverBlocksIn')
+        ->with("{$basePath}/src/Blocks", "{$namespace}\\Blocks")
+        ->once();
+
+    Visual::shouldHaveReceived('discoverPresetsIn')
+        ->with("{$basePath}/src/Presets", "{$namespace}\\Presets")
+        ->once();
 });
 
 test('theme should be loaded', function () {
