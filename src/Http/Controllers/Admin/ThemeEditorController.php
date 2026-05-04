@@ -43,7 +43,7 @@ class ThemeEditorController extends Controller
 
     public function index($themeCode)
     {
-        return view('visual::admin.editor.index', [
+        return view()->make('visual::admin.editor.index', [
             'config' => [
                 'baseUrl' => parse_url(route('visual.admin.editor', ['theme' => $themeCode]), PHP_URL_PATH),
                 'imagesBaseUrl' => Storage::disk(config('bagisto_visual.images_storage'))->url(''),
@@ -281,8 +281,8 @@ class ThemeEditorController extends Controller
                     'description' => $blockSchema->description,
                     'previewImageUrl' => $blockSchema->previewImageUrl,
                     'isSection' => collect([SimpleSection::class, BladeSection::class, LivewireSection::class])->some(fn ($class) => is_subclass_of($blockSchema->class, $class)),
-                    'enabledOn' => $blockSchema->enabledOn ?? [],
-                    'disabledOn' => $blockSchema->disabledOn ?? [],
+                    'enabledOn' => $blockSchema->enabledOn,
+                    'disabledOn' => $blockSchema->disabledOn,
                 ],
             ];
         })

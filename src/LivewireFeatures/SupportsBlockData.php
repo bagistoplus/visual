@@ -55,9 +55,7 @@ class SupportsBlockData extends ComponentHook
             $context['section'] = $this->component->getBlock();
         }
 
-        if (method_exists($this->component, 'share')) {
-            $craftileContext = array_merge($context, $this->component->share());
-        }
+        $craftileContext = array_merge($context, $this->component->share());
 
         $view->with(array_merge($context, ['__craftileContext' => $craftileContext]));
     }

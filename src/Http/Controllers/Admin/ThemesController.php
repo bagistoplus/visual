@@ -13,7 +13,7 @@ class ThemesController extends Controller
             ->where('visual_theme', true)
             ->map(fn ($attrs) => Theme::make($attrs));
 
-        return view('visual::admin.themes.index', [
+        return view()->make('visual::admin.themes.index', [
             'themes' => $themes,
         ]);
     }

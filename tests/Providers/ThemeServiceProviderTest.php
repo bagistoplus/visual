@@ -47,16 +47,20 @@ it('should discover sections blocks and presets from the theme source directorie
     $basePath = dirname(__DIR__).'/Fixtures/FakeTheme';
     $namespace = 'BagistoPlus\\Visual\\Tests\\Fixtures\\FakeTheme';
 
+    $normalizesTo = fn (string $expected) => Mockery::on(
+        fn (string $path) => str_replace('\\', '/', $path) === str_replace('\\', '/', $expected)
+    );
+
     Visual::shouldHaveReceived('discoverSectionsIn')
-        ->with("{$basePath}/src/Sections", "{$namespace}\\Sections")
+        ->with($normalizesTo("{$basePath}/src/Sections"), "{$namespace}\\Sections")
         ->once();
 
     Visual::shouldHaveReceived('discoverBlocksIn')
-        ->with("{$basePath}/src/Blocks", "{$namespace}\\Blocks")
+        ->with($normalizesTo("{$basePath}/src/Blocks"), "{$namespace}\\Blocks")
         ->once();
 
     Visual::shouldHaveReceived('discoverPresetsIn')
-        ->with("{$basePath}/src/Presets", "{$namespace}\\Presets")
+        ->with($normalizesTo("{$basePath}/src/Presets"), "{$namespace}\\Presets")
         ->once();
 });
 

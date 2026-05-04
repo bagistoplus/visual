@@ -28,7 +28,7 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
     {
         $settingsBag = $this->themeSettingsLoader->loadActiveThemeSettings();
 
-        return view('visual::admin.editor.injected-script', [
+        return view()->make('visual::admin.editor.injected-script', [
             'pageData' => [
                 'content' => $pageData,
                 'template' => [
