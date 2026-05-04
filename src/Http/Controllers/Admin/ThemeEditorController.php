@@ -14,11 +14,14 @@ use BagistoPlus\Visual\Persistence\PublishTheme;
 use BagistoPlus\Visual\Persistence\RenderPreview;
 use BagistoPlus\Visual\Settings\Support\ImageTransformer;
 use BagistoPlus\Visual\Theme\Theme;
+use BagistoPlus\Visual\ThemeEditor;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use BladeUI\Icons\Factory;
 use BladeUI\Icons\IconsManifest;
 use Craftile\Laravel\BlockSchemaRegistry;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Storage;
@@ -40,7 +43,7 @@ class ThemeEditorController extends Controller
 
     public function index($themeCode)
     {
-        return view('visual::admin.editor.index', [
+        return view()->make('visual::admin.editor.index', [
             'config' => [
                 'baseUrl' => parse_url(route('visual.admin.editor', ['theme' => $themeCode]), PHP_URL_PATH),
                 'imagesBaseUrl' => Storage::disk(config('bagisto_visual.images_storage'))->url(''),
@@ -140,7 +143,7 @@ class ThemeEditorController extends Controller
 
     public function uploadImages(Request $request)
     {
-        /** @var \Illuminate\Support\Collection<int, \Illuminate\Http\UploadedFile> $images */
+        /** @var Collection<int, UploadedFile> $images */
         $images = collect($request->file('image'));
 
         return $images->map(function ($image) {
@@ -236,7 +239,7 @@ class ThemeEditorController extends Controller
 
     protected function loadBlocks()
     {
-        /** @var \Illuminate\Support\Collection<string, BlockSchema> $schemas */
+        /** @var Collection<string, BlockSchema> $schemas */
         $schemas = collect(app(BlockSchemaRegistry::class)->all());
 
         return $schemas->map(function (BlockSchema $blockSchema) {
@@ -278,8 +281,8 @@ class ThemeEditorController extends Controller
                     'description' => $blockSchema->description,
                     'previewImageUrl' => $blockSchema->previewImageUrl,
                     'isSection' => collect([SimpleSection::class, BladeSection::class, LivewireSection::class])->some(fn ($class) => is_subclass_of($blockSchema->class, $class)),
-                    'enabledOn' => $blockSchema->enabledOn ?? [],
-                    'disabledOn' => $blockSchema->disabledOn ?? [],
+                    'enabledOn' => $blockSchema->enabledOn,
+                    'disabledOn' => $blockSchema->disabledOn,
                 ],
             ];
         })
@@ -308,7 +311,7 @@ class ThemeEditorController extends Controller
 
     protected function loadTemplates()
     {
-        return collect(app(\BagistoPlus\Visual\ThemeEditor::class)->getTemplates())
+        return collect(app(ThemeEditor::class)->getTemplates())
             ->map(fn ($template) => [
                 'template' => $template->template,
                 'label' => $template->label,

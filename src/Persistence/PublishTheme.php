@@ -4,6 +4,7 @@ namespace BagistoPlus\Visual\Persistence;
 
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use Illuminate\Filesystem\Filesystem;
+use Spatie\ResponseCache\Facades\ResponseCache;
 
 class PublishTheme
 {
@@ -56,7 +57,7 @@ class PublishTheme
     protected function clearResponseCache(): void
     {
         if (class_exists('\\Spatie\\ResponseCache\\Facades\\ResponseCache')) {
-            \Spatie\ResponseCache\Facades\ResponseCache::clear();
+            ResponseCache::clear();
         }
     }
 }

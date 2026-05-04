@@ -48,10 +48,29 @@ If you’re fixing a bug:
 
 ### 5. Commit with a Clear Message
 
+All commits must follow the [Conventional Commits](https://www.conventionalcommits.org) specification. The `commit-msg` git hook (installed automatically by Composer through CaptainHook) validates the message format locally, and a GitHub Actions workflow re-validates every commit on every pull request.
+
 ```bash
 git add .
-git commit -m "Fix: correct section layout misalignment"
+git commit -m "fix: correct section layout misalignment"
 ```
+
+#### Allowed types
+
+| Type | Use for |
+| --- | --- |
+| `feat` | New user-facing feature |
+| `fix` | Bug fix |
+| `refactor` | Code change that neither adds a feature nor fixes a bug |
+| `perf` | Performance improvement |
+| `style` | Formatting, whitespace, missing semicolons (no logic change) |
+| `test` | Adding or correcting tests |
+| `docs` | Documentation only |
+| `build` | Build system or external dependencies |
+| `ci` | CI configuration and workflows |
+| `chore` | Other changes that do not modify source or tests |
+
+A scope is optional and uses kebab-case (e.g. `feat(editor): ...`). Breaking changes use a `!` after the type/scope or a `BREAKING CHANGE:` footer, and trigger a major version bump on the next release.
 
 ### 6. Submit a Pull Request
 

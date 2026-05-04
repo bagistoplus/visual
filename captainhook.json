@@ -1,0 +1,66 @@
+{
+    "pre-commit": {
+        "enabled": true,
+        "actions": [
+            {
+                "action": "vendor/bin/pint --test",
+                "conditions": [
+                    {
+                        "exec": "\\CaptainHook\\App\\Hook\\Condition\\FileStaged\\OfType",
+                        "args": ["php"]
+                    }
+                ]
+            },
+            {
+                "action": "composer analyse",
+                "conditions": [
+                    {
+                        "exec": "\\CaptainHook\\App\\Hook\\Condition\\FileStaged\\OfType",
+                        "args": ["php"]
+                    }
+                ]
+            },
+            {
+                "action": "composer test",
+                "conditions": [
+                    {
+                        "exec": "\\CaptainHook\\App\\Hook\\Condition\\FileStaged\\OfType",
+                        "args": ["php"]
+                    }
+                ]
+            }
+        ]
+    },
+    "commit-msg": {
+        "enabled": true,
+        "actions": [
+            {
+                "action": "\\Ramsey\\CaptainHook\\ValidateConventionalCommit",
+                "options": {
+                    "config": {
+                        "typeCase": "kebab",
+                        "types": [
+                            "feat",
+                            "fix",
+                            "refactor",
+                            "chore",
+                            "test",
+                            "docs",
+                            "perf",
+                            "ci",
+                            "build",
+                            "style"
+                        ],
+                        "scopeRequired": false,
+                        "scopeCase": "kebab",
+                        "descriptionCase": null,
+                        "descriptionEndMark": null,
+                        "bodyRequired": false,
+                        "bodyWrapWidth": 0,
+                        "requiredFooters": []
+                    }
+                }
+            }
+        ]
+    }
+}

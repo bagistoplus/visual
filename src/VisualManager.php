@@ -7,6 +7,11 @@ use BagistoPlus\Visual\LivewireFeatures\BlockDataSynth;
 use BagistoPlus\Visual\LivewireFeatures\SupportsBlockData;
 use BagistoPlus\Visual\LivewireFeatures\SupportsComponentAttributes;
 use Craftile\Laravel\Facades\Craftile;
+use Illuminate\Support\Collection;
+use Livewire\Livewire;
+use Webkul\Shop\Http\Middleware\Currency;
+use Webkul\Shop\Http\Middleware\Locale;
+use Webkul\Shop\Http\Middleware\Theme;
 
 class VisualManager
 {
@@ -27,6 +32,11 @@ class VisualManager
     public function discoverBlocksIn(string $path, string $namespace = 'App\\Blocks'): void
     {
         Craftile::discoverBlocksIn($namespace, $path);
+    }
+
+    public function discoverPresetsIn(string $path, string $namespace = 'App\\Presets'): void
+    {
+        Craftile::discoverPresetsIn($namespace, $path);
     }
 
     /**
@@ -73,7 +83,7 @@ class VisualManager
      * Register a custom setting transformer.
      *
      * @param  string  $type  The setting type to transform
-     * @param  \BagistoPlus\Visual\Contracts\SettingTransformerInterface  $transformerClass  The transformer class
+     * @param  SettingTransformerInterface  $transformerClass  The transformer class
      */
     public function registerSettingTransformer(string $type, SettingTransformerInterface $transformerClass): void
     {
@@ -83,7 +93,7 @@ class VisualManager
     /**
      * Register a custom filter for Livewire block context.
      *
-     * @param  callable(\Illuminate\Support\Collection): \Illuminate\Support\Collection  $filter
+     * @param  callable(Collection): Collection  $filter
      */
     public function filterLivewireContextUsing(callable $filter): void
     {
@@ -105,19 +115,19 @@ class VisualManager
      */
     public function supportLivewire(): void
     {
-        if (! class_exists(\Livewire\Livewire::class)) {
+        if (! class_exists(Livewire::class)) {
             throw new \RuntimeException('Livewire is not installed. Please install it first: composer require livewire/livewire');
         }
 
-        \Livewire\Livewire::addPersistentMiddleware([
-            \Webkul\Shop\Http\Middleware\Locale::class,
-            \Webkul\Shop\Http\Middleware\Currency::class,
-            \Webkul\Shop\Http\Middleware\Theme::class,
+        Livewire::addPersistentMiddleware([
+            Locale::class,
+            Currency::class,
+            Theme::class,
         ]);
 
-        \Livewire\Livewire::propertySynthesizer(BlockDataSynth::class);
+        Livewire::propertySynthesizer(BlockDataSynth::class);
 
-        \Livewire\Livewire::componentHook(SupportsBlockData::class);
-        \Livewire\Livewire::componentHook(SupportsComponentAttributes::class);
+        Livewire::componentHook(SupportsBlockData::class);
+        Livewire::componentHook(SupportsComponentAttributes::class);
     }
 }

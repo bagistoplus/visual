@@ -5,26 +5,37 @@ namespace BagistoPlus\Visual\Providers;
 use BagistoPlus\Visual\Commands;
 use BagistoPlus\Visual\Components\Svg;
 use BagistoPlus\Visual\Data\BlockData;
+use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Middlewares\DisableResponseCacheInDesignMode;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
 use BagistoPlus\Visual\Settings\Support as SettingTransformers;
 use BagistoPlus\Visual\Support\BlockRenderFilter;
+use BagistoPlus\Visual\Support\TemplateNormalizer;
 use BagistoPlus\Visual\Support\UrlGenerator;
 use BagistoPlus\Visual\TemplateRegistrar;
 use BagistoPlus\Visual\ThemePathsResolver;
 use BagistoPlus\Visual\ThemeSettingsLoader;
+use BagistoPlus\Visual\View\Compilers\LivewireBlockCompiler;
 use Craftile\Laravel\Events\BlockSchemaRegistered;
 use Craftile\Laravel\Events\JsonViewLoaded;
 use Craftile\Laravel\Facades\Craftile;
+use Craftile\Laravel\View\BlockCompilerRegistry;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\DynamicComponent;
+use Livewire\Component;
+use Livewire\Livewire;
+use Webkul\Attribute\Models\Attribute;
+use Webkul\Category\Models\Category;
+use Webkul\Product\Models\Product;
+use Webkul\Shop\Http\Middleware\Theme;
 
 class CoreServiceProvider extends ServiceProvider
 {
@@ -88,7 +99,7 @@ class CoreServiceProvider extends ServiceProvider
             return ThemeEditor::inDesignMode();
         });
 
-        Craftile::normalizeTemplateUsing(new \BagistoPlus\Visual\Support\TemplateNormalizer);
+        Craftile::normalizeTemplateUsing(new TemplateNormalizer);
 
         Craftile::checkIfBlockCanRenderUsing(function (BlockData $blockData) {
             if ($blockData->disabled) {
@@ -135,15 +146,15 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function registerBlockCompilers(): void
     {
-        if (class_exists(\Livewire\Component::class)) {
-            $registry = app(\Craftile\Laravel\View\BlockCompilerRegistry::class);
-            $registry->register(new \BagistoPlus\Visual\View\Compilers\LivewireBlockCompiler);
+        if (class_exists(Component::class)) {
+            $registry = app(BlockCompilerRegistry::class);
+            $registry->register(new LivewireBlockCompiler);
 
             // Register Livewire blocks as Livewire components when they're discovered
             Event::listen(BlockSchemaRegistered::class, function (BlockSchemaRegistered $event) {
-                if ($event->schema->class && is_subclass_of($event->schema->class, \Livewire\Component::class)) {
+                if ($event->schema->class && is_subclass_of($event->schema->class, Component::class)) {
                     $componentName = 'craftile-'.$event->schema->slug;
-                    \Livewire\Livewire::component($componentName, $event->schema->class);
+                    Livewire::component($componentName, $event->schema->class);
                 }
             });
         }
@@ -164,9 +175,9 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function bootMiddlewares(): void
     {
-        $this->app->bind(\Webkul\Shop\Http\Middleware\Theme::class, UseShopThemeFromRequest::class);
+        $this->app->bind(Theme::class, UseShopThemeFromRequest::class);
 
-        $this->app[\Illuminate\Contracts\Http\Kernel::class]
+        $this->app[Kernel::class]
             ->prependMiddleware(DisableResponseCacheInDesignMode::class);
     }
 
@@ -191,9 +202,9 @@ class CoreServiceProvider extends ServiceProvider
     protected function bootMorphMap(): void
     {
         Relation::morphMap([
-            'product' => \Webkul\Product\Models\Product::class,
-            'category' => \Webkul\Category\Models\Category::class,
-            'attribute' => \Webkul\Attribute\Models\Attribute::class,
+            'product' => Product::class,
+            'category' => Category::class,
+            'attribute' => Attribute::class,
         ]);
     }
 
@@ -249,8 +260,8 @@ class CoreServiceProvider extends ServiceProvider
 
             'craftile.components.namespace' => 'visual',
 
-            'craftile.block_data_class' => \BagistoPlus\Visual\Data\BlockData::class,
-            'craftile.block_schema_class' => \BagistoPlus\Visual\Data\BlockSchema::class,
+            'craftile.block_data_class' => BlockData::class,
+            'craftile.block_schema_class' => BlockSchema::class,
 
             'craftile.php_template_extensions' => ['visual.php'],
         ]);

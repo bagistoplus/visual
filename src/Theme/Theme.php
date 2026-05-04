@@ -3,12 +3,41 @@
 namespace BagistoPlus\Visual\Theme;
 
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
+use BagistoPlus\Visual\ThemeSettingsLoader;
 use Craftile\Laravel\PropertyBag;
 use Webkul\Theme\Theme as BagistoTheme;
 
+/**
+ * @property ?PropertyBag $settings
+ */
 class Theme extends BagistoTheme
 {
-    public PropertyBag $settings;
+    private ?PropertyBag $settings = null;
+
+    public function __get(string $name): mixed
+    {
+        if ($name === 'settings') {
+            return $this->settings ??= app(ThemeSettingsLoader::class)->loadThemeSettings($this);
+        }
+
+        throw new \Error('Undefined property: '.static::class.'::$'.$name);
+    }
+
+    public function __set(string $name, mixed $value): void
+    {
+        if ($name === 'settings') {
+            $this->settings = $value;
+
+            return;
+        }
+
+        throw new \Error('Cannot create dynamic property '.static::class.'::$'.$name);
+    }
+
+    public function __isset(string $name): bool
+    {
+        return $name === 'settings' && $this->settings !== null;
+    }
 
     public static function make(array $attributes): self
     {

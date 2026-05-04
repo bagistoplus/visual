@@ -16,6 +16,7 @@ export function mergeUpdates(updates: UpdatesEvent[]): UpdatesEvent {
       updated: [],
       removed: [],
       moved: {},
+      positions: {},
     },
     blocks: {},
     regions: [],
@@ -26,6 +27,7 @@ export function mergeUpdates(updates: UpdatesEvent[]): UpdatesEvent {
     merged.changes.updated.push(...update.changes.updated);
     merged.changes.removed.push(...update.changes.removed);
     Object.assign(merged.changes.moved, update.changes.moved || {});
+    Object.assign(merged.changes.positions!, update.changes.positions || {});
     Object.assign(merged.blocks, update.blocks);
 
     if (update.regions && update.regions.length > 0) {
@@ -66,9 +68,9 @@ export function determineBlocksToProcess(blockIds: string[], allBlocks: Record<s
       continue;
     }
 
-    const repeatedAncestor = findRepeatedAncestor(blockId, allBlocks);
-    if (repeatedAncestor) {
-      const parentOfRepeated = allBlocks[repeatedAncestor]?.parentId;
+    const closestRepeated = findClosestRepeated(blockId, allBlocks);
+    if (closestRepeated) {
+      const parentOfRepeated = allBlocks[closestRepeated]?.parentId;
       if (parentOfRepeated) {
         blocksToProcess.push(parentOfRepeated);
       }
@@ -89,21 +91,15 @@ export function determineBlocksToProcess(blockIds: string[], allBlocks: Record<s
   return Array.from(new Set(blocksToProcess));
 }
 
-export function findRepeatedAncestor(blockId: string, allBlocks: Record<string, any>): string | null {
-  let currentId = blockId;
+export function findClosestRepeated(blockId: string, allBlocks: Record<string, any>): string | null {
+  let currentId: string | null | undefined = blockId;
 
-  while (allBlocks[currentId]?.parentId) {
-    const parentId = allBlocks[currentId].parentId;
-
-    if (!allBlocks[parentId]) {
-      break;
+  while (currentId && allBlocks[currentId]) {
+    if (allBlocks[currentId]?.repeated === true) {
+      return currentId;
     }
 
-    if (allBlocks[parentId]?.repeated === true) {
-      return parentId;
-    }
-
-    currentId = parentId;
+    currentId = allBlocks[currentId]?.parentId;
   }
 
   return null;
@@ -167,7 +163,11 @@ export function setupUpdatePersistence(editor: CraftileEditor, state: State) {
 
     request.onSuccess((htmlResponse) => {
       const allBlocks = editor.engine.getPage().blocks;
-      const directlyModifiedIds = [...(mergedUpdates.changes.added || []), ...(mergedUpdates.changes.updated || [])];
+      const directlyModifiedIds = [
+        ...(mergedUpdates.changes.added || []),
+        ...(mergedUpdates.changes.updated || []),
+        ...Object.keys(mergedUpdates.changes.moved || {}),
+      ];
       const blocksToUpdate = determineBlocksToProcess(directlyModifiedIds, allBlocks);
 
       const effects = computeEffects(htmlResponse, blocksToUpdate);

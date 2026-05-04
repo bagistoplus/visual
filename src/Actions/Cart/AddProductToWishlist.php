@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Actions\Cart;
 
+use Illuminate\Http\Resources\Json\JsonResource;
 use Webkul\Shop\Http\Controllers\API\WishlistController;
 
 class AddProductToWishlist
@@ -19,7 +20,7 @@ class AddProductToWishlist
             'product_id' => $productId,
         ]);
 
-        /** @var \Illuminate\Http\Resources\Json\JsonResource */
+        /** @var JsonResource */
         $response = $this->wishlistApi->store();
 
         return $response->resolve();

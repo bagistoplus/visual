@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Actions;
 
+use Illuminate\Http\Resources\Json\JsonResource;
 use Webkul\Shop\Http\Controllers\API\CompareController;
 
 class RemoveItemFromCompareList
@@ -15,7 +16,7 @@ class RemoveItemFromCompareList
     {
         request()->request->add(['product_id' => $productId]);
 
-        /** @var \Illuminate\Http\Resources\Json\JsonResource */
+        /** @var JsonResource */
         $response = $this->compareApi->destroy();
 
         return $response->resolve();

@@ -29,7 +29,7 @@ class ThemeSettingsLoader
      */
     public function loadActiveThemeSettings(): PropertyBag
     {
-        /** @var \BagistoPlus\Visual\Theme\Theme|null $theme */
+        /** @var Theme|null $theme */
         $theme = themes()->current();
 
         if (! $theme) {

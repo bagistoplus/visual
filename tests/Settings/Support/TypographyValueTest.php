@@ -1,5 +1,6 @@
 <?php
 
+use BagistoPlus\Visual\Settings\Support\FontValue;
 use BagistoPlus\Visual\Settings\Support\TypographyValue;
 use Illuminate\Support\HtmlString;
 
@@ -16,7 +17,7 @@ it('constructs with all properties', function () {
     $value = new TypographyValue($data, 'heading');
 
     expect($value->fontFamily)
-        ->toBeInstanceOf(\BagistoPlus\Visual\Settings\Support\FontValue::class)
+        ->toBeInstanceOf(FontValue::class)
         ->and($value->fontFamily->name)->toBe('Inter')
         ->and($value->fontSize)->toBe('2xl')
         ->and($value->lineHeight)->toBe('tight')
@@ -328,7 +329,7 @@ it('transforms fontFamily to FontValue instance', function () {
     $value = new TypographyValue($data, 'test');
 
     expect($value->fontFamily)
-        ->toBeInstanceOf(\BagistoPlus\Visual\Settings\Support\FontValue::class)
+        ->toBeInstanceOf(FontValue::class)
         ->and($value->fontFamily->name)
         ->toBe('Inter')
         ->and($value->fontFamily->slug)

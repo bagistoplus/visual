@@ -14,6 +14,10 @@ parameters:
     tmpDir: build/phpstan
     checkOctaneCompatibility: true
     checkModelProperties: true
+    configDirectories:
+        - config
+    viewDirectories:
+        - resources/views
     treatPhpDocTypesAsCertain: false
     universalObjectCratesClasses:
         - BagistoPlus\Visual\Sections\Concerns\SettingsValues

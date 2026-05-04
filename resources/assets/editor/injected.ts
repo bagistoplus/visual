@@ -32,6 +32,10 @@ window.addEventListener('error', (event) => {
 
 function createMorphdomHandler() {
   return function onBeforeElUpdated(fromEl: Element, toEl: Element): boolean {
+    if (fromEl instanceof HTMLElement && fromEl.hasAttribute('data-morph-ignore')) {
+      return false;
+    }
+
     if (fromEl instanceof HTMLElement && hasRecentLiveUpdate(fromEl)) {
       return false;
     }
@@ -189,6 +193,17 @@ class VisualObject {
 
   emit(event: string, data?: any): void {
     document.dispatchEvent(new CustomEvent(event, { detail: data }));
+  }
+
+  isResponsiveValue(value: unknown): boolean {
+    return typeof value === 'object' && value !== null && '_default' in value;
+  }
+
+  getResponsiveValue<T = any>(value: unknown, deviceId: string, fallback?: T): T {
+    if (typeof value === 'object' && value !== null && '_default' in value) {
+      return ((value as Record<string, any>)[deviceId] ?? (value as Record<string, any>)._default ?? fallback) as T;
+    }
+    return (value ?? fallback) as T;
   }
 
   handleLiveUpdate(blockId: string, key: string, value: any): void {

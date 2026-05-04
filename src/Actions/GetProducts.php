@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Actions;
 
+use Illuminate\Pagination\LengthAwarePaginator;
 use Webkul\Shop\Http\Controllers\API\ProductController;
 
 class GetProducts
@@ -11,7 +12,7 @@ class GetProducts
     /**
      * Get products
      *
-     * @return \Illuminate\Pagination\LengthAwarePaginator
+     * @return LengthAwarePaginator
      */
     public function execute(array $params)
     {

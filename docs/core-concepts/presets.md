@@ -444,6 +444,30 @@ your-theme/
         └── ClassicFooter.php
 ```
 
+### Registering Standalone Presets
+
+Bagisto Visual automatically discovers standalone preset classes from:
+
+- `app/Visual/Presets`
+- `packages/<Vendor>/<Theme>/src/Presets`
+
+For other locations, you can manually register presets in a service provider:
+
+#### Discover a directory
+
+Use `discoverPresetsIn()` to auto-discover all preset classes in a directory. The method requires two parameters:
+- The directory path containing your preset classes
+- The base namespace for those presets (defaults to `'App\\Presets'`)
+
+```php
+Visual::discoverPresetsIn(
+    base_path('modules/Shared/Presets'),
+    'Modules\\Shared\\Presets'
+);
+```
+
+This will automatically discover and register all preset classes in the specified directory, matching the namespace structure to the folder structure.
+
 ### When to Use Standalone Preset Classes
 
 | Use Standalone Classes When                                | Use Inline presets() Method When  |
