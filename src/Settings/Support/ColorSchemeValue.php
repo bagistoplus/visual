@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Settings\Support;
 
+use BagistoPlus\Visual\Theme\Theme;
 use BagistoPlus\Visual\View\TailwindPaletteGenerator;
 use Illuminate\Support\HtmlString;
 use matthieumastadenis\couleur\ColorFactory;
@@ -12,7 +13,7 @@ class ColorSchemeValue
     public function __construct(public string $id, public ?array $tokens = [])
     {
         if (empty($this->tokens)) {
-            /** @var \BagistoPlus\Visual\Theme\Theme */
+            /** @var Theme */
             $theme = themes()->current();
 
             $schemesSetting = collect($theme->settingsSchema)

@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Actions;
 
+use Illuminate\Http\Resources\Json\JsonResource;
 use Webkul\Shop\Http\Controllers\API\CompareController;
 
 class ClearCompareList
@@ -13,7 +14,7 @@ class ClearCompareList
      */
     public function execute()
     {
-        /** @var \Illuminate\Http\Resources\Json\JsonResource */
+        /** @var JsonResource */
         $response = $this->compareApi->destroyAll();
 
         return $response->resolve();

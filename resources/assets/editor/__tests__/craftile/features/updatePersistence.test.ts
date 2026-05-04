@@ -4,12 +4,18 @@ import {
   mergeUpdates,
   hasChanges,
   determineBlocksToProcess,
-  findRepeatedAncestor,
+  findClosestRepeated,
   computeEffects,
 } from '../../../craftile/features/updatePersistence';
 
 function createUpdatesEvent(
-  changes: { added?: string[]; updated?: string[]; removed?: string[]; moved?: Record<string, any> },
+  changes: {
+    added?: string[];
+    updated?: string[];
+    removed?: string[];
+    moved?: Record<string, any>;
+    positions?: Record<string, any>;
+  },
   blocks: Record<string, any> = {},
   regions: any[] = []
 ): UpdatesEvent {
@@ -19,6 +25,7 @@ function createUpdatesEvent(
       updated: changes.updated || [],
       removed: changes.removed || [],
       moved: changes.moved as any || {},
+      positions: changes.positions as any || {},
     },
     blocks: blocks as any,
     regions: regions as any,
@@ -107,6 +114,45 @@ describe('updatePersistence utilities', () => {
       });
     });
 
+    it('should merge positions objects', () => {
+      const updates: UpdatesEvent[] = [
+        createUpdatesEvent(
+          { positions: { block1: { parentId: 'parent1', afterId: 'sibling1' } } },
+          {}
+        ),
+        createUpdatesEvent(
+          { positions: { block2: { regionId: 'header' } } },
+          {}
+        ),
+      ];
+
+      const result = mergeUpdates(updates);
+
+      expect(result.changes.positions).toEqual({
+        block1: { parentId: 'parent1', afterId: 'sibling1' },
+        block2: { regionId: 'header' },
+      });
+    });
+
+    it('should overwrite earlier positions for the same block with later ones', () => {
+      const updates: UpdatesEvent[] = [
+        createUpdatesEvent(
+          { positions: { block1: { parentId: 'oldParent' } } },
+          {}
+        ),
+        createUpdatesEvent(
+          { positions: { block1: { parentId: 'newParent' } } },
+          {}
+        ),
+      ];
+
+      const result = mergeUpdates(updates);
+
+      expect(result.changes.positions).toEqual({
+        block1: { parentId: 'newParent' },
+      });
+    });
+
     it('should use regions from the last update that has them', () => {
       const updates: UpdatesEvent[] = [
         createUpdatesEvent({}, {}, ['region1']),
@@ -147,7 +193,7 @@ describe('updatePersistence utilities', () => {
     });
   });
 
-  describe('findRepeatedAncestor', () => {
+  describe('findClosestRepeated', () => {
     it('should return the first repeated ancestor', () => {
       const allBlocks = {
         block1: { id: 'block1', parentId: 'block2' },
@@ -156,29 +202,40 @@ describe('updatePersistence utilities', () => {
         block4: { id: 'block4', parentId: null },
       };
 
-      const result = findRepeatedAncestor('block1', allBlocks);
+      const result = findClosestRepeated('block1', allBlocks);
 
       expect(result).toBe('block3');
     });
 
-    it('should return null if no repeated ancestor exists', () => {
+    it('should return the block itself when it is repeated', () => {
+      const allBlocks = {
+        block1: { id: 'block1', parentId: 'block2', repeated: true },
+        block2: { id: 'block2', parentId: null },
+      };
+
+      const result = findClosestRepeated('block1', allBlocks);
+
+      expect(result).toBe('block1');
+    });
+
+    it('should return null if no repeated block is found', () => {
       const allBlocks = {
         block1: { id: 'block1', parentId: 'block2' },
         block2: { id: 'block2', parentId: 'block3' },
         block3: { id: 'block3', parentId: null },
       };
 
-      const result = findRepeatedAncestor('block1', allBlocks);
+      const result = findClosestRepeated('block1', allBlocks);
 
       expect(result).toBeNull();
     });
 
-    it('should return null if block has no parent', () => {
+    it('should return null if block has no parent and is not repeated', () => {
       const allBlocks = {
         block1: { id: 'block1', parentId: null },
       };
 
-      const result = findRepeatedAncestor('block1', allBlocks);
+      const result = findClosestRepeated('block1', allBlocks);
 
       expect(result).toBeNull();
     });
@@ -188,7 +245,7 @@ describe('updatePersistence utilities', () => {
         block1: { id: 'block1', parentId: 'nonexistent' },
       };
 
-      const result = findRepeatedAncestor('block1', allBlocks);
+      const result = findClosestRepeated('block1', allBlocks);
 
       expect(result).toBeNull();
     });
@@ -253,6 +310,53 @@ describe('updatePersistence utilities', () => {
       const result = determineBlocksToProcess(Object.keys(updatedBlocks), allBlocks);
 
       expect(result).toEqual(['block3']);
+    });
+  });
+
+  describe('determineBlocksToProcess with moved blocks', () => {
+    it('should return parent of repeated ancestor for moved block', () => {
+      const allBlocks = {
+        moved: { id: 'moved', parentId: 'repeated' },
+        repeated: { id: 'repeated', parentId: 'wrapper', repeated: true },
+        wrapper: { id: 'wrapper', parentId: null },
+      };
+
+      const result = determineBlocksToProcess(['moved'], allBlocks);
+
+      expect(result).toEqual(['wrapper']);
+    });
+
+    it('should return moved block itself when no repeated ancestor exists', () => {
+      const allBlocks = {
+        moved: { id: 'moved', parentId: 'parent' },
+        parent: { id: 'parent', parentId: null },
+      };
+
+      const result = determineBlocksToProcess(['moved'], allBlocks);
+
+      expect(result).toEqual(['moved']);
+    });
+
+    it('should skip moved block whose parent is also in the input', () => {
+      const allBlocks = {
+        moved: { id: 'moved', parentId: 'parent' },
+        parent: { id: 'parent', parentId: null },
+      };
+
+      const result = determineBlocksToProcess(['moved', 'parent'], allBlocks);
+
+      expect(result).toEqual(['parent']);
+    });
+
+    it('should route a repeated block in the input to its parent', () => {
+      const allBlocks = {
+        repeated: { id: 'repeated', parentId: 'wrapper', repeated: true },
+        wrapper: { id: 'wrapper', parentId: null },
+      };
+
+      const result = determineBlocksToProcess(['repeated'], allBlocks);
+
+      expect(result).toEqual(['wrapper']);
     });
   });
 

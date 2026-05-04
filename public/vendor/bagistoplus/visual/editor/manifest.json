@@ -1,15 +1,15 @@
 {
   "resources/assets/editor/index.ts": {
-    "file": "assets/index-GXOfLATq.js",
+    "file": "assets/index-D6kDlnWA.js",
     "name": "index",
     "src": "resources/assets/editor/index.ts",
     "isEntry": true,
     "css": [
-      "assets/index-Ba6OF_gp.css"
+      "assets/index-DgLZ2f7A.css"
     ]
   },
   "resources/assets/editor/injected.ts": {
-    "file": "assets/injected-Dl3UALAJ.js",
+    "file": "assets/injected-BWCJ6BYp.js",
     "name": "injected",
     "src": "resources/assets/editor/injected.ts",
     "isEntry": true

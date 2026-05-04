@@ -2,9 +2,14 @@
 
 namespace BagistoPlus\Visual\Blocks;
 
+use BagistoPlus\Visual\Data\BlockData;
+
+/**
+ * @property-read BlockData $section
+ */
 abstract class BladeSection extends BladeBlock
 {
-    public function __get($name)
+    public function __get(string $name)
     {
         if ($name === 'section') {
             return $this->block;

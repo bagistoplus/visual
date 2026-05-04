@@ -2,6 +2,30 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.5](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.4...v2.0.0-alpha.5) (2026-05-04)
+
+
+### Bug Fixes
+
+* forward encrypted session cookie to preview sub-request to prevent CSRF mismatch on database session driver ([9ae8a6c](https://github.com/bagistoplus/visual/commit/9ae8a6c39b0735ed1071b63020f4819cf7828d90))
+* lazy-load Theme::$settings to prevent uninitialized property error in Livewire updates ([17cf477](https://github.com/bagistoplus/visual/commit/17cf47722c98d933fab74b72133fadb671b80199))
+* refresh parent of repeated block on child reorder ([a9f175b](https://github.com/bagistoplus/visual/commit/a9f175bbfc61997b1b31055c0ff8c2435f6a1aa3))
+* use regionId instead of regionName in block filter ([75e6f68](https://github.com/bagistoplus/visual/commit/75e6f6876d8b606b210de62656ce4e31370c724a))
+
+
+### Features
+
+* add data-morph-ignore support to morphdom handler ([05218ee](https://github.com/bagistoplus/visual/commit/05218ee161778b9adc29ed1208fa548acc0e523c))
+* add discoverPresetsIn method ([ef45f05](https://github.com/bagistoplus/visual/commit/ef45f05c8e02d75579f5c056e6efe146d906c92e))
+* add font weight and style support for typography presets based on selected font ([df048ea](https://github.com/bagistoplus/visual/commit/df048eae0ae3885365d088d5e940b75a28348d53))
+* add inline rename support for typography presets ([6fce38b](https://github.com/bagistoplus/visual/commit/6fce38b91f48b2124af7de76608847763e2dde50))
+* add isResponsiveValue and getResponsiveValue utilities to Visual ([a9ec37f](https://github.com/bagistoplus/visual/commit/a9ec37f002146ec21eb71fe5fedf2c968f719e10))
+* add section alias for block in SimpleSection ([0007a28](https://github.com/bagistoplus/visual/commit/0007a28b1bb1f4a527dff1b8ee854721ef48817a))
+* add shared Events interface for cross-package Livewire events ([916e7df](https://github.com/bagistoplus/visual/commit/916e7dfa5f63c4d1878f63d7ae0c53dcd75c16d6))
+* allow 'auto' value in SpacingValue properties ([74af973](https://github.com/bagistoplus/visual/commit/74af97357ecc3d77e644d91112db98996aebade6))
+* discover theme presets from provider ([fad128f](https://github.com/bagistoplus/visual/commit/fad128fd04c588115b4ac4262338dad8690d2c72))
+* merge positions field in mergeUpdates ([19c5030](https://github.com/bagistoplus/visual/commit/19c5030d53afc8041f97bf49224abf00398250e6))
+
 ## v2.0.0-alpha.2 - 2025-12-30
 
 ### v2.0.0-alpha.2

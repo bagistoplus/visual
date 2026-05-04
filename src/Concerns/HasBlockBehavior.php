@@ -58,6 +58,6 @@ trait HasBlockBehavior
             throw new \RuntimeException('View not specified for block '.static::class);
         }
 
-        return view(static::$view, $this->getViewData());
+        return view()->make(static::$view, $this->getViewData());
     }
 }

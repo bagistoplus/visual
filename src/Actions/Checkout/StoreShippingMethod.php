@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Actions\Checkout;
 
+use Illuminate\Http\JsonResponse;
 use Webkul\Shop\Http\Controllers\API\OnepageController;
 
 class StoreShippingMethod
@@ -12,7 +13,7 @@ class StoreShippingMethod
     {
         request()->merge(['shipping_method' => $shippingMethod]);
 
-        /** @var \Illuminate\Http\JsonResponse */
+        /** @var JsonResponse */
         $response = $this->checkoutApi->storeShippingMethod();
 
         return $response->getData(true);

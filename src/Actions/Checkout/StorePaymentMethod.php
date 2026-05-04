@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Actions\Checkout;
 
+use Illuminate\Http\JsonResponse;
 use Webkul\Shop\Http\Controllers\API\OnepageController;
 
 class StorePaymentMethod
@@ -12,10 +13,10 @@ class StorePaymentMethod
     {
         request()->merge(['payment' => ['method' => $paymentMethod]]);
 
-        /** @var \Illuminate\Http\JsonResponse|array */
+        /** @var JsonResponse|array */
         $response = $this->checkoutApi->storePaymentMethod();
 
-        if ($response instanceof \Illuminate\Http\JsonResponse) {
+        if ($response instanceof JsonResponse) {
             return $response->getData(true);
         }
 

@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Actions;
 
+use Illuminate\Pagination\LengthAwarePaginator;
 use Webkul\Shop\Http\Controllers\API\CompareController;
 
 class GetCompareItems
@@ -11,7 +12,7 @@ class GetCompareItems
     /**
      * Get compare items
      *
-     * @return \Illuminate\Pagination\LengthAwarePaginator
+     * @return LengthAwarePaginator
      */
     public function execute(array $productIds)
     {

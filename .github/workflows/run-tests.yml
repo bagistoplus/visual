@@ -17,16 +17,17 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest, windows-latest]
-        php: [8.3, 8.2]
-        laravel: [11.*, 10.*]
+        php: [8.4, 8.3, 8.2]
+        laravel: [12.*, 11.*]
         stability: [prefer-lowest, prefer-stable]
-        # include:
-        #   - laravel: 11.*
-        #     testbench: 9.*
-        #     carbon: ^2.63
-        #   - laravel: 10.*
-        #     testbench: 8.*
-        #     carbon: ^2.63
+        include:
+          - laravel: 12.*
+            testbench: 10.*
+          - laravel: 11.*
+            testbench: 9.*
+        exclude:
+          - laravel: 12.*
+            php: 8.2
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
@@ -48,8 +49,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer install --no-interaction
-          composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+          composer require "illuminate/contracts:${{ matrix.laravel }}" --no-update --no-interaction
+          composer require --dev "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-update --no-interaction
+          composer update --${{ matrix.stability }} --prefer-dist --no-interaction --with-all-dependencies
 
       - name: List Installed Dependencies
         run: composer show -D
