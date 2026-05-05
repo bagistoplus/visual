@@ -54,19 +54,19 @@ If your section includes an image setting:
 Image::make('image', 'Hero Image')
 ```
 
-You should provide an optional `alt` field:
-
-```php
-Text::make('image_alt', 'Image alt text')
-```
-
-Then output it in your Blade file:
+Use the image metadata managed by the Visual Editor and output it in your Blade file:
 
 ```blade
-<img src="{{ $section->settings->image }}" alt="{{ $section->settings->alt }}">
+<img
+    src="{{ $section->settings->image }}"
+    alt="{{ $section->settings->image->alt }}"
+    style="object-position: {{ $section->settings->image->objectPosition() }}"
+>
 ```
 
 If the image is decorative, use `alt=""` and set `aria-hidden="true"`.
+
+Older sections may still use a separate text setting for alt text. That remains supported, but new sections should prefer image metadata so alt text stays attached to the selected image usage.
 
 ## 5. Label Form Controls
 

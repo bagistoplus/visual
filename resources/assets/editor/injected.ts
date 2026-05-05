@@ -134,33 +134,34 @@ function handlePropertyUpdate(data: { block: Block; key: string; value: any; old
   for (const el of elements) {
     const type = el.getAttribute(attrName);
     const [updateType, updateKey] = type?.split(/:(.+)/) ?? ['text', undefined];
+    const liveValue = normalizeLiveUpdateValue(value, updateType, updateKey);
 
     switch (updateType) {
       case 'text':
-        el.textContent = value;
+        el.textContent = liveValue;
         break;
       case 'html':
-        el.innerHTML = value;
+        el.innerHTML = liveValue;
         break;
       case 'outerHTML':
-        el.outerHTML = value;
+        el.outerHTML = liveValue;
         break;
       case 'attr':
-        if (!value) {
+        if (!liveValue) {
           if (el.tagName.toLowerCase() === 'img' && updateKey === 'src') {
             return false;
           }
 
           el.removeAttribute(updateKey as string);
         } else {
-          el.setAttribute(updateKey as string, value);
+          el.setAttribute(updateKey as string, liveValue);
         }
         break;
       case 'style':
-        if (!value) {
+        if (!liveValue) {
           (el as HTMLElement).style.removeProperty(updateKey as string);
         } else {
-          (el as HTMLElement).style.setProperty(updateKey as string, value);
+          (el as HTMLElement).style.setProperty(updateKey as string, liveValue);
         }
         break;
       case 'toggleClass':
@@ -170,6 +171,51 @@ function handlePropertyUpdate(data: { block: Block; key: string; value: any; old
         console.warn(`Unknown live update type: ${updateType}`);
     }
   }
+}
+
+function normalizeLiveUpdateValue(value: any, updateType?: string, updateKey?: string): any {
+  if (!isImageSettingValue(value)) {
+    return value;
+  }
+
+  if (updateType === 'attr') {
+    if (updateKey === 'src') {
+      return value.url ?? value.path;
+    }
+
+    if (updateKey === 'alt') {
+      return value.alt ?? '';
+    }
+  }
+
+  if (updateType === 'style' && updateKey === 'object-position') {
+    return focalPointObjectPosition(value.focalPoint);
+  }
+
+  return value.path;
+}
+
+function isImageSettingValue(
+  value: any
+): value is { path: string; url?: string; alt?: string; focalPoint?: { x?: number; y?: number } } {
+  return typeof value === 'object' && value !== null && typeof value.path === 'string';
+}
+
+function focalPointObjectPosition(focalPoint?: { x?: number; y?: number }): string {
+  const x = normalizePercentage(focalPoint?.x);
+  const y = normalizePercentage(focalPoint?.y);
+
+  return `${x}% ${y}%`;
+}
+
+function normalizePercentage(value: unknown): number {
+  const numberValue = Number(value ?? 50);
+
+  if (!Number.isFinite(numberValue)) {
+    return 50;
+  }
+
+  return Math.min(100, Math.max(0, Math.round(numberValue)));
 }
 
 previewClient.on('block.property.updated', handlePropertyUpdate);

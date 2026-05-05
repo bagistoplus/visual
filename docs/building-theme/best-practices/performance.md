@@ -30,7 +30,8 @@ This guide provides practical tips for building performant Bagisto Visual themes
 ```blade
 <img
   src="{{ $section->settings->image }}"
-  alt="{{ $section->settings->alt }}"
+  alt="{{ $section->settings->image->alt }}"
+  style="object-position: {{ $section->settings->image->objectPosition() }}"
   width="800"
   height="400"
   loading="lazy"

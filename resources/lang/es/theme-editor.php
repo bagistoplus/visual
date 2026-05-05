@@ -26,6 +26,12 @@ return [
     'Image Picker' => 'Selector de imagen',
     'Drop your images here' => 'Suelta tus imágenes aquí',
     'Add images' => 'Agregar imágenes',
+    'Edit metadata' => 'Editar metadatos',
+    'Edit image metadata' => 'Editar metadatos de imagen',
+    'Alt text' => 'Texto alternativo',
+    'Focal point' => 'Punto focal',
+    'Focal point position' => 'Posición del punto focal',
+    'Save' => 'Guardar',
     'Image uploaded successfully' => 'Imagen subida con éxito',
     'Failed to upload image' => 'Error al subir la imagen',
 

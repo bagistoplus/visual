@@ -461,6 +461,7 @@ The merchant can:
 
 - Upload a new image
 - Pick an existing image from the media library
+- Define image metadata such as alt text and focal point
 
 ```php
 use BagistoPlus\Visual\Settings\Image;
@@ -477,9 +478,17 @@ In Blade:
 
 ```blade
 @if ($section->settings->banner_image)
-    <img src="{{ $section->settings->banner_image }}" alt="Banner" />
+    <img
+        src="{{ $section->settings->banner_image }}"
+        alt="{{ $section->settings->banner_image->alt }}"
+        style="object-position: {{ $section->settings->banner_image->objectPosition() }}"
+    />
 @endif
 ```
+
+Image settings are stored as image paths in older themes and as structured values when metadata is edited in the Visual Editor. Both formats are supported. The image value still casts to the image URL, so existing `src="{{ $section->settings->banner_image }}"` usage continues to work.
+
+For new sections, prefer the image metadata `alt` value over creating a separate alt text setting. Existing sections that already use a separate alt setting can keep doing so and migrate gradually.
 
 <SettingPreview image="/setting-image.png" title="Image setting type preview"/>
 

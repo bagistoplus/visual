@@ -154,6 +154,17 @@ export interface Image {
   uploading?: boolean;
 }
 
+export interface ImageFocalPoint {
+  x: number;
+  y: number;
+}
+
+export interface ImageSettingValue {
+  path: string;
+  alt: string;
+  focalPoint: ImageFocalPoint;
+}
+
 interface Category {
   id: number;
   name: string;
