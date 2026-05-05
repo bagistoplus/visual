@@ -1,9 +1,17 @@
 <?php
 
+use BagistoPlus\Visual\Data\BlockData;
+use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Providers\ThemeServiceProvider;
+use BagistoPlus\Visual\Tests\Fixtures\FakeTheme\Blocks\LivewireHero;
 use BagistoPlus\Visual\Tests\Fixtures\FakeTheme\FakeThemeServiceProvider;
 use BagistoPlus\Visual\Tests\Fixtures\FakeTheme2\Providers\FakeTheme2ServiceProvider;
+use BagistoPlus\Visual\View\Compilers\LivewireBlockCompiler;
+use Livewire\ComponentHookRegistry;
+use Livewire\Features\SupportReleaseTokens\ReleaseToken;
+use Livewire\Livewire;
+use Livewire\Mechanisms\ComponentRegistry;
 
 it('should be abstract', function () {
     expect(ThemeServiceProvider::class)->toBeAbstract();
@@ -62,6 +70,42 @@ it('should discover sections blocks and presets from the theme source directorie
     Visual::shouldHaveReceived('discoverPresetsIn')
         ->with($normalizesTo("{$basePath}/src/Presets"), "{$namespace}\\Presets")
         ->once();
+});
+
+it('compiles Livewire blocks using their component class name', function () {
+    $compiled = (new LivewireBlockCompiler)->compile(
+        BlockSchema::fromClass(LivewireHero::class),
+        'abc123'
+    );
+
+    expect($compiled)
+        ->toContain('@livewire(\\'.LivewireHero::class.'::class')
+        ->not->toContain("@livewire('craftile-livewire-hero'");
+});
+
+it('dehydrates Visual Livewire block snapshots with a class name', function () {
+    config()->set('app.key', 'base64:'.base64_encode(str_repeat('a', 32)));
+
+    Visual::supportLivewire();
+    ComponentHookRegistry::boot();
+
+    $componentRegistry = app(ComponentRegistry::class);
+    $aliases = new ReflectionProperty($componentRegistry, 'aliases');
+    $aliases->setValue($componentRegistry, []);
+
+    $snapshot = Livewire::test(LivewireHero::class, [
+        'context' => [],
+        'block' => BlockData::make([
+            'id' => 'hero-1',
+            'type' => LivewireHero::type(),
+        ])->setSourceFile(__FILE__),
+    ])->snapshot;
+
+    expect($snapshot['memo']['name'])->toBe(LivewireHero::class);
+
+    ReleaseToken::verify($snapshot);
+
+    expect($componentRegistry->getClass($snapshot['memo']['name']))->toBe(LivewireHero::class);
 });
 
 test('theme should be loaded', function () {
