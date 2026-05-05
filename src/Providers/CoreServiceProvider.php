@@ -22,8 +22,8 @@ use Craftile\Laravel\Events\JsonViewLoaded;
 use Craftile\Laravel\Facades\Craftile;
 use Craftile\Laravel\View\BlockCompilerRegistry;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Foundation\Http\Kernel;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
@@ -32,8 +32,10 @@ use Illuminate\View\DynamicComponent;
 use Livewire\Component;
 use Webkul\Attribute\Models\Attribute;
 use Webkul\Category\Models\Category;
+use Webkul\Core\Models\Channel;
 use Webkul\Product\Models\Product;
 use Webkul\Shop\Http\Middleware\Theme;
+use Webkul\Theme\Models\ThemeCustomization;
 
 class CoreServiceProvider extends ServiceProvider
 {
@@ -167,8 +169,9 @@ class CoreServiceProvider extends ServiceProvider
     {
         $this->app->bind(Theme::class, UseShopThemeFromRequest::class);
 
-        $this->app[Kernel::class]
-            ->prependMiddleware(DisableResponseCacheInDesignMode::class);
+        /** @var Kernel */
+        $kernel = $this->app->get(Kernel::class);
+        $kernel->prependMiddleware(DisableResponseCacheInDesignMode::class);
     }
 
     protected function bootVisualSections(): void
@@ -195,6 +198,8 @@ class CoreServiceProvider extends ServiceProvider
             'product' => Product::class,
             'category' => Category::class,
             'attribute' => Attribute::class,
+            'theme' => ThemeCustomization::class,
+            'channel' => Channel::class,
         ]);
     }
 
