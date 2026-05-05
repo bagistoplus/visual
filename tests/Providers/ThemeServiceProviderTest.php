@@ -11,7 +11,6 @@ use BagistoPlus\Visual\View\Compilers\LivewireBlockCompiler;
 use Livewire\ComponentHookRegistry;
 use Livewire\Features\SupportReleaseTokens\ReleaseToken;
 use Livewire\Livewire;
-use Livewire\Mechanisms\ComponentRegistry;
 
 it('should be abstract', function () {
     expect(ThemeServiceProvider::class)->toBeAbstract();
@@ -89,9 +88,14 @@ it('dehydrates Visual Livewire block snapshots with a class name', function () {
     Visual::supportLivewire();
     ComponentHookRegistry::boot();
 
-    $componentRegistry = app(ComponentRegistry::class);
-    $aliases = new ReflectionProperty($componentRegistry, 'aliases');
-    $aliases->setValue($componentRegistry, []);
+    $finder = app('livewire.finder');
+    $factory = app('livewire.factory');
+
+    $classComponents = new ReflectionProperty($finder, 'classComponents');
+    $classComponents->setValue($finder, []);
+
+    $resolvedComponentCache = new ReflectionProperty($factory, 'resolvedComponentCache');
+    $resolvedComponentCache->setValue($factory, []);
 
     $snapshot = Livewire::test(LivewireHero::class, [
         'context' => [],
@@ -105,7 +109,29 @@ it('dehydrates Visual Livewire block snapshots with a class name', function () {
 
     ReleaseToken::verify($snapshot);
 
-    expect($componentRegistry->getClass($snapshot['memo']['name']))->toBe(LivewireHero::class);
+    expect($factory->resolveComponentClass($snapshot['memo']['name']))->toBe(LivewireHero::class);
+});
+
+it('preserves Visual Livewire block HTML attributes on snapshots', function () {
+    config()->set('app.key', 'base64:'.base64_encode(str_repeat('a', 32)));
+
+    Visual::supportLivewire();
+    ComponentHookRegistry::boot();
+
+    $snapshot = Livewire::test(LivewireHero::class, [
+        'context' => [],
+        'block' => BlockData::make([
+            'id' => 'hero-1',
+            'type' => LivewireHero::type(),
+        ])->setSourceFile(__FILE__),
+        'x-data' => '{ open: false }',
+        'data-test' => 'hero',
+    ])->snapshot;
+
+    expect($snapshot['memo']['attributes'])->toMatchArray([
+        'x-data' => '{ open: false }',
+        'data-test' => 'hero',
+    ]);
 });
 
 test('theme should be loaded', function () {
