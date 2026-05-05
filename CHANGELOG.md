@@ -2,6 +2,13 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.6](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.5...v2.0.0-alpha.6) (2026-05-05)
+
+
+### Features
+
+* add image metadata support ([58bee1c](https://github.com/bagistoplus/visual/commit/58bee1c694c9b80709645739e4046f26cac91580))
+
 # [2.0.0-alpha.5](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.4...v2.0.0-alpha.5) (2026-05-04)
 
 
