@@ -22,6 +22,7 @@ use Craftile\Laravel\Events\JsonViewLoaded;
 use Craftile\Laravel\Facades\Craftile;
 use Craftile\Laravel\View\BlockCompilerRegistry;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Http\Kernel as HttpKernelContract;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Http\Kernel;
 use Illuminate\Support\Facades\Blade;
@@ -169,8 +170,8 @@ class CoreServiceProvider extends ServiceProvider
     {
         $this->app->bind(Theme::class, UseShopThemeFromRequest::class);
 
-        /** @var Kernel */
-        $kernel = $this->app->get(Kernel::class);
+        /** @var Kernel $kernel */
+        $kernel = $this->app->make(HttpKernelContract::class);
         $kernel->prependMiddleware(DisableResponseCacheInDesignMode::class);
     }
 
