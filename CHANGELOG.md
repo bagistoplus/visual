@@ -2,6 +2,13 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.8](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.7...v2.0.0-alpha.8) (2026-05-07)
+
+
+### Bug Fixes
+
+* register cache middleware on app kernel ([3cf60b0](https://github.com/bagistoplus/visual/commit/3cf60b0758f80063c302b801b504784219d5e598))
+
 # [2.0.0-alpha.7](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.6...v2.0.0-alpha.7) (2026-05-05)
 
 
