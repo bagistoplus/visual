@@ -26,6 +26,12 @@ return [
     'Image Picker' => 'छवि चयनकर्ता',
     'Drop your images here' => 'अपनी छवियाँ यहाँ छोड़ें',
     'Add images' => 'छवियाँ जोड़ें',
+    'Edit metadata' => 'मेटाडेटा संपादित करें',
+    'Edit image metadata' => 'छवि मेटाडेटा संपादित करें',
+    'Alt text' => 'वैकल्पिक टेक्स्ट',
+    'Focal point' => 'फोकल पॉइंट',
+    'Focal point position' => 'फोकल पॉइंट स्थिति',
+    'Save' => 'सहेजें',
     'Image uploaded successfully' => 'छवि सफलतापूर्वक अपलोड हुई',
     'Failed to upload image' => 'छवि अपलोड करने में विफल',
 

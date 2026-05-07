@@ -26,6 +26,12 @@ return [
     'Image Picker' => 'Image Picker',
     'Drop your images here' => 'Drop your images here',
     'Add images' => 'Add images',
+    'Edit metadata' => 'Edit metadata',
+    'Edit image metadata' => 'Edit image metadata',
+    'Alt text' => 'Alt text',
+    'Focal point' => 'Focal point',
+    'Focal point position' => 'Focal point position',
+    'Save' => 'Save',
     'Image uploaded successfully' => 'Image uploaded successfully',
     'Failed to upload image' => 'Failed to upload image',
 

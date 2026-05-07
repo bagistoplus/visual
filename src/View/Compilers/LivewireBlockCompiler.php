@@ -31,7 +31,7 @@ class LivewireBlockCompiler implements BlockCompilerInterface
         }
         ?>
 
-        @livewire('craftile-{$schema->slug}', [
+        @livewire(\\{$schema->class}::class, [
             'context' => {$contextVar},
             'block' => {$blockDataVar}
         ], key({$blockDataVar}->id))

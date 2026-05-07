@@ -2,6 +2,29 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.8](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.7...v2.0.0-alpha.8) (2026-05-07)
+
+
+### Bug Fixes
+
+* register cache middleware on app kernel ([3cf60b0](https://github.com/bagistoplus/visual/commit/3cf60b0758f80063c302b801b504784219d5e598))
+
+# [2.0.0-alpha.7](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.6...v2.0.0-alpha.7) (2026-05-05)
+
+
+### Bug Fixes
+
+* **core:** register theme and channel morph aliases ([2571ba5](https://github.com/bagistoplus/visual/commit/2571ba55d63836617200906958fbee9d170ce839))
+* **livewire:** support livewire 4.3 ([6e1b98d](https://github.com/bagistoplus/visual/commit/6e1b98d37a023e2a4b56aa336005f6efeb780131))
+* **livewire:** use class names to render visual blocks ([2f4b4fd](https://github.com/bagistoplus/visual/commit/2f4b4fde960997d0aee58cd9f187a064713f7e3f))
+
+# [2.0.0-alpha.6](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.5...v2.0.0-alpha.6) (2026-05-05)
+
+
+### Features
+
+* add image metadata support ([58bee1c](https://github.com/bagistoplus/visual/commit/58bee1c694c9b80709645739e4046f26cac91580))
+
 # [2.0.0-alpha.5](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.4...v2.0.0-alpha.5) (2026-05-04)
 
 

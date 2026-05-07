@@ -5,7 +5,6 @@ namespace BagistoPlus\Visual;
 use BagistoPlus\Visual\Contracts\SettingTransformerInterface;
 use BagistoPlus\Visual\LivewireFeatures\BlockDataSynth;
 use BagistoPlus\Visual\LivewireFeatures\SupportsBlockData;
-use BagistoPlus\Visual\LivewireFeatures\SupportsComponentAttributes;
 use Craftile\Laravel\Facades\Craftile;
 use Illuminate\Support\Collection;
 use Livewire\Livewire;
@@ -128,6 +127,5 @@ class VisualManager
         Livewire::propertySynthesizer(BlockDataSynth::class);
 
         Livewire::componentHook(SupportsBlockData::class);
-        Livewire::componentHook(SupportsComponentAttributes::class);
     }
 }

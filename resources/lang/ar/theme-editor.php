@@ -26,6 +26,12 @@ return [
     'Image Picker' => 'منتقي الصور',
     'Drop your images here' => 'قم بإسقاط صورك هنا',
     'Add images' => 'إضافة صور',
+    'Edit metadata' => 'تعديل البيانات الوصفية',
+    'Edit image metadata' => 'تعديل بيانات الصورة الوصفية',
+    'Alt text' => 'النص البديل',
+    'Focal point' => 'نقطة التركيز',
+    'Focal point position' => 'موضع نقطة التركيز',
+    'Save' => 'حفظ',
     'Image uploaded successfully' => 'تم تحميل الصورة بنجاح',
     'Failed to upload image' => 'فشل تحميل الصورة',
 

@@ -11,6 +11,7 @@ use Illuminate\View\ComponentAttributeBag;
 use Illuminate\View\ComponentSlot;
 use Illuminate\View\InvokableComponentVariable;
 use Livewire\ComponentHook;
+use Livewire\Mechanisms\HandleComponents\ComponentContext;
 
 class SupportsBlockData extends ComponentHook
 {
@@ -63,5 +64,14 @@ class SupportsBlockData extends ComponentHook
     public function rerender($view)
     {
         return $this->render($view);
+    }
+
+    public function dehydrate(ComponentContext $context)
+    {
+        if (! ($this->component instanceof LivewireBlock)) {
+            return;
+        }
+
+        $context->memo['name'] = $this->component::class;
     }
 }

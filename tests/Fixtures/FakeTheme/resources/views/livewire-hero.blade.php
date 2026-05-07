@@ -1,0 +1,1 @@
+<div>Livewire hero</div>
