@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visual Template Assignment Brainstorm</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --panel: #ffffff;
+      --ink: #151922;
+      --muted: #606a7a;
+      --line: #d8dee8;
+      --soft: #eef2f7;
+      --blue: #1d4ed8;
+      --green: #047857;
+      --amber: #b45309;
+      --red: #b91c1c;
+      --code-bg: #111827;
+      --code-ink: #e5e7eb;
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .wrap {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 42px 0 30px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      max-width: 860px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      max-width: 800px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      padding: 7px 12px;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    main {
+      padding: 30px 0 56px;
+    }
+
+    section {
+      margin-top: 22px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      padding: 18px;
+    }
+
+    .panel h2 {
+      margin-bottom: 12px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+
+    .panel h3 {
+      margin-bottom: 8px;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .list li {
+      border-left: 3px solid var(--line);
+      padding-left: 11px;
+      color: #303846;
+      font-size: 14px;
+    }
+
+    .callout {
+      border-left: 4px solid var(--blue);
+      background: #eff6ff;
+      padding: 14px 16px;
+      color: #1e3a8a;
+      font-size: 14px;
+    }
+
+    .decision {
+      border-left-color: var(--green);
+      background: #ecfdf5;
+      color: #064e3b;
+    }
+
+    .risk {
+      border-left-color: var(--amber);
+      background: #fffbeb;
+      color: #78350f;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: 1fr 44px 1fr 44px 1fr;
+      align-items: stretch;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .node {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 14px;
+      min-height: 112px;
+    }
+
+    .node strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .node span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .arrow {
+      display: grid;
+      place-items: center;
+      color: var(--blue);
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    pre {
+      overflow: auto;
+      border-radius: var(--radius);
+      background: var(--code-bg);
+      color: var(--code-ink);
+      padding: 16px;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    .tag {
+      display: inline-block;
+      border-radius: 5px;
+      padding: 2px 7px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .tag.green {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .tag.amber {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .tag.blue {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #334155;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .score {
+      font-weight: 800;
+      color: var(--green);
+    }
+
+    @media (max-width: 900px) {
+      .grid.two,
+      .grid.three {
+        grid-template-columns: 1fr;
+      }
+
+      .flow {
+        grid-template-columns: 1fr;
+      }
+
+      .arrow {
+        transform: rotate(90deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <h1>Custom Product, Category, and Page Templates</h1>
+      <p class="subtitle">
+        Current design for Shopify-style custom templates in Visual: template content stays file-based, assignment uses Bagisto-native model storage, and creation happens from a nested template selector in the Visual Editor.
+      </p>
+      <div class="meta">
+        <span class="pill">Types: product, category, page</span>
+        <span class="pill">Theme files stay file-based</span>
+        <span class="pill">No custom index</span>
+        <span class="pill">Assignment UI: entity forms</span>
+        <span class="pill">Editor override: _template</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="grid two">
+      <article class="panel">
+        <h2>Locked Scope</h2>
+        <p class="lead">
+          Custom template support is limited to assignable entity page types. Homepage/index remains a core editor template only and is not part of custom template creation or assignment.
+        </p>
+        <ul class="list">
+          <li>Supported custom types: <code>product</code>, <code>category</code>, <code>page</code>.</li>
+          <li>Unsupported for this phase: custom <code>index</code>, delete, rename, assignment counts.</li>
+          <li>Custom templates replace only the inner Visual content include.</li>
+          <li>Template assignment changes publish immediately with Bagisto entity forms.</li>
+        </ul>
+      </article>
+
+      <article class="panel">
+        <h2>Storage Decision</h2>
+        <div class="callout decision">
+          Use Bagisto-native storage so fetched entities already carry their assignment data where possible. Avoid Concord model overrides by default.
+        </div>
+        <ul class="list">
+          <li>Product: product attribute <code>visual_template</code>, channel + locale aware.</li>
+          <li>Category: <code>category_translations.visual_template</code>, locale aware.</li>
+          <li>CMS page: <code>cms_page_translations.visual_template</code>, locale aware.</li>
+          <li>Assignments store the full key, e.g. <code>gift-box.product</code>; default stores <code>null</code>.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>Storefront Data Flow</h2>
+      <p class="lead">
+        The page wrapper should not resolve assignment through a late Blade query. The assignment value should come from the same Bagisto data the model already uses.
+      </p>
+      <div class="flow">
+        <div class="node">
+          <strong>1. Bagisto Fetches Entity</strong>
+          <span>Product attributes or translations are loaded by existing model behavior.</span>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node">
+          <strong>2. Validate Template Key</strong>
+          <span>Strict type match and live template availability decide whether to use the assignment.</span>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node">
+          <strong>3. Wrapper Includes Template</strong>
+          <span>Blade includes the assigned template key or falls back to <code>product</code>, <code>category</code>, or <code>page</code>.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Template Loading Model</h2>
+      <p class="lead">
+        Templates are loaded through one registry service that discovers definitions from package files and Visual storage. It exposes type-filtered options to the editor and Bagisto entity forms.
+      </p>
+      <div class="flow">
+        <div class="node">
+          <strong>1. Discover Files</strong>
+          <span>Scan theme package, live storage, or editor storage depending on request context.</span>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node">
+          <strong>2. Parse Template Key</strong>
+          <span><code>landing.product.json</code> becomes key <code>landing.product</code>, type <code>product</code>, name <code>landing</code>.</span>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node">
+          <strong>3. Return Registry</strong>
+          <span>Registry returns default templates plus custom templates filtered by type and active channel theme.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid two">
+      <article class="panel">
+        <h2>Discovery Precedence</h2>
+        <p class="lead">
+          Discovery includes fallback channel/locale paths. Later sources override earlier ones for the same full template key.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Order</th>
+              <th>Source</th>
+              <th>Used When</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Theme package defaults</td>
+              <td>Always available as fallback</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Live storage</td>
+              <td>Normal storefront/admin assignment forms</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Editor storage</td>
+              <td>Visual Editor and design mode only</td>
+            </tr>
+          </tbody>
+        </table>
+        <ul class="list">
+          <li>Bagisto entity forms list live templates only.</li>
+          <li>Visual Editor includes editor drafts.</li>
+          <li>Package-default custom templates are assignable.</li>
+        </ul>
+      </article>
+
+      <article class="panel">
+        <h2>Supported File Names</h2>
+        <pre><code>resources/views/templates/product.json
+resources/views/templates/landing.product.json
+resources/views/templates/landing.product.yaml
+resources/views/templates/landing.product.yml
+resources/views/templates/landing.product.visual.php
+
+storage/bagisto-visual/themes/{theme}/live/{channel}/{locale}/templates/landing.product.json
+storage/bagisto-visual/themes/{theme}/editor/{channel}/{locale}/templates/landing.product.json</code></pre>
+        <p class="lead">
+          The full key is the filename without extension. The type is the final key segment. Custom <code>*.index.*</code> files are ignored for this phase.
+        </p>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>Registry Service Sketch</h2>
+      <pre><code>final class TemplateDiscovery
+{
+    public function forType(
+        string $themeCode,
+        string $type,
+        ?string $channel = null,
+        ?string $locale = null,
+        bool $includeEditorDrafts = false
+    ): Collection {
+        return $this-&gt;all($themeCode, $channel, $locale, $includeEditorDrafts)
+            -&gt;where('type', $type)
+            -&gt;values();
+    }
+
+    public function all(
+        string $themeCode,
+        ?string $channel = null,
+        ?string $locale = null,
+        bool $includeEditorDrafts = false
+    ): Collection {
+        $templates = collect($this-&gt;defaultTemplatesForAssignableTypes());
+
+        foreach ($this-&gt;packageTemplateFiles($themeCode) as $file) {
+            $templates-&gt;put($this-&gt;keyFromFile($file), $this-&gt;templateFromFile($file));
+        }
+
+        foreach ($this-&gt;storageTemplateFiles($themeCode, 'live', $channel, $locale) as $file) {
+            $templates-&gt;put($this-&gt;keyFromFile($file), $this-&gt;templateFromFile($file));
+        }
+
+        if ($includeEditorDrafts) {
+            foreach ($this-&gt;storageTemplateFiles($themeCode, 'editor', $channel, $locale) as $file) {
+                $templates-&gt;put($this-&gt;keyFromFile($file), $this-&gt;templateFromFile($file));
+            }
+        }
+
+        return $templates-&gt;values();
+    }
+}</code></pre>
+      <div class="callout">
+        Registry labels are title-cased from the filename custom name: <code>gift-box.product.json</code> becomes <code>Gift Box</code>. Metadata labels are ignored for this phase.
+      </div>
+    </section>
+
+    <section class="grid two">
+      <article class="panel">
+        <h2>Bagisto Form Loading</h2>
+        <pre><code>// Product: selected product edit channel + locale.
+$templates = app(TemplateDiscovery::class)-&gt;forType(
+    themeCode: app(ChannelThemeResolver::class)-&gt;for($currentChannel)-&gt;code,
+    type: 'product',
+    channel: $currentChannel-&gt;code,
+    locale: $currentLocale-&gt;code
+);
+
+$selected = old('visual_template') ?? $product-&gt;visual_template;</code></pre>
+        <p class="lead">
+          Category and CMS use the default shop channel theme and current locale because their assignments follow Bagisto translations, not channel-specific storage.
+        </p>
+      </article>
+
+      <article class="panel">
+        <h2>Select Field Shape</h2>
+        <pre><code>&lt;x-admin::form.control-group&gt;
+    &lt;x-admin::form.control-group.label&gt;
+        Theme template
+    &lt;/x-admin::form.control-group.label&gt;
+
+    &lt;x-admin::form.control-group.control
+        type="select"
+        name="visual_template"
+        :value="$selected"
+    &gt;
+        &lt;option value=""&gt;Default product&lt;/option&gt;
+
+        @foreach ($templates as $template)
+            &lt;option value="{{ $template-&gt;key }}"&gt;
+                {{ $template-&gt;label }}
+            &lt;/option&gt;
+        @endforeach
+    &lt;/x-admin::form.control-group.control&gt;
+&lt;/x-admin::form.control-group&gt;</code></pre>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>Assignment Persistence</h2>
+      <p class="lead">
+        Assignment fields are injected with Bagisto view render events and saved with Bagisto update events. Invalid assignment values are skipped with a warning rather than failing the main entity save.
+      </p>
+      <pre><code>Event::listen('catalog.product.update.after', function ($product) {
+    // Save request('visual_template') into the product attribute value
+    // for the selected product edit channel + locale.
+});
+
+Event::listen('catalog.category.update.after', function ($category) {
+    // Save request('visual_template') into category_translations
+    // for request('locale').
+});
+
+Event::listen('cms.page.update.after', function ($page) {
+    // Save request('visual_template') into cms_page_translations
+    // for the current requested locale.
+});</code></pre>
+      <div class="callout">
+        Form placement: product general panel; category right settings panel after Visible in menu; CMS page right general panel after channel selection.
+      </div>
+    </section>
+
+    <section class="grid two">
+      <article class="panel">
+        <h2>Editor Selector Pattern</h2>
+        <p class="lead">
+          The Visual Editor follows Shopify's nested selector pattern. Type rows open a panel with templates for that type and a create action.
+        </p>
+        <pre><code>Home page
+Products &gt;
+Categories &gt;
+Pages &gt;
+Cart
+Checkout
+Search
+Contact
+Error</code></pre>
+      </article>
+
+      <article class="panel">
+        <h2>Nested Type Panel</h2>
+        <pre><code>Products
+
+Default product
+Gift Box
+Preorder
+
++ Create template</code></pre>
+        <p class="lead">
+          <code>Default product</code>, <code>Default category</code>, and <code>Default page</code> are selectable and use base keys <code>product</code>, <code>category</code>, and <code>page</code>.
+        </p>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>Create Template Modal</h2>
+      <div class="grid two">
+        <div>
+          <p class="lead">
+            Template creation is launched from the nested selector, not from the current preview page. After creation, the editor switches to the new template.
+          </p>
+          <ul class="list">
+            <li>User enters a name; slug is generated and editable before create.</li>
+            <li>Name length max is 25 characters.</li>
+            <li>New templates are written as <code>{slug}.{type}.json</code>.</li>
+            <li>No delete and no rename UI in this phase.</li>
+          </ul>
+        </div>
+        <pre><code>Create a template
+
+Create a template to customize how your content is displayed.
+After it's published, assign it in the Bagisto admin.
+
+Name
+[Gift Box                    8/25]
+
+Based on
+[Default product             v]
+
+[Cancel] [Create template]</code></pre>
+      </div>
+    </section>
+
+    <section class="grid two">
+      <article class="panel">
+        <h2>Based On Options</h2>
+        <pre><code>Default product
+Gift Box
+Preorder
+Empty template</code></pre>
+        <p class="lead">
+          The list is type-specific. Creating from <code>Empty template</code> still includes shared regions from current page data plus an empty <code>main</code> region.
+        </p>
+      </article>
+
+      <article class="panel">
+        <h2>Create/Duplicate Data</h2>
+        <ul class="list">
+          <li>Shared regions and shared blocks are copied from the current page data.</li>
+          <li>Duplicate copies non-shared regions from the selected <code>Based on</code> template.</li>
+          <li>Empty creates shared regions plus empty non-shared <code>main</code>.</li>
+          <li>Multiple non-shared regions are supported when present in a base template.</li>
+          <li>Create/duplicate writes only to the current editor channel + locale.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>Preview Override</h2>
+      <p class="lead">
+        The editor uses <code>_template</code> as the source of truth for previewing unassigned custom templates. It is honored only in design/editor mode and must match the current route type.
+      </p>
+      <pre><code>/red-shirt?_designMode=my-theme&amp;_template=gift-box.product</code></pre>
+      <ul class="list">
+        <li>Design mode priority: valid <code>_template</code>, then entity assignment, then default type.</li>
+        <li>Storefront priority: entity assignment, then default type.</li>
+        <li>Injected page data reports <code>template.name = gift-box.product</code>.</li>
+        <li>Persistence writes to <code>templates/gift-box.product.json</code>.</li>
+      </ul>
+    </section>
+
+    <section class="grid two">
+      <article class="panel">
+        <h2>Blade Wrapper Result</h2>
+        <pre><code>@visual_content
+
+@includeIf('shop::templates.' . ($product-&gt;visual_template ?: 'product'))
+
+@end_visual_content</code></pre>
+        <p class="lead">
+          Same wrapper still owns SEO, schema data, route variables, and layout. Only the Visual content include changes.
+        </p>
+      </article>
+
+      <article class="panel">
+        <h2>Strict Matching</h2>
+        <ul class="list">
+          <li>Product form lists and accepts only <code>*.product</code>.</li>
+          <li>Category form lists and accepts only <code>*.category</code>.</li>
+          <li>CMS page form lists and accepts only <code>*.page</code>.</li>
+          <li>Missing or wrong-type assigned templates fall back to the default type.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>Rejected Alternatives</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Alternative</th>
+            <th>Status</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Dedicated assignment table for all entities</td>
+            <td>Rejected for now</td>
+            <td>Would require explicit eager-loading or joins to avoid extra queries.</td>
+          </tr>
+          <tr>
+            <td>Concord model overrides</td>
+            <td>Rejected by default</td>
+            <td>Only one model override wins per contract, creating package conflict risk.</td>
+          </tr>
+          <tr>
+            <td>Custom homepage/index templates</td>
+            <td>Out of scope</td>
+            <td>No assignment target needed for this phase.</td>
+          </tr>
+          <tr>
+            <td>Template delete/rename UI</td>
+            <td>Out of scope</td>
+            <td>Rename/delete would require cross-entity assignment cleanup.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Implementation TODOs</h2>
+      <ul class="list">
+        <li>Add <code>visual_template</code> product attribute during install/update if missing.</li>
+        <li>Add nullable <code>visual_template</code> columns to category and CMS translation tables.</li>
+        <li>Build <code>TemplateDiscovery</code> with channel/locale fallback discovery.</li>
+        <li>Build <code>ChannelThemeResolver</code> so option loading matches the active channel theme.</li>
+        <li>Inject Bagisto form fields with view render events and persist via update events.</li>
+        <li>Update editor template selector to nested Shopify-style panels.</li>
+        <li>Add create-template API that writes JSON immediately to editor storage.</li>
+        <li>Honor <code>_template</code> in design mode and validate strict type match.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

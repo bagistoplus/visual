@@ -1,83 +1,194 @@
 <script setup lang="ts">
-import { Menu } from '@ark-ui/vue/menu';
+import { Popover } from '@ark-ui/vue/popover';
 import { Button } from '@craftile/editor/ui';
-import NProgress from 'nprogress';
 
-import { useState } from '../state';
-import { updateUrlParam, removeUrlParam } from '../utils/urlState';
+import { useState, type TemplateVariantType } from '../state';
+import type { Template } from '../types';
+import useI18n from '../composables/i18n';
+import { isCustomTemplateVariant, useTemplateSelection } from '../composables/useTemplateSelection';
 
 const editor = useCraftileEditor();
-const { currentTemplate, templates, theme, channel, locale, state } = useState();
+const { t } = useI18n();
+const { currentTemplate, templates, state } = useState();
+const { selectTemplate } = useTemplateSelection();
 
-function onSelect({ value }: { value: string }) {
-  const template = templates.value.find(t => t.template === value);
+const isOpen = ref(false);
+const activePanel = ref<TemplateVariantType | null>(null);
+const variantTypes = ['product', 'category', 'page'] as const;
 
-  if (template && editor) {
-    if (state.pageData?.template !== value) {
-      if (state.pageData) {
-        state.pageData.template = value;
-      }
+watch(isOpen, (open) => {
+  if (!open) {
+    activePanel.value = null;
+  }
+});
 
-      editor.engine.setPage({
-        regions: [],
-        blocks: {},
-      });
-    }
+const rootTemplates = computed(() => templates.value.filter((template) => !isCustomTemplateVariant(template)));
 
-    updateUrlParam('template', value);
-    removeUrlParam('block');
+const currentIcon = computed(() => currentTemplate.value?.icon || templates.value[0]?.icon || '');
+const currentLabel = computed(() => currentTemplate.value?.label || templates.value[0]?.label || 'Select template');
 
-    NProgress.start();
+function variantTemplates(type: TemplateVariantType) {
+  return templates.value.filter((template) => template.type === type && template.template !== type);
+}
 
-    const url = new URL(template.previewUrl);
-    url.searchParams.set('_designMode', theme.value!.code as string);
-    url.searchParams.set('channel', channel.value);
-    url.searchParams.set('locale', locale.value);
-    editor.preview.loadUrl(url.href);
+function defaultTemplate(type: TemplateVariantType) {
+  return templates.value.find((template) => template.template === type);
+}
+
+function defaultBaseTemplate(type: TemplateVariantType) {
+  const template = defaultTemplate(type);
+
+  return template?.isJsonTemplate ? template : null;
+}
+
+function isVariantType(type: unknown): type is TemplateVariantType {
+  return typeof type === 'string' && variantTypes.includes(type as TemplateVariantType);
+}
+
+function variantType(template: Template): TemplateVariantType | null {
+  return template.supportsVariants && isVariantType(template.type) ? template.type : null;
+}
+
+function opensVariantPanel(template: Template) {
+  return Boolean(variantType(template));
+}
+
+function openVariantPanel(template: Template) {
+  const type = variantType(template);
+
+  if (type) {
+    activePanel.value = type;
   }
 }
+
+function onSelectTemplate(template: Template) {
+  if (!selectTemplate(template)) {
+    return;
+  }
+
+  isOpen.value = false;
+  activePanel.value = null;
+}
+
+function openCreate(type: TemplateVariantType) {
+  state.templateForm.type = type;
+  state.templateForm.name = '';
+  state.templateForm.basedOn = defaultBaseTemplate(type) ? type : '__empty__';
+  state.templateForm.error = '';
+  state.templateForm.isSubmitting = false;
+  isOpen.value = false;
+  editor?.ui.openModal('create-template');
+}
+
+function panelBaseTemplate(type: TemplateVariantType) {
+  return templates.value.find((template) => template.supportsVariants && template.type === type);
+}
+
+function defaultTemplateLabel(type: TemplateVariantType) {
+  return t(`Default ${type}`);
+}
+
 </script>
 
 <template>
-  <Menu.Root
-    @select="onSelect"
-    :positioning="{ gutter: 4, strategy: 'fixed', placement: 'bottom' }"
-  >
-    <Menu.Trigger asChild>
-      <Button>
-        <template v-if="currentTemplate">
-          <span v-html="currentTemplate.icon"></span>
-          {{ currentTemplate.label }}
-        </template>
-        <template v-else-if="templates.length > 0">
-          <span v-html="templates[0].icon"></span>
-          {{ templates[0].label }}
-        </template>
-        <template v-else>
-          Select Template
-        </template>
-        <Menu.Indicator>
+  <div class="relative">
+    <Popover.Root
+      v-model:open="isOpen"
+      :positioning="{ gutter: 4, strategy: 'fixed', placement: 'bottom-start' }"
+    >
+      <Popover.Trigger as-child>
+        <Button>
+          <span
+            v-if="currentIcon"
+            v-html="currentIcon"
+          ></span>
+          {{ currentLabel }}
           <i-heroicons-chevron-down class="inline w-4" />
-        </Menu.Indicator>
-      </Button>
-    </Menu.Trigger>
-    <Menu.Positioner class="w-64">
-      <Menu.Content class="pointer-events-none border shadow flex gap-1 p-1 flex-col outline-none rounded bg-white data-[state=open]:animate-fade-in">
-        <template
-          v-for="t in templates"
-          :key="t.template"
-        >
-          <Menu.Separator v-if="t.template === '__separator__'" />
-          <Menu.Item
-            v-else
-            :value="t.template"
-            class="rounded cursor-pointer flex items-center h-9 px-3 gap-3 hover:bg-gray-200"
-          >
-            <span v-html="t.icon"></span>
-            {{ t.label }}
-          </Menu.Item>
-        </template>
-      </Menu.Content>
-    </Menu.Positioner>
-  </Menu.Root>
+        </Button>
+      </Popover.Trigger>
+
+      <Popover.Positioner class="w-72 !z-50">
+        <Popover.Content class="max-h-112 overflow-y-auto rounded-md border bg-white p-1 shadow-lg outline-none">
+          <template v-if="!activePanel">
+            <template
+              v-for="(template, index) in rootTemplates"
+              :key="`${template.template}-${index}`"
+            >
+              <div
+                v-if="template.template === '__separator__'"
+                class="my-1 border-t"
+              ></div>
+
+              <button
+                v-else-if="opensVariantPanel(template)"
+                type="button"
+                class="flex h-10 w-full items-center justify-between rounded-md px-3 text-left text-sm hover:bg-gray-100"
+                @click="openVariantPanel(template)"
+              >
+                <span class="flex items-center gap-3">
+                  <span v-html="template.icon"></span>
+                  {{ template.label }}
+                </span>
+
+                <i-heroicons-chevron-right class="w-4" />
+              </button>
+
+              <button
+                v-else
+                type="button"
+                class="flex h-10 w-full items-center gap-3 rounded-md px-3 text-left text-sm hover:bg-gray-100"
+                @click="onSelectTemplate(template)"
+              >
+                <span v-html="template.icon"></span>
+                {{ template.label }}
+              </button>
+            </template>
+          </template>
+
+          <template v-else>
+            <button
+              type="button"
+              class="mb-1 flex h-10 w-full items-center gap-3 rounded-md px-3 text-left text-sm font-medium hover:bg-gray-100"
+              @click="activePanel = null"
+            >
+              <i-heroicons-chevron-left class="w-4" />
+              {{ panelBaseTemplate(activePanel)?.label || activePanel }}
+            </button>
+
+            <button
+              v-if="defaultTemplate(activePanel)"
+              type="button"
+              class="flex min-h-10 w-full items-center gap-3 rounded-md px-3 text-left text-sm hover:bg-gray-100"
+              @click="onSelectTemplate(defaultTemplate(activePanel)!)"
+            >
+              <span v-html="defaultTemplate(activePanel)!.icon"></span>
+              <span>
+                <span class="block">{{ defaultTemplateLabel(activePanel) }}</span>
+              </span>
+            </button>
+
+            <button
+              v-for="template in variantTemplates(activePanel)"
+              :key="template.template"
+              type="button"
+              class="flex min-h-10 w-full items-center gap-3 rounded-md px-3 text-left text-sm hover:bg-gray-100"
+              @click="onSelectTemplate(template)"
+            >
+              <span v-html="template.icon"></span>
+              {{ template.label }}
+            </button>
+
+            <button
+              type="button"
+              class="mt-1 flex h-10 w-full items-center gap-3 rounded-md px-3 text-left text-sm text-blue-600 hover:bg-blue-50"
+              @click="openCreate(activePanel)"
+            >
+              <i-heroicons-plus-circle class="w-4" />
+              {{ t('Create template') }}
+            </button>
+          </template>
+        </Popover.Content>
+      </Popover.Positioner>
+    </Popover.Root>
+  </div>
 </template>

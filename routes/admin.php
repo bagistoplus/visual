@@ -14,6 +14,9 @@ Route::prefix('/visual/editor')->group(function () {
     Route::post('api/publish-theme', [ThemeEditorController::class, 'publishTheme'])
         ->name('visual.admin.editor.api.publish');
 
+    Route::post('api/templates', [ThemeEditorController::class, 'createTemplate'])
+        ->name('visual.admin.editor.api.templates.create');
+
     Route::post('api/upload-images', [ThemeEditorController::class, 'uploadImages'])
         ->name('visual.admin.editor.api.upload');
 

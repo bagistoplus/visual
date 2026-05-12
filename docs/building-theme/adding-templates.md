@@ -102,6 +102,39 @@ The structure and behavior of template formats are explained in:
 - [JSON & YAML Templates](../core-concepts/templates/json-yaml.md) - Declarative templates
 - [PHP Templates](../core-concepts/templates/php-templates.md) - Programmatic templates with IDE support
 
+## Creating Custom Product, Category, and Page Templates
+
+Product, category, and CMS page templates can have custom variants. These variants are assigned to individual resources from the Bagisto admin.
+
+Place custom templates in a type-first directory:
+
+```text
+resources/views/templates/
+├── product/
+│   └── gift-box.json
+├── category/
+│   └── sale.yaml
+└── page/
+    └── landing.visual.php
+```
+
+These files create the template keys `product.gift-box`, `category.sale`, and `page.landing`.
+
+Custom templates use the same JSON, YAML, or `.visual.php` structure as default templates:
+
+```yaml
+sections:
+  product-information:
+    type: '@awesome-theme/product-information'
+
+order:
+  - product-information
+```
+
+The default data template can also be placed at either `templates/product.yaml` or `templates/product/index.yaml`. The same pattern applies to `category` and `page`.
+
+For the full workflow, see [Custom Templates](../core-concepts/templates/custom-templates.md).
+
 In the next chapter, we will cover:
 
 - How to create sections

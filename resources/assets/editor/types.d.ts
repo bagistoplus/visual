@@ -43,6 +43,7 @@ export interface ThemeEditorConfig {
     persistUpdates: string;
     persistThemeSettings: string;
     publishTheme: string;
+    createTemplate: string;
     themesIndex: string;
     uploadImage: string;
     listImages: string;
@@ -59,6 +60,9 @@ export interface Template {
   label: string;
   icon: string;
   previewUrl: string;
+  type?: 'product' | 'category' | 'page' | string | null;
+  supportsVariants?: boolean;
+  isJsonTemplate?: boolean;
 }
 
 export interface Locale {

@@ -8,8 +8,8 @@ export function persistUpdates(updates: UpdatesEvent) {
 
   const request = post(window.editorConfig.routes.persistUpdates, {
     theme: state.theme?.code,
-    channel: window.editorConfig.defaultChannel,
-    locale: window.editorConfig.editorLocale,
+    channel: state.channel || window.editorConfig.defaultChannel,
+    locale: state.locale || window.editorConfig.editorLocale,
     template: {
       url: state.pageData?.url || '',
       name: state.pageData?.template || 'index',
@@ -61,6 +61,22 @@ export function publishTheme(pageData?: any) {
   });
 
   return request;
+}
+
+export function createTemplate(payload: {
+  type: string;
+  name: string;
+  basedOn?: string | null;
+}) {
+  const { state } = useState();
+  const { post } = useHttpClient();
+
+  return post(window.editorConfig.routes.createTemplate, {
+    theme: state.theme!.code,
+    channel: state.channel || window.editorConfig.defaultChannel,
+    locale: state.locale || window.editorConfig.editorLocale,
+    ...payload,
+  });
 }
 
 export function fetchCategories() {

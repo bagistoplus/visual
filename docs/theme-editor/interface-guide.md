@@ -36,6 +36,40 @@ When you open the editor, you'll see three main areas:
 
 ![The Visual Editor section configuration panel](/editor-toolbar.png)
 
+## Switching Templates
+
+Use the template selector in the toolbar to move between storefront templates. The selector keeps the same order as the theme defines, including separators between groups of templates.
+
+Product, category, and CMS page templates open a second panel. That panel lists the default template, any custom templates for that type, and a **Create template** action.
+
+![Custom template selector](/editor-custom-template-selector.png)
+
+## Creating Custom Templates
+
+From a product, category, or page template panel, click **Create template**.
+
+![Custom template create modal](/editor-custom-template-create-modal.png)
+
+The editor creates custom templates from a name and a base template:
+
+- **Empty template** starts with an empty main content area.
+- Existing templates can be duplicated as a starting point.
+- Shared header and footer regions stay shared and are not copied into the custom template file.
+
+After publishing, custom templates can be assigned to resources in the Bagisto admin.
+
+## Assigning Custom Templates
+
+Custom templates are assigned from each resource edit form in Bagisto:
+
+- **Product:** General panel. Product assignments are channel and locale specific.
+- **Category:** Theme template accordion. Category assignments are locale specific.
+- **CMS Page:** Theme template accordion. CMS page assignments are locale specific.
+
+![Custom template assignment field](/editor-custom-template-admin.png)
+
+CMS pages with an assigned custom page template also show Visual Editor shortcuts in the CMS page list and edit page.
+
 ## What You Can Do
 
 - **Add Sections**

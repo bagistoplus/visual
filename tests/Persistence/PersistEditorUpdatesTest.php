@@ -239,6 +239,39 @@ describe('handleFullPage', function () {
             ->and($templateData['regions'][0]['name'])->toBe('main');
     });
 
+    test('saves custom assignable templates in type-first directories', function () {
+        Storage::fake('local');
+
+        $basePath = 'test-theme/default/en/editor';
+
+        ThemePathsResolver::shouldReceive('resolvePath')
+            ->with('test-theme', 'default', 'en', 'editor', 'templates/product/gift-box.json')
+            ->andReturn(Storage::path($basePath.'/templates/product/gift-box.json'));
+
+        ThemePathsResolver::shouldReceive('getThemeBaseDataPath')
+            ->with('test-theme', 'editor/.last-edit')
+            ->andReturn(Storage::path($basePath.'/.last-edit'));
+
+        $data = [
+            'theme' => 'test-theme',
+            'channel' => 'default',
+            'locale' => 'en',
+            'template' => 'product.gift-box',
+            'page' => [
+                'blocks' => [
+                    'block-1' => ['id' => 'block-1', 'type' => 'text'],
+                ],
+                'regions' => [
+                    ['name' => 'main', 'shared' => false, 'blocks' => ['block-1']],
+                ],
+            ],
+        ];
+
+        $this->persistEditorUpdates->handleFullPage($data);
+
+        expect(Storage::exists($basePath.'/templates/product/gift-box.json'))->toBeTrue();
+    });
+
     test('handles multiple shared regions', function () {
         Storage::fake('local');
 

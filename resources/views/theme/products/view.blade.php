@@ -35,6 +35,6 @@
 
 @visual_content
 
-@includeIf('shop::templates.product')
+@include('shop::templates.' . visual_template_for('product', $product))
 
 @end_visual_content

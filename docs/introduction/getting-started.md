@@ -41,7 +41,13 @@ Then publish the assets:
 php artisan vendor:publish --tag=visual-assets
 ```
 
-This installs the Bagisto Visual and prepares your store for theme customization.
+Then run the package migrations:
+
+```bash
+php artisan migrate
+```
+
+This installs Bagisto Visual, creates the Visual-owned tables required by editor and admin features, and prepares your store for theme customization.
 
 ## Step 2: Install the Starter Theme
 

@@ -27,7 +27,7 @@ class TemplateRegistrar
                 route: 'shop.home.index',
                 label: __('visual::theme-editor.templates.homepage'),
                 icon: 'lucide-home',
-                previewUrl: url()->to('/')
+                previewUrl: url()->to('/'),
             ),
         ];
 
@@ -44,6 +44,8 @@ class TemplateRegistrar
                 label: __('visual::theme-editor.templates.category'),
                 icon: 'lucide-tags',
                 previewUrl: $category->url,
+                type: 'category',
+                supportsVariants: true,
             );
         }
 
@@ -57,6 +59,8 @@ class TemplateRegistrar
                 label: __('visual::theme-editor.templates.product'),
                 icon: 'lucide-tag',
                 previewUrl: url($product->url_key),
+                type: 'product',
+                supportsVariants: true,
             );
         }
 
@@ -105,7 +109,9 @@ class TemplateRegistrar
                 route: 'shop.cms.page',
                 label: __('visual::theme-editor.templates.cms'),
                 icon: 'lucide-file',
-                previewUrl: route('shop.cms.page', [$page->url_key])
+                previewUrl: route('shop.cms.page', [$page->url_key]),
+                type: 'page',
+                supportsVariants: true,
             );
         }
 

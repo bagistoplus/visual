@@ -29,6 +29,13 @@ describe('state management', () => {
       expect(state.products).toBeInstanceOf(Map);
       expect(state.cmsPages).toBeInstanceOf(Map);
       expect(state.haveEdits).toBe(false);
+      expect(state.templateForm).toEqual({
+        type: 'product',
+        name: '',
+        basedOn: '__empty__',
+        error: '',
+        isSubmitting: false,
+      });
     });
 
     it('should create state with custom defaults', () => {

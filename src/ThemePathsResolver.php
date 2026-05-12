@@ -39,24 +39,7 @@ class ThemePathsResolver
      */
     public function resolveThemeSettingsPath(string $themeCode, string $channel, string $locale, string $mode = 'live'): ?string
     {
-        /** @var Channel */
-        $defaultChannel = core()->getDefaultChannel();
-
-        /** @var Channel */
-        $channelModel = once(fn () => Channel::query()->with(['default_locale'])->where('code', $channel)->first());
-        $pathsToCheck = [];
-
-        if ($channel !== $defaultChannel->code) {
-            if ($locale !== $channelModel->default_locale->code) {
-                $pathsToCheck[] = $this->buildThemePath($themeCode, $mode, $channel, $channelModel->default_locale->code);
-            }
-
-            $pathsToCheck[] = $this->buildThemePath($themeCode, $mode, $defaultChannel->code, $locale);
-        }
-
-        $pathsToCheck[] = $this->buildThemePath($themeCode, $mode, $defaultChannel->code, $defaultChannel->default_locale->code);
-
-        foreach ($pathsToCheck as $path) {
+        foreach ($this->resolveFallbackPaths($themeCode, $mode, $channel, $locale) as $path) {
             $path = $path.'/theme.json';
 
             if (file_exists($path)) {
@@ -80,30 +63,44 @@ class ThemePathsResolver
         /** @var Channel $requestedChannel */
         $requestedChannel = core()->getRequestedChannel();
 
-        /** @var Channel $defaultChannel */
-        $defaultChannel = core()->getDefaultChannel();
-
         $requestedLocale = app()->getLocale();
 
-        $paths = [
-            $this->buildThemePath($themeCode, $mode, $requestedChannel->code, $requestedLocale),
-        ];
-
-        if ($requestedLocale !== $requestedChannel->default_locale->code) {
-            $paths[] = $this->buildThemePath($themeCode, $mode, $requestedChannel->code, $requestedChannel->default_locale->code);
-        }
-
-        if ($requestedChannel->code !== $defaultChannel->code) {
-            $paths[] = $this->buildThemePath($themeCode, $mode, $defaultChannel->code, $requestedLocale);
-
-            if ($requestedLocale !== $defaultChannel->default_locale->code) {
-                $paths[] = $this->buildThemePath($themeCode, $mode, $defaultChannel->code, $defaultChannel->default_locale->code);
-            }
-        }
+        $paths = $this->resolveFallbackPaths($themeCode, $mode, $requestedChannel->code, $requestedLocale);
 
         // Bagisto prepend base path to the provided paths
         // so we strip it
         return array_map(fn ($p) => substr($p, strlen(base_path()) + 1), $paths);
+    }
+
+    /**
+     * Resolve theme data paths using the channel and locale fallback hierarchy.
+     *
+     * @return array<int, string>
+     */
+    public function resolveFallbackPaths(string $themeCode, string $mode, string $channel, string $locale): array
+    {
+        /** @var Channel */
+        $defaultChannel = core()->getDefaultChannel();
+
+        /** @var Channel|null */
+        $channelModel = once(fn () => Channel::query()->with(['default_locale'])->where('code', $channel)->first());
+        $paths = [];
+
+        $paths[] = $this->buildThemePath($themeCode, $mode, $channel, $locale);
+
+        if ($channelModel && $locale !== $channelModel->default_locale->code) {
+            $paths[] = $this->buildThemePath($themeCode, $mode, $channel, $channelModel->default_locale->code);
+        }
+
+        if ($channel !== $defaultChannel->code) {
+            $paths[] = $this->buildThemePath($themeCode, $mode, $defaultChannel->code, $locale);
+
+            if ($locale !== $defaultChannel->default_locale->code) {
+                $paths[] = $this->buildThemePath($themeCode, $mode, $defaultChannel->code, $defaultChannel->default_locale->code);
+            }
+        }
+
+        return array_values(array_unique($paths));
     }
 
     /**

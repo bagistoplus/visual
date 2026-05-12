@@ -48,12 +48,34 @@ Example:
 /templates/
 ├── index.blade.php       # Homepage template (Blade)
 ├── product.visual.php    # Product page (PHP)
+├── product/
+│   └── gift-box.json     # Custom product template
 ├── category.json         # Category page (JSON)
+├── category/
+│   └── sale.yaml         # Custom category template
 ├── cart.yaml             # Cart page (YAML)
 ├── checkout.yaml         # Checkout page (YAML)
 ├── page.yaml             # CMS pages (YAML)
+├── page/
+│   └── landing.visual.php # Custom CMS page template
 ├── search.json           # Search results page (JSON)
 ```
+
+## Template Variants
+
+Product, category, and CMS page templates can have custom variants. A variant is an alternate template for one resource type, such as `product.gift-box`, `category.sale`, or `page.landing`.
+
+Variants are stored in type-first directories:
+
+```plaintext
+templates/product/gift-box.json
+templates/category/sale.yaml
+templates/page/landing.visual.php
+```
+
+Merchants can create variants in the Visual Editor and assign them to individual products, categories, or CMS pages from the Bagisto admin.
+
+Learn more in [Custom Templates](./custom-templates.md).
 
 ## Template Format Comparison
 

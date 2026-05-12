@@ -23,6 +23,7 @@ import TypographyPicker from '../../components/TypographyPicker.vue';
 import PublishAction from '../../components/PublishAction.vue';
 import PreviewAction from '../../components/PreviewAction.vue';
 import ConfirmPublish from '../../components/ConfirmPublish.vue';
+import CreateTemplateModal from '../../components/CreateTemplateModal.vue';
 import BackButton from '../../components/BackButton.vue';
 import useI18n from '../../composables/i18n';
 
@@ -81,6 +82,13 @@ function configureHeader(ui: PluginContext['editor']['ui']) {
     title: t('Publish edits ?'),
     size: 'lg',
     render: ConfirmPublish,
+  });
+
+  ui.registerModal({
+    id: 'create-template',
+    title: t('Create a template'),
+    size: 'xl',
+    render: CreateTemplateModal,
   });
 }
 

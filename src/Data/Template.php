@@ -12,7 +12,9 @@ class Template implements Arrayable, JsonSerializable
         public string|array $route,
         public string $label,
         public string $icon,
-        public string $previewUrl
+        public string $previewUrl,
+        public ?string $type = null,
+        public bool $supportsVariants = false,
     ) {}
 
     public function matchRoute($route)
@@ -28,6 +30,8 @@ class Template implements Arrayable, JsonSerializable
             label: $attributes['label'],
             icon: $attributes['icon'],
             previewUrl: $attributes['previewUrl'],
+            type: $attributes['type'] ?? null,
+            supportsVariants: $attributes['supportsVariants'] ?? false,
         );
     }
 
@@ -44,6 +48,8 @@ class Template implements Arrayable, JsonSerializable
             'label' => $this->label,
             'icon' => $this->icon,
             'previewUrl' => $this->previewUrl,
+            'type' => $this->type,
+            'supportsVariants' => $this->supportsVariants,
         ];
     }
 

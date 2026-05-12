@@ -53,6 +53,8 @@ Example inside a section Blade file:
 The **Category Template** is used to display a list of products belonging to a specific category.
 It typically includes features like filters, sorting options, product grids, and category banners.
 
+Category templates support custom variants such as `category.sale`. Custom category templates receive the same `$category` variable as the default category template.
+
 ### Location
 
 ```plaintext
@@ -226,6 +228,8 @@ Since no variable is automatically exposed, a typical section might look like:
 The **Page Template** is used to render CMS pages created from the admin panel.
 It displays static content like About Us, Contact, Terms, or any custom page.
 
+CMS page templates support custom variants such as `page.landing`. Custom page templates receive the same `$page` variable as the default page template.
+
 ### Location
 
 ```plaintext
@@ -254,6 +258,8 @@ Example inside a section Blade file:
 
 The **Product Template** is used to display the details of a single product.
 It includes the product title, description, images, price, reviews, and add-to-cart functionality.
+
+Product templates support custom variants such as `product.gift-box`. Custom product templates receive the same `$product` variable as the default product template.
 
 ### Location
 

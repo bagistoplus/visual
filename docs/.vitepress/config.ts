@@ -61,6 +61,7 @@ export default defineConfig({
                 { text: 'JSON & YAML', link: '/core-concepts/templates/json-yaml' },
                 { text: 'PHP Templates', link: '/core-concepts/templates/php-templates' },
                 { text: 'Available templates', link: '/core-concepts/templates/available' },
+                { text: 'Custom templates', link: '/core-concepts/templates/custom-templates' },
               ],
             },
             { text: 'Sections', link: '/core-concepts/sections' },

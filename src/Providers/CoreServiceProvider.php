@@ -10,8 +10,12 @@ use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Middlewares\DisableResponseCacheInDesignMode;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
+use BagistoPlus\Visual\Models\VisualTemplateAssignment;
 use BagistoPlus\Visual\Settings\Support as SettingTransformers;
 use BagistoPlus\Visual\Support\BlockRenderFilter;
+use BagistoPlus\Visual\Support\ChannelThemeResolver;
+use BagistoPlus\Visual\Support\TemplateAssignment;
+use BagistoPlus\Visual\Support\TemplateDiscovery;
 use BagistoPlus\Visual\Support\TemplateNormalizer;
 use BagistoPlus\Visual\Support\UrlGenerator;
 use BagistoPlus\Visual\TemplateRegistrar;
@@ -23,6 +27,7 @@ use Craftile\Laravel\Facades\Craftile;
 use Craftile\Laravel\View\BlockCompilerRegistry;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Http\Kernel as HttpKernelContract;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Http\Kernel;
 use Illuminate\Support\Facades\Blade;
@@ -33,6 +38,7 @@ use Illuminate\View\DynamicComponent;
 use Livewire\Component;
 use Webkul\Attribute\Models\Attribute;
 use Webkul\Category\Models\Category;
+use Webkul\CMS\Models\Page;
 use Webkul\Core\Models\Channel;
 use Webkul\Product\Models\Product;
 use Webkul\Shop\Http\Middleware\Theme;
@@ -164,6 +170,7 @@ class CoreServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'visual');
         $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'visual');
+        $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
     }
 
     protected function bootMiddlewares(): void
@@ -198,10 +205,24 @@ class CoreServiceProvider extends ServiceProvider
         Relation::morphMap([
             'product' => Product::class,
             'category' => Category::class,
+            'page' => Page::class,
             'attribute' => Attribute::class,
             'theme' => ThemeCustomization::class,
             'channel' => Channel::class,
+            'visualtpl' => VisualTemplateAssignment::class,
         ]);
+
+        foreach ([Product::class, Category::class, Page::class] as $model) {
+            $model::resolveRelationUsing(
+                'visualTemplateAssignments',
+                fn ($model) => $model->morphMany(VisualTemplateAssignment::class, 'assignable')
+            );
+
+            $model::addGlobalScope(
+                'visual_template_assignments',
+                fn (Builder $builder) => $builder->with('visualTemplateAssignments')
+            );
+        }
     }
 
     protected function bootCommands(): void
@@ -222,7 +243,6 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function bootTemplates(): void
     {
-
         if (ThemeEditor::active()) {
             Event::listen(JsonViewLoaded::class, function (JsonViewLoaded $event) {
                 ThemeEditor::addJsonView($event->path);
@@ -274,6 +294,9 @@ class CoreServiceProvider extends ServiceProvider
 
         // Register BlockRenderFilter as singleton for request-scoped caching
         $this->app->singleton(BlockRenderFilter::class);
+        $this->app->singleton(TemplateDiscovery::class);
+        $this->app->singleton(ChannelThemeResolver::class);
+        $this->app->singleton(TemplateAssignment::class);
     }
 
     protected function registerCustomUrlGenerator(): void

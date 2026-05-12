@@ -2,6 +2,16 @@ import { Category, Channel, CmsPage, Image, Product, Template, Theme } from './t
 
 export const VISUAL_EDITOR_STATE = Symbol('VISUAL_EDITOR_STATE');
 
+export type TemplateVariantType = 'product' | 'category' | 'page';
+
+export interface TemplateForm {
+  type: TemplateVariantType;
+  name: string;
+  basedOn: string;
+  error: string;
+  isSubmitting: boolean;
+}
+
 export interface State {
   channels: Channel[];
   channel: string;
@@ -19,23 +29,40 @@ export interface State {
   products: Map<number, Product>;
   cmsPages: Map<number, CmsPage>;
   haveEdits: boolean;
+  templateForm: TemplateForm;
 }
 
 let state: State | null = null;
 
+function defaultTemplateForm(): TemplateForm {
+  return {
+    type: 'product',
+    name: '',
+    basedOn: '__empty__',
+    error: '',
+    isSubmitting: false,
+  };
+}
+
 export function createState(defaults: Partial<State> = {}): State {
+  const templates = defaults.templates || [];
+
   state = reactive({
     channels: defaults.channels || [],
     channel: 'default',
     locale: 'en',
     theme: defaults.theme || null,
-    templates: defaults.templates || [],
+    templates,
     pageData: null,
     images: defaults.images || [],
     categories: defaults.categories || new Map(),
     products: defaults.products || new Map(),
     cmsPages: defaults.cmsPages || new Map(),
     haveEdits: defaults.haveEdits || false,
+    templateForm: {
+      ...defaultTemplateForm(),
+      ...(defaults.templateForm || {}),
+    },
   });
 
   return state as State;
