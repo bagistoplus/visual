@@ -6,8 +6,12 @@ use BagistoPlus\Visual\Providers\VisualServiceProvider;
 use BagistoPlus\Visual\Tests\Fixtures\FakeTheme\FakeThemeServiceProvider;
 use Illuminate\Config\Repository;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Konekt\Concord\ConcordServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
+
+require_once __DIR__.'/../vendor/bagisto/bagisto/packages/Webkul/Core/src/Http/helpers.php';
+require_once __DIR__.'/../vendor/bagisto/bagisto/packages/Webkul/Theme/src/Http/helpers.php';
 
 class TestCase extends Orchestra
 {
@@ -23,6 +27,7 @@ class TestCase extends Orchestra
     protected function getPackageProviders($app)
     {
         return [
+            ConcordServiceProvider::class,
             LivewireServiceProvider::class,
             VisualServiceProvider::class,
             FakeThemeServiceProvider::class,
@@ -38,7 +43,16 @@ class TestCase extends Orchestra
 
     public function getEnvironmentSetUp($app)
     {
+        $app->instance(\Webkul\Core\Core::class, new class
+        {
+            public function version(): string
+            {
+                return '2.4.0';
+            }
+        });
+
         tap($app['config'], function (Repository $config) {
+            $config->set('app.admin_url', 'admin');
             $config->set('database.default', 'testbench');
             $config->set('database.connections.testbench', [
                 'driver' => 'sqlite',
@@ -50,6 +64,6 @@ class TestCase extends Orchestra
 
     public static function applicationBasePath()
     {
-        return dirname(__DIR__).'/vendor/bagisto/bagisto';
+        return parent::applicationBasePath();
     }
 }

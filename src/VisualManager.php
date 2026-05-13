@@ -8,7 +8,6 @@ use BagistoPlus\Visual\Sections\Section;
 use BagistoPlus\Visual\Sections\SectionInterface;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\File;
-use Livewire\Livewire;
 use ReflectionClass;
 use Symfony\Component\Finder\Finder;
 
@@ -65,9 +64,7 @@ class VisualManager
 
         Sections::add($section);
 
-        if ($section->isLivewire) {
-            Livewire::component("visual-section-{$vendorPrefix}-$slug", $componentClass);
-        } else {
+        if (! $section->isLivewire) {
             Blade::component($componentClass, $slug, "visual-section-{$vendorPrefix}");
         }
     }

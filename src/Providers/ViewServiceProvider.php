@@ -4,7 +4,6 @@ namespace BagistoPlus\Visual\Providers;
 
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
-use BagistoPlus\Visual\LivewireFeatures\SupportComponentAttributes;
 use BagistoPlus\Visual\LivewireFeatures\SupportSectionData;
 use BagistoPlus\Visual\Theme\Theme;
 use BagistoPlus\Visual\Theme\Themes;
@@ -16,6 +15,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Engines\CompilerEngine;
+use Livewire\ComponentHookRegistry;
 
 class ViewServiceProvider extends ServiceProvider
 {
@@ -23,6 +23,7 @@ class ViewServiceProvider extends ServiceProvider
     {
         $this->registerJsonViewCompiler();
         $this->registerEngineResolver();
+        $this->registerLivewireFeatures();
     }
 
     public function boot()
@@ -31,7 +32,6 @@ class ViewServiceProvider extends ServiceProvider
         $this->registerBladeDirectives();
         $this->registerViewExtensions();
 
-        $this->bootLivewireFeatures();
         $this->bootViewComposers();
 
         $this->app->bind(\Webkul\Theme\Themes::class, Themes::class);
@@ -100,10 +100,9 @@ class ViewServiceProvider extends ServiceProvider
         Blade::directive('visual_color_vars', [BladeDirectives::class, 'visualColorVars']);
     }
 
-    protected function bootLivewireFeatures()
+    protected function registerLivewireFeatures()
     {
-        $this->app['livewire']->componentHook(SupportSectionData::class);
-        $this->app['livewire']->componentHook(SupportComponentAttributes::class);
+        ComponentHookRegistry::register(SupportSectionData::class);
     }
 
     protected function bootViewComposers()

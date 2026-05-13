@@ -70,6 +70,8 @@ final class Section implements JsonSerializable
 
     public array $disabledOn = [];
 
+    protected ?string $componentClass;
+
     public function __construct(
         $slug,
         $name,
@@ -83,7 +85,8 @@ final class Section implements JsonSerializable
         $default = [],
         $enabledOn = ['*'],
         $disabledOn = [],
-        $isLivewire = false
+        $isLivewire = false,
+        ?string $componentClass = null
     ) {
         $this->slug = $slug;
         $this->name = $name;
@@ -98,6 +101,7 @@ final class Section implements JsonSerializable
         $this->enabledOn = $enabledOn;
         $this->disabledOn = $disabledOn;
         $this->isLivewire = $isLivewire;
+        $this->componentClass = $componentClass;
     }
 
     /**
@@ -107,11 +111,14 @@ final class Section implements JsonSerializable
     {
         $viewData = "collect(get_defined_vars()['__data'] ?: [])->except(['__env', 'app'])->all()";
 
-        $slug = str_replace('::', '-', $this->slug);
-
         if ($this->isLivewire) {
-            $component = sprintf("@livewire('visual-section-%s', ['visualId' => '%s', 'viewData' => %s], key('%s'))", $slug, $id, $viewData, $id);
+            if (! $this->componentClass) {
+                throw new \LogicException('Livewire sections must have a component class.');
+            }
+
+            $component = sprintf("@livewire(\\%s::class, ['visualId' => '%s', 'context' => %s], key('%s'))", $this->componentClass, $id, $viewData, $id);
         } else {
+            $slug = str_replace('::', '-', $this->slug);
             $component = sprintf('<x-visual-section-%s visualId="%s" :viewData="%s" />', $slug, $id, $viewData);
         }
 
@@ -169,7 +176,8 @@ final class Section implements JsonSerializable
             enabledOn: $component::enabledOn(),
             disabledOn: $component::disabledOn(),
             default: $component::default(),
-            isLivewire: is_subclass_of($component, \Livewire\Component::class)
+            isLivewire: is_subclass_of($component, \Livewire\Component::class),
+            componentClass: $component
         );
     }
 }
