@@ -2,6 +2,13 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.9](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.8...v2.0.0-alpha.9) (2026-05-13)
+
+
+### Features
+
+* add support for custom template variants ([970ebfa](https://github.com/bagistoplus/visual/commit/970ebfaa0ab9ab753a015605c458248764e3c98b))
+
 # [2.0.0-alpha.8](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.7...v2.0.0-alpha.8) (2026-05-07)
 
 

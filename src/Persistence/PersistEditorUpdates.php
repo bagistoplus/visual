@@ -3,9 +3,11 @@
 namespace BagistoPlus\Visual\Persistence;
 
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
+use BagistoPlus\Visual\Support\TemplateDiscovery;
 use Craftile\Laravel\Data\UpdateRequest;
 use Craftile\Laravel\Support\HandleUpdates;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class PersistEditorUpdates
 {
@@ -173,7 +175,7 @@ class PersistEditorUpdates
             channel: $channel,
             locale: $locale,
             mode: 'editor',
-            path: "templates/{$template}.json"
+            path: $this->templateStoragePath($template)
         );
     }
 
@@ -196,7 +198,25 @@ class PersistEditorUpdates
 
     protected function getTemplateSourcePath(string $template, array $sources): ?string
     {
-        return collect($sources)
-            ->first(fn ($sourcePath) => str_contains($sourcePath, "/templates/{$template}."));
+        $templatePath = $this->templateStoragePath($template);
+        $sourcePatterns = ['/'.Str::beforeLast($templatePath, '.json').'.'];
+
+        if (app(TemplateDiscovery::class)->typeForKey($template) === $template) {
+            $sourcePatterns[] = "/templates/{$template}/index.";
+        }
+
+        return collect($sources)->first(fn ($sourcePath) => collect($sourcePatterns)
+            ->contains(fn ($pattern) => str_contains($sourcePath, $pattern)));
+    }
+
+    protected function templateStoragePath(string $template): string
+    {
+        $type = app(TemplateDiscovery::class)->typeForKey($template);
+
+        if ($type && $template !== $type) {
+            return 'templates/'.str_replace('.', '/', $template).'.json';
+        }
+
+        return "templates/{$template}.json";
     }
 }

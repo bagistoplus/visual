@@ -3,7 +3,9 @@
 namespace BagistoPlus\Visual\Support;
 
 use BagistoPlus\Visual\Facades\ThemeEditor;
+use Illuminate\Routing\Route;
 use Illuminate\Routing\UrlGenerator as RoutingUrlGenerator;
+use Illuminate\Support\Arr;
 
 class UrlGenerator extends RoutingUrlGenerator
 {
@@ -38,6 +40,22 @@ class UrlGenerator extends RoutingUrlGenerator
     }
 
     /**
+     * Get the URL for a given route instance.
+     *
+     * @param  mixed  $route
+     * @param  mixed  $parameters
+     * @param  bool  $absolute
+     */
+    public function toRoute($route, $parameters, $absolute)
+    {
+        return parent::toRoute(
+            $route,
+            $this->withTemplateParameterForRoute($route, $parameters),
+            $absolute
+        );
+    }
+
+    /**
      * Extract the query string from the given path.
      *
      * @param  string  $path
@@ -61,5 +79,35 @@ class UrlGenerator extends RoutingUrlGenerator
         }
 
         return [$path, $query ? '?'.$query : ''];
+    }
+
+    protected function withTemplateParameterForRoute(Route $route, mixed $parameters): mixed
+    {
+        if (! ThemeEditor::inDesignMode() || ! request()->query->has('_template')) {
+            return $parameters;
+        }
+
+        $template = request()->query('_template');
+        $templateType = app(TemplateDiscovery::class)->typeForKey($template);
+        $routeType = $this->templateTypeForRoute($route->getName());
+
+        if (! $templateType || $templateType !== $routeType) {
+            return $parameters;
+        }
+
+        $parameters = Arr::wrap($parameters);
+        $parameters['_template'] = $template;
+
+        return $parameters;
+    }
+
+    protected function templateTypeForRoute(?string $routeName): ?string
+    {
+        return match ($routeName) {
+            'shop.products.index' => 'product',
+            'shop.categories.index' => 'category',
+            'shop.cms.page' => 'page',
+            default => null,
+        };
     }
 }

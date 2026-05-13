@@ -10,13 +10,16 @@ import * as Vue from 'vue';
 import { createState } from './state';
 import { matchesCondition } from './utils/patternMatcher';
 import { useBunnyFonts } from './composables/useBunnyFonts';
+import { initialChannelFromUrl, initialLocaleFromUrl } from './craftile/features/urlState';
 import NProgress from 'nprogress';
 
 const { blockSchemas } = window.editorConfig;
+const initialChannel = initialChannelFromUrl(window.editorConfig.channels, window.editorConfig.defaultChannel);
 
 const state = createState({
   channels: window.editorConfig.channels,
-  channel: window.editorConfig.defaultChannel,
+  channel: initialChannel,
+  locale: initialLocaleFromUrl(window.editorConfig.channels, initialChannel, window.editorConfig.editorLocale),
   theme: window.editorConfig.theme,
   templates: window.editorConfig.templates || [],
   haveEdits: window.editorConfig.haveEdits,

@@ -35,6 +35,26 @@ function getCsrfToken(): string {
   return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 }
 
+async function responseError(response: Response): Promise<Error> {
+  const fallback = `HTTP error! status: ${response.status}`;
+
+  try {
+    const contentType = response.headers.get('content-type') || '';
+
+    if (contentType.includes('application/json')) {
+      const body = await response.json();
+
+      if (typeof body?.message === 'string' && body.message.trim()) {
+        return new Error(body.message);
+      }
+    }
+  } catch {
+    // Ignore malformed error responses and use the generic HTTP fallback.
+  }
+
+  return new Error(fallback);
+}
+
 export function useHttpClient(): HttpClient {
   return createHttpClientInstance();
 }
@@ -71,7 +91,7 @@ function createUseFetch<T = any, D = any>(
       statusCode.value = response.status;
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw await responseError(response);
       }
 
       const result = options.responseType === 'text' ? await response.text() : await response.json();

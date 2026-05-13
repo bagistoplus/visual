@@ -85,6 +85,23 @@ class ThemeEditor
         return $template ? $template->template : Str::of($routeName)->slug();
     }
 
+    public function getTemplateFromJsonViews(?string $fallback = null): string
+    {
+        foreach (array_reverse($this->jsonViews) as $path) {
+            if (preg_match('#(?:^|/)templates/(product|category|page)/([^/.]+)\.(?:json|ya?ml|visual\.php)$#', $path, $matches)) {
+                return $matches[2] === 'index'
+                    ? $matches[1]
+                    : "{$matches[1]}.{$matches[2]}";
+            }
+
+            if (preg_match('#(?:^|/)templates/(product|category|page)\.(?:json|ya?ml|visual\.php)$#', $path, $matches)) {
+                return $matches[1];
+            }
+        }
+
+        return $fallback ?? 'index';
+    }
+
     public function preloadModel(string $type, $model): void
     {
         $this->preloadedModels[$type][] = $model;

@@ -27,15 +27,16 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
     protected function buildPreviewScripts(array $pageData): string
     {
         $settingsBag = $this->themeSettingsLoader->loadActiveThemeSettings();
+        $routeTemplate = $this->themeEditor->getTemplateForRoute(
+            $this->fixCategoryOrProductRoute(Route::currentRouteName())
+        );
 
         return view()->make('visual::admin.editor.injected-script', [
             'pageData' => [
                 'content' => $pageData,
                 'template' => [
                     'url' => request()->fullUrl(),
-                    'name' => $this->themeEditor->getTemplateForRoute(
-                        $this->fixCategoryOrProductRoute(Route::currentRouteName())
-                    ),
+                    'name' => $this->themeEditor->getTemplateFromJsonViews($routeTemplate),
                     'sources' => encrypt($this->themeEditor->jsonViews()),
                 ],
                 'settings' => $settingsBag->toArray(),

@@ -8,11 +8,14 @@ use BagistoPlus\Visual\Blocks\SimpleSection;
 use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use BagistoPlus\Visual\Http\Controllers\Controller;
+use BagistoPlus\Visual\Persistence\CreateTemplate;
 use BagistoPlus\Visual\Persistence\PersistEditorUpdates;
 use BagistoPlus\Visual\Persistence\PersistThemeSettings;
 use BagistoPlus\Visual\Persistence\PublishTheme;
 use BagistoPlus\Visual\Persistence\RenderPreview;
 use BagistoPlus\Visual\Settings\Support\ImageTransformer;
+use BagistoPlus\Visual\Support\ChannelThemeResolver;
+use BagistoPlus\Visual\Support\TemplateDiscovery;
 use BagistoPlus\Visual\Theme\Theme;
 use BagistoPlus\Visual\ThemeEditor;
 use BagistoPlus\Visual\ThemeSettingsLoader;
@@ -38,10 +41,13 @@ class ThemeEditorController extends Controller
         protected PersistThemeSettings $persistThemeSettings,
         protected PublishTheme $publishTheme,
         protected RenderPreview $renderPreview,
-        protected ThemeSettingsLoader $themeSettingsLoader
+        protected ThemeSettingsLoader $themeSettingsLoader,
+        protected TemplateDiscovery $templateDiscovery,
+        protected CreateTemplate $createTemplate,
+        protected ChannelThemeResolver $channelThemeResolver
     ) {}
 
-    public function index($themeCode)
+    public function index(string $themeCode)
     {
         return view()->make('visual::admin.editor.index', [
             'config' => [
@@ -52,12 +58,13 @@ class ThemeEditorController extends Controller
                 'defaultChannel' => core()->getDefaultChannelCode(),
                 'blockSchemas' => $this->loadBlocks(),
                 'theme' => $this->loadTheme($themeCode),
-                'templates' => $this->loadTemplates(),
+                'templates' => $this->loadTemplates($themeCode),
                 'routes' => [
                     'themesIndex' => route('visual.admin.themes.index'),
                     'persistUpdates' => route('visual.admin.editor.api.persist'),
                     'persistThemeSettings' => route('visual.admin.editor.api.persist_settings'),
                     'publishTheme' => route('visual.admin.editor.api.publish'),
+                    'createTemplate' => route('visual.admin.editor.api.templates.create'),
                     'uploadImage' => route('visual.admin.editor.api.upload'),
                     'listImages' => route('visual.admin.editor.api.images'),
                     'getCmsPages' => route('visual.admin.editor.api.cms_pages'),
@@ -138,6 +145,55 @@ class ThemeEditorController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Theme published successfully',
+        ]);
+    }
+
+    public function createTemplate(Request $request)
+    {
+        $validated = $request->validate([
+            'theme' => ['required', 'string', Rule::in($this->getVisualThemes())],
+            'channel' => ['required', 'string', Rule::in($this->getChannelCodes())],
+            'locale' => ['required', 'string', Rule::in($this->getLocaleCodes($request->input('channel')))],
+            'type' => ['required', 'string', Rule::in(TemplateDiscovery::ASSIGNABLE_TYPES)],
+            'name' => ['required', 'string', 'max:25'],
+            'basedOn' => ['nullable', 'string'],
+        ]);
+
+        $theme = Theme::make(config("themes.shop.{$validated['theme']}"));
+
+        try {
+            $template = ($this->createTemplate)(
+                theme: $theme,
+                channel: $validated['channel'],
+                locale: $validated['locale'],
+                type: $validated['type'],
+                name: $validated['name'],
+                basedOn: $validated['basedOn'] ?? null,
+            );
+        } catch (\InvalidArgumentException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
+        }
+
+        $templates = collect($this->loadTemplates($validated['theme']));
+        $baseTemplate = $templates->firstWhere('template', $validated['type']);
+        $createdTemplate = [
+            'template' => $template['key'],
+            'label' => $template['label'],
+            'icon' => $baseTemplate['icon'] ?? '',
+            'previewUrl' => $baseTemplate['previewUrl'] ?? '',
+            'type' => $validated['type'],
+            'supportsVariants' => false,
+            'isJsonTemplate' => true,
+        ];
+
+        return response()->json([
+            'template' => $template,
+            'createdTemplate' => $createdTemplate,
+            'templates' => $templates
+                ->reject(fn ($existing) => $existing['template'] === $createdTemplate['template'])
+                ->push($createdTemplate)
+                ->values()
+                ->all(),
         ]);
     }
 
@@ -309,17 +365,56 @@ class ThemeEditorController extends Controller
         ];
     }
 
-    protected function loadTemplates()
+    protected function loadTemplates(?string $themeCode = null)
     {
-        return collect(app(ThemeEditor::class)->getTemplates())
+        $templates = collect(app(ThemeEditor::class)->getTemplates())
             ->map(fn ($template) => [
                 'template' => $template->template,
                 'label' => $template->label,
                 'icon' => $template->icon,
                 'previewUrl' => $template->previewUrl,
+                'type' => $template->type,
+                'supportsVariants' => $template->supportsVariants,
+                'isJsonTemplate' => false,
             ])
-            ->values()
-            ->toArray();
+            ->values();
+
+        $themeCode ??= request('theme');
+        $theme = $themeCode ? Theme::make(array_merge(['code' => $themeCode], config("themes.shop.{$themeCode}", []))) : null;
+
+        if ($theme?->isVisualTheme()) {
+            foreach (TemplateDiscovery::ASSIGNABLE_TYPES as $type) {
+                $typeTemplates = $this->templateDiscovery
+                    ->forType($theme, $type, core()->getDefaultChannelCode(), app()->getLocale(), true);
+
+                $defaultTemplate = $typeTemplates->firstWhere('key', $type);
+                $baseTemplate = $templates->firstWhere('template', $type);
+
+                if ($defaultTemplate?->isJsonTemplate) {
+                    $templates = $templates->map(
+                        fn ($template) => $template['template'] === $type
+                            ? array_merge($template, ['isJsonTemplate' => true])
+                            : $template
+                    );
+                }
+
+                $customTemplates = $typeTemplates
+                    ->reject(fn ($template) => $template->key === $type)
+                    ->map(fn ($template) => [
+                        'template' => $template->key,
+                        'label' => $template->label,
+                        'icon' => $baseTemplate['icon'] ?? '',
+                        'previewUrl' => $baseTemplate['previewUrl'] ?? '',
+                        'type' => $type,
+                        'supportsVariants' => false,
+                        'isJsonTemplate' => $template->isJsonTemplate,
+                    ]);
+
+                $templates = $templates->merge($customTemplates);
+            }
+        }
+
+        return $templates->values()->toArray();
     }
 
     protected function checkIfHaveEdits(string $themeCode): bool

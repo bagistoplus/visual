@@ -38,6 +38,14 @@ You can publish the config file with:
 php artisan vendor:publish --tag="visual-assets"
 ```
 
+Then run the package migrations:
+
+```bash
+php artisan migrate
+```
+
+These migrations create the Visual-owned tables required by editor and admin features.
+
 ## Documentation
 
 Visit the official documentation for full guides at: [https://visual.bagistoplus.com](https://visual.bagistoplus.com)
