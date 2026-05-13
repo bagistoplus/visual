@@ -59,7 +59,6 @@ class Theme extends BagistoTheme
                 assetsPath: $assetsPath,
                 viewsPath: $viewsPath,
                 vite: $vite,
-                // @phpstan-ignore-next-line
                 viewsNamespace: $viewsNamespace
             );
         }

@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Actions;
 
 use Illuminate\Support\Facades\Validator;
+use Webkul\Customer\Models\Customer;
 use Webkul\Product\Repositories\ProductReviewAttachmentRepository;
 use Webkul\Product\Repositories\ProductReviewRepository;
 use Webkul\Shop\Http\Controllers\API\ReviewController;
@@ -27,7 +28,10 @@ class StoreProductReview
 
         $validated['product_id'] = $productId;
         $validated['status'] = ReviewController::STATUS_PENDING;
-        $validated['name'] = auth('customer')->user()?->name ?? $data['name'];
+        $customer = auth('customer')->user();
+        $validated['name'] = $customer instanceof Customer
+            ? $customer->getNameAttribute()
+            : $data['name'];
         $validated['customer_id'] = auth('customer')->id() ?? null;
 
         $review = $this->productReviewRepository->create($validated);

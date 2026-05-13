@@ -85,7 +85,7 @@ class TemplatePreviewController extends Controller
 
         $order->setRelation('items', collect($items));
 
-        return view('shop::checkout.success', compact('order'));
+        return view()->make('shop::checkout.success', compact('order'));
     }
 
     protected function getFakeProductImage()
