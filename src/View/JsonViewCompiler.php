@@ -7,6 +7,7 @@ use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Sections\Section;
 use Exception;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Collection;
 use Illuminate\View\Compilers\BladeCompiler;
 use Illuminate\View\Compilers\Compiler;
 use Illuminate\View\Compilers\CompilerInterface;
@@ -142,7 +143,7 @@ class JsonViewCompiler extends Compiler implements CompilerInterface
      * Get the open and closing PHP tag tokens from the given string.
      *
      * @param  string  $contents
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     protected function getOpenAndClosingPhpTokens($contents)
     {

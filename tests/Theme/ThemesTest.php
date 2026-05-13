@@ -1,21 +1,22 @@
 <?php
 
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
+use BagistoPlus\Visual\Theme\Theme;
 use BagistoPlus\Visual\Theme\Themes;
 use Illuminate\Support\Facades\View;
 
 it('should extends \\Webkul\\Theme\\Themes', function () {
-    expect(get_parent_class(Themes::class))->toBe(\Webkul\Theme\Themes::class);
+    expect(get_parent_class(Themes::class))->toBe(Webkul\Theme\Themes::class);
 });
 
 test('`app(\'themes\')` should resolve instance of \\BagistoPlus\\Visual\\Theme\Themes', function () {
     expect(themes())
-        ->toBeInstanceOf(\BagistoPlus\Visual\Theme\Themes::class);
+        ->toBeInstanceOf(Themes::class);
 });
 
 it('should load themes as instance of \\BagistoPlus\\Visual\\Theme\\Theme', function () {
     expect(themes()->all())
-        ->toContainOnlyInstancesOf(\BagistoPlus\Visual\Theme\Theme::class);
+        ->toContainOnlyInstancesOf(Theme::class);
 });
 
 it('should prepend default views path to shop namespace when active theme is visual theme', function () {

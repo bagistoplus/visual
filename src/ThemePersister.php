@@ -4,6 +4,7 @@ namespace BagistoPlus\Visual;
 
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use Illuminate\Filesystem\Filesystem;
+use Spatie\ResponseCache\Facades\ResponseCache;
 
 class ThemePersister
 {
@@ -47,7 +48,7 @@ class ThemePersister
 
         // Clear response cache
         if (class_exists('\\Spatie\\ResponseCache\\Facades\\ResponseCache')) {
-            \Spatie\ResponseCache\Facades\ResponseCache::clear();
+            ResponseCache::clear();
         }
     }
 

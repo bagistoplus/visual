@@ -2,10 +2,12 @@
 
 namespace BagistoPlus\Visual\Sections;
 
+use Illuminate\Support\Collection;
+
 class SectionRepository
 {
     /**
-     * @var \Illuminate\Support\Collection<Section>
+     * @var Collection<Section>
      */
     protected $sections;
 

@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static void vite(string|array $assets, array $options = [])
  * @method static \Illuminate\Support\HtmlString renderVite()
  *
- * @see \BagistoPlus\Visual\ThemeEditor
+ * @see ThemeEditorManager
  */
 class ThemeEditor extends Facade
 {

@@ -4,6 +4,7 @@ namespace BagistoPlus\Visual\Sections;
 
 use BagistoPlus\Visual\Support\SimpleEmmetParser;
 use JsonSerializable;
+use Livewire\Component;
 
 final class Section implements JsonSerializable
 {
@@ -176,7 +177,7 @@ final class Section implements JsonSerializable
             enabledOn: $component::enabledOn(),
             disabledOn: $component::disabledOn(),
             default: $component::default(),
-            isLivewire: is_subclass_of($component, \Livewire\Component::class),
+            isLivewire: is_subclass_of($component, Component::class),
             componentClass: $component
         );
     }

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static mixed has(string $slug)
  * @method static mixed get(string $slug)
  *
- * @see \BagistoPlus\Visual\Sections\SectionRepository
+ * @see SectionRepository
  */
 class Sections extends Facade
 {

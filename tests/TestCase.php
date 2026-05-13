@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Konekt\Concord\ConcordServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Webkul\Core\Core;
 
 require_once __DIR__.'/../vendor/bagisto/bagisto/packages/Webkul/Core/src/Http/helpers.php';
 require_once __DIR__.'/../vendor/bagisto/bagisto/packages/Webkul/Theme/src/Http/helpers.php';
@@ -43,7 +44,7 @@ class TestCase extends Orchestra
 
     public function getEnvironmentSetUp($app)
     {
-        $app->instance(\Webkul\Core\Core::class, new class
+        $app->instance(Core::class, new class
         {
             public function version(): string
             {

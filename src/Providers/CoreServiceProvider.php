@@ -20,6 +20,12 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\DynamicComponent;
 use Livewire\Livewire;
+use Webkul\Attribute\Models\Attribute;
+use Webkul\Category\Models\Category;
+use Webkul\Product\Models\Product;
+use Webkul\Shop\Http\Middleware\Currency;
+use Webkul\Shop\Http\Middleware\Locale;
+use Webkul\Shop\Http\Middleware\Theme;
 
 class CoreServiceProvider extends ServiceProvider
 {
@@ -87,15 +93,15 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function bootMiddlewares(): void
     {
-        $this->app->bind(\Webkul\Shop\Http\Middleware\Theme::class, UseShopThemeFromRequest::class);
+        $this->app->bind(Theme::class, UseShopThemeFromRequest::class);
     }
 
     protected function bootLivewireMiddlewares(): void
     {
         Livewire::addPersistentMiddleware([
-            \Webkul\Shop\Http\Middleware\Locale::class,
-            \Webkul\Shop\Http\Middleware\Currency::class,
-            \Webkul\Shop\Http\Middleware\Theme::class,
+            Locale::class,
+            Currency::class,
+            Theme::class,
         ]);
     }
 
@@ -117,9 +123,9 @@ class CoreServiceProvider extends ServiceProvider
     protected function bootMorphMap(): void
     {
         Relation::morphMap([
-            'product' => \Webkul\Product\Models\Product::class,
-            'category' => \Webkul\Category\Models\Category::class,
-            'attribute' => \Webkul\Attribute\Models\Attribute::class,
+            'product' => Product::class,
+            'category' => Category::class,
+            'attribute' => Attribute::class,
         ]);
     }
 

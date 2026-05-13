@@ -9,6 +9,8 @@ use BagistoPlus\Visual\ThemePersister;
 use BladeUI\Icons\Factory;
 use BladeUI\Icons\IconsManifest;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Storage;
@@ -82,7 +84,7 @@ class ThemeEditorController extends Controller
 
     public function uploadImages(Request $request)
     {
-        /** @var \Illuminate\Support\Collection<int, \Illuminate\Http\UploadedFile> $images */
+        /** @var Collection<int, UploadedFile> $images */
         $images = collect($request->file('image'));
 
         return $images->map(function ($image) {

@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Middlewares;
 
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
+use BagistoPlus\Visual\Theme\Theme;
 use BagistoPlus\Visual\ThemeDataCollector;
 use BagistoPlus\Visual\ThemeEditor;
 use Closure;
@@ -83,7 +84,7 @@ class InjectThemeEditorScript
                 'haveEdits' => $this->checkIfHaveEdits(),
             ];
 
-            /** @var \BagistoPlus\Visual\Theme\Theme */
+            /** @var Theme */
             $theme = themes()->current();
 
             $editorScript = view('visual::admin.editor.injected-script', [

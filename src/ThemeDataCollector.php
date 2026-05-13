@@ -6,6 +6,7 @@ use BagistoPlus\Visual\Facades\Sections;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Sections\Support\SectionData;
 use BagistoPlus\Visual\Settings\Support\SettingsValues;
+use BagistoPlus\Visual\Theme\Theme;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -68,7 +69,7 @@ class ThemeDataCollector
      */
     public function getThemeSettings(): SettingsValues
     {
-        /** @var \BagistoPlus\Visual\Theme\Theme|null $theme */
+        /** @var Theme|null $theme */
         $theme = themes()->current();
 
         if (! $theme) {
