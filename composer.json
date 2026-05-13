@@ -30,7 +30,7 @@
     "illuminate/contracts": "^10.0||^11.0",
     "livewire/livewire": "^4.3",
     "mallardduck/blade-lucide-icons": "^1.23",
-    "matthieumastadenis/couleur": "^0.1.2",
+    "bagistoplus/couleur": "^0.2.0",
     "mews/purifier": "^3.4",
     "spatie/browsershot": "^3.61||^5.0",
     "spatie/once": "^3.1",
