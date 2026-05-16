@@ -44,6 +44,7 @@ abstract class BladeBlock extends Component implements BlockInterface, Condition
             'presets',
             'enabledOn',
             'disabledOn',
+            'meta',
             'properties',
             'previewImageUrl',
             'icon',
