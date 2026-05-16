@@ -324,22 +324,24 @@ class ThemeEditorController extends Controller
                 ->filter()
                 ->values();
 
+            $meta = array_merge($blockSchema->meta, [
+                'name' => $blockSchema->name,
+                'icon' => $blockSchema->icon,
+                'category' => $blockSchema->category,
+                'description' => $blockSchema->description,
+                'previewImageUrl' => $blockSchema->previewImageUrl,
+                'isSection' => collect([SimpleSection::class, BladeSection::class, LivewireSection::class])->some(fn ($class) => is_subclass_of($blockSchema->class, $class)),
+                'enabledOn' => $blockSchema->enabledOn,
+                'disabledOn' => $blockSchema->disabledOn,
+            ]);
+
             return [
                 'type' => $blockSchema->type,
                 'properties' => $properties,
                 'accepts' => $blockSchema->accepts,
                 'presets' => $blockSchema->presets,
                 'private' => $blockSchema->private,
-                'meta' => [
-                    'name' => $blockSchema->name,
-                    'icon' => $blockSchema->icon,
-                    'category' => $blockSchema->category,
-                    'description' => $blockSchema->description,
-                    'previewImageUrl' => $blockSchema->previewImageUrl,
-                    'isSection' => collect([SimpleSection::class, BladeSection::class, LivewireSection::class])->some(fn ($class) => is_subclass_of($blockSchema->class, $class)),
-                    'enabledOn' => $blockSchema->enabledOn,
-                    'disabledOn' => $blockSchema->disabledOn,
-                ],
+                'meta' => $meta,
             ];
         })
             ->values();

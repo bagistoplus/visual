@@ -13,6 +13,8 @@ class BlockSchema extends CraftileBlockSchema
 
     public array $disabledOn = [];
 
+    public array $meta = [];
+
     /**
      * Create schema from BlockInterface class.
      */
@@ -23,6 +25,7 @@ class BlockSchema extends CraftileBlockSchema
         // Check if block implements conditional visibility methods
         $schema->enabledOn = method_exists($blockClass, 'enabledOn') ? $blockClass::enabledOn() : [];
         $schema->disabledOn = method_exists($blockClass, 'disabledOn') ? $blockClass::disabledOn() : [];
+        $schema->meta = method_exists($blockClass, 'meta') ? $blockClass::meta() : [];
 
         return $schema;
     }
@@ -35,6 +38,7 @@ class BlockSchema extends CraftileBlockSchema
         return array_merge(parent::toArray(), [
             'enabledOn' => $this->enabledOn,
             'disabledOn' => $this->disabledOn,
+            'meta' => $this->meta,
         ]);
     }
 }

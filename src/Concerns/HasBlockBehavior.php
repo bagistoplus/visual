@@ -16,6 +16,8 @@ trait HasBlockBehavior
 
     protected static array $disabledOn = [];
 
+    protected static array $meta = [];
+
     public static function enabledOn(): array
     {
         return static::$enabledOn;
@@ -24,6 +26,11 @@ trait HasBlockBehavior
     public static function disabledOn(): array
     {
         return static::$disabledOn;
+    }
+
+    public static function meta(): array
+    {
+        return static::$meta;
     }
 
     /**
