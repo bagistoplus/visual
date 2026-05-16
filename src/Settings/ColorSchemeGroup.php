@@ -4,7 +4,7 @@ namespace BagistoPlus\Visual\Settings;
 
 class ColorSchemeGroup extends Base
 {
-    protected static string $type = 'color-scheme-group';
+    protected static string $type = 'color_scheme_group';
 
     public const REQUIRED_TOKENS = [
         'background',
