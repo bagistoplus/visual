@@ -18,7 +18,7 @@ const colorSchemes = computed<Record<string, ColorSchemeDefintion>>(() => {
 
   const settingId = theme.value.settingsSchema
     .flatMap((obj) => obj.settings)
-    .find((setting) => setting.type === 'color-scheme-group')?.id;
+    .find((setting) => setting.type === 'color_scheme_group')?.id;
 
   if (!settingId) {
     return {};

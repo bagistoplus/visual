@@ -107,7 +107,7 @@ function registerPropertyFields(ui: PluginContext['editor']['ui']) {
   });
 
   ui.registerPropertyField({
-    type: 'cms-page',
+    type: 'cms_page',
     render: CmsPagePicker,
   });
 
@@ -137,12 +137,12 @@ function registerPropertyFields(ui: PluginContext['editor']['ui']) {
   });
 
   ui.registerPropertyField({
-    type: 'color-scheme',
+    type: 'color_scheme',
     render: ColorSchemePicker,
   });
 
   ui.registerPropertyField({
-    type: 'color-scheme-group',
+    type: 'color_scheme_group',
     render: ColorSchemeGroup,
   });
 
