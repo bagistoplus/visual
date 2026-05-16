@@ -2,7 +2,6 @@
 
 namespace BagistoPlus\Visual\Settings\Support;
 
-use BagistoPlus\Visual\Theme\Theme;
 use BagistoPlus\Visual\View\TailwindPaletteGenerator;
 use Illuminate\Support\HtmlString;
 use matthieumastadenis\couleur\ColorFactory;
@@ -10,25 +9,7 @@ use matthieumastadenis\couleur\ColorSpace;
 
 class ColorSchemeValue
 {
-    public function __construct(public string $id, public ?array $tokens = [])
-    {
-        if (empty($this->tokens)) {
-            /** @var Theme */
-            $theme = themes()->current();
-
-            $schemesSetting = collect($theme->settingsSchema)
-                ->flatMap(fn ($group) => $group['settings'])
-                ->first(fn ($setting) => $setting['type'] === 'color_scheme_group');
-
-            if (! $schemesSetting) {
-                return;
-            }
-
-            $schemes = $theme->settings->get($schemesSetting['id']);
-
-            $this->tokens = $schemes[$this->id]->tokens;
-        }
-    }
+    public function __construct(public string $id, public array $tokens = []) {}
 
     public function __toString()
     {
