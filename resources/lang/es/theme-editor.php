@@ -73,6 +73,16 @@ return [
     'Search product' => 'Buscar producto...',
     'Select product' => 'Seleccionar producto',
 
+    'Select categories' => 'Seleccionar categorías',
+    'Select pages' => 'Seleccionar páginas',
+    'Select products' => 'Seleccionar productos',
+    'Current selection' => 'Selección actual',
+    'No selection' => 'Sin selección',
+    'Confirm' => 'Confirmar',
+    'Change' => 'Cambiar',
+    'more' => 'más',
+    'more items' => 'elementos más',
+
     'Recently selected' => 'Seleccionado recientemente',
     'Currently used' => 'Actualmente en uso',
 

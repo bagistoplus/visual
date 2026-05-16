@@ -2,7 +2,15 @@ import { BlockSchema } from '@craftile/types';
 import type * as Vue from 'vue';
 
 export type ViewMode = 'desktop' | 'mobile' | 'fullscreen' | 'reordering';
-export type SettingValue = string | number | boolean | object | null | undefined;
+export type SettingValue =
+  | string
+  | number
+  | boolean
+  | object
+  | string[]
+  | number[]
+  | null
+  | undefined;
 
 declare global {
   interface Window {
@@ -169,7 +177,7 @@ export interface ImageSettingValue {
   focalPoint: ImageFocalPoint;
 }
 
-interface Category {
+export interface Category {
   id: number;
   name: string;
   slug: string;
@@ -182,7 +190,7 @@ interface Category {
   translations: any[];
 }
 
-interface Product {
+export interface Product {
   id: number;
   name: string;
   url_key: string;
@@ -201,7 +209,7 @@ interface Product {
   }[];
 }
 
-interface CmsPage {
+export interface CmsPage {
   id: number;
   url_key: string;
   page_title: string;
