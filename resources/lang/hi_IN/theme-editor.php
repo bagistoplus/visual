@@ -73,6 +73,16 @@ return [
     'Search product' => 'उत्पाद खोजें...',
     'Select product' => 'उत्पाद चुनें',
 
+    'Select categories' => 'श्रेणियाँ चुनें',
+    'Select pages' => 'पृष्ठ चुनें',
+    'Select products' => 'उत्पाद चुनें',
+    'Current selection' => 'वर्तमान चयन',
+    'No selection' => 'कोई चयन नहीं',
+    'Confirm' => 'पुष्टि करें',
+    'Change' => 'बदलें',
+    'more' => 'और',
+    'more items' => 'और आइटम',
+
     'Recently selected' => 'हाल ही में चयनित',
     'Currently used' => 'वर्तमान में उपयोग में',
 

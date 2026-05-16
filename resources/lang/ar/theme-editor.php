@@ -73,6 +73,16 @@ return [
     'Search product' => 'البحث عن منتج...',
     'Select product' => 'اختر منتج',
 
+    'Select categories' => 'اختر الفئات',
+    'Select pages' => 'اختر الصفحات',
+    'Select products' => 'اختر المنتجات',
+    'Current selection' => 'التحديد الحالي',
+    'No selection' => 'لا يوجد تحديد',
+    'Confirm' => 'تأكيد',
+    'Change' => 'تغيير',
+    'more' => 'المزيد',
+    'more items' => 'عناصر أخرى',
+
     'Recently selected' => 'المحدد مؤخراً',
     'Currently used' => 'المستخدم حالياً',
 

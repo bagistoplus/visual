@@ -7,8 +7,11 @@ import HeaderTools from '../../components/HeaderTools.vue';
 import ThemeSettingsPanel from '../../components/ThemeSettingsPanel.vue';
 import MediaPanel from '../../components/MediaPanel.vue';
 import CategoryPicker from '../../components/CategoryPicker.vue';
+import CategoryListPicker from '../../components/CategoryListPicker.vue';
 import ProductPicker from '../../components/ProductPicker.vue';
+import ProductListPicker from '../../components/ProductListPicker.vue';
 import CmsPagePicker from '../../components/CmsPagePicker.vue';
+import CmsPageListPicker from '../../components/CmsPageListPicker.vue';
 import FontPicker from '../../components/FontPicker.vue';
 import LinkPicker from '../../components/LinkPicker.vue';
 import ColorSchemePicker from '../../components/ColorSchemePicker.vue';
@@ -116,6 +119,21 @@ function registerPropertyFields(ui: PluginContext['editor']['ui']) {
   ui.registerPropertyField({
     type: 'link',
     render: LinkPicker,
+  });
+
+  ui.registerPropertyField({
+    type: 'product_list',
+    render: ProductListPicker,
+  });
+
+  ui.registerPropertyField({
+    type: 'category_list',
+    render: CategoryListPicker,
+  });
+
+  ui.registerPropertyField({
+    type: 'cms_page_list',
+    render: CmsPageListPicker,
   });
 
   ui.registerPropertyField({
