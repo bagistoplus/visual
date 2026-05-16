@@ -2,6 +2,19 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.10](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.9...v2.0.0-alpha.10) (2026-05-16)
+
+
+### Bug Fixes
+
+* **color-scheme:** return null for unregistered scheme ids ([830d22d](https://github.com/bagistoplus/visual/commit/830d22da83a503d9a18ec7c36edea60ca263b45d))
+
+
+### Features
+
+* add product_list category_list cms_page_list settings ([2e25dd3](https://github.com/bagistoplus/visual/commit/2e25dd3052fdc67d44c64f37cf3cff7331c392f9))
+* support custom block meta ([2f5c3d3](https://github.com/bagistoplus/visual/commit/2f5c3d34cb76999000b89507fd71f0031533e0c8))
+
 # [2.0.0-alpha.9](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.8...v2.0.0-alpha.9) (2026-05-13)
 
 
