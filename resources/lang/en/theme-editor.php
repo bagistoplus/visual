@@ -73,6 +73,16 @@ return [
     'Search product' => 'Search product...',
     'Select product' => 'Select product',
 
+    'Select categories' => 'Select categories',
+    'Select pages' => 'Select pages',
+    'Select products' => 'Select products',
+    'Current selection' => 'Current selection',
+    'No selection' => 'No selection',
+    'Confirm' => 'Confirm',
+    'Change' => 'Change',
+    'more' => 'more',
+    'more items' => 'more items',
+
     'Recently selected' => 'Recently selected',
     'Currently used' => 'Currently used',
 

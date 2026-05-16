@@ -592,6 +592,89 @@ In Blade:
 
 ---
 
+### ProductList
+
+Multi-select picker for choosing several products from the store catalog.
+
+When accessing the setting, the value is an `Illuminate\Support\Collection` of `Webkul\Product\Models\Product` instances, in the order chosen by the merchant. Products that no longer exist are skipped.
+
+```php
+use BagistoPlus\Visual\Settings\ProductList;
+
+public static function settings(): array
+{
+    return [
+        ProductList::make('featured_products', 'Featured Products'),
+    ];
+}
+```
+
+In Blade:
+
+```blade
+@foreach ($section->settings->featured_products as $product)
+    @visualBlock('@vendor/product-card', 'static-product-card', ['product' => $product])
+@endforeach
+```
+
+---
+
+### CategoryList
+
+Multi-select picker for choosing several categories from the store catalog.
+
+When accessing the setting, the value is an `Illuminate\Support\Collection` of `Webkul\Category\Models\Category` instances, in the order chosen by the merchant. Categories that no longer exist are skipped.
+
+```php
+use BagistoPlus\Visual\Settings\CategoryList;
+
+public static function settings(): array
+{
+    return [
+        CategoryList::make('promoted_categories', 'Promoted Categories'),
+    ];
+}
+```
+
+In Blade:
+
+```blade
+@foreach ($section->settings->promoted_categories as $category)
+    @visualBlock('@vendor/category-card', 'static-category-card', ['product' => $product])
+@endforeach
+```
+
+---
+
+### CmsPageList
+
+Multi-select picker for choosing several CMS pages from the store.
+
+When accessing the setting, the value is an `Illuminate\Support\Collection` of `Webkul\CMS\Models\CmsPage` instances, in the order chosen by the merchant. Pages that no longer exist are skipped.
+
+```php
+use BagistoPlus\Visual\Settings\CmsPageList;
+
+public static function settings(): array
+{
+    return [
+        CmsPageList::make('footer_pages', 'Footer Pages'),
+    ];
+}
+```
+
+In Blade:
+
+```blade
+@foreach ($section->settings->footer_pages as $page)
+    <a href="{{ route('shop.cms.page', $page->url_key) }}">
+        {{ $page->page_title }}
+    </a>
+@endforeach
+```
+
+---
+
 ### RichText
 
 WYSIWYG rich-text editor input. Useful for inserting formatted content like paragraphs, lists, links, and formatted text.

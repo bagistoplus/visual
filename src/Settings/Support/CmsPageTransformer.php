@@ -12,7 +12,7 @@ class CmsPageTransformer
         $page = $id ? app(PageRepository::class)->find($id) : null;
 
         if (ThemeEditor::inDesignMode() && $page) {
-            ThemeEditor::preloadModel('categories', $page);
+            ThemeEditor::preloadModel('cms_pages', $page);
         }
 
         return $page;
