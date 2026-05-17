@@ -2,6 +2,8 @@
 
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use BagistoPlus\Visual\Persistence\PersistEditorUpdates;
+use Craftile\Laravel\Data\UpdateRequest;
+use Craftile\Laravel\Support\HandleUpdates;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
@@ -128,6 +130,44 @@ describe('handleFullPage', function () {
             ->and($templateData['blocks'])->not->toHaveKey('block-1');
     });
 
+    test('saves shared regions by id when present', function () {
+        Storage::fake('local');
+
+        $basePath = 'test-theme/default/en/editor';
+
+        ThemePathsResolver::shouldReceive('resolvePath')
+            ->with('test-theme', 'default', 'en', 'editor', 'regions/site-header.json')
+            ->andReturn(Storage::path($basePath.'/regions/site-header.json'));
+
+        ThemePathsResolver::shouldReceive('getThemeBaseDataPath')
+            ->with('test-theme', 'editor/.last-edit')
+            ->andReturn(Storage::path($basePath.'/.last-edit'));
+
+        $data = [
+            'theme' => 'test-theme',
+            'channel' => 'default',
+            'locale' => 'en',
+            'template' => 'index',
+            'page' => [
+                'blocks' => [
+                    'block-1' => ['id' => 'block-1', 'type' => 'text', 'content' => 'Header'],
+                ],
+                'regions' => [
+                    ['id' => 'site-header', 'name' => 'Header', 'shared' => true, 'blocks' => ['block-1']],
+                ],
+            ],
+        ];
+
+        $this->persistEditorUpdates->handleFullPage($data);
+
+        expect(Storage::exists($basePath.'/regions/site-header.json'))->toBeTrue();
+
+        $headerData = json_decode(Storage::get($basePath.'/regions/site-header.json'), true);
+
+        expect($headerData['regions'][0]['id'])->toBe('site-header')
+            ->and($headerData['regions'][0]['name'])->toBe('Header');
+    });
+
     test('collects nested blocks in shared regions', function () {
         Storage::fake('local');
 
@@ -239,6 +279,42 @@ describe('handleFullPage', function () {
             ->and($templateData['regions'][0]['name'])->toBe('main');
     });
 
+    test('keeps id and name when saving non-shared regions', function () {
+        Storage::fake('local');
+
+        $basePath = 'test-theme/default/en/editor';
+
+        ThemePathsResolver::shouldReceive('resolvePath')
+            ->with('test-theme', 'default', 'en', 'editor', 'templates/index.json')
+            ->andReturn(Storage::path($basePath.'/templates/index.json'));
+
+        ThemePathsResolver::shouldReceive('getThemeBaseDataPath')
+            ->with('test-theme', 'editor/.last-edit')
+            ->andReturn(Storage::path($basePath.'/.last-edit'));
+
+        $data = [
+            'theme' => 'test-theme',
+            'channel' => 'default',
+            'locale' => 'en',
+            'template' => 'index',
+            'page' => [
+                'blocks' => [
+                    'block-1' => ['id' => 'block-1', 'type' => 'text'],
+                ],
+                'regions' => [
+                    ['id' => 'main-content', 'name' => 'Main content', 'shared' => false, 'blocks' => ['block-1']],
+                ],
+            ],
+        ];
+
+        $this->persistEditorUpdates->handleFullPage($data);
+
+        $templateData = json_decode(Storage::get($basePath.'/templates/index.json'), true);
+
+        expect($templateData['regions'][0]['id'])->toBe('main-content')
+            ->and($templateData['regions'][0]['name'])->toBe('Main content');
+    });
+
     test('saves custom assignable templates in type-first directories', function () {
         Storage::fake('local');
 
@@ -320,6 +396,90 @@ describe('handleFullPage', function () {
 });
 
 describe('handle', function () {
+    test('uses shared region id for source lookup and update targeting', function () {
+        Storage::fake('local');
+
+        $basePath = 'test-theme/default/en/editor';
+        $regionSourcePath = '/theme/views/regions/site-header.blade.php';
+
+        ThemePathsResolver::shouldReceive('resolvePath')
+            ->with('test-theme', 'default', 'en', 'editor', 'regions/site-header.json')
+            ->andReturn(Storage::path($basePath.'/regions/site-header.json'));
+
+        $handleUpdates = Mockery::mock(HandleUpdates::class);
+        $handleUpdates->shouldReceive('execute')
+            ->once()
+            ->with($regionSourcePath, Mockery::type(UpdateRequest::class), ['site-header'])
+            ->andReturn(['updated' => false, 'data' => []]);
+
+        $persistEditorUpdates = new PersistEditorUpdates($handleUpdates);
+
+        $result = $persistEditorUpdates->handle([
+            'theme' => 'test-theme',
+            'channel' => 'default',
+            'locale' => 'en',
+            'template' => [
+                'name' => 'index',
+                'sources' => encrypt([$regionSourcePath]),
+            ],
+            'updates' => [
+                'blocks' => [],
+                'regions' => [
+                    ['id' => 'site-header', 'name' => 'Header', 'shared' => true, 'blocks' => []],
+                ],
+                'changes' => [
+                    'added' => [],
+                    'updated' => [],
+                    'removed' => [],
+                ],
+            ],
+        ]);
+
+        expect($result['loadedBlocks'])->toBeEmpty();
+    });
+
+    test('uses non-shared region ids for update targeting', function () {
+        Storage::fake('local');
+
+        $basePath = 'test-theme/default/en/editor';
+        Storage::put($basePath.'/templates/index.json', '{}');
+
+        ThemePathsResolver::shouldReceive('resolvePath')
+            ->with('test-theme', 'default', 'en', 'editor', 'templates/index.json')
+            ->andReturn(Storage::path($basePath.'/templates/index.json'));
+
+        $handleUpdates = Mockery::mock(HandleUpdates::class);
+        $handleUpdates->shouldReceive('execute')
+            ->once()
+            ->with(Storage::path($basePath.'/templates/index.json'), Mockery::type(UpdateRequest::class), ['main-content'])
+            ->andReturn(['updated' => false, 'data' => []]);
+
+        $persistEditorUpdates = new PersistEditorUpdates($handleUpdates);
+
+        $result = $persistEditorUpdates->handle([
+            'theme' => 'test-theme',
+            'channel' => 'default',
+            'locale' => 'en',
+            'template' => [
+                'name' => 'index',
+                'sources' => encrypt([]),
+            ],
+            'updates' => [
+                'blocks' => [],
+                'regions' => [
+                    ['id' => 'main-content', 'name' => 'Main content', 'shared' => false, 'blocks' => []],
+                ],
+                'changes' => [
+                    'added' => [],
+                    'updated' => [],
+                    'removed' => [],
+                ],
+            ],
+        ]);
+
+        expect($result['loadedBlocks'])->toBeEmpty();
+    });
+
     test('returns loaded blocks from shared regions', function () {
         $sources = ['header' => 'path/to/header.blade.php'];
 

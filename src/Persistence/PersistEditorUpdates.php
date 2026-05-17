@@ -70,8 +70,7 @@ class PersistEditorUpdates
         $nonSharedRegions = $regions->filter(fn ($region) => ! isset($region['shared']) || $region['shared'] === false);
 
         foreach ($sharedRegions as $region) {
-            $regionPath = $this->getRegionFilePath($theme, $channel, $locale, $region['name']);
-
+            $regionPath = $this->getRegionFilePath($theme, $channel, $locale, $this->regionKey($region));
             $regionBlocks = $this->collectRegionBlocks($allBlocks, $region['blocks'] ?? []);
             $regionData = [
                 'blocks' => $regionBlocks,
@@ -118,14 +117,15 @@ class PersistEditorUpdates
 
     protected function persistSharedRegion(array $region, UpdateRequest $updateRequest, string $theme, string $channel, string $locale, array $sources): array
     {
-        $regionPath = $this->getRegionFilePath($theme, $channel, $locale, $region['name']);
+        $regionKey = $this->regionKey($region);
+        $regionPath = $this->getRegionFilePath($theme, $channel, $locale, $regionKey);
         $sourceDataPath = $regionPath;
 
         if (! File::exists($sourceDataPath)) {
-            $sourceDataPath = $this->getRegionSourcePath($region['name'], $sources);
+            $sourceDataPath = $this->getRegionSourcePath($regionKey, $sources);
         }
 
-        $result = $this->handleUpdates->execute($sourceDataPath, $updateRequest, [$region['name']]);
+        $result = $this->handleUpdates->execute($sourceDataPath, $updateRequest, [$regionKey]);
 
         if ($result['updated']) {
             $this->saveFlattened($result['data'], $regionPath, $theme);
@@ -143,8 +143,11 @@ class PersistEditorUpdates
             $sourceDataPath = $this->getTemplateSourcePath($template, $sources);
         }
 
-        $regionNames = collect($nonSharedRegions)->pluck('name')->toArray();
-        $result = $this->handleUpdates->execute($sourceDataPath, $updateRequest, $regionNames);
+        $regionKeys = collect($nonSharedRegions)
+            ->map(fn ($region) => $this->regionKey($region))
+            ->toArray();
+
+        $result = $this->handleUpdates->execute($sourceDataPath, $updateRequest, $regionKeys);
 
         if ($result['updated']) {
             $this->saveFlattened($result['data'], $templatePath, $theme);
@@ -218,5 +221,10 @@ class PersistEditorUpdates
         }
 
         return "templates/{$template}.json";
+    }
+
+    protected function regionKey(array $region): string
+    {
+        return $region['id'] ?? $region['name'];
     }
 }
