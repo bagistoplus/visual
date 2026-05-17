@@ -2,6 +2,14 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.11](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.10...v2.0.0-alpha.11) (2026-05-17)
+
+
+### Bug Fixes
+
+* prefer region ids for editor persistence ([2496a60](https://github.com/bagistoplus/visual/commit/2496a606fb1c5317f0a5a0c51af7f8a3b4d7f0a9))
+* use optional visual template includes ([0878e35](https://github.com/bagistoplus/visual/commit/0878e35ac2ab88bee2b523781ec975b7626e672d))
+
 # [2.0.0-alpha.10](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.9...v2.0.0-alpha.10) (2026-05-16)
 
 
