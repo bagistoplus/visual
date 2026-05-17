@@ -13,6 +13,6 @@
 
 @visual_content
 
-@include('shop::templates.' . visual_template_for('page', $page))
+@includeIf('shop::templates.' . visual_template_for('page', $page))
 
 @end_visual_content
