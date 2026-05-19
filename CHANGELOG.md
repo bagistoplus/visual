@@ -2,6 +2,13 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.13](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.12...v2.0.0-alpha.13) (2026-05-19)
+
+
+### Bug Fixes
+
+* update craftile packages ([326ccd1](https://github.com/bagistoplus/visual/commit/326ccd127ee1b00f6542606e348dc30deedc1f73))
+
 # [2.0.0-alpha.12](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.11...v2.0.0-alpha.12) (2026-05-19)
 
 
