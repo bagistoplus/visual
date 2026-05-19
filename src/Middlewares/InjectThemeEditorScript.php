@@ -7,7 +7,9 @@ use BagistoPlus\Visual\ThemeSettingsLoader;
 use Craftile\Laravel\Middlewares\PreviewScriptMiddleware;
 use Craftile\Laravel\PreviewDataCollector;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\HttpFoundation\Response;
 use Webkul\Category\Repositories\CategoryRepository;
 use Webkul\Product\Repositories\ProductRepository;
 
@@ -20,6 +22,33 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
         protected ProductRepository $productRepository,
         protected PreviewDataCollector $previewCollector
     ) {}
+
+    /**
+     * Inject preview client and page data scripts into the response.
+     */
+    protected function injectPreviewScripts(Response $response, Request $request): void
+    {
+        if (! $this->isHtmlResponse($response)) {
+            return;
+        }
+
+        $content = $response->getContent();
+        if (! $content || ! preg_match('/<head\b[^>]*>/i', $content)) {
+            return;
+        }
+
+        $pageData = $this->getCurrentPageData();
+        $scripts = $this->buildPreviewScripts($pageData);
+
+        $content = preg_replace_callback(
+            '/<head\b[^>]*>/i',
+            fn (array $matches) => $matches[0].$scripts,
+            $content,
+            1
+        );
+
+        $response->setContent($content);
+    }
 
     /**
      * Build the scripts to inject for preview functionality.
