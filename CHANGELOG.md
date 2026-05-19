@@ -2,6 +2,18 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.12](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.11...v2.0.0-alpha.12) (2026-05-19)
+
+
+### Bug Fixes
+
+* inject preview scripts at head start ([526a63f](https://github.com/bagistoplus/visual/commit/526a63fc5be06d1db43a6cfb46b18174742e46b3))
+
+
+### Features
+
+* add scoped visual editor events ([170c19c](https://github.com/bagistoplus/visual/commit/170c19c0a07590a65f1f3615ff5f61aaf267a695))
+
 # [2.0.0-alpha.11](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.10...v2.0.0-alpha.11) (2026-05-17)
 
 
