@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import morphdom from 'morphdom';
 
 // Mock the Craftile modules
@@ -210,5 +210,211 @@ describe('Visual utilities', () => {
       expect(Visual.getResponsiveValue(value, 'mobile')).toBe('base');
       expect(Visual.getResponsiveValue(value, 'tablet')).toBe('base');
     });
+  });
+});
+
+describe('Visual editor event forwarding', () => {
+  let previewClient: any;
+  let emittedEvents: { type: string; detail: any }[];
+  let dispatchEventSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(async () => {
+    vi.resetModules();
+    vi.clearAllMocks();
+    vi.stubGlobal('CSS', {
+      escape: (value: string) => value.replace(/[^a-zA-Z0-9_-]/g, '\\$&'),
+    });
+
+    emittedEvents = [];
+    dispatchEventSpy = vi.spyOn(document, 'dispatchEvent').mockImplementation((event: Event) => {
+      emittedEvents.push({
+        type: event.type,
+        detail: (event as CustomEvent).detail,
+      });
+
+      return true;
+    });
+
+    const previewModule = await import('@craftile/preview-client');
+    await import('../injected');
+
+    previewClient = (previewModule.PreviewClient as any).mock.instances[0];
+  });
+
+  afterEach(() => {
+    dispatchEventSpy.mockRestore();
+    vi.unstubAllGlobals();
+  });
+
+  function triggerPreviewEvent(eventName: string, payload: any): void {
+    const handlers = previewClient.on.mock.calls
+      .filter(([registeredEvent]: [string]) => registeredEvent === eventName)
+      .map(([, handler]: [string, (data: any) => void]) => handler);
+
+    for (const handler of handlers) {
+      handler(payload);
+    }
+  }
+
+  function expectEvent(type: string, detail: any): void {
+    expect(emittedEvents).toContainEqual({ type, detail });
+  }
+
+  function expectNoEvent(type: string): void {
+    expect(emittedEvents.some((event) => event.type === type)).toBe(false);
+  }
+
+  it.each([
+    ['block.insert.before', ['adding']],
+    ['block.insert.after', ['added', 'load']],
+    ['block.remove.before', ['removing']],
+    ['block.remove.after', ['removed', 'unload']],
+    ['block.move.before', ['moving']],
+    ['block.move.after', ['moved']],
+    ['block.update.before', ['updating']],
+    ['block.update.after', ['updated', 'load']],
+    ['block.select', ['selected']],
+    ['block.deselect', ['deselected']],
+  ])('emits block-scoped variants for %s', (previewEvent, visualEvents) => {
+    const payload = {
+      blockId: 'block-123',
+      block: { id: 'block-123', parentId: 'section-123' },
+    };
+
+    triggerPreviewEvent(previewEvent, payload);
+
+    for (const visualEvent of visualEvents) {
+      expectEvent(`visual:block:${visualEvent}`, payload);
+      expectEvent(`visual:block:${visualEvent}:block-123`, payload);
+    }
+  });
+
+  it.each([
+    ['block.insert.before', ['adding']],
+    ['block.insert.after', ['added', 'load']],
+    ['block.remove.before', ['removing']],
+    ['block.remove.after', ['removed', 'unload']],
+    ['block.move.before', ['moving']],
+    ['block.move.after', ['moved']],
+    ['block.update.before', ['updating']],
+    ['block.update.after', ['updated', 'load']],
+  ])('emits section-scoped variants for top-level blocks on %s', (previewEvent, visualEvents) => {
+    const payload = {
+      blockId: 'section-123',
+      block: { id: 'section-123' },
+    };
+    const sectionPayload = {
+      ...payload,
+      sectionId: 'section-123',
+      section: payload.block,
+    };
+
+    triggerPreviewEvent(previewEvent, payload);
+
+    for (const visualEvent of visualEvents) {
+      expectEvent(`visual:section:${visualEvent}`, sectionPayload);
+      expectEvent(`visual:section:${visualEvent}:section-123`, sectionPayload);
+    }
+  });
+
+  it('does not emit section events for nested blocks', () => {
+    const payload = {
+      blockId: 'block-123',
+      block: { id: 'block-123', parentId: 'section-123' },
+    };
+
+    triggerPreviewEvent('block.insert.after', payload);
+
+    expectNoEvent('visual:section:added');
+    expectNoEvent('visual:section:added:block-123');
+    expectNoEvent('visual:section:load');
+    expectNoEvent('visual:section:load:block-123');
+  });
+
+  it('uses block.id as the scoped block id when blockId is missing', () => {
+    const payload = {
+      block: { id: 'block-from-object', parentId: 'section-123' },
+    };
+
+    triggerPreviewEvent('block.select', payload);
+
+    expectEvent('visual:block:selected', payload);
+    expectEvent('visual:block:selected:block-from-object', payload);
+  });
+
+  it.each([
+    ['block.select', 'selected'],
+    ['block.deselect', 'deselected'],
+  ])('does not emit section events for top-level block %s payloads', (previewEvent, visualEvent) => {
+    const payload = {
+      blockId: 'section-123',
+      block: { id: 'section-123' },
+    };
+
+    triggerPreviewEvent(previewEvent, payload);
+
+    expectEvent(`visual:block:${visualEvent}`, payload);
+    expectEvent(`visual:block:${visualEvent}:section-123`, payload);
+    expectNoEvent(`visual:section:${visualEvent}`);
+    expectNoEvent(`visual:section:${visualEvent}:section-123`);
+  });
+
+  it('does not emit block-scoped lifecycle variants when no block id is available', () => {
+    const payload = {
+      block: { parentId: 'section-123' },
+    };
+
+    triggerPreviewEvent('block.select', payload);
+
+    expectEvent('visual:block:selected', payload);
+    expectNoEvent('visual:block:selected:undefined');
+  });
+
+  it('emits setting-scoped block and section events for top-level block setting updates', () => {
+    const payload = {
+      blockId: 'section-123',
+      block: { id: 'section-123' },
+      key: 'heading',
+      value: 'New heading',
+      oldValue: 'Old heading',
+    };
+
+    triggerPreviewEvent('block.property.updated', payload);
+
+    expectEvent('visual:block:setting:updated', payload);
+    expectEvent('visual:block:setting:updated:heading', payload);
+    expectEvent('visual:section:setting:updated', payload);
+    expectEvent('visual:section:setting:updated:heading', payload);
+  });
+
+  it('does not emit section setting events for nested block setting updates', () => {
+    const payload = {
+      blockId: 'block-123',
+      block: { id: 'block-123', parentId: 'section-123' },
+      key: 'heading',
+      value: 'New heading',
+      oldValue: 'Old heading',
+    };
+
+    triggerPreviewEvent('block.property.updated', payload);
+
+    expectEvent('visual:block:setting:updated', payload);
+    expectEvent('visual:block:setting:updated:heading', payload);
+    expectNoEvent('visual:section:setting:updated');
+    expectNoEvent('visual:section:setting:updated:heading');
+  });
+
+  it('does not emit setting-scoped variants when the setting key is missing', () => {
+    const payload = {
+      blockId: 'block-123',
+      block: { id: 'block-123', parentId: 'section-123' },
+      value: 'New heading',
+      oldValue: 'Old heading',
+    };
+
+    triggerPreviewEvent('block.property.updated', payload);
+
+    expectEvent('visual:block:setting:updated', payload);
+    expectNoEvent('visual:block:setting:updated:undefined');
   });
 });
