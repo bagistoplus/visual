@@ -221,6 +221,8 @@ function normalizePercentage(value: unknown): number {
 previewClient.on('block.property.updated', handlePropertyUpdate);
 
 class VisualObject {
+  inDesignMode: true = true;
+
   on(event: string, handler: (data: any) => void): () => void {
     const listener = ((e: CustomEvent) => {
       handler(e.detail);
@@ -269,126 +271,102 @@ class VisualObject {
 
 const visual = new VisualObject();
 
+type BlockEventPayload = {
+  blockId?: string;
+  block?: Block & { parentId?: string | null };
+  key?: string;
+  [key: string]: any;
+};
+
+function getBlockId(data: BlockEventPayload): string | undefined {
+  return data.blockId ?? data.block?.id;
+}
+
+function isSectionBlock(data: BlockEventPayload): boolean {
+  return Boolean(data.block && !data.block.parentId);
+}
+
+function toSectionPayload(data: BlockEventPayload): BlockEventPayload {
+  return {
+    ...data,
+    sectionId: data.blockId,
+    section: data.block,
+  };
+}
+
+function emitEvent(event: string, data: any, scopeId?: string): void {
+  visual.emit(event, data);
+
+  if (scopeId) {
+    visual.emit(`${event}:${scopeId}`, data);
+  }
+}
+
+function emitBlockEvent(name: string, data: BlockEventPayload): void {
+  emitEvent(`visual:block:${name}`, data, getBlockId(data));
+
+  if (isSectionBlock(data)) {
+    emitSectionEvent(name, data);
+  }
+}
+
+function emitSectionEvent(name: string, data: BlockEventPayload): void {
+  emitEvent(`visual:section:${name}`, toSectionPayload(data), getBlockId(data));
+}
+
 previewClient.on('block.property.updated', (data) => {
-  visual.emit('visual:block:setting:updated', data);
-  if (data.block && !data.block.parentId) {
-    visual.emit('visual:section:setting:updated', data);
+  emitEvent('visual:block:setting:updated', data, data.key);
+
+  if (isSectionBlock(data)) {
+    emitEvent('visual:section:setting:updated', data, data.key);
   }
 });
 
 // Block adding
 previewClient.on('block.insert.before', (data) => {
-  visual.emit('visual:block:adding', data);
-
-  if (data.block && !data.block.parentId) {
-    visual.emit('visual:section:adding', {
-      ...data,
-      sectionId: data.blockId,
-      section: data.block,
-    });
-  }
+  emitBlockEvent('adding', data);
 });
 
 previewClient.on('block.insert.after', (data) => {
-  visual.emit('visual:block:added', data);
-  visual.emit('visual:block:load', data);
-
-  if (data.block && !data.block.parentId) {
-    visual.emit('visual:section:added', {
-      ...data,
-      sectionId: data.blockId,
-      section: data.block,
-    });
-    visual.emit('visual:section:load', {
-      ...data,
-      sectionId: data.blockId,
-      section: data.block,
-    });
-  }
+  emitBlockEvent('added', data);
+  emitBlockEvent('load', data);
 });
 
 // Block removing
 previewClient.on('block.remove.before', (data) => {
-  visual.emit('visual:block:removing', data);
-
-  if (data.block && !data.block.parentId) {
-    visual.emit('visual:section:removing', {
-      ...data,
-      sectionId: data.blockId,
-      section: data.block,
-    });
-  }
+  emitBlockEvent('removing', data);
 });
 
 previewClient.on('block.remove.after', (data) => {
-  visual.emit('visual:block:removed', data);
-  visual.emit('visual:block:unload', data);
-
-  if (data.block && !data.block.parentId) {
-    visual.emit('visual:section:removed', {
-      ...data,
-      sectionId: data.blockId,
-      section: data.block,
-    });
-    visual.emit('visual:section:unload', {
-      ...data,
-      sectionId: data.blockId,
-      section: data.block,
-    });
-  }
+  emitBlockEvent('removed', data);
+  emitBlockEvent('unload', data);
 });
 
 // Block moving
 previewClient.on('block.move.before', (data) => {
-  visual.emit('visual:block:moving', data);
-  if (data.block && !data.block.parentId) {
-    visual.emit('visual:section:moving', {
-      ...data,
-      sectionId: data.blockId,
-      section: data.block,
-    });
-  }
+  emitBlockEvent('moving', data);
 });
 
 previewClient.on('block.move.after', (data) => {
-  visual.emit('visual:block:moved', data);
-  if (data.block && !data.block.parentId) {
-    visual.emit('visual:section:moved', {
-      ...data,
-      sectionId: data.blockId,
-      section: data.block,
-    });
-  }
+  emitBlockEvent('moved', data);
 });
 
 // Block updating
 previewClient.on('block.update.before', (data) => {
-  visual.emit('visual:block:updating', data);
-  if (data.block && !data.block.parentId) {
-    visual.emit('visual:section:updating', {
-      ...data,
-      sectionId: data.blockId,
-      section: data.block,
-    });
-  }
+  emitBlockEvent('updating', data);
 });
 
 previewClient.on('block.update.after', (data) => {
-  visual.emit('visual:block:updated', data);
-  visual.emit('visual:block:load', data);
+  emitBlockEvent('updated', data);
+  emitBlockEvent('load', data);
+});
 
-  if (data.block && !data.block.parentId) {
-    visual.emit('visual:section:updated', {
-      ...data,
-      sectionId: data.blockId,
-      section: data.block,
-    });
-    visual.emit('visual:section:load', {
-      ...data,
-      sectionId: data.blockId,
-      section: data.block,
-    });
-  }
+previewClient.on('block.select', (data) => {
+  emitEvent('visual:block:selected', data, getBlockId(data));
+});
+
+previewClient.on('block.deselect', (data) => {
+  emitEvent('visual:block:deselected', data, getBlockId(data));
 });
 
 declare global {

@@ -39,7 +39,7 @@ Bagisto Visual emits events during this lifecycle:
 | `visual:section:updated`        | After section is updated      |
 | `visual:section:moving`         | Before section is moved       |
 | `visual:section:moved`          | After section is moved        |
-| `visual:section:setting:updated`| When a section setting changes|
+| `visual:section:setting:updated` | When a section setting changes |
 | `visual:block:adding`           | Before block is added         |
 | `visual:block:added`            | After block is added          |
 | `visual:block:removing`         | Before block is removed       |
@@ -49,6 +49,17 @@ Bagisto Visual emits events during this lifecycle:
 | `visual:block:moving`           | Before block is moved         |
 | `visual:block:moved`            | After block is moved          |
 | `visual:block:setting:updated`  | When a block setting changes  |
+
+All block and section events also emit scoped variants when the relevant id is available:
+
+| Scoped event pattern                         | Use case                                      |
+| -------------------------------------------- | --------------------------------------------- |
+| `visual:block:{event}:{blockId}`             | Listen to one block instance                  |
+| `visual:section:{event}:{sectionBlockId}`    | Listen to one section instance                |
+| `visual:block:setting:updated:{settingId}`   | Listen to one block setting across instances  |
+| `visual:section:setting:updated:{settingId}` | Listen to one section setting across sections |
+
+Sections are top-level blocks in the editor data model. Section-scoped events therefore use the section block id, and they only fire when the event payload block has no `parentId`.
 
 Each event exposes:
 
@@ -98,6 +109,14 @@ This prevents editor-specific code from running on the live storefront, keeping 
                     // Reinitialize interactivity: sliders, modals, listeners
                 }
             });
+
+            document.addEventListener('visual:section:load:{{ $section->id }}', (event) => {
+                // Reinitialize this exact section instance
+            });
+
+            document.addEventListener('visual:section:setting:updated:heading', (event) => {
+                // React only when a section's "heading" setting changes
+            });
         </script>
     @endPushOnce
 @end_visual_design_mode
@@ -119,6 +138,14 @@ This prevents editor-specific code from running on the live storefront, keeping 
                 if (event.detail.block.type === '{{ $block->type }}') {
                     // Reinitialize block-specific JavaScript
                 }
+            });
+
+            document.addEventListener('visual:block:load:{{ $block->id }}', (event) => {
+                // Reinitialize this exact block instance
+            });
+
+            document.addEventListener('visual:block:setting:updated:text', (event) => {
+                // React only when a block's "text" setting changes
             });
         </script>
     @endPushOnce
