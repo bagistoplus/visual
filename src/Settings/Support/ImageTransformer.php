@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Settings\Support;
 
 use BagistoPlus\Visual\Contracts\SettingTransformerInterface;
+use BagistoPlus\Visual\Facades\Visual;
 use Illuminate\Support\Facades\Storage;
 
 class ImageTransformer implements SettingTransformerInterface
@@ -41,7 +42,7 @@ class ImageTransformer implements SettingTransformerInterface
             return new ImageValue(
                 name: $originalName,
                 path: $path,
-                url: Storage::disk(config('bagisto_visual.images_storage'))->url($path),
+                url: Storage::disk(Visual::imagesDisk())->url($path),
                 alt: $metadata['alt'],
                 focalPoint: $metadata['focalPoint'],
             );
