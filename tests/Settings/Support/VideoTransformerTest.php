@@ -101,6 +101,14 @@ it('supports youtube watch embed and shorts urls', function ($url) {
     'https://www.youtube.com/shorts/abc123XYZ',
 ]);
 
+it('rejects urls with spoofed youtube hosts', function ($url) {
+    expect((new VideoTransformer)->transform($url))->toBeNull();
+})->with([
+    'https://youtube.com.evil.test/watch?v=abc123XYZ',
+    'https://evil-youtube.com/watch?v=abc123XYZ',
+    'https://evil.test/youtube.com/watch?v=abc123XYZ',
+]);
+
 it('normalizes vimeo urls and preserves unlisted hashes and time fragments', function () {
     $video = (new VideoTransformer)->transform('https://vimeo.com/123456789/abcdef#t=1m30s');
 
@@ -117,6 +125,13 @@ it('supports vimeo player urls with h query', function () {
 
     expect($video?->url)->toBe('https://player.vimeo.com/video/123456789?controls=1&h=abcdef');
 });
+
+it('rejects urls with spoofed vimeo hosts', function ($url) {
+    expect((new VideoTransformer)->transform($url))->toBeNull();
+})->with([
+    'https://vimeo.com.evil.test/123456789',
+    'https://evil-vimeo.com/123456789',
+]);
 
 it('classifies custom external video urls using schema regex', function () {
     $schema = [
