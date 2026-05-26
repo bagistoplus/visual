@@ -13,23 +13,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Images Storage
+    | Images
     |--------------------------------------------------------------------------
     |
-    | The storage disk to use for theme images.
+    | Storage settings for theme images.
     |
     */
-    'images_storage' => 'public',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Images Directory
-    |--------------------------------------------------------------------------
-    |
-    | The directory path within the storage disk for theme images.
-    |
-    */
-    'images_directory' => 'bagisto-visual/images',
+    'images' => [
+        'storage' => 'public',
+        'directory' => 'bagisto-visual/images',
+    ],
 
     /*
     |--------------------------------------------------------------------------

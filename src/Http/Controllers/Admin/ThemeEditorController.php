@@ -7,6 +7,7 @@ use BagistoPlus\Visual\Blocks\LivewireSection;
 use BagistoPlus\Visual\Blocks\SimpleSection;
 use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
+use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Http\Controllers\Controller;
 use BagistoPlus\Visual\Persistence\CreateTemplate;
 use BagistoPlus\Visual\Persistence\PersistEditorUpdates;
@@ -53,8 +54,8 @@ class ThemeEditorController extends Controller
         return view()->make('visual::admin.editor.index', [
             'config' => [
                 'baseUrl' => parse_url(route('visual.admin.editor', ['theme' => $themeCode]), PHP_URL_PATH),
-                'imagesBaseUrl' => Storage::disk(config('bagisto_visual.images_storage'))->url(''),
-                'videosBaseUrl' => Storage::disk(config('bagisto_visual.videos.storage'))->url(''),
+                'imagesBaseUrl' => Storage::disk(Visual::imagesDisk())->url(''),
+                'videosBaseUrl' => Storage::disk(Visual::videosDisk())->url(''),
                 'storefrontUrl' => url('/').'?'.http_build_query(['_designMode' => $themeCode]),
                 'channels' => $this->getChannels(),
                 'defaultChannel' => core()->getDefaultChannelCode(),
@@ -212,24 +213,24 @@ class ThemeEditorController extends Controller
             $storedName = bin2hex($originalName).'_'.uniqid().'.'.$extension;
 
             $path = $image->storeAs(
-                config('bagisto_visual.images_directory'),
+                Visual::imagesDirectory(),
                 $storedName,
-                config('bagisto_visual.images_storage'),
+                Visual::imagesDisk(),
             );
 
             return [
                 'path' => $path,
                 'name' => $originalName,
-                'url' => Storage::disk(config('bagisto_visual.images_storage'))->url($path),
+                'url' => Storage::disk(Visual::imagesDisk())->url($path),
             ];
         });
     }
 
     public function listImages()
     {
-        $diskName = config('bagisto_visual.images_storage');
+        $diskName = Visual::imagesDisk();
         $files = Storage::disk($diskName)
-            ->files(config('bagisto_visual.images_directory'));
+            ->files(Visual::imagesDirectory());
 
         return collect($files)->map(function ($file) {
             $image = (new ImageTransformer)($file);
@@ -250,7 +251,7 @@ class ThemeEditorController extends Controller
                 'required',
                 'file',
                 'mimetypes:video/mp4,video/x-m4v,video/webm,video/ogg',
-                'max:'.config('bagisto_visual.videos.max_upload_size', 51200),
+                'max:'.Visual::videosMaxUploadSize(),
             ],
         ]);
 
@@ -269,15 +270,15 @@ class ThemeEditorController extends Controller
             $storedName = bin2hex($originalName).'_'.uniqid().'.'.$extension;
 
             $path = $video->storeAs(
-                config('bagisto_visual.videos.directory'),
+                Visual::videosDirectory(),
                 $storedName,
-                config('bagisto_visual.videos.storage'),
+                Visual::videosDisk(),
             );
 
             return [
                 'path' => $path,
                 'name' => $originalName,
-                'url' => Storage::disk(config('bagisto_visual.videos.storage'))->url($path),
+                'url' => Storage::disk(Visual::videosDisk())->url($path),
                 'mime_type' => $mimeType,
             ];
         });
@@ -285,9 +286,9 @@ class ThemeEditorController extends Controller
 
     public function listVideos()
     {
-        $diskName = config('bagisto_visual.videos.storage');
+        $diskName = Visual::videosDisk();
         $files = Storage::disk($diskName)
-            ->files(config('bagisto_visual.videos.directory'));
+            ->files(Visual::videosDirectory());
 
         return collect($files)->map(function ($file) {
             $video = (new VideoTransformer)->transform($file);

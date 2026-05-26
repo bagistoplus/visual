@@ -23,6 +23,31 @@ class VisualManager
         return $this->themeSettingsLoader;
     }
 
+    public function imagesDisk(): string
+    {
+        return (string) config('bagisto_visual.images.storage', config('bagisto_visual.images_storage'));
+    }
+
+    public function imagesDirectory(): string
+    {
+        return (string) config('bagisto_visual.images.directory', config('bagisto_visual.images_directory'));
+    }
+
+    public function videosDisk(): string
+    {
+        return (string) config('bagisto_visual.videos.storage');
+    }
+
+    public function videosDirectory(): string
+    {
+        return (string) config('bagisto_visual.videos.directory');
+    }
+
+    public function videosMaxUploadSize(): int
+    {
+        return (int) config('bagisto_visual.videos.max_upload_size', 51200);
+    }
+
     public function discoverSectionsIn(string $path, string $namespace = 'App\\Sections'): void
     {
         Craftile::discoverBlocksIn($namespace, $path);

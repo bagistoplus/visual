@@ -5,7 +5,7 @@ use BagistoPlus\Visual\Settings\Support\ImageTransformer;
 use BagistoPlus\Visual\Settings\Support\ImageValue;
 
 beforeEach(function () {
-    config()->set('bagisto_visual.images_storage', 'public');
+    config()->set('bagisto_visual.images.storage', 'public');
 });
 
 it('implements SettingTransformerInterface', function () {
