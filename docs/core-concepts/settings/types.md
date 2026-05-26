@@ -1081,6 +1081,54 @@ Bagisto Visual provides a helper method to generate the full CSS output automati
 
 ---
 
+### ColorToken
+
+Semantic color token picker. Useful when a section or block should reference a role inside the active color scheme (such as `primary`, `danger`, or `success`) instead of a hardcoded literal color.
+
+A `ColorToken` value stays a token string at every layer of the stack. At render time it resolves to a CSS variable like `var(--color-primary)`, so the same value automatically adapts to the active `data-color-scheme` on the page.
+
+How it differs from the other color related setting types:
+
+- [Color](#color) stores a literal color value (hex, rgba, etc.).
+- [ColorScheme](#colorscheme) lets the merchant pick a whole scheme to apply to a section.
+- `ColorToken` lets the merchant pick one role inside whatever scheme is currently active.
+
+```php
+use BagistoPlus\Visual\Settings\ColorToken;
+
+public static function settings(): array
+{
+    return [
+        ColorToken::make('button_color', 'Button color')
+            ->default('primary'),
+    ];
+}
+```
+
+In Blade, call `cssVar()` on the resolved value to emit the CSS variable reference:
+
+```blade
+@if ($section->settings->button_color)
+    <a style="background-color: {{ $section->settings->button_color->cssVar() }}">
+        Buy now
+    </a>
+@endif
+```
+
+Casting the value to string returns the token itself (for example `primary`), which is useful when you want to drive class names or data attributes from the token:
+
+```blade
+<button class="btn btn-{{ $section->settings->button_color }}">
+    Add to cart
+</button>
+```
+
+In the editor, each token swatch is rendered using the colors from the nearest active color scheme.
+
+<SettingPreview image="/setting-color-token.png" title="Color token setting type preview"/>
+
+---
+
 ### Typography
 
 The `Typography` setting allows merchants to select a typography preset for text styling. Typography presets are defined once in the theme's settings using [TypographyPresets](#typographypresets), and sections or blocks can reference them using this setting.

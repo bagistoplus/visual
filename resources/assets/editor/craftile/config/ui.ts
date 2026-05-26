@@ -16,6 +16,7 @@ import FontPicker from '../../components/FontPicker.vue';
 import LinkPicker from '../../components/LinkPicker.vue';
 import ColorSchemePicker from '../../components/ColorSchemePicker.vue';
 import ColorSchemeGroup from '../../components/ColorSchemeGroup.vue';
+import ColorTokenPicker from '../../components/ColorTokenPicker.vue';
 import IconPicker from '../../components/IconPicker.vue';
 import ImagePicker from '../../components/ImagePicker.vue';
 import VideoField from '../../components/VideoField.vue';
@@ -145,6 +146,11 @@ function registerPropertyFields(ui: PluginContext['editor']['ui']) {
   ui.registerPropertyField({
     type: 'color_scheme_group',
     render: ColorSchemeGroup,
+  });
+
+  ui.registerPropertyField({
+    type: 'color_token',
+    render: ColorTokenPicker,
   });
 
   ui.registerPropertyField({
