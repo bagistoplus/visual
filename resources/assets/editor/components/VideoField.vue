@@ -43,7 +43,7 @@ function youtubeId(url: string): string | null {
       return parsed.pathname.split('/').filter(Boolean)[0] ?? null;
     }
 
-    if (!host.includes('youtube.com')) {
+    if (host !== 'youtube.com' && !host.endsWith('.youtube.com')) {
       return null;
     }
 
@@ -63,7 +63,9 @@ function vimeoId(url: string): string | null {
   try {
     const parsed = new URL(url);
 
-    if (!parsed.hostname.toLowerCase().includes('vimeo.com')) {
+    const host = parsed.hostname.toLowerCase();
+
+    if (host !== 'vimeo.com' && !host.endsWith('.vimeo.com')) {
       return null;
     }
 
