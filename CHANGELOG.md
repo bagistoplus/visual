@@ -2,6 +2,33 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.14](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.13...v2.0.0-alpha.14) (2026-05-26)
+
+
+### Bug Fixes
+
+* **color-scheme:** return null for unregistered scheme ids ([460a563](https://github.com/bagistoplus/visual/commit/460a56360f07916f9fe3ce8b83902481e406513f))
+* **color-scheme:** return null for unregistered scheme ids ([15d475f](https://github.com/bagistoplus/visual/commit/15d475f1bb7c7e19780e28c65eee176b958d2cff))
+* inject preview scripts at head start ([d2406d0](https://github.com/bagistoplus/visual/commit/d2406d0d14ca20fc5f88c7310cc04fd5072fdc9d))
+* inject preview scripts at head start ([38cfcd1](https://github.com/bagistoplus/visual/commit/38cfcd10cea9ad6d4d3a623df789fdc4d36a3f54))
+* prefer region ids for editor persistence ([609b75e](https://github.com/bagistoplus/visual/commit/609b75e433283ba856399bad44703786550e6822))
+* prefer region ids for editor persistence ([f0fd478](https://github.com/bagistoplus/visual/commit/f0fd4786167d5e00e5fb0b03f6e2b1bc0a356386))
+* repair package lock for alpha ([06883be](https://github.com/bagistoplus/visual/commit/06883beb38a6d6cbdeccd055b5555a5052950c4c))
+* use optional visual template includes ([6b7071d](https://github.com/bagistoplus/visual/commit/6b7071d837edb15770fb5b302f0468095a1c6092))
+* use optional visual template includes ([b156f30](https://github.com/bagistoplus/visual/commit/b156f30e58ebce1d3de3e7db405cb831e305ca16))
+
+
+### Features
+
+* add color token setting ([d124752](https://github.com/bagistoplus/visual/commit/d1247527e3cb34ce78bbe0f5b9285e00820c45a9))
+* add product_list category_list cms_page_list settings ([b252e99](https://github.com/bagistoplus/visual/commit/b252e998ad7a8970f872a960fb636478cdb2d7e2))
+* add product_list category_list cms_page_list settings ([c660844](https://github.com/bagistoplus/visual/commit/c6608445bff48e225ecc15d45c8232c69f255841))
+* add scoped visual editor events ([240a4bb](https://github.com/bagistoplus/visual/commit/240a4bb567afb63cd84ce70a96cbfc4f970cad48))
+* add scoped visual editor events ([11af2f0](https://github.com/bagistoplus/visual/commit/11af2f0ced61cf3f789e131d0392139fd68448ce))
+* add video setting type ([d04ccac](https://github.com/bagistoplus/visual/commit/d04ccac00a3010765436d3a79295ea3477f22c75))
+* support custom block meta ([6a0d618](https://github.com/bagistoplus/visual/commit/6a0d618ef1dacc611dbfb596127e4de07d6c9fe7))
+* support custom block meta ([54137b1](https://github.com/bagistoplus/visual/commit/54137b12969e270b02f42e0976886eaf2fd9ea4e))
+
 # [2.0.0-alpha.13](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.12...v2.0.0-alpha.13) (2026-05-19)
 
 
