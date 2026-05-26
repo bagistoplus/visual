@@ -14,6 +14,7 @@ use BagistoPlus\Visual\Persistence\PersistThemeSettings;
 use BagistoPlus\Visual\Persistence\PublishTheme;
 use BagistoPlus\Visual\Persistence\RenderPreview;
 use BagistoPlus\Visual\Settings\Support\ImageTransformer;
+use BagistoPlus\Visual\Settings\Support\VideoTransformer;
 use BagistoPlus\Visual\Support\ChannelThemeResolver;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
 use BagistoPlus\Visual\Theme\Theme;
@@ -53,6 +54,7 @@ class ThemeEditorController extends Controller
             'config' => [
                 'baseUrl' => parse_url(route('visual.admin.editor', ['theme' => $themeCode]), PHP_URL_PATH),
                 'imagesBaseUrl' => Storage::disk(config('bagisto_visual.images_storage'))->url(''),
+                'videosBaseUrl' => Storage::disk(config('bagisto_visual.videos.storage'))->url(''),
                 'storefrontUrl' => url('/').'?'.http_build_query(['_designMode' => $themeCode]),
                 'channels' => $this->getChannels(),
                 'defaultChannel' => core()->getDefaultChannelCode(),
@@ -67,6 +69,8 @@ class ThemeEditorController extends Controller
                     'createTemplate' => route('visual.admin.editor.api.templates.create'),
                     'uploadImage' => route('visual.admin.editor.api.upload'),
                     'listImages' => route('visual.admin.editor.api.images'),
+                    'uploadVideo' => route('visual.admin.editor.api.videos.upload'),
+                    'listVideos' => route('visual.admin.editor.api.videos.index'),
                     'getCmsPages' => route('visual.admin.editor.api.cms_pages'),
                     'getIcons' => route('visual.admin.editor.api.icons'),
                 ],
@@ -234,6 +238,65 @@ class ThemeEditorController extends Controller
                 'name' => $image->name,
                 'path' => $image->path,
                 'url' => $image->url,
+            ];
+        });
+    }
+
+    public function uploadVideos(Request $request)
+    {
+        $request->validate([
+            'video' => ['required', 'array'],
+            'video.*' => [
+                'required',
+                'file',
+                'mimetypes:video/mp4,video/x-m4v,video/webm,video/ogg',
+                'max:'.config('bagisto_visual.videos.max_upload_size', 51200),
+            ],
+        ]);
+
+        /** @var Collection<int, UploadedFile> $videos */
+        $videos = collect($request->file('video'));
+
+        return $videos->map(function ($video) {
+            $originalName = pathinfo($video->getClientOriginalName(), PATHINFO_FILENAME);
+            $mimeType = $video->getMimeType();
+            $extension = match ($mimeType) {
+                'video/mp4', 'video/x-m4v' => 'mp4',
+                'video/webm' => 'webm',
+                'video/ogg' => 'ogg',
+                default => $video->guessExtension(),
+            };
+            $storedName = bin2hex($originalName).'_'.uniqid().'.'.$extension;
+
+            $path = $video->storeAs(
+                config('bagisto_visual.videos.directory'),
+                $storedName,
+                config('bagisto_visual.videos.storage'),
+            );
+
+            return [
+                'path' => $path,
+                'name' => $originalName,
+                'url' => Storage::disk(config('bagisto_visual.videos.storage'))->url($path),
+                'mime_type' => $mimeType,
+            ];
+        });
+    }
+
+    public function listVideos()
+    {
+        $diskName = config('bagisto_visual.videos.storage');
+        $files = Storage::disk($diskName)
+            ->files(config('bagisto_visual.videos.directory'));
+
+        return collect($files)->map(function ($file) {
+            $video = (new VideoTransformer)->transform($file);
+
+            return [
+                'name' => $video->name,
+                'path' => $video->path,
+                'url' => $video->url,
+                'mime_type' => $video->sources[0]['mime_type'] ?? null,
             ];
         });
     }

@@ -7,7 +7,7 @@ use Webkul\Product\Repositories\ProductRepository;
 
 class ProductTransformer
 {
-    public function __invoke(?int $id)
+    public function __invoke(?int $id, array $schema = [])
     {
         $product = $id ? app(ProductRepository::class)->find($id) : null;
 

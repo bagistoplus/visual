@@ -23,6 +23,12 @@ Route::prefix('/visual/editor')->group(function () {
     Route::get('api/images', [ThemeEditorController::class, 'listImages'])
         ->name('visual.admin.editor.api.images');
 
+    Route::post('api/upload-videos', [ThemeEditorController::class, 'uploadVideos'])
+        ->name('visual.admin.editor.api.videos.upload');
+
+    Route::get('api/videos', [ThemeEditorController::class, 'listVideos'])
+        ->name('visual.admin.editor.api.videos.index');
+
     Route::get('api/cms-pages', [ThemeEditorController::class, 'cmsPages'])
         ->name('visual.admin.editor.api.cms_pages');
 

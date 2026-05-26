@@ -6,7 +6,7 @@ use BagistoPlus\Visual\Theme\Theme;
 
 class ColorSchemeTransformer
 {
-    public function __invoke(?string $colorScheme = null)
+    public function __invoke(?string $colorScheme = null, array $schema = [])
     {
         if (! $colorScheme) {
             return null;

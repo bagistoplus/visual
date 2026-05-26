@@ -216,6 +216,7 @@ function createHttpClientInstance(): HttpClient {
           method: 'POST',
           headers: {
             'X-CSRF-TOKEN': csrfToken,
+            Accept: 'application/json',
           },
           body: requestFormData,
           signal,

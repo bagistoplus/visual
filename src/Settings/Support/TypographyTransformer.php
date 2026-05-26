@@ -7,7 +7,7 @@ use BagistoPlus\Visual\Theme\Theme;
 
 class TypographyTransformer implements SettingTransformerInterface
 {
-    public function transform(mixed $value, mixed $property = null): mixed
+    public function transform(mixed $value, array $schema = []): mixed
     {
         if (! $value || ! is_string($value)) {
             return null;

@@ -134,6 +134,7 @@ class CoreServiceProvider extends ServiceProvider
             'font' => SettingTransformers\FontTransformer::class,
             'color' => SettingTransformers\ColorTransformer::class,
             'image' => SettingTransformers\ImageTransformer::class,
+            'video' => SettingTransformers\VideoTransformer::class,
             'product' => SettingTransformers\ProductTransformer::class,
             'product_list' => SettingTransformers\ProductListTransformer::class,
             'category' => SettingTransformers\CategoryTransformer::class,

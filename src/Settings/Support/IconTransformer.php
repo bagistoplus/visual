@@ -4,7 +4,7 @@ namespace BagistoPlus\Visual\Settings\Support;
 
 class IconTransformer
 {
-    public function __invoke(?string $icon = null)
+    public function __invoke(?string $icon = null, array $schema = [])
     {
         if (! $icon) {
             return null;
