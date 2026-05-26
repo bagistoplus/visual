@@ -6,6 +6,8 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const COLOR_TOKEN_EMPTY_VALUE: typeof import('./composables/useColorSchemeContext').COLOR_TOKEN_EMPTY_VALUE
+  const COLOR_TOKEN_OPTIONS: typeof import('./composables/useColorSchemeContext').COLOR_TOKEN_OPTIONS
   const EffectScope: typeof import('vue').EffectScope
   const asyncComputed: typeof import('@vueuse/core').asyncComputed
   const autoResetRef: typeof import('@vueuse/core').autoResetRef
@@ -34,9 +36,12 @@ declare global {
   const eagerComputed: typeof import('@vueuse/core').eagerComputed
   const effectScope: typeof import('vue').effectScope
   const extendRef: typeof import('@vueuse/core').extendRef
+  const findColorSchemeGroup: typeof import('./composables/useColorSchemeContext').findColorSchemeGroup
+  const findContextualSchemeId: typeof import('./composables/useColorSchemeContext').findContextualSchemeId
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
   const getCurrentWatcher: typeof import('vue').getCurrentWatcher
+  const getSchemeTokens: typeof import('./composables/useColorSchemeContext').getSchemeTokens
   const h: typeof import('vue').h
   const i18n: typeof import('./composables/i18n').default
   const ignorableWatch: typeof import('@vueuse/core').ignorableWatch
@@ -88,6 +93,7 @@ declare global {
   const refManualReset: typeof import('@vueuse/core').refManualReset
   const refThrottled: typeof import('@vueuse/core').refThrottled
   const refWithControl: typeof import('@vueuse/core').refWithControl
+  const resolveActiveSchemeId: typeof import('./composables/useColorSchemeContext').resolveActiveSchemeId
   const resolveComponent: typeof import('vue').resolveComponent
   const resolveRef: typeof import('@vueuse/core').resolveRef
   const resolveUnref: typeof import('@vueuse/core')['resolveUnref']
@@ -142,6 +148,7 @@ declare global {
   const useClipboardItems: typeof import('@vueuse/core').useClipboardItems
   const useCloned: typeof import('@vueuse/core').useCloned
   const useColorMode: typeof import('@vueuse/core').useColorMode
+  const useColorSchemeContext: typeof import('./composables/useColorSchemeContext').useColorSchemeContext
   const useConfirmDialog: typeof import('@vueuse/core').useConfirmDialog
   const useCountdown: typeof import('@vueuse/core').useCountdown
   const useCounter: typeof import('@vueuse/core').useCounter
@@ -311,6 +318,9 @@ declare global {
   export type { UseFetchOptions, UseFetchReturn, HttpClient } from './composables/http'
   import('./composables/http')
   // @ts-ignore
+  export type { ColorTokenOption } from './composables/useColorSchemeContext'
+  import('./composables/useColorSchemeContext')
+  // @ts-ignore
   export type { Icon, IconSet } from './composables/useIconStore'
   import('./composables/useIconStore')
 }
@@ -320,6 +330,8 @@ import { UnwrapRef } from 'vue'
 declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
+    readonly COLOR_TOKEN_EMPTY_VALUE: UnwrapRef<typeof import('./composables/useColorSchemeContext')['COLOR_TOKEN_EMPTY_VALUE']>
+    readonly COLOR_TOKEN_OPTIONS: UnwrapRef<typeof import('./composables/useColorSchemeContext')['COLOR_TOKEN_OPTIONS']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
@@ -348,6 +360,8 @@ declare module 'vue' {
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
+    readonly findColorSchemeGroup: UnwrapRef<typeof import('./composables/useColorSchemeContext')['findColorSchemeGroup']>
+    readonly findContextualSchemeId: UnwrapRef<typeof import('./composables/useColorSchemeContext')['findContextualSchemeId']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly getCurrentWatcher: UnwrapRef<typeof import('vue')['getCurrentWatcher']>
@@ -402,6 +416,7 @@ declare module 'vue' {
     readonly refManualReset: UnwrapRef<typeof import('@vueuse/core')['refManualReset']>
     readonly refThrottled: UnwrapRef<typeof import('@vueuse/core')['refThrottled']>
     readonly refWithControl: UnwrapRef<typeof import('@vueuse/core')['refWithControl']>
+    readonly resolveActiveSchemeId: UnwrapRef<typeof import('./composables/useColorSchemeContext')['resolveActiveSchemeId']>
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
     readonly resolveRef: UnwrapRef<typeof import('@vueuse/core')['resolveRef']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
@@ -455,6 +470,7 @@ declare module 'vue' {
     readonly useClipboardItems: UnwrapRef<typeof import('@vueuse/core')['useClipboardItems']>
     readonly useCloned: UnwrapRef<typeof import('@vueuse/core')['useCloned']>
     readonly useColorMode: UnwrapRef<typeof import('@vueuse/core')['useColorMode']>
+    readonly useColorSchemeContext: UnwrapRef<typeof import('./composables/useColorSchemeContext')['useColorSchemeContext']>
     readonly useConfirmDialog: UnwrapRef<typeof import('@vueuse/core')['useConfirmDialog']>
     readonly useCountdown: UnwrapRef<typeof import('@vueuse/core')['useCountdown']>
     readonly useCounter: UnwrapRef<typeof import('@vueuse/core')['useCounter']>
