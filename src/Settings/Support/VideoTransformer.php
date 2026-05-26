@@ -129,7 +129,7 @@ class VideoTransformer implements SettingTransformerInterface
             return $this->validYoutubeId(explode('/', $path)[0] ?? null);
         }
 
-        if (! str_contains($host, 'youtube.com')) {
+        if ($host !== 'youtube.com' && ! str_ends_with($host, '.youtube.com')) {
             return null;
         }
 
@@ -180,7 +180,7 @@ class VideoTransformer implements SettingTransformerInterface
         $host = strtolower($parts['host'] ?? '');
         $path = trim($parts['path'] ?? '', '/');
 
-        if (! str_contains($host, 'vimeo.com')) {
+        if ($host !== 'vimeo.com' && ! str_ends_with($host, '.vimeo.com')) {
             return null;
         }
 
