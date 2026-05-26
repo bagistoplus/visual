@@ -52,6 +52,8 @@ declare module 'vue' {
     IHeroiconsLink: typeof import('~icons/heroicons/link')['default']
     IHeroiconsMagnifyingGlass: typeof import('~icons/heroicons/magnifying-glass')['default']
     IHeroiconsPencil: typeof import('~icons/heroicons/pencil')['default']
+    IHeroiconsPlay: typeof import('~icons/heroicons/play')['default']
+    IHeroiconsPlayCircle: typeof import('~icons/heroicons/play-circle')['default']
     IHeroiconsPlus: typeof import('~icons/heroicons/plus')['default']
     IHeroiconsPlusCircle: typeof import('~icons/heroicons/plus-circle')['default']
     IHeroiconsQuestionMarkCircle: typeof import('~icons/heroicons/question-mark-circle')['default']
@@ -83,5 +85,8 @@ declare module 'vue' {
     TypographyPresetEditor: typeof import('./components/TypographyPresetEditor.vue')['default']
     TypographyPresetPreview: typeof import('./components/TypographyPresetPreview.vue')['default']
     TypographyPresets: typeof import('./components/TypographyPresets.vue')['default']
+    VideoField: typeof import('./components/VideoField.vue')['default']
+    VideoPicker: typeof import('./components/VideoPicker.vue')['default']
+    VideoPreview: typeof import('./components/VideoPreview.vue')['default']
   }
 }

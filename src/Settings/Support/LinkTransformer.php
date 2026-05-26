@@ -4,7 +4,7 @@ namespace BagistoPlus\Visual\Settings\Support;
 
 class LinkTransformer
 {
-    public function __invoke(?string $url = null)
+    public function __invoke(?string $url = null, array $schema = [])
     {
         if (! $url) {
             return null;

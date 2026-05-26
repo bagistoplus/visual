@@ -41,6 +41,7 @@ export interface Theme {
 export interface ThemeEditorConfig {
   baseUrl: string;
   imagesBaseUrl: string;
+  videosBaseUrl: string;
   storefrontUrl: string;
   channels: Channel[];
   defaultChannel: string;
@@ -55,6 +56,8 @@ export interface ThemeEditorConfig {
     themesIndex: string;
     uploadImage: string;
     listImages: string;
+    uploadVideo: string;
+    listVideos: string;
     getCmsPages: string;
     getIcons: string;
   };
@@ -175,6 +178,37 @@ export interface ImageSettingValue {
   path: string;
   alt: string;
   focalPoint: ImageFocalPoint;
+}
+
+export interface Video {
+  name: string;
+  path: string;
+  url: string;
+  mime_type?: string | null;
+  uploading?: boolean;
+}
+
+export interface VideoExternalSource {
+  host: string;
+  label: string;
+  kind: 'embed' | 'video';
+  pattern?: string;
+  jsPattern?: string;
+  jsFlags?: string;
+}
+
+export interface VideoSettingValue {
+  mode: 'upload' | 'external';
+  path?: string;
+  url?: string;
+  host?: string | null;
+  upload?: {
+    path: string;
+  };
+  external?: {
+    url: string;
+    host?: string | null;
+  };
 }
 
 export interface Category {

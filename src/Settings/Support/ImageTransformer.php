@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ImageTransformer implements SettingTransformerInterface
 {
-    public function transform(mixed $value): ?ImageValue
+    public function transform(mixed $value, array $schema = []): ?ImageValue
     {
         return $this($value);
     }

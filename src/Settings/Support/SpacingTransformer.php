@@ -6,7 +6,7 @@ use BagistoPlus\Visual\Contracts\SettingTransformerInterface;
 
 class SpacingTransformer implements SettingTransformerInterface
 {
-    public function transform(mixed $value): mixed
+    public function transform(mixed $value, array $schema = []): mixed
     {
         if (! $value || ! is_array($value)) {
             $value = $this->getDefault();

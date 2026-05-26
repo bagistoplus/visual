@@ -9,7 +9,7 @@ use matthieumastadenis\couleur\colors\HexRgb;
 
 class ColorTransformer implements SettingTransformerInterface
 {
-    public function transform($color): ColorInterface
+    public function transform($color, array $schema = []): ColorInterface
     {
         try {
             return ColorFactory::new($color);

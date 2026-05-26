@@ -18,6 +18,7 @@ import ColorSchemePicker from '../../components/ColorSchemePicker.vue';
 import ColorSchemeGroup from '../../components/ColorSchemeGroup.vue';
 import IconPicker from '../../components/IconPicker.vue';
 import ImagePicker from '../../components/ImagePicker.vue';
+import VideoField from '../../components/VideoField.vue';
 import RichtextEditor from '../../components/RichtextEditor.vue';
 import GradientPicker from '../../components/GradientPicker.vue';
 import SpacingField from '../../components/SpacingField.vue';
@@ -154,6 +155,11 @@ function registerPropertyFields(ui: PluginContext['editor']['ui']) {
   ui.registerPropertyField({
     type: 'image',
     render: ImagePicker,
+  });
+
+  ui.registerPropertyField({
+    type: 'video',
+    render: VideoField,
   });
 
   ui.registerPropertyField({

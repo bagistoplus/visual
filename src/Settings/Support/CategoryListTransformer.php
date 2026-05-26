@@ -9,7 +9,7 @@ use Webkul\Category\Repositories\CategoryRepository;
 
 class CategoryListTransformer implements SettingTransformerInterface
 {
-    public function transform(mixed $value, mixed $property = null): mixed
+    public function transform(mixed $value, array $schema = []): mixed
     {
         if (! is_array($value) || empty($value)) {
             return collect();

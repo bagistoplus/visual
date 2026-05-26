@@ -6,7 +6,7 @@ use Illuminate\Support\Str;
 
 class FontTransformer
 {
-    public function __invoke(string|array|null $font = null)
+    public function __invoke(string|array|null $font = null, array $schema = [])
     {
         if (! $font) {
             return null;

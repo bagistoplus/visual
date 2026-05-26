@@ -7,7 +7,7 @@ use Webkul\CMS\Repositories\PageRepository;
 
 class CmsPageTransformer
 {
-    public function __invoke(?int $id)
+    public function __invoke(?int $id, array $schema = [])
     {
         $page = $id ? app(PageRepository::class)->find($id) : null;
 

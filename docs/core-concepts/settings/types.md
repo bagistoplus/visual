@@ -494,6 +494,69 @@ For new sections, prefer the image metadata `alt` value over creating a separate
 
 ---
 
+### Video
+
+Video input. Useful for hero videos, product demos, banners, and other media-rich sections.
+
+By default, video settings allow uploaded videos only:
+
+```php
+use BagistoPlus\Visual\Settings\Video;
+
+public static function settings(): array
+{
+    return [
+        Video::make('hero_video', 'Hero Video'),
+    ];
+}
+```
+
+To also allow external YouTube and Vimeo URLs:
+
+```php
+Video::make('hero_video', 'Hero Video')
+    ->acceptsExternal();
+```
+
+You can restrict or extend the accepted external sources. Custom sources use PHP regex patterns and must point to directly playable video URLs:
+
+```php
+Video::make('hero_video', 'Hero Video')
+    ->acceptsExternal([
+        'youtube',
+        [
+            'host' => 'cdn',
+            'label' => 'CDN video',
+            'pattern' => '#^https://cdn\.example\.com/.+\.(mp4|webm|ogg)(\?.*)?$#i',
+        ],
+    ]);
+```
+
+In Blade:
+
+```blade
+@if ($section->settings->hero_video)
+    {!! $section->settings->hero_video->render(['class' => 'w-full']) !!}
+@endif
+```
+
+<SettingPreview image="/setting-video.png" title="Video setting type preview"/>
+
+When accessing a video setting inside Blade, the value is a `VideoValue` object or `null`. It casts to the renderable video URL and exposes media information:
+
+```blade
+{{ $section->settings->hero_video->media_type }}
+{{ $section->settings->hero_video->host }}
+{{ $section->settings->hero_video->url }}
+{{ $section->settings->hero_video->original_url }}
+```
+
+Native uploaded videos expose a `sources` array with URL and MIME type. YouTube videos expose a `preview_image` value when a thumbnail can be derived.
+
+Video settings support string defaults for uploaded paths, YouTube/Vimeo URLs, and direct web-playable video URLs.
+
+---
+
 ### Category
 
 Dropdown selector input. Useful for allowing the merchant to select a category from the store catalog.

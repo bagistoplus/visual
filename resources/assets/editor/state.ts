@@ -1,4 +1,4 @@
-import { Category, Channel, CmsPage, Image, Product, Template, Theme } from './types';
+import { Category, Channel, CmsPage, Image, Product, Template, Theme, Video } from './types';
 
 export const VISUAL_EDITOR_STATE = Symbol('VISUAL_EDITOR_STATE');
 
@@ -25,6 +25,7 @@ export interface State {
     settings?: Record<string, any>;
   } | null;
   images: Image[];
+  videos: Video[];
   categories: Map<number, Category>;
   products: Map<number, Product>;
   cmsPages: Map<number, CmsPage>;
@@ -55,6 +56,7 @@ export function createState(defaults: Partial<State> = {}): State {
     templates,
     pageData: null,
     images: defaults.images || [],
+    videos: defaults.videos || [],
     categories: defaults.categories || new Map(),
     products: defaults.products || new Map(),
     cmsPages: defaults.cmsPages || new Map(),

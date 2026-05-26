@@ -7,7 +7,7 @@ use Webkul\Category\Repositories\CategoryRepository;
 
 class CategoryTransformer
 {
-    public function __invoke(?int $id)
+    public function __invoke(?int $id, array $schema = [])
     {
         $category = $id ? app(CategoryRepository::class)->find($id) : null;
 
