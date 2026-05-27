@@ -1258,12 +1258,18 @@ This generates CSS for typography styles:
 }
 ```
 
-And generates HTML to load fonts from Bunny Fonts:
+Render the font links for all typography presets once in your layout:
+
+```blade
+{{ $theme->settings->typography_presets->fontLinks() }}
+```
+
+This generates HTML to load the configured font families from Bunny Fonts. When the same font is used across multiple presets, all configured weights and styles are grouped into one request:
 
 ```html
 <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
-<link href="https://fonts.bunny.net/css?family=inter:" rel="preload" as="style" />
-<link href="https://fonts.bunny.net/css?family=inter:" rel="stylesheet" />
+<link href="https://fonts.bunny.net/css?family=inter:700,400" rel="preload" as="style" />
+<link href="https://fonts.bunny.net/css?family=inter:700,400" rel="stylesheet" />
 ```
 
 **With Custom Selectors:**
@@ -1451,7 +1457,7 @@ Generated responsive CSS:
 - Only one `TypographyPresets` setting should be defined per theme
 - Sections reference presets via the `Typography` setting, not directly
 - If no `TypographyPresets` is defined, `Typography` fields will not be functional
-- Font families are automatically loaded from Bunny Fonts using the `toHtml()` method
+- Load preset font families from Bunny Fonts with ` $theme->settings->typography_presets->fontLinks()`
 - Bunny Fonts is the only supported font provider. See the [Font](#font) setting type for more details on font loading
 
 ---

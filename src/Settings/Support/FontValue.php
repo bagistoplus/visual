@@ -44,8 +44,14 @@ class FontValue
             }
         }
 
-        $base .= "\n".'  <link href="https://fonts.bunny.net/css?family='.$this->slug.':'.implode(',', $query).'" rel="preload" as="style" />';
-        $base .= "\n".'  <link href="https://fonts.bunny.net/css?family='.$this->slug.':'.implode(',', $query).'" rel="stylesheet" />';
+        $href = 'https://fonts.bunny.net/css?family='.$this->slug;
+
+        if ($query !== []) {
+            $href .= ':'.implode(',', $query);
+        }
+
+        $base .= "\n".'  <link href="'.$href.'" rel="preload" as="style" />';
+        $base .= "\n".'  <link href="'.$href.'" rel="stylesheet" />';
 
         return new HtmlString($base);
     }

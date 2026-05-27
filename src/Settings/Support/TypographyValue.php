@@ -87,7 +87,7 @@ class TypographyValue
     {
         return [
             'name' => $this->name,
-            'fontFamily' => $this->fontFamily?->toArray(),
+            'fontFamily' => $this->fontFamily?->slug,
             'fontStyle' => $this->fontStyle,
             'fontWeight' => $this->fontWeight,
             'fontSize' => $this->fontSize,

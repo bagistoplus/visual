@@ -70,8 +70,7 @@ it('converts to array', function () {
     expect($array)
         ->toBeArray()
         ->toHaveKeys(['fontFamily', 'fontStyle', 'fontWeight', 'fontSize', 'lineHeight', 'letterSpacing', 'textTransform'])
-        ->and($array['fontFamily'])->toBeArray()
-        ->and($array['fontFamily']['name'])->toBe('Roboto')
+        ->and($array['fontFamily'])->toBe('roboto')
         ->and($array['fontWeight'])->toBe('400')
         ->and($array['fontSize'])->toBe('lg')
         ->and($array['lineHeight'])->toBe('relaxed')
@@ -333,7 +332,11 @@ it('transforms fontFamily to FontValue instance', function () {
         ->and($value->fontFamily->name)
         ->toBe('Inter')
         ->and($value->fontFamily->slug)
-        ->toBe('inter');
+        ->toBe('inter')
+        ->and($value->fontFamily->weights)
+        ->toBe([])
+        ->and($value->fontFamily->styles)
+        ->toBe([]);
 });
 
 it('handles null fontFamily', function () {
@@ -360,7 +363,20 @@ it('generates font loading HTML via toHtml()', function () {
 
     expect($html)
         ->toContain('fonts.bunny.net')
-        ->toContain('family=inter');
+        ->toContain('family=inter')
+        ->not->toContain('family=inter:400');
+});
+
+it('generates font loading HTML with configured weights and styles', function () {
+    $font = new FontValue(
+        slug: 'inter',
+        name: 'Inter',
+        weights: ['400', '700'],
+        styles: ['normal', 'italic'],
+    );
+
+    expect($font->toHtml()->toHtml())
+        ->toContain('family=inter:400,400i,700,700i');
 });
 
 it('returns empty string for toHtml() when no fontFamily', function () {
@@ -370,7 +386,7 @@ it('returns empty string for toHtml() when no fontFamily', function () {
     expect($html)->toBe('');
 });
 
-it('converts fontFamily to object in toArray()', function () {
+it('converts fontFamily to slug in toArray()', function () {
     $data = ['fontFamily' => 'Inter', 'fontSize' => 'base'];
 
     $value = new TypographyValue($data, 'test');
@@ -379,10 +395,6 @@ it('converts fontFamily to object in toArray()', function () {
     expect($array)
         ->toHaveKey('fontFamily')
         ->and($array['fontFamily'])
-        ->toBeArray()
-        ->and($array['fontFamily']['name'])
-        ->toBe('Inter')
-        ->and($array['fontFamily']['slug'])
         ->toBe('inter');
 });
 
