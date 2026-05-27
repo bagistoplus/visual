@@ -19,8 +19,8 @@ class FontTransformer
             ];
         }
 
-        $font['weights'] = $font['weights'] ?? ['400'];
-        $font['styles'] = $font['styles'] ?? ['normal'];
+        $font['weights'] = $font['weights'] ?? [];
+        $font['styles'] = $font['styles'] ?? [];
 
         return new FontValue(
             slug: $font['slug'],

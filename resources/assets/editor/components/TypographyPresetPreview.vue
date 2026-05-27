@@ -34,8 +34,12 @@ const displayLabel = computed(() => {
 const summary = computed(() => {
   const parts: string[] = [];
 
-  if (props.preset?.fontFamily?.name) {
-    parts.push(props.preset.fontFamily.name);
+  if (props.preset?.fontFamily) {
+    parts.push(
+      typeof props.preset.fontFamily === 'string'
+        ? toTitleCase(props.preset.fontFamily)
+        : props.preset.fontFamily.name
+    );
   }
 
   if (props.preset?.fontWeight) {

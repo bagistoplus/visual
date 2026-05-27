@@ -11,6 +11,7 @@ import {
   getTextTransformOptions,
   formatFontWeight,
 } from '../constants/typography';
+import { toTitleCase } from '../utils/strings';
 
 interface Font {
   slug: string;
@@ -21,7 +22,7 @@ interface Font {
 
 interface TypographyPresetValue {
   name?: string;
-  fontFamily: Font | null;
+  fontFamily: string | null;
   fontStyle: string;
   fontWeight: number;
   fontSize: string | Record<string, string>;
@@ -47,7 +48,7 @@ function handleDelete() {
 }
 
 const { t } = useI18n();
-const { findFont, isFetched } = useBunnyFonts();
+const { findFont } = useBunnyFonts();
 
 const fontSizeOptions = getFontSizeOptions(t);
 const lineHeightOptions = getLineHeightOptions(t);
@@ -96,7 +97,7 @@ const lineHeightField = {
 };
 
 const fontStyleField = computed(() => {
-  const styles = model.value.fontFamily?.styles || ['normal'];
+  const styles = selectedFont.value?.styles || ['normal'];
 
   return {
     id: 'fontStyle',
@@ -123,9 +124,24 @@ const textTransformField = {
   options: textTransformOptions,
 };
 
+const selectedFont = computed<Font | null>(() => {
+  const slug = model.value.fontFamily;
+
+  if (!slug) {
+    return null;
+  }
+
+  return findFont(slug) || {
+    slug,
+    name: toTitleCase(slug),
+    weights: [model.value.fontWeight],
+    styles: [model.value.fontStyle],
+  };
+});
+
 const fontPickerModel = computed({
   get: () => {
-    return model.value.fontFamily;
+    return selectedFont.value;
   },
   set: (value: Font | null) => {
     if (!value) {
@@ -145,12 +161,7 @@ const fontPickerModel = computed({
 
     model.value = {
       ...model.value,
-      fontFamily: {
-        slug: value.slug,
-        name: value.name,
-        weights: value.weights,
-        styles: value.styles,
-      },
+      fontFamily: value.slug,
       fontWeight: newWeight,
       fontStyle: newStyle,
     };
@@ -199,31 +210,8 @@ const fontWeightModel = computed({
   },
 });
 
-watch(
-  () => ({ fetched: isFetched.value, fontFamily: model.value.fontFamily }),
-  ({ fetched, fontFamily }) => {
-    if (!fetched || !fontFamily) {
-      return;
-    }
-
-    const slug = typeof fontFamily === 'string'
-      ? fontFamily
-      : fontFamily.slug;
-
-    const fullFont = findFont(slug);
-
-    if (fullFont && (typeof fontFamily === 'string' || !fontFamily.weights || fontFamily.weights.length === 1)) {
-      model.value = {
-        ...model.value,
-        fontFamily: fullFont,
-      };
-    }
-  },
-  { immediate: true, deep: true }
-);
-
 const fontWeightField = computed(() => {
-  const weights = model.value.fontFamily?.weights || [400];
+  const weights = selectedFont.value?.weights || [400];
 
   return {
     id: 'fontWeight',

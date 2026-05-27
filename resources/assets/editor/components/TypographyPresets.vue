@@ -6,18 +6,11 @@ import { toTitleCase } from '../utils/strings';
 import TypographyPresetEditor from './TypographyPresetEditor.vue';
 import TypographyPresetPreview from './TypographyPresetPreview.vue';
 
-interface Font {
-  slug: string;
-  name: string;
-  weights: string[];
-  styles: string[];
-}
-
 interface TypographyPresetData {
   name?: string;
-  fontFamily: Font | null;
+  fontFamily: string | null;
   fontStyle: string;
-  fontWeight: string;
+  fontWeight: number;
   fontSize: string | Record<string, string>;
   lineHeight: string | Record<string, string>;
   letterSpacing: string;
