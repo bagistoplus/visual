@@ -8,7 +8,7 @@ import { persistThemeSettings as persistThemeSettingsApi } from '../api';
 import { CRAFTILE_EDITOR } from '../craftile/plugin';
 
 const { t } = useI18n();
-const { theme } = useState();
+const { state, theme } = useState();
 const editor = inject<any>(CRAFTILE_EDITOR);
 
 // Accumulator for pending setting changes
@@ -50,6 +50,7 @@ const updateSetting = (id: string, value: any) => {
 
   // Update local state immediately for UI responsiveness
   theme.value.settings[id] = value;
+  state.haveEdits = true;
 
   // Accumulate the change in pending updates
   pendingUpdates.value[id] = value;
