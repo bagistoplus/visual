@@ -2,6 +2,14 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.15](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.14...v2.0.0-alpha.15) (2026-05-27)
+
+
+### Bug Fixes
+
+* improve typography font loading ([6e8a6b3](https://github.com/bagistoplus/visual/commit/6e8a6b30209c291979e5171221e5e79444c8ed90))
+* validate video provider hosts ([9bb9bee](https://github.com/bagistoplus/visual/commit/9bb9bee091153fb0dbb0b75269a41ed6d9f58d8e))
+
 # [2.0.0-alpha.14](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.13...v2.0.0-alpha.14) (2026-05-26)
 
 
