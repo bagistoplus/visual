@@ -418,6 +418,70 @@ In Blade:
 
 ---
 
+### Gradient
+
+Gradient picker input. Useful for hero backgrounds, banner overlays, cards, and other surfaces that need a configurable CSS gradient.
+
+```php
+use BagistoPlus\Visual\Settings\Gradient;
+
+public static function settings(): array
+{
+    return [
+        Gradient::make('background_gradient', 'Background Gradient')
+            ->default('linear-gradient(90deg, #000000ff 0%, #ffffffff 100%)'),
+    ];
+}
+```
+
+In Blade:
+
+```blade
+@if ($section->settings->background_gradient)
+    <div style="background-image: {{ $section->settings->background_gradient }};">
+        <!-- Content -->
+    </div>
+@endif
+```
+
+<SettingPreview image="/setting-gradient.png" title="Gradient setting type preview"/>
+
+#### Supported Formats
+
+The visual picker supports one non-repeating CSS gradient:
+
+- `linear-gradient(...)`
+- `radial-gradient(circle, ...)`
+
+Linear gradients support degree angles and simple direction syntax such as `to right`, `to top`, `to bottom`, `to left`, and clean diagonal directions like `to top right`.
+
+Radial gradients support `circle` only. Ellipse gradients, size keywords, and positioned radial gradients are not supported by the visual picker.
+
+Color stops can use concrete colors accepted by the editor color picker, including:
+
+- Hex colors, including alpha hex
+- `rgb(...)` and `rgba(...)`
+- `hsl(...)` and `hsla(...)`
+- Standard named colors
+
+Stop positions support percentages. Omitted stop positions are normalized using CSS interpolation behavior.
+
+Unsupported values include:
+
+- `var(...)`
+- `currentColor`
+- `color-mix(...)`
+- unresolved or advanced CSS color functions
+- color hints
+- multi-position stops
+- non-percentage stop positions
+
+::: info
+Theme defaults should use the supported subset when the value needs to remain editable in the visual picker.
+:::
+
+---
+
 ### Link
 
 URL input field. Useful for buttons, banners, images, and any elements that need a hyperlink.

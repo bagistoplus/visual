@@ -4,24 +4,14 @@ import { Popover } from '@ark-ui/vue/popover';
 import { Slider } from '@ark-ui/vue/slider';
 import ColorPicker from './ColorPicker.vue';
 import { Button } from '@craftile/editor/ui';
-
-interface GradientStop {
-  color: string; // hexa format (#rrggbbaa)
-  position: number; // 0-100
-}
-
-interface GradientValue {
-  type: 'linear' | 'radial';
-  angle?: number;
-  stops: GradientStop[];
-}
+import { gradientToCss, parseGradientCss, type GradientStop, type GradientValue } from '../utils/gradient';
 
 interface Props {
   field: PropertyField;
 }
 
 const props = defineProps<Props>();
-const modelValue = defineModel<GradientValue | null>();
+const modelValue = defineModel<string | null>();
 
 const defaultGradient: GradientValue = {
   type: 'linear',
@@ -32,10 +22,16 @@ const defaultGradient: GradientValue = {
   ],
 };
 
-const model = computed({
-  get: () => modelValue.value || defaultGradient,
+const currentGradient = ref<GradientValue | null>(null);
+const draftGradient = ref<GradientValue>(cloneGradient(defaultGradient));
+const cssInput = ref('');
+const cssError = ref('');
+let isSyncing = false;
+
+const model = computed<GradientValue>({
+  get: () => currentGradient.value ?? draftGradient.value,
   set: (value: GradientValue) => {
-    modelValue.value = value;
+    updateGradient(value);
   },
 });
 
@@ -44,36 +40,91 @@ function triggerUpdate() {
   model.value = { ...model.value };
 }
 
+function cloneGradient(value: GradientValue): GradientValue {
+  return {
+    type: value.type,
+    angle: value.angle,
+    stops: value.stops.map((stop) => ({ ...stop })),
+  };
+}
+
+function updateGradient(value: GradientValue) {
+  const nextGradient = cloneGradient(value);
+  currentGradient.value = nextGradient;
+  draftGradient.value = cloneGradient(nextGradient);
+  const css = gradientToCss(nextGradient);
+  modelValue.value = css;
+
+  isSyncing = true;
+  cssInput.value = css;
+  cssError.value = '';
+  isSyncing = false;
+}
+
+function onCssInput(event: Event) {
+  const value = (event.target as HTMLInputElement).value;
+  cssInput.value = value;
+
+  if (!value.trim()) {
+    currentGradient.value = null;
+    modelValue.value = null;
+    cssError.value = '';
+    selectedStopIndex.value = 0;
+    return;
+  }
+
+  const parsed = parseGradientCss(value);
+
+  if (!parsed) {
+    cssError.value = 'Enter a single linear-gradient(...) or radial-gradient(circle, ...) with positioned color stops.';
+    return;
+  }
+
+  cssError.value = '';
+  updateGradient(parsed);
+}
+
 const opened = ref(false);
 const selectedStopIndex = ref<number | null>(0);
 
-// Gradient preview style
-const gradientPreview = computed(() => {
-  if (!model.value) {
-    return 'linear-gradient(90deg, #000000 0%, #ffffff 100%)';
-  }
-  const { type, angle, stops } = model.value;
-  const stopsStr = stops
-    .map((s) => {
-      return `${hexaToRgba(s.color)} ${s.position}%`;
-    })
-    .join(', ');
+watch(
+  modelValue,
+  (value) => {
+    if (isSyncing) return;
 
-  if (type === 'linear') {
-    return `linear-gradient(${angle}deg, ${stopsStr})`;
-  }
+    cssInput.value = value ?? '';
 
-  return `radial-gradient(circle, ${stopsStr})`;
+    if (!value) {
+      currentGradient.value = null;
+      cssError.value = '';
+      selectedStopIndex.value = 0;
+      return;
+    }
+
+    const parsed = parseGradientCss(value);
+
+    if (parsed) {
+      currentGradient.value = parsed;
+      draftGradient.value = cloneGradient(parsed);
+      cssError.value = '';
+      if (selectedStopIndex.value === null || selectedStopIndex.value >= parsed.stops.length) {
+        selectedStopIndex.value = 0;
+      }
+      return;
+    }
+
+    currentGradient.value = null;
+    cssError.value = 'Enter a single linear-gradient(...) or radial-gradient(circle, ...) with positioned color stops.';
+    selectedStopIndex.value = 0;
+  },
+  { immediate: true }
+);
+
+const triggerPreview = computed(() => {
+  return currentGradient.value ? gradientToCss(currentGradient.value) : 'none';
 });
 
-function hexaToRgba(hexa: string): string {
-  const hex = hexa.replace('#', '');
-  const r = parseInt(hex.slice(0, 2), 16);
-  const g = parseInt(hex.slice(2, 4), 16);
-  const b = parseInt(hex.slice(4, 6), 16);
-  const a = hex.length === 8 ? parseInt(hex.slice(6, 8), 16) / 255 : 1;
-  return `rgba(${r}, ${g}, ${b}, ${a})`;
-}
+const editorPreview = computed(() => gradientToCss(model.value));
 
 function addStop(position: number) {
   // Find the two stops that this position is between
@@ -101,9 +152,8 @@ function addStop(position: number) {
 
   model.value.stops.push(newStop);
   model.value.stops.sort((a, b) => a.position - b.position);
-  triggerUpdate();
-
   selectedStopIndex.value = model.value.stops.indexOf(newStop);
+  triggerUpdate();
 }
 
 function interpolateColor(color1: string, color2: string, ratio: number): string {
@@ -128,21 +178,15 @@ function interpolateColor(color1: string, color2: string, ratio: number): string
 function removeStop(index: number) {
   if (model.value.stops.length <= 2) return;
 
-  // Remove the stop
   model.value.stops.splice(index, 1);
   triggerUpdate();
 
   // Always keep a stop selected
   if (selectedStopIndex.value === index) {
-    // Select the previous stop, or first stop if we removed the first one
     selectedStopIndex.value = Math.max(0, index - 1);
   } else if (selectedStopIndex.value !== null && selectedStopIndex.value > index) {
     selectedStopIndex.value--;
   }
-}
-
-function selectStop(index: number) {
-  selectedStopIndex.value = index;
 }
 
 // Drag state
@@ -210,7 +254,7 @@ function onStopMouseDown(event: MouseEvent, index: number) {
 }
 
 const selectedStop = computed(() => {
-  if (selectedStopIndex.value !== null && model.value) {
+  if (selectedStopIndex.value !== null) {
     return model.value.stops[selectedStopIndex.value];
   }
   return null;
@@ -220,13 +264,14 @@ watch(
   () => selectedStop.value?.position,
   (newPos) => {
     if (newPos !== undefined && selectedStopIndex.value !== null && model.value) {
-      // Re-sort stops when position changes
       const stop = model.value.stops[selectedStopIndex.value];
+
+      // Re-sort stops when position changes
       model.value.stops.sort((a, b) => a.position - b.position);
-      triggerUpdate();
 
       // Update selectedStopIndex to follow the moved stop
       selectedStopIndex.value = model.value.stops.findIndex((s) => s === stop);
+      triggerUpdate();
     }
   }
 );
@@ -247,11 +292,15 @@ watch(
       <Popover.Trigger as-child>
         <div
           class="h-12 rounded border border-zinc-300 cursor-pointer hover:border-zinc-400 transition-colors"
-          :style="{ background: gradientPreview }"
+          :style="{ background: triggerPreview }"
         />
       </Popover.Trigger>
+
       <!-- <Teleport to="body"> -->
-      <Popover.Positioner class="w-[var(--reference-width)] !min-w-auto">
+      <Popover.Positioner
+        placement="top"
+        class="w-[var(--available-width)] !min-w-auto"
+      >
         <Popover.Content class="border border-zinc-300 rounded shadow-lg z-50 bg-white w-full p-2">
           <div class="flex flex-col gap-4">
             <!-- Gradient Type Selector -->
@@ -273,7 +322,6 @@ watch(
             </div>
 
             <!-- Angle Slider (for linear only) -->
-
             <Slider.Root
               v-if="model.type === 'linear'"
               :min="0"
@@ -298,7 +346,7 @@ watch(
             <div class="relative">
               <div
                 class="h-4 rounded relative cursor-crosshair"
-                :style="{ background: gradientPreview }"
+                :style="{ background: editorPreview }"
                 @click="onGradientBarClick"
               >
                 <div
@@ -359,6 +407,22 @@ watch(
                   />
                 </Slider.Control>
               </Slider.Root>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <input
+                :value="cssInput"
+                type="text"
+                class="appearance-none rounded bg-none outline-0 relative w-full border px-3 h-10 min-w-10 focus:ring-2 focus:ring-blue-600"
+                :class="{ 'border-red-500 focus:ring-red-500': cssError }"
+                @input="onCssInput"
+              >
+              <p
+                v-if="cssError"
+                class="text-xs text-red-600"
+              >
+                {{ cssError }}
+              </p>
             </div>
 
             <!-- <div class="flex justify-between items-center pt-2 border-t">

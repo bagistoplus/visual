@@ -145,7 +145,6 @@ class CoreServiceProvider extends ServiceProvider
             'color_scheme' => SettingTransformers\ColorSchemeTransformer::class,
             'color_scheme_group' => SettingTransformers\ColorSchemeGroupTransformer::class,
             'color_token' => SettingTransformers\ColorTokenTransformer::class,
-            'gradient' => SettingTransformers\GradientTransformer::class,
             'spacing' => SettingTransformers\SpacingTransformer::class,
             'typography_presets' => SettingTransformers\TypographyPresetsTransformer::class,
             'typography' => SettingTransformers\TypographyTransformer::class,
