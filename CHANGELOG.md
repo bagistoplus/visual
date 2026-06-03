@@ -2,6 +2,23 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.16](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.15...v2.0.0-alpha.16) (2026-06-03)
+
+
+### Bug Fixes
+
+* enable publish after theme setting edits ([47e9d0f](https://github.com/bagistoplus/visual/commit/47e9d0f174d50e179f9a38ac4cb0357ff22c138d))
+* improve typography font loading ([2ed08b6](https://github.com/bagistoplus/visual/commit/2ed08b6a22a3657c883977c9f6fe0e26d51d6f5e))
+* repair package lock for alpha ([0f9380c](https://github.com/bagistoplus/visual/commit/0f9380cf7408a017b5f9738b85f8884c0381d71b))
+* validate video provider hosts ([920874b](https://github.com/bagistoplus/visual/commit/920874b845839da2cb061b85c801f7f14765af45))
+
+
+### Features
+
+* add color token setting ([8787d21](https://github.com/bagistoplus/visual/commit/8787d21f0c4e5700d3609504ddf18e8009c5e529))
+* add css gradient setting support ([081e986](https://github.com/bagistoplus/visual/commit/081e9862bb9d42c708ebfd876d991536d15d33e6))
+* add video setting type ([db28f1a](https://github.com/bagistoplus/visual/commit/db28f1ac22f478916859ac01d1a7fc4bd4241852))
+
 # [2.0.0-alpha.15](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.14...v2.0.0-alpha.15) (2026-05-27)
 
 
