@@ -1,0 +1,10 @@
+<?php
+
+namespace Webkul\Core;
+
+use Webkul\Core\Models\Channel;
+
+class Core
+{
+    public function getCurrentChannel(?string $hostname = null): Channel;
+}

@@ -3,6 +3,7 @@
 namespace Webkul\Core\Models;
 
 /**
+ * @property int $id
  * @property string $code
  * @property \Webkul\Core\Models\Locale $default_locale
  */

@@ -21,11 +21,15 @@ parameters:
     treatPhpDocTypesAsCertain: false
     universalObjectCratesClasses:
         - BagistoPlus\Visual\Sections\Concerns\SettingsValues
+        - Webkul\Core\Contracts\Channel
     stubFiles:
         - stubs/Webkul/Theme/Theme.stub
         - stubs/Webkul/Theme/Themes.stub
+        - stubs/Webkul/Core/Core.stub
+        - stubs/Webkul/Core/Contracts/Channel.stub
         - stubs/Webkul/Core/Models/Locale.stub
         - stubs/Webkul/Core/Models/Channel.stub
+        - stubs/Webkul/Product/Repositories/ProductRepository.stub
     ignoreErrors:
         -
             message: '#Parameter \#1 \$column of method #'

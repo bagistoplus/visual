@@ -1,0 +1,9 @@
+<?php
+
+namespace Webkul\Core\Contracts;
+
+/**
+ * @mixin \Webkul\Core\Models\Channel
+ * @property int $id
+ */
+interface Channel {}

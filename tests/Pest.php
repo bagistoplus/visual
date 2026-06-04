@@ -31,6 +31,19 @@ if (! function_exists('core')) {
             {
                 return 'en';
             }
+
+            public function getConfigData(string $key): mixed
+            {
+                return match ($key) {
+                    'catalog.products.search.engine' => 'database',
+                    default => null,
+                };
+            }
+
+            public function getCurrentChannel(): object
+            {
+                return (object) ['id' => 1];
+            }
         };
     }
 }

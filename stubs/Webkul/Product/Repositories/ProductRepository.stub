@@ -1,0 +1,14 @@
+<?php
+
+namespace Webkul\Product\Repositories;
+
+use Illuminate\Pagination\LengthAwarePaginator;
+
+class ProductRepository
+{
+    /**
+     * @param  array<string, mixed>  $params
+     * @return LengthAwarePaginator<int, mixed>
+     */
+    public function getAll(array $params = []): LengthAwarePaginator;
+}
