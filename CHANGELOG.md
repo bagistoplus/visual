@@ -2,6 +2,13 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.17](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.16...v2.0.0-alpha.17) (2026-06-04)
+
+
+### Bug Fixes
+
+* fetch products via repository for Bagisto 2.4.5 ([dc6f574](https://github.com/bagistoplus/visual/commit/dc6f574543dc45a5dfc137f8e26b6beefeb54932))
+
 # [2.0.0-alpha.16](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.15...v2.0.0-alpha.16) (2026-06-03)
 
 
