@@ -9,6 +9,7 @@ use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Middlewares\DisableResponseCacheInDesignMode;
+use BagistoPlus\Visual\Middlewares\RegisterVisualSchemas;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
 use BagistoPlus\Visual\Models\VisualTemplateAssignment;
 use BagistoPlus\Visual\Settings\Support as SettingTransformers;
@@ -18,6 +19,7 @@ use BagistoPlus\Visual\Support\TemplateAssignment;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
 use BagistoPlus\Visual\Support\TemplateNormalizer;
 use BagistoPlus\Visual\Support\UrlGenerator;
+use BagistoPlus\Visual\Support\VisualDiscoveryFilter;
 use BagistoPlus\Visual\TemplateRegistrar;
 use BagistoPlus\Visual\ThemePathsResolver;
 use BagistoPlus\Visual\ThemeSettingsLoader;
@@ -63,6 +65,7 @@ class CoreServiceProvider extends ServiceProvider
         $this->bootViewsAndTranslations();
         $this->bootMiddlewares();
         $this->bootVisualSections();
+        $this->bootConsoleSchemaRegistration();
         $this->bootBladeIcons();
         $this->bootMorphMap();
 
@@ -107,6 +110,10 @@ class CoreServiceProvider extends ServiceProvider
         });
 
         Craftile::normalizeTemplateUsing(new TemplateNormalizer);
+
+        Craftile::filterDiscoveredSchemasUsing(
+            fn (array $entry, string $type) => app(VisualDiscoveryFilter::class)->allows($entry, $type)
+        );
 
         Craftile::checkIfBlockCanRenderUsing(function (BlockData $blockData) {
             if ($blockData->disabled) {
@@ -166,7 +173,7 @@ class CoreServiceProvider extends ServiceProvider
     protected function bootShopRoutes(): void
     {
         Route::prefix('/visual/template-preview')
-            ->middleware(['web', 'locale', 'theme', 'currency'])
+            ->middleware(['web', 'shop'])
             ->group(__DIR__.'/../../routes/shop.php');
     }
 
@@ -184,13 +191,24 @@ class CoreServiceProvider extends ServiceProvider
         /** @var Kernel $kernel */
         $kernel = $this->app->make(HttpKernelContract::class);
         $kernel->prependMiddleware(DisableResponseCacheInDesignMode::class);
+
+        $this->app->booted(function (Application $app) {
+            $app->get('router')->pushMiddlewareToGroup('shop', RegisterVisualSchemas::class);
+        });
     }
 
     protected function bootVisualSections(): void
     {
-        $this->app->booted(function () {
-            Visual::discoverSectionsIn(app_path(('Visual/Sections')), 'App\\Visual\\Sections');
-            Visual::discoverBlocksIn(app_path(('Visual/Blocks')), 'App\\Visual\\Blocks');
+        Visual::discoverSectionsIn(app_path(('Visual/Sections')), 'App\\Visual\\Sections');
+        Visual::discoverBlocksIn(app_path(('Visual/Blocks')), 'App\\Visual\\Blocks');
+    }
+
+    protected function bootConsoleSchemaRegistration(): void
+    {
+        $this->app->booted(function (Application $app) {
+            if ($app->runningInConsole()) {
+                Craftile::registerDiscoveredSchemas(fn (): bool => true);
+            }
         });
     }
 
@@ -301,6 +319,7 @@ class CoreServiceProvider extends ServiceProvider
         $this->app->singleton(TemplateDiscovery::class);
         $this->app->singleton(ChannelThemeResolver::class);
         $this->app->singleton(TemplateAssignment::class);
+        $this->app->singleton(VisualDiscoveryFilter::class);
     }
 
     protected function registerCustomUrlGenerator(): void

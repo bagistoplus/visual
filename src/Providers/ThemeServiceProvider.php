@@ -71,13 +71,11 @@ abstract class ThemeServiceProvider extends ServiceProvider
     protected function bootSections()
     {
         if ($this->app->runningInConsole()) {
-            $this->app->booted(function () {
-                $theme = $this->loadThemeConfig();
-                $namespace = $this->getThemeNamespace();
-                Visual::discoverSectionsIn("{$theme['base_path']}/src/Sections", "{$namespace}\\Sections");
-                Visual::discoverBlocksIn("{$theme['base_path']}/src/Blocks", "{$namespace}\\Blocks");
-                Visual::discoverPresetsIn("{$theme['base_path']}/src/Presets", "{$namespace}\\Presets");
-            });
+            $theme = $this->loadThemeConfig();
+            $namespace = $this->getThemeNamespace();
+            Visual::discoverSectionsIn("{$theme['base_path']}/src/Sections", "{$namespace}\\Sections");
+            Visual::discoverBlocksIn("{$theme['base_path']}/src/Blocks", "{$namespace}\\Blocks");
+            Visual::discoverPresetsIn("{$theme['base_path']}/src/Presets", "{$namespace}\\Presets");
 
             return;
         }

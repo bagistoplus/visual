@@ -24,6 +24,7 @@ use BagistoPlus\Visual\ThemeSettingsLoader;
 use BladeUI\Icons\Factory;
 use BladeUI\Icons\IconsManifest;
 use Craftile\Laravel\BlockSchemaRegistry;
+use Craftile\Laravel\Facades\Craftile;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
@@ -51,6 +52,8 @@ class ThemeEditorController extends Controller
 
     public function index(string $themeCode)
     {
+        Craftile::registerDiscoveredSchemas();
+
         return view()->make('visual::admin.editor.index', [
             'config' => [
                 'baseUrl' => parse_url(route('visual.admin.editor', ['theme' => $themeCode]), PHP_URL_PATH),

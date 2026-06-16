@@ -28,7 +28,7 @@
     "bagistoplus/couleur": "^0.2.0",
     "blade-ui-kit/blade-heroicons": "^2.4",
     "blade-ui-kit/blade-icons": "^1.7",
-    "craftile/laravel": "^0.7",
+    "craftile/laravel": "^0.9.1",
     "illuminate/contracts": "^11.0||^12.0",
     "mallardduck/blade-lucide-icons": "^1.23",
     "mews/purifier": "^3.4",
