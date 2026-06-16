@@ -102,6 +102,58 @@ return [
     'Font Picker' => 'फ़ॉन्ट चयनकर्ता',
     'Icon Picker' => 'आइकन चयनकर्ता',
 
+    'Add preset' => 'प्रीसेट जोड़ें',
+    'Delete preset' => 'प्रीसेट हटाएं',
+    'Delete Preset' => 'प्रीसेट हटाएं',
+    'Editing' => 'संपादन',
+    'Editing :name' => ':name का संपादन',
+    'Configure typography' => 'टाइपोग्राफी कॉन्फ़िगर करें',
+    'Select a typography preset' => 'टाइपोग्राफी प्रीसेट चुनें',
+    'No typography presets defined in theme settings.' => 'थीम सेटिंग्स में कोई टाइपोग्राफी प्रीसेट परिभाषित नहीं है।',
+
+    'Font Family' => 'फ़ॉन्ट परिवार',
+    'Font Style' => 'फ़ॉन्ट शैली',
+    'Font Weight' => 'फ़ॉन्ट वजन',
+    'Font Size' => 'फ़ॉन्ट आकार',
+    'Line Height' => 'लाइन ऊंचाई',
+    'Letter Spacing' => 'अक्षर अंतराल',
+    'Text Transform' => 'टेक्स्ट रूपांतरण',
+
+    'Click to rename' => 'नाम बदलने के लिए क्लिक करें',
+    'Theme preset (cannot be renamed)' => 'थीम प्रीसेट (नाम नहीं बदला जा सकता)',
+
+    'Extra Small' => 'बहुत छोटा',
+    'Small' => 'छोटा',
+    'Base' => 'बेस',
+    'Large' => 'बड़ा',
+    'Extra Large' => 'बहुत बड़ा',
+    '2XL' => '2XL',
+    '3XL' => '3XL',
+    '4XL' => '4XL',
+    '5XL' => '5XL',
+    '6XL' => '6XL',
+    '7XL' => '7XL',
+    '8XL' => '8XL',
+    '9XL' => '9XL',
+
+    'None' => 'कोई नहीं',
+    'Tight' => 'टाइट',
+    'Snug' => 'स्नग',
+    'Normal' => 'सामान्य',
+    'Relaxed' => 'आरामदायक',
+    'Loose' => 'ढीला',
+
+    'Tighter' => 'अधिक टाइट',
+    'Wide' => 'चौड़ा',
+    'Wider' => 'अधिक चौड़ा',
+    'Widest' => 'सबसे चौड़ा',
+
+    'Italic' => 'इटैलिक',
+
+    'Capitalize' => 'कैपिटलाइज़',
+    'Uppercase' => 'अपरकेस',
+    'Lowercase' => 'लोअरकेस',
+
     'templates' => [
         'homepage' => 'होम पेज',
         'category' => 'श्रेणी पृष्ठ',

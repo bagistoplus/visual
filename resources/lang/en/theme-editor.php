@@ -107,6 +107,7 @@ return [
     'Delete preset' => 'Delete preset',
     'Delete Preset' => 'Delete Preset',
     'Editing' => 'Editing',
+    'Editing :name' => 'Editing :name',
     'Configure typography' => 'Configure typography',
     'Select a typography preset' => 'Select a typography preset',
     'No typography presets defined in theme settings.' => 'No typography presets defined in theme settings.',

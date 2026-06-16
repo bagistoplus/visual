@@ -102,6 +102,58 @@ return [
     'Font Picker' => 'Sélecteur de police',
     'Icon Picker' => 'Sélecteur d\'icône',
 
+    'Add preset' => 'Ajouter un préréglage',
+    'Delete preset' => 'Supprimer le préréglage',
+    'Delete Preset' => 'Supprimer le préréglage',
+    'Editing' => 'Édition',
+    'Editing :name' => 'Édition de :name',
+    'Configure typography' => 'Configurer la typographie',
+    'Select a typography preset' => 'Sélectionner un préréglage de typographie',
+    'No typography presets defined in theme settings.' => 'Aucun préréglage de typographie n\'est défini dans les paramètres du thème.',
+
+    'Font Family' => 'Famille de police',
+    'Font Style' => 'Style de police',
+    'Font Weight' => 'Graisse de police',
+    'Font Size' => 'Taille de police',
+    'Line Height' => 'Hauteur de ligne',
+    'Letter Spacing' => 'Espacement des lettres',
+    'Text Transform' => 'Transformation du texte',
+
+    'Click to rename' => 'Cliquer pour renommer',
+    'Theme preset (cannot be renamed)' => 'Préréglage du thème (ne peut pas être renommé)',
+
+    'Extra Small' => 'Très petit',
+    'Small' => 'Petit',
+    'Base' => 'Base',
+    'Large' => 'Grand',
+    'Extra Large' => 'Très grand',
+    '2XL' => '2XL',
+    '3XL' => '3XL',
+    '4XL' => '4XL',
+    '5XL' => '5XL',
+    '6XL' => '6XL',
+    '7XL' => '7XL',
+    '8XL' => '8XL',
+    '9XL' => '9XL',
+
+    'None' => 'Aucun',
+    'Tight' => 'Serré',
+    'Snug' => 'Ajusté',
+    'Normal' => 'Normal',
+    'Relaxed' => 'Détendu',
+    'Loose' => 'Lâche',
+
+    'Tighter' => 'Plus serré',
+    'Wide' => 'Large',
+    'Wider' => 'Plus large',
+    'Widest' => 'Le plus large',
+
+    'Italic' => 'Italique',
+
+    'Capitalize' => 'Capitaliser',
+    'Uppercase' => 'Majuscules',
+    'Lowercase' => 'Minuscules',
+
     'templates' => [
         'homepage' => 'Page d\'accueil',
         'category' => 'Page de catégorie',

@@ -102,6 +102,58 @@ return [
     'Font Picker' => 'منتقي الخط',
     'Icon Picker' => 'منتقي الأيقونة',
 
+    'Add preset' => 'إضافة إعداد مسبق',
+    'Delete preset' => 'حذف الإعداد المسبق',
+    'Delete Preset' => 'حذف الإعداد المسبق',
+    'Editing' => 'جار التحرير',
+    'Editing :name' => 'جار تحرير :name',
+    'Configure typography' => 'تكوين الطباعة',
+    'Select a typography preset' => 'حدد إعداد طباعة مسبق',
+    'No typography presets defined in theme settings.' => 'لا توجد إعدادات طباعة مسبقة معرفة في إعدادات السمة.',
+
+    'Font Family' => 'عائلة الخط',
+    'Font Style' => 'نمط الخط',
+    'Font Weight' => 'وزن الخط',
+    'Font Size' => 'حجم الخط',
+    'Line Height' => 'ارتفاع السطر',
+    'Letter Spacing' => 'تباعد الأحرف',
+    'Text Transform' => 'تحويل النص',
+
+    'Click to rename' => 'انقر لإعادة التسمية',
+    'Theme preset (cannot be renamed)' => 'إعداد السمة المسبق (لا يمكن إعادة تسميته)',
+
+    'Extra Small' => 'صغير جدا',
+    'Small' => 'صغير',
+    'Base' => 'أساسي',
+    'Large' => 'كبير',
+    'Extra Large' => 'كبير جدا',
+    '2XL' => '2XL',
+    '3XL' => '3XL',
+    '4XL' => '4XL',
+    '5XL' => '5XL',
+    '6XL' => '6XL',
+    '7XL' => '7XL',
+    '8XL' => '8XL',
+    '9XL' => '9XL',
+
+    'None' => 'بدون',
+    'Tight' => 'ضيق',
+    'Snug' => 'محكم',
+    'Normal' => 'عادي',
+    'Relaxed' => 'مريح',
+    'Loose' => 'واسع',
+
+    'Tighter' => 'أضيق',
+    'Wide' => 'واسع',
+    'Wider' => 'أوسع',
+    'Widest' => 'الأوسع',
+
+    'Italic' => 'مائل',
+
+    'Capitalize' => 'تكبير أول حرف',
+    'Uppercase' => 'أحرف كبيرة',
+    'Lowercase' => 'أحرف صغيرة',
+
     'templates' => [
         'homepage' => 'الصفحة الرئيسية',
         'category' => 'صفحة الفئة',

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PropertyField } from '@craftile/types';
 import { Dialog } from '@ark-ui/vue/dialog';
+import useI18n from '../composables/i18n';
 import { ColorSchemeDefintion } from '../types';
 
 interface Props {
@@ -11,8 +12,12 @@ const props = defineProps<Props>();
 const model = defineModel<Record<string, { id: string; tokens: ColorSchemeDefintion } | ColorSchemeDefintion>>();
 const emit = defineEmits(['update:modelValue'])
 
+const { t } = useI18n();
+
 const editingScheme = ref<string | null>(null);
 const editModalOpen = ref(false);
+
+const editingSchemeDisplayName = computed(() => editingScheme.value?.replace('-', ' ') ?? '');
 
 const editingSchemeValue = computed({
   get() {
@@ -89,7 +94,9 @@ function onAddScheme() {
       <Dialog.Positioner class="flex fixed z-50 top-14 left-14 bottom-0 w-75 items-center justify-center">
         <Dialog.Content class="bg-white shadow flex flex-col w-full h-full overflow-hidden">
           <header class="flex-none h-12 border-b border-neutral-200 flex gap-3 px-4 items-center justify-between">
-            <Dialog.Title class="capitalize">Editing {{ editingScheme?.replace('-', ' ') }}</Dialog.Title>
+            <Dialog.Title>
+              {{ t('Editing :name', { name: editingSchemeDisplayName }) }}
+            </Dialog.Title>
             <Dialog.CloseTrigger class="cursor-pointer rounded-lg p-0.5 text-neutral-700 hover:bg-neutral-300">
               <i-heroicons-x-mark class="w-5 h-5" />
             </Dialog.CloseTrigger>

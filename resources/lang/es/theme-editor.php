@@ -102,6 +102,58 @@ return [
     'Font Picker' => 'Selector de fuente',
     'Icon Picker' => 'Selector de icono',
 
+    'Add preset' => 'Agregar preajuste',
+    'Delete preset' => 'Eliminar preajuste',
+    'Delete Preset' => 'Eliminar preajuste',
+    'Editing' => 'Editando',
+    'Editing :name' => 'Editando :name',
+    'Configure typography' => 'Configurar tipografía',
+    'Select a typography preset' => 'Seleccione un preajuste de tipografía',
+    'No typography presets defined in theme settings.' => 'No hay preajustes de tipografía definidos en la configuración del tema.',
+
+    'Font Family' => 'Familia de fuente',
+    'Font Style' => 'Estilo de fuente',
+    'Font Weight' => 'Peso de fuente',
+    'Font Size' => 'Tamaño de fuente',
+    'Line Height' => 'Altura de línea',
+    'Letter Spacing' => 'Espaciado entre letras',
+    'Text Transform' => 'Transformación de texto',
+
+    'Click to rename' => 'Haga clic para renombrar',
+    'Theme preset (cannot be renamed)' => 'Preajuste del tema (no se puede renombrar)',
+
+    'Extra Small' => 'Extra pequeño',
+    'Small' => 'Pequeño',
+    'Base' => 'Base',
+    'Large' => 'Grande',
+    'Extra Large' => 'Extra grande',
+    '2XL' => '2XL',
+    '3XL' => '3XL',
+    '4XL' => '4XL',
+    '5XL' => '5XL',
+    '6XL' => '6XL',
+    '7XL' => '7XL',
+    '8XL' => '8XL',
+    '9XL' => '9XL',
+
+    'None' => 'Ninguno',
+    'Tight' => 'Compacto',
+    'Snug' => 'Ajustado',
+    'Normal' => 'Normal',
+    'Relaxed' => 'Relajado',
+    'Loose' => 'Amplio',
+
+    'Tighter' => 'Más compacto',
+    'Wide' => 'Amplio',
+    'Wider' => 'Más amplio',
+    'Widest' => 'Máximo',
+
+    'Italic' => 'Cursiva',
+
+    'Capitalize' => 'Capitalizar',
+    'Uppercase' => 'Mayúsculas',
+    'Lowercase' => 'Minúsculas',
+
     'templates' => [
         'homepage' => 'Página de inicio',
         'category' => 'Página de categoría',

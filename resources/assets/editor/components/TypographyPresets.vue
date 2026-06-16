@@ -199,17 +199,18 @@ const canDeleteCurrentPreset = computed(() => {
         <Dialog.Content class="bg-white shadow flex flex-col w-full h-full overflow-hidden">
           <header class="flex-none h-12 border-b border-neutral-200 flex gap-3 px-4 items-center justify-between">
             <div class="flex items-center gap-2 flex-1 min-w-0">
-              <span class="text-sm text-gray-600 flex-none">{{ t('Editing') }}</span>
+              <template v-if="isEditingName">
+                <span class="text-sm text-gray-600 flex-none">{{ t('Editing') }}</span>
 
-              <input
-                v-if="isEditingName"
-                v-model="editingNameValue"
-                type="text"
-                maxlength="50"
-                class="preset-name-input flex-1 min-w-0 px-2 py-1 text-sm font-medium border border-blue-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                @blur="saveEditingName"
-                @keydown="handleNameKeydown"
-              />
+                <input
+                  v-model="editingNameValue"
+                  type="text"
+                  maxlength="50"
+                  class="preset-name-input flex-1 min-w-0 px-2 py-1 text-sm font-medium border border-blue-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  @blur="saveEditingName"
+                  @keydown="handleNameKeydown"
+                />
+              </template>
 
               <button
                 v-else
@@ -219,7 +220,7 @@ const canDeleteCurrentPreset = computed(() => {
                 :title="canRenameCurrentPreset ? t('Click to rename') : t('Theme preset (cannot be renamed)')"
                 @click="startEditingName"
               >
-                {{ editingPresetDisplayName }}
+                {{ t('Editing :name', { name: editingPresetDisplayName }) }}
                 <i-heroicons-pencil
                   v-if="canRenameCurrentPreset"
                   class="inline-block w-3 h-3 ml-1 text-gray-400"
