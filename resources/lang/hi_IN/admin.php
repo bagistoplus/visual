@@ -10,6 +10,8 @@ return [
         'title' => 'थीम',
         'customize' => 'अनुकूलित करें',
         'preview' => 'पूर्वावलोकन',
+        'made-by' => 'निर्माता:',
+        'view-documentation' => 'दस्तावेज़ देखें',
         'no-themes' => 'कोई थीम नहीं मिली',
     ],
 

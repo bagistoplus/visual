@@ -10,6 +10,8 @@ return [
         'title' => 'السمات',
         'customize' => 'تخصيص',
         'preview' => 'معاينة',
+        'made-by' => 'بواسطة:',
+        'view-documentation' => 'عرض التوثيق',
         'no-themes' => 'لم يتم العثور على سمات',
     ],
 

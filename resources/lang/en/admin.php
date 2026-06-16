@@ -10,6 +10,8 @@ return [
         'title' => 'Themes',
         'customize' => 'Customize',
         'preview' => 'Preview',
+        'made-by' => 'Made by:',
+        'view-documentation' => 'View Documentation',
         'no-themes' => 'No themes found',
     ],
 

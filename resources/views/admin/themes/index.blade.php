@@ -14,7 +14,7 @@
       <div
         class="relative mb-6 overflow-hidden rounded border border-gray-200 bg-white sm:min-h-[16rem] sm:px-8 sm:pb-8 md:pt-8 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
       >
-        <div class="absolute inset-y-0 right-0 h-full w-[360px] bg-cover bg-no-repeat max-sm:hidden"
+        <div class="absolute inset-y-0 end-0 h-full w-[360px] bg-cover bg-no-repeat max-sm:hidden"
           style="background-image: url({{ $theme->previewImage ? asset($theme->previewImage) : bagisto_asset('images/default_theme_preview.png', 'visual_admin') }})"
         >
         </div>
@@ -22,12 +22,12 @@
           <img src="{{ $theme->previewImage ? asset($theme->previewImage) : bagisto_asset('images/default_theme_preview.png', 'visual_admin') }}">
         </div>
 
-        <div class="relative w-full max-w-xs max-sm:p-4">
+        <div class="relative me-auto w-full max-w-xs max-sm:p-4">
           <h3 class="text-2xl font-semibold">{{ $theme->name }}</h3>
 
           <div class="mt-2">
             @if ($theme->author)
-              <p><span class="font-semibold">Made by:</span> {{ $theme->author }}</p>
+              <p><span class="font-semibold">@lang('visual::admin.themes.made-by')</span> {{ $theme->author }}</p>
             @endif
             @if ($theme->documentationUrl)
               <a
@@ -35,11 +35,11 @@
                 target="_blank"
                 class="text-blue-500"
               >
-                View Documentation
+                @lang('visual::admin.themes.view-documentation')
               </a>
             @endif
           </div>
-          <div class="mt-4 space-x-4">
+          <div class="mt-4 flex flex-wrap gap-4">
             <a href="{{ route('visual.admin.editor', ['theme' => $theme->code]) }}" class="rounded bg-blue-600 px-5 py-2 text-white">
               {{ __('visual::admin.themes.customize') }}
             </a>

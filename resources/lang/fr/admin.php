@@ -10,6 +10,8 @@ return [
         'title' => 'Thèmes',
         'customize' => 'Personnaliser',
         'preview' => 'Aperçu',
+        'made-by' => 'Créé par :',
+        'view-documentation' => 'Voir la documentation',
         'no-themes' => 'Aucun thème disponible',
     ],
 
