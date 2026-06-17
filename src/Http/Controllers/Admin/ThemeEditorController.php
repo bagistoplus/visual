@@ -18,6 +18,7 @@ use BagistoPlus\Visual\Settings\Support\ImageTransformer;
 use BagistoPlus\Visual\Settings\Support\VideoTransformer;
 use BagistoPlus\Visual\Support\ChannelThemeResolver;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
+use BagistoPlus\Visual\TemplateRegistrar;
 use BagistoPlus\Visual\Theme\Theme;
 use BagistoPlus\Visual\ThemeEditor;
 use BagistoPlus\Visual\ThemeSettingsLoader;
@@ -47,12 +48,14 @@ class ThemeEditorController extends Controller
         protected ThemeSettingsLoader $themeSettingsLoader,
         protected TemplateDiscovery $templateDiscovery,
         protected CreateTemplate $createTemplate,
-        protected ChannelThemeResolver $channelThemeResolver
+        protected ChannelThemeResolver $channelThemeResolver,
+        protected TemplateRegistrar $templateRegistrar
     ) {}
 
     public function index(string $themeCode)
     {
         Craftile::registerDiscoveredSchemas();
+        $this->templateRegistrar->registerTemplates();
 
         return view()->make('visual::admin.editor.index', [
             'config' => [

@@ -1,8 +1,10 @@
 <?php
 
+use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Middlewares\DisableResponseCacheInDesignMode;
 use BagistoPlus\Visual\Middlewares\RegisterVisualSchemas;
 use BagistoPlus\Visual\Providers\CoreServiceProvider;
+use BagistoPlus\Visual\TemplateRegistrar;
 use Craftile\Laravel\Facades\Craftile;
 use Illuminate\Contracts\Http\Kernel;
 
@@ -35,4 +37,17 @@ it('registers discovered schemas after the app boots in console', function () {
     Craftile::shouldHaveReceived('registerDiscoveredSchemas')
         ->with(Mockery::on(fn ($filter) => is_callable($filter) && $filter([], 'block') === true))
         ->once();
+});
+
+it('does not register editor templates during application boot', function () {
+    ThemeEditor::shouldReceive('active')->andReturnTrue();
+
+    $registrar = Mockery::mock(TemplateRegistrar::class);
+    $registrar->shouldNotReceive('registerTemplates');
+    $this->app->instance(TemplateRegistrar::class, $registrar);
+
+    $provider = new CoreServiceProvider($this->app);
+    $method = new ReflectionMethod($provider, 'bootTemplates');
+    $method->setAccessible(true);
+    $method->invoke($provider);
 });
