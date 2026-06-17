@@ -16,7 +16,10 @@ class CategoryListTransformer implements SettingTransformerInterface
         }
 
         $categories = app(CategoryRepository::class)
-            ->findWhereIn('id', $value)
+            ->getModel()
+            ->whereIn('id', $value)
+            ->withCount('products')
+            ->get()
             ->keyBy('id');
 
         $inDesignMode = ThemeEditor::inDesignMode();
