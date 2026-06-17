@@ -41,6 +41,8 @@ describe('state management', () => {
     it('should create state with custom defaults', () => {
       const customDefaults = {
         haveEdits: true,
+        channel: 'mobile',
+        locale: 'fr',
         templates: [{ template: 'home', name: 'Home' }] as any,
       };
 
@@ -48,8 +50,8 @@ describe('state management', () => {
 
       expect(state.haveEdits).toBe(true);
       expect(state.templates).toHaveLength(1);
-      expect(state.channel).toBe('default');
-      expect(state.locale).toBe('en');
+      expect(state.channel).toBe('mobile');
+      expect(state.locale).toBe('fr');
     });
 
     it('should initialize Maps correctly', () => {

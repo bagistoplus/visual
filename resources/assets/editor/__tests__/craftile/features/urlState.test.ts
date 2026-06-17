@@ -19,8 +19,11 @@ const channels = [
   {
     code: 'mobile',
     name: 'Mobile',
-    default_locale: 'en',
-    locales: [{ code: 'en', name: 'English', logo_url: '' }],
+    default_locale: 'fr',
+    locales: [
+      { code: 'en', name: 'English', logo_url: '' },
+      { code: 'fr', name: 'French', logo_url: '' },
+    ],
   },
 ];
 
@@ -47,6 +50,12 @@ describe('editor url state', () => {
     const locale = initialLocaleFromUrl(channels, channel, 'en');
 
     expect(channel).toBe('mobile');
+    expect(locale).toBe('fr');
+  });
+
+  it('falls back to the explicit fallback when the channel is unavailable', () => {
+    const locale = initialLocaleFromUrl(channels, 'unknown', 'en');
+
     expect(locale).toBe('en');
   });
 
@@ -66,9 +75,9 @@ describe('editor url state', () => {
     expect(resolvePreviewUrl('http://localhost:3000/cms/default')).toBe('http://localhost:3000/cms/default');
   });
 
-  it('loads custom page templates with preview override and _template', () => {
+  it('loads custom page templates with preview override, editor state, and _template', () => {
     (window as any).location = new URL(
-      'http://localhost:3000/admin/visual/editor/fake-theme?template=page.landing&previewUrl=%2Fcms%2Fabout-us'
+      'http://localhost:3000/admin/visual/editor/fake-theme?template=page.landing&previewUrl=%2Fcms%2Fabout-us&channel=default&locale=fr'
     );
 
     const loadUrl = vi.fn();
@@ -77,12 +86,13 @@ describe('editor url state', () => {
     loadTemplateFromUrl(
       editor,
       {
-        channel: 'default',
-        locale: 'en',
+        channel: 'mobile',
+        locale: 'fr',
         theme: { code: 'fake-theme' },
       } as any,
       {
         storefrontUrl: 'http://localhost:3000',
+        channels,
         templates: [
           {
             template: 'page.landing',
@@ -98,8 +108,72 @@ describe('editor url state', () => {
 
     expect(loaded.href).toContain('/cms/about-us');
     expect(loaded.searchParams.get('_designMode')).toBe('fake-theme');
-    expect(loaded.searchParams.get('channel')).toBe('default');
-    expect(loaded.searchParams.get('locale')).toBe('en');
+    expect(loaded.searchParams.get('channel')).toBe('mobile');
+    expect(loaded.searchParams.get('locale')).toBe('fr');
     expect(loaded.searchParams.get('_template')).toBe('page.landing');
+  });
+
+  it('loads initial template previews with editor state channel and locale', () => {
+    (window as any).location = new URL(
+      'http://localhost:3000/admin/visual/editor/fake-theme?template=page.landing'
+    );
+
+    const loadUrl = vi.fn();
+    const editor = { preview: { loadUrl } } as any;
+
+    loadTemplateFromUrl(
+      editor,
+      {
+        channel: 'default',
+        locale: 'fr',
+        theme: { code: 'fake-theme' },
+      } as any,
+      {
+        storefrontUrl: 'http://localhost:3000',
+        channels,
+        templates: [
+          {
+            template: 'page.landing',
+            previewUrl: 'http://localhost:3000/cms/default',
+            supportsVariants: false,
+            type: 'page',
+          },
+        ],
+      } as any
+    );
+
+    const loaded = new URL(loadUrl.mock.calls[0][0]);
+
+    expect(loaded.searchParams.get('channel')).toBe('default');
+    expect(loaded.searchParams.get('locale')).toBe('fr');
+  });
+
+  it('loads the initial storefront preview with editor state channel and locale', () => {
+    (window as any).location = new URL(
+      'http://localhost:3000/admin/visual/editor/fake-theme?channel=default&locale=fr'
+    );
+
+    const loadUrl = vi.fn();
+    const editor = { preview: { loadUrl } } as any;
+
+    loadTemplateFromUrl(
+      editor,
+      {
+        channel: 'default',
+        locale: 'fr',
+        theme: { code: 'fake-theme' },
+      } as any,
+      {
+        storefrontUrl: 'http://localhost:3000?_designMode=fake-theme',
+        channels,
+        templates: [],
+      } as any
+    );
+
+    const loaded = new URL(loadUrl.mock.calls[0][0]);
+
+    expect(loaded.searchParams.get('_designMode')).toBe('fake-theme');
+    expect(loaded.searchParams.get('channel')).toBe('default');
+    expect(loaded.searchParams.get('locale')).toBe('fr');
   });
 });

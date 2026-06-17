@@ -2,7 +2,7 @@
 
 use BagistoPlus\Visual\Blocks\SimpleBlock;
 use BagistoPlus\Visual\Data\BlockSchema;
-use BagistoPlus\Visual\Http\Controllers\Admin\ThemeEditorController;
+use BagistoPlus\Visual\Support\EditorBlockSchemaSerializer;
 use Craftile\Laravel\BlockSchemaRegistry;
 
 class BlockSchemaMetaBlock extends SimpleBlock
@@ -51,11 +51,7 @@ it('keeps built-in admin meta keys reserved', function () {
     $registry->register(BlockSchema::fromClass(BlockSchemaMetaReservedKeysBlock::class));
     app()->instance(BlockSchemaRegistry::class, $registry);
 
-    $controller = (new ReflectionClass(ThemeEditorController::class))->newInstanceWithoutConstructor();
-    $loadBlocks = new ReflectionMethod($controller, 'loadBlocks');
-    $loadBlocks->setAccessible(true);
-
-    $block = $loadBlocks->invoke($controller)->first();
+    $block = app(EditorBlockSchemaSerializer::class)->all()[0];
 
     expect($block['meta'])
         ->toMatchArray([

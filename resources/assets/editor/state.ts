@@ -22,6 +22,8 @@ export interface State {
     url: string;
     template: string;
     sources: string;
+    channel?: string;
+    locale?: string;
     settings?: Record<string, any>;
   } | null;
   images: Image[];
@@ -30,6 +32,7 @@ export interface State {
   products: Map<number, Product>;
   cmsPages: Map<number, CmsPage>;
   haveEdits: boolean;
+  previewLoading: boolean;
   templateForm: TemplateForm;
 }
 
@@ -50,8 +53,8 @@ export function createState(defaults: Partial<State> = {}): State {
 
   state = reactive({
     channels: defaults.channels || [],
-    channel: 'default',
-    locale: 'en',
+    channel: defaults.channel || 'default',
+    locale: defaults.locale || 'en',
     theme: defaults.theme || null,
     templates,
     pageData: null,
@@ -61,6 +64,7 @@ export function createState(defaults: Partial<State> = {}): State {
     products: defaults.products || new Map(),
     cmsPages: defaults.cmsPages || new Map(),
     haveEdits: defaults.haveEdits || false,
+    previewLoading: defaults.previewLoading || false,
     templateForm: {
       ...defaultTemplateForm(),
       ...(defaults.templateForm || {}),

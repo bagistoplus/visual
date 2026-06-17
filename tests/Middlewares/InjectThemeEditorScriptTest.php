@@ -1,9 +1,15 @@
 <?php
 
 use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
+use BagistoPlus\Visual\ThemeEditor;
+use BagistoPlus\Visual\ThemeSettingsLoader;
+use Craftile\Laravel\PreviewDataCollector;
+use Craftile\Laravel\PropertyBag;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Webkul\Category\Repositories\CategoryRepository;
+use Webkul\Product\Repositories\ProductRepository;
 
 class TestInjectThemeEditorScript extends InjectThemeEditorScript
 {
@@ -22,6 +28,19 @@ class TestInjectThemeEditorScript extends InjectThemeEditorScript
     protected function buildPreviewScripts(array $pageData): string
     {
         return '<script id="preview-script">window.previewValue = "$1";</script>';
+    }
+}
+
+class PreviewContextInjectThemeEditorScript extends InjectThemeEditorScript
+{
+    public function payload(array $pageData): array
+    {
+        return $this->buildInjectedPageData($pageData, 'index', new PropertyBag);
+    }
+
+    protected function fixCategoryOrProductRoute($routeName)
+    {
+        return 'shop.home.index';
     }
 }
 
@@ -66,4 +85,29 @@ it('does not inject when the response has no head tag', function () {
 
     expect($response->getContent())
         ->toBe('<html><body></body></html>');
+});
+
+it('includes the resolved preview channel and locale in page data', function () {
+    $themeEditor = Mockery::mock(ThemeEditor::class);
+    $themeEditor->shouldReceive('getTemplateFromJsonViews')->with('index')->andReturn('index');
+    $themeEditor->shouldReceive('jsonViews')->andReturn([]);
+    $themeEditor->shouldReceive('preloadedModels')->andReturn([]);
+
+    $themeSettingsLoader = Mockery::mock(ThemeSettingsLoader::class);
+    $themeSettingsLoader->shouldReceive('loadActiveThemeSettings')->andReturn(new PropertyBag);
+
+    $middleware = new PreviewContextInjectThemeEditorScript(
+        $themeEditor,
+        $themeSettingsLoader,
+        Mockery::mock(CategoryRepository::class),
+        Mockery::mock(ProductRepository::class),
+        Mockery::mock(PreviewDataCollector::class),
+    );
+
+    $payload = $middleware->payload(['title' => 'Preview']);
+
+    expect($payload)
+        ->toHaveKey('channel', 'default')
+        ->toHaveKey('locale', 'en')
+        ->toHaveKey('blockSchemas', []);
 });

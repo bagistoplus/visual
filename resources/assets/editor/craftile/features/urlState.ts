@@ -66,9 +66,11 @@ export function initialLocaleFromUrl(channels: Channel[], channelCode: string, f
   const requestedLocale = getUrlParam('locale');
   const channel = channels.find((channel) => channel.code === channelCode);
 
-  return requestedLocale && channel?.locales.some((locale) => locale.code === requestedLocale)
-    ? requestedLocale
-    : fallback;
+  if (requestedLocale && channel?.locales.some((locale) => locale.code === requestedLocale)) {
+    return requestedLocale;
+  }
+
+  return channel?.default_locale || fallback;
 }
 
 export function setupUrlState(editor: CraftileEditor, state: State, editorConfig: ThemeEditorConfig) {

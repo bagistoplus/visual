@@ -15,20 +15,25 @@ const locales = computed(() => {
     channel = channels[0];
   }
 
-  return channel.locales;
+  return channel?.locales || [];
 });
 const selectedLabel = computed(() => locales.value.find(c => c.code === selected.value)?.name);
+const defaultLocale = computed(() => {
+  const channel = channels.find(c => c.code === props.channel) || channels[0];
+
+  return channel?.default_locale || locales.value[0]?.code;
+});
 
 onBeforeMount(() => {
   if (!selected.value) {
-    selected.value = locales.value[0].code
+    selected.value = defaultLocale.value
   }
 });
 
 watch(() => props.channel, (newChannel) => {
   const localeExists = !!locales.value.find(l => l.code === selected.value);
   if (!localeExists) {
-    selected.value = locales.value[0].code;
+    selected.value = defaultLocale.value;
   }
 })
 function onSelect({ value }: { value: string }) {

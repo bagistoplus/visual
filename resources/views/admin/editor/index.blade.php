@@ -39,9 +39,9 @@
     {{ ThemeEditor::renderScripts() }}
   </head>
 
-  <body @if (core()->getCurrentLocale()->direction == 'rtl') class="rtl" @endif style="margin:0; padding: 0; position: relative">
+  <body @if (core()->getCurrentLocale()->direction == 'rtl') class="rtl" @endif style="width: 100vw; height: 100vh; padding: 0; margin: 0; overflow: hidden;">
 
-    <div id="app" style="width: 100vw; height: 100vh; position: absolute; top: 0; left: 0;"></div>
+    <div id="app" style="width: 100%; height: 100%;"></div>
 
   </body>
 

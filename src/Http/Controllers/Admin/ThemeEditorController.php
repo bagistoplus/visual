@@ -2,10 +2,6 @@
 
 namespace BagistoPlus\Visual\Http\Controllers\Admin;
 
-use BagistoPlus\Visual\Blocks\BladeSection;
-use BagistoPlus\Visual\Blocks\LivewireSection;
-use BagistoPlus\Visual\Blocks\SimpleSection;
-use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Http\Controllers\Controller;
@@ -23,8 +19,6 @@ use BagistoPlus\Visual\ThemeEditor;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use BladeUI\Icons\Factory;
 use BladeUI\Icons\IconsManifest;
-use Craftile\Laravel\BlockSchemaRegistry;
-use Craftile\Laravel\Facades\Craftile;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
@@ -52,8 +46,6 @@ class ThemeEditorController extends Controller
 
     public function index(string $themeCode)
     {
-        Craftile::registerDiscoveredSchemas();
-
         return view()->make('visual::admin.editor.index', [
             'config' => [
                 'baseUrl' => parse_url(route('visual.admin.editor', ['theme' => $themeCode]), PHP_URL_PATH),
@@ -62,7 +54,6 @@ class ThemeEditorController extends Controller
                 'storefrontUrl' => url('/').'?'.http_build_query(['_designMode' => $themeCode]),
                 'channels' => $this->getChannels(),
                 'defaultChannel' => core()->getDefaultChannelCode(),
-                'blockSchemas' => $this->loadBlocks(),
                 'theme' => $this->loadTheme($themeCode),
                 'templates' => $this->loadTemplates($themeCode),
                 'routes' => [
@@ -358,60 +349,6 @@ class ThemeEditorController extends Controller
             'sets' => collect($sets)->map(fn ($set, $key) => ['id' => $key, 'prefix' => $set['prefix'], 'name' => Str::headline($key)])->values(),
             'icons' => $icons->values(),
         ];
-    }
-
-    protected function loadBlocks()
-    {
-        /** @var Collection<string, BlockSchema> $schemas */
-        $schemas = collect(app(BlockSchemaRegistry::class)->all());
-
-        return $schemas->map(function (BlockSchema $blockSchema) {
-            $currentGroup = null;
-            $properties = collect($blockSchema->properties)
-                ->map(function ($prop) use (&$currentGroup) {
-                    $propArray = $prop->toArray();
-
-                    if ($propArray['type'] === 'header') {
-                        $currentGroup = $propArray['label'];
-
-                        return null;
-                    }
-
-                    // Filter out typography_presets as it's theme settings only
-                    if ($propArray['type'] === 'typography_presets') {
-                        return null;
-                    }
-
-                    if ($currentGroup !== null) {
-                        $propArray['group'] = $currentGroup;
-                    }
-
-                    return $propArray;
-                })
-                ->filter()
-                ->values();
-
-            $meta = array_merge($blockSchema->meta, [
-                'name' => $blockSchema->name,
-                'icon' => $blockSchema->icon,
-                'category' => $blockSchema->category,
-                'description' => $blockSchema->description,
-                'previewImageUrl' => $blockSchema->previewImageUrl,
-                'isSection' => collect([SimpleSection::class, BladeSection::class, LivewireSection::class])->some(fn ($class) => is_subclass_of($blockSchema->class, $class)),
-                'enabledOn' => $blockSchema->enabledOn,
-                'disabledOn' => $blockSchema->disabledOn,
-            ]);
-
-            return [
-                'type' => $blockSchema->type,
-                'properties' => $properties,
-                'accepts' => $blockSchema->accepts,
-                'presets' => $blockSchema->presets,
-                'private' => $blockSchema->private,
-                'meta' => $meta,
-            ];
-        })
-            ->values();
     }
 
     protected function loadTheme($themeCode)

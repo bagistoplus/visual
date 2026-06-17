@@ -1,9 +1,12 @@
 <?php
 
+use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use BagistoPlus\Visual\Persistence\PersistEditorUpdates;
 use Craftile\Laravel\Data\UpdateRequest;
+use Craftile\Laravel\Facades\Craftile;
 use Craftile\Laravel\Support\HandleUpdates;
+use Craftile\Laravel\View\JsonViewParser;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
@@ -12,6 +15,7 @@ beforeEach(function () {
     }
 
     Storage::fake('themes-data');
+    Craftile::detectPreviewUsing(fn () => ThemeEditor::inDesignMode());
     $this->persistEditorUpdates = app(PersistEditorUpdates::class);
 });
 
@@ -396,28 +400,38 @@ describe('handleFullPage', function () {
 });
 
 describe('handle', function () {
-    test('uses shared region id for source lookup and update targeting', function () {
+    test('uses preview context when parsing shared region source data', function () {
         Storage::fake('local');
+        app()->setLocale('en');
 
-        $basePath = 'test-theme/default/en/editor';
+        $parser = Mockery::mock(JsonViewParser::class);
+        $parser->shouldReceive('clearCache')->twice();
+        app()->instance(JsonViewParser::class, $parser);
+
+        $basePath = 'test-theme/default/ar/editor';
         $regionSourcePath = '/theme/views/regions/site-header.blade.php';
 
         ThemePathsResolver::shouldReceive('resolvePath')
-            ->with('test-theme', 'default', 'en', 'editor', 'regions/site-header.json')
+            ->with('test-theme', 'default', 'ar', 'editor', 'regions/site-header.json')
             ->andReturn(Storage::path($basePath.'/regions/site-header.json'));
 
         $handleUpdates = Mockery::mock(HandleUpdates::class);
         $handleUpdates->shouldReceive('execute')
             ->once()
             ->with($regionSourcePath, Mockery::type(UpdateRequest::class), ['site-header'])
-            ->andReturn(['updated' => false, 'data' => []]);
+            ->andReturnUsing(function () {
+                expect(app()->getLocale())->toBe('ar')
+                    ->and(Craftile::inPreview())->toBeTrue();
+
+                return ['updated' => false, 'data' => []];
+            });
 
         $persistEditorUpdates = new PersistEditorUpdates($handleUpdates);
 
         $result = $persistEditorUpdates->handle([
             'theme' => 'test-theme',
             'channel' => 'default',
-            'locale' => 'en',
+            'locale' => 'ar',
             'template' => [
                 'name' => 'index',
                 'sources' => encrypt([$regionSourcePath]),
@@ -435,7 +449,9 @@ describe('handle', function () {
             ],
         ]);
 
-        expect($result['loadedBlocks'])->toBeEmpty();
+        expect($result['loadedBlocks'])->toBeEmpty()
+            ->and(app()->getLocale())->toBe('en')
+            ->and(Craftile::inPreview())->toBeFalse();
     });
 
     test('uses non-shared region ids for update targeting', function () {
@@ -478,6 +494,61 @@ describe('handle', function () {
         ]);
 
         expect($result['loadedBlocks'])->toBeEmpty();
+    });
+
+    test('uses preview context when existing editor template data is used', function () {
+        Storage::fake('local');
+        app()->setLocale('en');
+        Craftile::detectPreviewUsing(fn () => false);
+
+        $basePath = 'test-theme/default/ar/editor';
+        Storage::put($basePath.'/templates/index.json', '{}');
+
+        $parser = Mockery::mock(JsonViewParser::class);
+        $parser->shouldReceive('clearCache')->twice();
+        app()->instance(JsonViewParser::class, $parser);
+
+        ThemePathsResolver::shouldReceive('resolvePath')
+            ->with('test-theme', 'default', 'ar', 'editor', 'templates/index.json')
+            ->andReturn(Storage::path($basePath.'/templates/index.json'));
+
+        $handleUpdates = Mockery::mock(HandleUpdates::class);
+        $handleUpdates->shouldReceive('execute')
+            ->once()
+            ->with(Storage::path($basePath.'/templates/index.json'), Mockery::type(UpdateRequest::class), ['main-content'])
+            ->andReturnUsing(function () {
+                expect(app()->getLocale())->toBe('ar')
+                    ->and(Craftile::inPreview())->toBeTrue();
+
+                return ['updated' => false, 'data' => []];
+            });
+
+        $persistEditorUpdates = new PersistEditorUpdates($handleUpdates);
+
+        $result = $persistEditorUpdates->handle([
+            'theme' => 'test-theme',
+            'channel' => 'default',
+            'locale' => 'ar',
+            'template' => [
+                'name' => 'index',
+                'sources' => encrypt([]),
+            ],
+            'updates' => [
+                'blocks' => [],
+                'regions' => [
+                    ['id' => 'main-content', 'name' => 'Main content', 'shared' => false, 'blocks' => []],
+                ],
+                'changes' => [
+                    'added' => [],
+                    'updated' => [],
+                    'removed' => [],
+                ],
+            ],
+        ]);
+
+        expect($result['loadedBlocks'])->toBeEmpty()
+            ->and(app()->getLocale())->toBe('en')
+            ->and(Craftile::inPreview())->toBeFalse();
     });
 
     test('returns loaded blocks from shared regions', function () {

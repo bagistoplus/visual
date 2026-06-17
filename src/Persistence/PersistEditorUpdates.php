@@ -2,12 +2,17 @@
 
 namespace BagistoPlus\Visual\Persistence;
 
+use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
 use Craftile\Laravel\Data\UpdateRequest;
+use Craftile\Laravel\Facades\Craftile;
 use Craftile\Laravel\Support\HandleUpdates;
+use Craftile\Laravel\View\JsonViewParser;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Throwable;
+use Webkul\Core\Models\Channel;
 
 class PersistEditorUpdates
 {
@@ -120,12 +125,11 @@ class PersistEditorUpdates
         $regionKey = $this->regionKey($region);
         $regionPath = $this->getRegionFilePath($theme, $channel, $locale, $regionKey);
         $sourceDataPath = $regionPath;
-
         if (! File::exists($sourceDataPath)) {
             $sourceDataPath = $this->getRegionSourcePath($regionKey, $sources);
         }
 
-        $result = $this->handleUpdates->execute($sourceDataPath, $updateRequest, [$regionKey]);
+        $result = $this->executeUpdates($sourceDataPath, $updateRequest, [$regionKey], $channel, $locale);
 
         if ($result['updated']) {
             $this->saveFlattened($result['data'], $regionPath, $theme);
@@ -147,13 +151,60 @@ class PersistEditorUpdates
             ->map(fn ($region) => $this->regionKey($region))
             ->toArray();
 
-        $result = $this->handleUpdates->execute($sourceDataPath, $updateRequest, $regionKeys);
+        $result = $this->executeUpdates($sourceDataPath, $updateRequest, $regionKeys, $channel, $locale);
 
         if ($result['updated']) {
             $this->saveFlattened($result['data'], $templatePath, $theme);
         }
 
         return $result;
+    }
+
+    protected function executeUpdates(?string $sourceDataPath, UpdateRequest $updateRequest, array $regionKeys, string $channel, string $locale): array
+    {
+        return $this->withPreviewPersistenceContext(
+            $channel,
+            $locale,
+            fn () => $this->handleUpdates->execute($sourceDataPath, $updateRequest, $regionKeys)
+        );
+    }
+
+    protected function withPreviewPersistenceContext(string $channel, string $locale, callable $callback): array
+    {
+        $previousLocale = app()->getLocale();
+        $previousChannel = core()->getCurrentChannel();
+        $nextChannel = $this->resolveChannel($channel);
+
+        app()->get(JsonViewParser::class)->clearCache();
+        app()->setLocale($locale);
+
+        if ($nextChannel) {
+            core()->setCurrentChannel($nextChannel);
+        }
+
+        Craftile::detectPreviewUsing(fn () => true);
+
+        try {
+            return $callback();
+        } finally {
+            app()->setLocale($previousLocale);
+
+            if ($previousChannel instanceof Channel) {
+                core()->setCurrentChannel($previousChannel);
+            }
+
+            Craftile::detectPreviewUsing(fn () => ThemeEditor::inDesignMode());
+            app()->get(JsonViewParser::class)->clearCache();
+        }
+    }
+
+    protected function resolveChannel(string $channel): ?Channel
+    {
+        try {
+            return Channel::query()->where('code', $channel)->first();
+        } catch (Throwable) {
+            return null;
+        }
     }
 
     protected function saveFlattened(array $data, string $filePath, string $theme): void

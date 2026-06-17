@@ -63,11 +63,7 @@ export function publishTheme(pageData?: any) {
   return request;
 }
 
-export function createTemplate(payload: {
-  type: string;
-  name: string;
-  basedOn?: string | null;
-}) {
+export function createTemplate(payload: { type: string; name: string; basedOn?: string | null }) {
   const { state } = useState();
   const { post } = useHttpClient();
 

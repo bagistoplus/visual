@@ -12,6 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BackButton: typeof import('./components/BackButton.vue')['default']
+    BlocksTreeLoadingOverlay: typeof import('./components/BlocksTreeLoadingOverlay.vue')['default']
     CategoryListbox: typeof import('./components/CategoryListbox.vue')['default']
     CategoryListPicker: typeof import('./components/CategoryListPicker.vue')['default']
     CategoryPicker: typeof import('./components/CategoryPicker.vue')['default']

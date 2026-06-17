@@ -13,7 +13,6 @@ import { useBunnyFonts } from './composables/useBunnyFonts';
 import { initialChannelFromUrl, initialLocaleFromUrl } from './craftile/features/urlState';
 import NProgress from 'nprogress';
 
-const { blockSchemas } = window.editorConfig;
 const initialChannel = initialChannelFromUrl(window.editorConfig.channels, window.editorConfig.defaultChannel);
 
 const state = createState({
@@ -38,7 +37,7 @@ NProgress.configure({
 
 const editorInstance = createCraftileEditor({
   el: '#app',
-  blockSchemas,
+  blockSchemas: window.editorConfig.blockSchemas || [],
   devices: {
     presets: [
       { id: 'mobile', label: 'Mobile', width: 376, icon: 'mobile' },

@@ -5,17 +5,48 @@ import type { State } from '../../state';
 import { populatePreloadedModels } from '../../state';
 import { getUrlParam, removeUrlParam } from '../../utils/urlState';
 
+export function syncEditorBlockSchemas(editor: CraftileEditor, blockSchemas: any[]) {
+  const blocksManager = editor.engine.getBlocksManager();
+
+  blockSchemas.forEach((schema) => {
+    if (blocksManager.has(schema.type)) {
+      blocksManager.unregister(schema.type);
+    }
+
+    blocksManager.register(schema.type, schema);
+  });
+}
+
+export function syncEditorContextFromPageData(state: State, pageData: any) {
+  if (pageData.channel) {
+    state.channel = pageData.channel;
+  }
+
+  if (pageData.locale) {
+    state.locale = pageData.locale;
+  }
+}
+
 export function setupPageDataHandler(editor: CraftileEditor, state: State) {
   editor.preview.onReady(() => {
     editor.preview.onMessage('craftile.preview.page-data', ({ pageData }: any) => {
       NProgress.done();
 
+      syncEditorContextFromPageData(state, pageData);
+
+      if (pageData.blockSchemas) {
+        syncEditorBlockSchemas(editor, pageData.blockSchemas);
+      }
+
       editor.engine.setPage(pageData.content);
+      state.previewLoading = false;
 
       state.pageData = {
         url: pageData.template.url,
         template: pageData.template.name,
         sources: pageData.template.sources,
+        channel: pageData.channel,
+        locale: pageData.locale,
         settings: pageData.settings,
       };
 

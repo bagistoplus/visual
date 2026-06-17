@@ -45,7 +45,7 @@ export interface ThemeEditorConfig {
   storefrontUrl: string;
   channels: Channel[];
   defaultChannel: string;
-  blockSchemas: BlockSchema[];
+  blockSchemas?: BlockSchema[];
   theme: Theme;
   templates: Template[];
   routes: {

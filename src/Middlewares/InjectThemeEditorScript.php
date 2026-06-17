@@ -2,10 +2,12 @@
 
 namespace BagistoPlus\Visual\Middlewares;
 
+use BagistoPlus\Visual\Support\EditorBlockSchemaSerializer;
 use BagistoPlus\Visual\ThemeEditor;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use Craftile\Laravel\Middlewares\PreviewScriptMiddleware;
 use Craftile\Laravel\PreviewDataCollector;
+use Craftile\Laravel\PropertyBag;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -61,17 +63,25 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
         );
 
         return view()->make('visual::admin.editor.injected-script', [
-            'pageData' => [
-                'content' => $pageData,
-                'template' => [
-                    'url' => request()->fullUrl(),
-                    'name' => $this->themeEditor->getTemplateFromJsonViews($routeTemplate),
-                    'sources' => encrypt($this->themeEditor->jsonViews()),
-                ],
-                'settings' => $settingsBag->toArray(),
-                'preloadedModels' => $this->themeEditor->preloadedModels(),
-            ],
+            'pageData' => $this->buildInjectedPageData($pageData, $routeTemplate, $settingsBag),
         ])->render();
+    }
+
+    protected function buildInjectedPageData(array $pageData, $routeTemplate, PropertyBag $settingsBag): array
+    {
+        return [
+            'content' => $pageData,
+            'template' => [
+                'url' => request()->fullUrl(),
+                'name' => $this->themeEditor->getTemplateFromJsonViews($routeTemplate),
+                'sources' => encrypt($this->themeEditor->jsonViews()),
+            ],
+            'channel' => core()->getRequestedChannelCode(),
+            'locale' => core()->getRequestedLocaleCode(),
+            'blockSchemas' => app(EditorBlockSchemaSerializer::class)->all(),
+            'settings' => $settingsBag->toArray(),
+            'preloadedModels' => $this->themeEditor->preloadedModels(),
+        ];
     }
 
     protected function getCurrentTheme()
