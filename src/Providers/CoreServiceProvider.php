@@ -3,7 +3,6 @@
 namespace BagistoPlus\Visual\Providers;
 
 use BagistoPlus\Visual\Commands;
-use BagistoPlus\Visual\Components\Svg;
 use BagistoPlus\Visual\Data\BlockData;
 use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Facades\ThemeEditor;
@@ -15,6 +14,7 @@ use BagistoPlus\Visual\Models\VisualTemplateAssignment;
 use BagistoPlus\Visual\Settings\Support as SettingTransformers;
 use BagistoPlus\Visual\Support\BlockRenderFilter;
 use BagistoPlus\Visual\Support\ChannelThemeResolver;
+use BagistoPlus\Visual\Support\IconMapFilesystemAdapter;
 use BagistoPlus\Visual\Support\TemplateAssignment;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
 use BagistoPlus\Visual\Support\TemplateNormalizer;
@@ -24,18 +24,24 @@ use BagistoPlus\Visual\TemplateRegistrar;
 use BagistoPlus\Visual\ThemePathsResolver;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use BagistoPlus\Visual\View\Compilers\LivewireBlockCompiler;
+use BladeUI\Icons\Factory as BladeIconsFactory;
+use BladeUI\Icons\IconsManifest;
 use Craftile\Laravel\Events\JsonViewLoaded;
 use Craftile\Laravel\Facades\Craftile;
 use Craftile\Laravel\View\BlockCompilerRegistry;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\DynamicComponent;
+use League\Flysystem\Filesystem;
 use Livewire\Component;
+use ReflectionProperty;
 use Webkul\Attribute\Models\Attribute;
 use Webkul\Category\Models\Category;
 use Webkul\CMS\Models\Page;
@@ -214,10 +220,54 @@ class CoreServiceProvider extends ServiceProvider
     {
         Blade::component('dynamic-component', DynamicComponent::class);
 
-        // Register alias for some blade-icons icons
-        foreach (config('bagisto_visual_iconmap') as $alias => $icon) {
-            Blade::component(Svg::class, $alias);
-        }
+        $this->registerIconMapDisk();
+
+        $this->callAfterResolving(BladeIconsFactory::class, function (BladeIconsFactory $factory) {
+            if (isset($factory->all()['bagisto-visual-iconmap'])) {
+                return;
+            }
+
+            $factory->add('bagisto-visual-iconmap', [
+                'disk' => 'bagisto_visual_iconmap',
+                'path' => '/',
+                'prefix' => 'icon',
+            ]);
+
+            if ($this->app->resolved('view')) {
+                $this->flushBladeIconsManifest();
+                $factory->registerComponents();
+            }
+        });
+    }
+
+    protected function registerIconMapDisk(): void
+    {
+        config([
+            'filesystems.disks.bagisto_visual_iconmap' => [
+                'driver' => 'bagisto_visual_iconmap',
+                'throw' => true,
+            ],
+        ]);
+
+        Storage::extend('bagisto_visual_iconmap', function (Application $app, array $config) {
+            $adapter = new IconMapFilesystemAdapter(
+                $app->make('config'),
+                fn (string $icon): string => $app->make(BladeIconsFactory::class)->svg($icon)->contents(),
+            );
+
+            return new FilesystemAdapter(
+                new Filesystem($adapter, $config),
+                $adapter,
+                $config
+            );
+        });
+    }
+
+    protected function flushBladeIconsManifest(): void
+    {
+        $manifest = $this->app->make(IconsManifest::class);
+        $property = new ReflectionProperty($manifest, 'manifest');
+        $property->setValue($manifest, null);
     }
 
     protected function bootMorphMap(): void

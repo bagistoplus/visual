@@ -4,10 +4,12 @@ namespace BagistoPlus\Visual\Tests;
 
 use BagistoPlus\Visual\Providers\VisualServiceProvider;
 use BagistoPlus\Visual\Tests\Fixtures\FakeTheme\FakeThemeServiceProvider;
+use BladeUI\Icons\BladeIconsServiceProvider;
 use Craftile\Laravel\CraftileServiceProvider;
 use Illuminate\Config\Repository;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Livewire\LivewireServiceProvider;
+use MallardDuck\LucideIcons\BladeLucideIconsServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
@@ -26,6 +28,8 @@ class TestCase extends Orchestra
     protected function getPackageProviders($app)
     {
         return [
+            BladeIconsServiceProvider::class,
+            BladeLucideIconsServiceProvider::class,
             LivewireServiceProvider::class,
             CraftileServiceProvider::class,
             VisualServiceProvider::class,
