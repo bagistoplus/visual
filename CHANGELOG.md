@@ -2,6 +2,18 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.19](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.18...v2.0.0-alpha.19) (2026-06-17)
+
+
+### Bug Fixes
+
+* sync preview locale and schemas ([d9c2231](https://github.com/bagistoplus/visual/commit/d9c2231f028a633bec3b32078c8a5e114ffb4a36))
+
+
+### Features
+
+* add visual storage clear command ([e4e03d1](https://github.com/bagistoplus/visual/commit/e4e03d1dbda6e45e6db86da7de64d79f3b48af14))
+
 # [2.0.0-alpha.18](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.17...v2.0.0-alpha.18) (2026-06-17)
 
 
