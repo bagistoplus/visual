@@ -2,6 +2,26 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.18](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.17...v2.0.0-alpha.18) (2026-06-17)
+
+
+### Bug Fixes
+
+* defer template preview url resolution ([f59a8f0](https://github.com/bagistoplus/visual/commit/f59a8f0000165d508f297473ad3bb129d0bb7034))
+* defer template registration to editor requests ([6287998](https://github.com/bagistoplus/visual/commit/628799842813b262252acdfa8fd564083754f7e4))
+* localize editor editing labels ([884e19d](https://github.com/bagistoplus/visual/commit/884e19d55a7fb83891067bbbca827c9f1b344c4c))
+* persist visual livewire middleware ([74105c2](https://github.com/bagistoplus/visual/commit/74105c2c18e76db59ab3e442cdbb2a3203b57f21))
+* preload category product counts ([7521e2d](https://github.com/bagistoplus/visual/commit/7521e2dfd5617db0196d9958234e37fc9882e3ce))
+* register deferred visual schemas ([917ba03](https://github.com/bagistoplus/visual/commit/917ba033e3b154bbec09c9bdcbaa4cf6fd8e07a3))
+* scope design cache middleware to storefront ([6a513ac](https://github.com/bagistoplus/visual/commit/6a513ace30d54a43051f435c2766335f5f3740b0))
+* support rtl theme cards ([2d74212](https://github.com/bagistoplus/visual/commit/2d74212e452c08e185502059a295e25473bd9565))
+
+
+### Features
+
+* add customer rma account view ([f83d79f](https://github.com/bagistoplus/visual/commit/f83d79f8ad6e8c378589bb08fb818bbe9a077a17))
+* support virtual icon map aliases ([073f2b7](https://github.com/bagistoplus/visual/commit/073f2b7e97a6b2b124ac6704c6decd8890e9eedc))
+
 # [2.0.0-alpha.17](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.16...v2.0.0-alpha.17) (2026-06-04)
 
 
