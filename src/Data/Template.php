@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Data;
 
+use Closure;
 use Illuminate\Contracts\Support\Arrayable;
 use JsonSerializable;
 
@@ -12,7 +13,7 @@ class Template implements Arrayable, JsonSerializable
         public string|array $route,
         public string $label,
         public string $icon,
-        public string $previewUrl,
+        public string|Closure $previewUrl,
         public ?string $type = null,
         public bool $supportsVariants = false,
     ) {}
@@ -40,6 +41,13 @@ class Template implements Arrayable, JsonSerializable
         return new self('__separator__', '', '', 'lucide-x', '');
     }
 
+    public function resolvePreviewUrl(): string
+    {
+        return (string) (is_callable($this->previewUrl)
+            ? ($this->previewUrl)()
+            : $this->previewUrl);
+    }
+
     public function toArray()
     {
         return [
@@ -47,7 +55,7 @@ class Template implements Arrayable, JsonSerializable
             'route' => $this->route,
             'label' => $this->label,
             'icon' => $this->icon,
-            'previewUrl' => $this->previewUrl,
+            'previewUrl' => $this->resolvePreviewUrl(),
             'type' => $this->type,
             'supportsVariants' => $this->supportsVariants,
         ];

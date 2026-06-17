@@ -39,11 +39,11 @@ it('registers discovered schemas after the app boots in console', function () {
         ->once();
 });
 
-it('does not register editor templates during application boot', function () {
+it('registers editor templates during active visual requests', function () {
     ThemeEditor::shouldReceive('active')->andReturnTrue();
 
     $registrar = Mockery::mock(TemplateRegistrar::class);
-    $registrar->shouldNotReceive('registerTemplates');
+    $registrar->shouldReceive('registerTemplates')->once();
     $this->app->instance(TemplateRegistrar::class, $registrar);
 
     $provider = new CoreServiceProvider($this->app);

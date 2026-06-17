@@ -20,6 +20,7 @@ use BagistoPlus\Visual\Support\TemplateDiscovery;
 use BagistoPlus\Visual\Support\TemplateNormalizer;
 use BagistoPlus\Visual\Support\UrlGenerator;
 use BagistoPlus\Visual\Support\VisualDiscoveryFilter;
+use BagistoPlus\Visual\TemplateRegistrar;
 use BagistoPlus\Visual\ThemePathsResolver;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use BagistoPlus\Visual\View\Compilers\LivewireBlockCompiler;
@@ -266,6 +267,8 @@ class CoreServiceProvider extends ServiceProvider
             Event::listen(JsonViewLoaded::class, function (JsonViewLoaded $event) {
                 ThemeEditor::addJsonView($event->path);
             });
+
+            $this->app->make(TemplateRegistrar::class)->registerTemplates();
         }
     }
 

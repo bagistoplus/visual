@@ -18,7 +18,6 @@ use BagistoPlus\Visual\Settings\Support\ImageTransformer;
 use BagistoPlus\Visual\Settings\Support\VideoTransformer;
 use BagistoPlus\Visual\Support\ChannelThemeResolver;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
-use BagistoPlus\Visual\TemplateRegistrar;
 use BagistoPlus\Visual\Theme\Theme;
 use BagistoPlus\Visual\ThemeEditor;
 use BagistoPlus\Visual\ThemeSettingsLoader;
@@ -48,14 +47,12 @@ class ThemeEditorController extends Controller
         protected ThemeSettingsLoader $themeSettingsLoader,
         protected TemplateDiscovery $templateDiscovery,
         protected CreateTemplate $createTemplate,
-        protected ChannelThemeResolver $channelThemeResolver,
-        protected TemplateRegistrar $templateRegistrar
+        protected ChannelThemeResolver $channelThemeResolver
     ) {}
 
     public function index(string $themeCode)
     {
         Craftile::registerDiscoveredSchemas();
-        $this->templateRegistrar->registerTemplates();
 
         return view()->make('visual::admin.editor.index', [
             'config' => [
@@ -444,7 +441,7 @@ class ThemeEditorController extends Controller
                 'template' => $template->template,
                 'label' => $template->label,
                 'icon' => $template->icon,
-                'previewUrl' => $template->previewUrl,
+                'previewUrl' => $template->resolvePreviewUrl(),
                 'type' => $template->type,
                 'supportsVariants' => $template->supportsVariants,
                 'isJsonTemplate' => false,

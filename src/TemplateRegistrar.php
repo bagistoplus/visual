@@ -43,7 +43,7 @@ class TemplateRegistrar
                 route: 'shop.categories.index',
                 label: __('visual::theme-editor.templates.category'),
                 icon: 'lucide-tags',
-                previewUrl: $category->url,
+                previewUrl: fn () => $category->url,
                 type: 'category',
                 supportsVariants: true,
             );
@@ -58,7 +58,7 @@ class TemplateRegistrar
                 route: 'shop.products.index',
                 label: __('visual::theme-editor.templates.product'),
                 icon: 'lucide-tag',
-                previewUrl: url($product->url_key),
+                previewUrl: fn () => url($product->url_key),
                 type: 'product',
                 supportsVariants: true,
             );
@@ -109,7 +109,7 @@ class TemplateRegistrar
                 route: 'shop.cms.page',
                 label: __('visual::theme-editor.templates.cms'),
                 icon: 'lucide-file',
-                previewUrl: route('shop.cms.page', [$page->url_key]),
+                previewUrl: fn () => route('shop.cms.page', [$page->url_key]),
                 type: 'page',
                 supportsVariants: true,
             );
