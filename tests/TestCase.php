@@ -41,6 +41,7 @@ class TestCase extends Orchestra
     {
         tap($app['config'], function (Repository $config) {
             $config->set('database.default', 'testbench');
+            $config->set('app.key', 'base64:'.base64_encode(str_repeat('a', 32)));
             $config->set('database.connections.testbench', [
                 'driver' => 'sqlite',
                 'database' => ':memory:',
