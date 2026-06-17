@@ -57,6 +57,7 @@ class CoreServiceProvider extends ServiceProvider
         Commands\MakeSectionCommand::class,
         Commands\MakeBlockCommand::class,
         Commands\GeneratePreviewCommand::class,
+        Commands\ClearStorageCommand::class,
     ];
 
     /**
