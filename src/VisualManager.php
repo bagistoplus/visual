@@ -5,12 +5,13 @@ namespace BagistoPlus\Visual;
 use BagistoPlus\Visual\Contracts\SettingTransformerInterface;
 use BagistoPlus\Visual\LivewireFeatures\BlockDataSynth;
 use BagistoPlus\Visual\LivewireFeatures\SupportsBlockData;
+use BagistoPlus\Visual\Middlewares\RegisterVisualSchemas;
+use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
 use Craftile\Laravel\Facades\Craftile;
 use Illuminate\Support\Collection;
 use Livewire\Livewire;
 use Webkul\Shop\Http\Middleware\Currency;
 use Webkul\Shop\Http\Middleware\Locale;
-use Webkul\Shop\Http\Middleware\Theme;
 
 class VisualManager
 {
@@ -146,7 +147,8 @@ class VisualManager
         Livewire::addPersistentMiddleware([
             Locale::class,
             Currency::class,
-            Theme::class,
+            UseShopThemeFromRequest::class,
+            RegisterVisualSchemas::class,
         ]);
 
         Livewire::propertySynthesizer(BlockDataSynth::class);
