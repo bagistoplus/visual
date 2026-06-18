@@ -41,13 +41,23 @@ Then publish the assets:
 php artisan vendor:publish --tag=visual-assets
 ```
 
+This installs Bagisto Visual and prepares your store for theme customization.
+
+### Optional: Enable Template Assignments
+
+Template assignments let products, categories, and CMS pages use custom templates from the Bagisto admin. This feature stores assignments in the database, so enable it only when you need persistent per-resource templates.
+
+Add the environment flag:
+
+```env
+BAGISTO_VISUAL_TEMPLATE_ASSIGNMENTS=true
+```
+
 Then run the package migrations:
 
 ```bash
 php artisan migrate
 ```
-
-This installs Bagisto Visual, creates the Visual-owned tables required by editor and admin features, and prepares your store for theme customization.
 
 ## Step 2: Install the Starter Theme
 

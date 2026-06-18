@@ -283,6 +283,10 @@ class CoreServiceProvider extends ServiceProvider
             'visualtpl' => VisualTemplateAssignment::class,
         ]);
 
+        if (! Visual::templateAssignmentsEnabled()) {
+            return;
+        }
+
         foreach ([Product::class, Category::class, Page::class] as $model) {
             $model::resolveRelationUsing(
                 'visualTemplateAssignments',

@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Support;
 
+use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Models\VisualTemplateAssignment;
 use Webkul\CMS\Models\Page;
 
@@ -67,6 +68,10 @@ class CmsPageVisualEditorUrlResolver
 
     protected function assignedTemplate(Page $page, string $locale): ?string
     {
+        if (! Visual::templateAssignmentsEnabled()) {
+            return null;
+        }
+
         return VisualTemplateAssignment::query()
             ->where('assignable_id', $page->getKey())
             ->where('template_type', 'page')

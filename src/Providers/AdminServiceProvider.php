@@ -6,6 +6,7 @@ use BagistoPlus\Visual\Actions\Admin\AddCmsPageEditVisualEditorButton;
 use BagistoPlus\Visual\Actions\Admin\AddTemplateAssignmentField;
 use BagistoPlus\Visual\Actions\Admin\PersistTemplateAssignment;
 use BagistoPlus\Visual\Actions\Admin\PrepareCmsPageVisualDatagrid;
+use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Middlewares\AllowSameOriginIframeInEditor;
 use BagistoPlus\Visual\Middlewares\DispatchServingThemeEditor;
 use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
@@ -29,7 +30,10 @@ class AdminServiceProvider extends ServiceProvider
         $this->bootRoutes();
         $this->bootMiddlewares();
         $this->bootViewEventListeners();
-        app(PrepareCmsPageVisualDatagrid::class)->listen();
+
+        if (Visual::templateAssignmentsEnabled()) {
+            app(PrepareCmsPageVisualDatagrid::class)->listen();
+        }
     }
 
     /**
@@ -83,6 +87,10 @@ class AdminServiceProvider extends ServiceProvider
         Event::listen('bagisto.admin.cms.pages.edit.create_form_controls.before', function ($viewRenderEventManager) {
             app(AddCmsPageEditVisualEditorButton::class)($viewRenderEventManager);
         });
+
+        if (! Visual::templateAssignmentsEnabled()) {
+            return;
+        }
 
         Event::listen('catalog.product.update.after', fn ($product) => app(PersistTemplateAssignment::class)($product, 'product'));
         Event::listen('catalog.category.update.after', fn ($category) => app(PersistTemplateAssignment::class)($category, 'category'));

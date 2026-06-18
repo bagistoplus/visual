@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Actions\Admin;
 
+use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Support\ChannelThemeResolver;
 use BagistoPlus\Visual\Support\CmsPageVisualEditorUrlResolver;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +23,10 @@ class PrepareCmsPageVisualDatagrid
 
     public function listen(): void
     {
+        if (! Visual::templateAssignmentsEnabled()) {
+            return;
+        }
+
         foreach (self::EVENT_NAMES as $eventName) {
             Event::listen("datagrid.{$eventName}.query_builder.prepare.after", function (DataGrid $datagrid) {
                 app(self::class)->prepareQuery($datagrid);
@@ -35,6 +40,10 @@ class PrepareCmsPageVisualDatagrid
 
     public function prepareQuery(DataGrid $datagrid): void
     {
+        if (! Visual::templateAssignmentsEnabled()) {
+            return;
+        }
+
         if (! $this->themes->resolveDefault()) {
             return;
         }
@@ -52,6 +61,10 @@ class PrepareCmsPageVisualDatagrid
 
     public function prepareActions(DataGrid $datagrid): void
     {
+        if (! Visual::templateAssignmentsEnabled()) {
+            return;
+        }
+
         if (! $this->themes->resolveDefault()) {
             return;
         }

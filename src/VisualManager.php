@@ -49,6 +49,11 @@ class VisualManager
         return (int) config('bagisto_visual.videos.max_upload_size', 51200);
     }
 
+    public function templateAssignmentsEnabled(): bool
+    {
+        return (bool) config('bagisto_visual.template_assignments', false);
+    }
+
     public function discoverSectionsIn(string $path, string $namespace = 'App\\Sections'): void
     {
         Craftile::discoverBlocksIn($namespace, $path);

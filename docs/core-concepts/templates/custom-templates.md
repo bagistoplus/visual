@@ -68,6 +68,8 @@ Shared regions, such as the header and footer, stay shared across templates.
 
 ## Assigning Templates
 
+Template assignment is optional. Enable it with `BAGISTO_VISUAL_TEMPLATE_ASSIGNMENTS=true` and run `php artisan migrate` before assigning custom templates in the Bagisto admin.
+
 After a custom template is published, assign it from the relevant Bagisto admin form.
 
 ![Custom template assignment field](/editor-custom-template-admin.png)

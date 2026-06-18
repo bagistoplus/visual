@@ -17,6 +17,7 @@ class CmsVisualActionTestDataGrid extends DataGrid
 }
 
 beforeEach(function () {
+    config()->set('bagisto_visual.template_assignments', true);
     config(['app.key' => 'base64:'.base64_encode(str_repeat('a', 32))]);
 
     Route::get('/cms/{url_key}', fn () => 'cms')->name('shop.cms.page');
@@ -55,6 +56,16 @@ beforeEach(function () {
                 && $includeEditorDrafts;
         }
     });
+});
+
+it('does not touch the cms datagrid while template assignments are disabled', function () {
+    config()->set('bagisto_visual.template_assignments', false);
+
+    $datagrid = new CmsVisualActionTestDataGrid;
+
+    app(PrepareCmsPageVisualDatagrid::class)->prepareActions($datagrid);
+
+    expect($datagrid->getActions())->toBe([]);
 });
 
 function cmsVisualEditorUrlForTemplate(?string $template): ?string

@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Actions\Admin;
 
+use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Support\ChannelThemeResolver;
 use BagistoPlus\Visual\Support\TemplateAssignment;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
@@ -35,6 +36,15 @@ class AddTemplateAssignmentField
 
     public function data(string $type, mixed $model): array
     {
+        if (! Visual::templateAssignmentsEnabled()) {
+            return [
+                'enabled' => false,
+                'type' => $type,
+                'model' => $model,
+                'accordion' => $this->usesAccordion($type),
+            ];
+        }
+
         if (! $model instanceof Model) {
             return [
                 'enabled' => false,
@@ -48,7 +58,7 @@ class AddTemplateAssignmentField
         $locale = request('locale', core()->getRequestedLocaleCode());
         $theme = $this->theme($type, $channel);
 
-        if ($type === 'product' && ! $theme) {
+        if (! $theme) {
             return [
                 'enabled' => false,
                 'type' => $type,
@@ -63,10 +73,8 @@ class AddTemplateAssignmentField
             'model' => $model,
             'accordion' => $this->usesAccordion($type),
             'theme' => $theme,
-            'templates' => $theme
-                ? $this->templates->forType($theme, $type, $channel, $locale, false)
-                    ->reject(fn ($template) => $template->key === $type)
-                : collect(),
+            'templates' => $this->templates->forType($theme, $type, $channel, $locale, false)
+                ->reject(fn ($template) => $template->key === $type),
             'selected' => old('visual_template', $this->assignments->read($model, $type, $channel, $locale)),
             'defaultLabel' => __('visual::admin.template-assignment.default', ['type' => Str::headline($type)]),
         ];

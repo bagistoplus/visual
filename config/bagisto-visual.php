@@ -40,6 +40,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Template Assignments
+    |--------------------------------------------------------------------------
+    |
+    | Enable persistent template assignments for products, categories, and CMS
+    | pages. This feature requires the visual_template_assignments table.
+    |
+    */
+    'template_assignments' => env('BAGISTO_VISUAL_TEMPLATE_ASSIGNMENTS', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Theme Settings Cache TTL
     |--------------------------------------------------------------------------
     |

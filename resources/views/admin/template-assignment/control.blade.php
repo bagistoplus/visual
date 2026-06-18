@@ -23,11 +23,5 @@
         @endforeach
     </x-admin::form.control-group.control>
 
-    @unless ($theme)
-        <p class="mt-1 text-xs text-gray-500 dark:text-gray-300">
-            @lang('visual::admin.template-assignment.no-theme')
-        </p>
-    @endunless
-
     <x-admin::form.control-group.error control-name="visual_template" />
 </x-admin::form.control-group>

@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Support;
 
+use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Models\VisualTemplateAssignment;
 use BagistoPlus\Visual\Theme\Theme;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +17,10 @@ class TemplateAssignment
 
     public function resolve(Model $model, string $type, ?Theme $theme = null, ?string $channel = null, ?string $locale = null, bool $includeEditorDrafts = false): string
     {
+        if (! Visual::templateAssignmentsEnabled()) {
+            return $type;
+        }
+
         $theme ??= $type === 'product'
             ? $this->themes->resolve($channel ?? core()->getRequestedChannelCode())
             : $this->themes->resolveDefault();
@@ -39,6 +44,10 @@ class TemplateAssignment
 
     public function read(Model $model, string $type, ?string $channel = null, ?string $locale = null): ?string
     {
+        if (! Visual::templateAssignmentsEnabled()) {
+            return null;
+        }
+
         if (! in_array($type, TemplateDiscovery::ASSIGNABLE_TYPES, true)) {
             return null;
         }
@@ -55,6 +64,10 @@ class TemplateAssignment
 
     public function save(Model $model, string $type, ?string $template, ?string $channel = null, ?string $locale = null): void
     {
+        if (! Visual::templateAssignmentsEnabled()) {
+            return;
+        }
+
         $template = $template ?: null;
         $channel = $this->normalizeChannel($type, $channel);
         $locale ??= core()->getRequestedLocaleCode();
@@ -93,6 +106,10 @@ class TemplateAssignment
 
     public function isValid(?string $template, string $type, ?Theme $theme, ?string $channel, ?string $locale): bool
     {
+        if (! Visual::templateAssignmentsEnabled()) {
+            return ! $template;
+        }
+
         if (! $template) {
             return true;
         }

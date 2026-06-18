@@ -1,6 +1,7 @@
 <?php
 
 use BagistoPlus\Visual\Facades\ThemeEditor;
+use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Support\TemplateAssignment;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
 use BagistoPlus\Visual\Theme\Theme as VisualTheme;
@@ -59,7 +60,7 @@ if (! function_exists('visual_template_for')) {
             return $requested;
         }
 
-        if ($model) {
+        if ($model && Visual::templateAssignmentsEnabled()) {
             return app(TemplateAssignment::class)->resolve(
                 model: $model,
                 type: $type,

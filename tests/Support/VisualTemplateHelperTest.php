@@ -97,6 +97,8 @@ it('uses a valid requested template in design mode with the current visual theme
 });
 
 it('passes the current visual theme into template assignment resolution', function () {
+    config()->set('bagisto_visual.template_assignments', true);
+
     $theme = visualTemplateHelperTheme();
     bindCurrentTheme($theme);
 
@@ -128,6 +130,8 @@ it('passes the current visual theme into template assignment resolution', functi
 });
 
 it('returns keys that normal shop template includes can render', function () {
+    config()->set('bagisto_visual.template_assignments', true);
+
     $theme = visualTemplateHelperTheme();
     bindCurrentTheme($theme);
 
@@ -145,4 +149,21 @@ it('returns keys that normal shop template includes can render', function () {
 
     expect($key)->toBe('product.gift-box')
         ->and(view("shop::templates.{$key}")->render())->toContain('custom gift box product template');
+});
+
+it('does not resolve persisted assignments while template assignments are disabled', function () {
+    $theme = visualTemplateHelperTheme();
+    bindCurrentTheme($theme);
+
+    app()->instance(TemplateAssignment::class, new class extends TemplateAssignment
+    {
+        public function __construct() {}
+
+        public function resolve(Model $model, string $type, ?Theme $theme = null, ?string $channel = null, ?string $locale = null, bool $includeEditorDrafts = false): string
+        {
+            throw new RuntimeException('TemplateAssignment should not be used while disabled.');
+        }
+    });
+
+    expect(visual_template_for('product', new VisualTemplateHelperTestModel))->toBe('product');
 });

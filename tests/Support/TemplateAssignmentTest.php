@@ -32,6 +32,31 @@ function templateAssignmentService(?TemplateDiscovery $discovery = null): Templa
     );
 }
 
+beforeEach(function () {
+    config()->set('bagisto_visual.template_assignments', true);
+});
+
+it('no-ops while template assignments are disabled', function () {
+    config()->set('bagisto_visual.template_assignments', false);
+
+    $model = templateAssignmentTestModel();
+    $model->setRelation('visualTemplateAssignments', collect([
+        new VisualTemplateAssignment([
+            'template_type' => 'product',
+            'template_key' => 'product.gift-box',
+            'channel' => 'default',
+            'locale' => 'en',
+        ]),
+    ]));
+
+    $service = templateAssignmentService();
+
+    expect($service->read($model, 'product', 'default', 'en'))->toBeNull()
+        ->and($service->resolve($model, 'product', null, 'default', 'en'))->toBe('product')
+        ->and($service->isValid(null, 'product', null, 'default', 'en'))->toBeTrue()
+        ->and($service->isValid('product.gift-box', 'product', null, 'default', 'en'))->toBeFalse();
+});
+
 it('uses an eager loaded visual template assignment relation when present', function () {
     $model = templateAssignmentTestModel();
     $model->setRelation('visualTemplateAssignments', collect([

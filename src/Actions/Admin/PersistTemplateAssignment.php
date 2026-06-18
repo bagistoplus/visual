@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Actions\Admin;
 
+use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Support\ChannelThemeResolver;
 use BagistoPlus\Visual\Support\TemplateAssignment;
 
@@ -14,6 +15,10 @@ class PersistTemplateAssignment
 
     public function __invoke($model, string $type): void
     {
+        if (! Visual::templateAssignmentsEnabled()) {
+            return;
+        }
+
         if (! request()->has('visual_template')) {
             return;
         }

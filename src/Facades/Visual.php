@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static string videosDisk()
  * @method static string videosDirectory()
  * @method static int videosMaxUploadSize()
+ * @method static bool templateAssignmentsEnabled()
  * @method static void discoverSectionsIn(string $path, string $namespace = 'App\\Sections')
  * @method static void discoverBlocksIn(string $path, string $namespace = 'App\\Blocks')
  * @method static void discoverPresetsIn(string $path, string $namespace = 'App\\Presets')

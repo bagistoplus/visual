@@ -37,6 +37,8 @@ class TemplateAssignmentFieldViewTestManager extends ViewRenderEventManager
 }
 
 beforeEach(function () {
+    config()->set('bagisto_visual.template_assignments', true);
+
     view()->addLocation(__DIR__.'/../views/components');
 
     Blade::component('test-admin-accordion', 'admin::accordion');
@@ -82,13 +84,50 @@ beforeEach(function () {
     });
 });
 
+function templateAssignmentFieldVisualTheme(): Theme
+{
+    return Theme::make([
+        'code' => 'fake-theme',
+        'name' => 'Fake Theme',
+        'visual_theme' => true,
+    ]);
+}
+
+function bindTemplateAssignmentFieldThemeResolver(?Theme $productTheme = null, ?Theme $defaultTheme = null): void
+{
+    app()->instance(ChannelThemeResolver::class, new class($productTheme, $defaultTheme) extends ChannelThemeResolver
+    {
+        public function __construct(protected ?Theme $productTheme, protected ?Theme $defaultTheme) {}
+
+        public function resolve(Channel|string|null $channel = null): ?Theme
+        {
+            return $this->productTheme;
+        }
+
+        public function resolveDefault(): ?Theme
+        {
+            return $this->defaultTheme;
+        }
+    });
+}
+
+it('does not prepare assignment field data while template assignments are disabled', function () {
+    config()->set('bagisto_visual.template_assignments', false);
+
+    $data = app(AddTemplateAssignmentField::class)->data('category', new TemplateAssignmentFieldViewTestModel);
+
+    expect($data['enabled'])->toBeFalse()
+        ->and($data['type'])->toBe('category')
+        ->and($data['accordion'])->toBeTrue();
+});
+
 it('renders the product template assignment field without an accordion wrapper', function () {
     $html = view('visual::admin.template-assignment.field', [
         'enabled' => true,
         'type' => 'product',
         'model' => new TemplateAssignmentFieldViewTestModel,
         'accordion' => false,
-        'theme' => null,
+        'theme' => templateAssignmentFieldVisualTheme(),
         'templates' => collect(),
         'selected' => null,
         'defaultLabel' => 'Default Product',
@@ -104,7 +143,7 @@ it('renders category and cms template assignment fields inside an accordion wrap
         'type' => $type,
         'model' => new TemplateAssignmentFieldViewTestModel,
         'accordion' => true,
-        'theme' => null,
+        'theme' => templateAssignmentFieldVisualTheme(),
         'templates' => collect(),
         'selected' => null,
         'defaultLabel' => "Default {$type}",
@@ -125,6 +164,8 @@ it('renders nothing when the prepared field is disabled', function () {
 });
 
 it('pre-renders the assignment field before adding it to the view render manager', function () {
+    bindTemplateAssignmentFieldThemeResolver(defaultTheme: templateAssignmentFieldVisualTheme());
+
     $manager = new TemplateAssignmentFieldViewTestManager;
 
     app(AddTemplateAssignmentField::class)($manager, 'category');
@@ -143,18 +184,19 @@ it('does not add the product assignment field when the selected channel theme is
     expect($manager->templates)->toBe([]);
 });
 
+it('does not add category or cms page assignment fields when the default theme is not visual', function (string $type) {
+    $manager = new TemplateAssignmentFieldViewTestManager;
+
+    app(AddTemplateAssignmentField::class)($manager, $type);
+
+    expect($manager->templates)->toBe([]);
+})->with([
+    'category',
+    'page',
+]);
+
 it('adds the product assignment field when the selected channel theme is visual', function () {
-    app()->instance(ChannelThemeResolver::class, new class extends ChannelThemeResolver
-    {
-        public function resolve(Channel|string|null $channel = null): ?Theme
-        {
-            return Theme::make([
-                'code' => 'fake-theme',
-                'name' => 'Fake Theme',
-                'visual_theme' => true,
-            ]);
-        }
-    });
+    bindTemplateAssignmentFieldThemeResolver(productTheme: templateAssignmentFieldVisualTheme());
 
     $manager = new TemplateAssignmentFieldViewTestManager;
 
@@ -164,3 +206,18 @@ it('adds the product assignment field when the selected channel theme is visual'
         ->and($manager->templates[0][0])->toContain('name="visual_template"')
         ->and($manager->templates[0][0])->not->toContain('data-test-accordion');
 });
+
+it('adds category and cms page assignment fields when the default theme is visual', function (string $type) {
+    bindTemplateAssignmentFieldThemeResolver(defaultTheme: templateAssignmentFieldVisualTheme());
+
+    $manager = new TemplateAssignmentFieldViewTestManager;
+
+    app(AddTemplateAssignmentField::class)($manager, $type);
+
+    expect($manager->templates)->toHaveCount(1)
+        ->and($manager->templates[0][0])->toContain('name="visual_template"')
+        ->and($manager->templates[0][0])->toContain('data-test-accordion');
+})->with([
+    'category',
+    'page',
+]);

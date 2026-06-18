@@ -60,6 +60,8 @@ After publishing, custom templates can be assigned to resources in the Bagisto a
 
 ## Assigning Custom Templates
 
+Template assignment is optional. Enable it with `BAGISTO_VISUAL_TEMPLATE_ASSIGNMENTS=true` and run `php artisan migrate` before assigning custom templates in the Bagisto admin.
+
 Custom templates are assigned from each resource edit form in Bagisto:
 
 - **Product:** General panel. Product assignments are channel and locale specific.

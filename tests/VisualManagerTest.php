@@ -28,3 +28,13 @@ it('reads grouped video media settings', function () {
         ->and(Visual::videosDirectory())->toBe('visual-videos')
         ->and(Visual::videosMaxUploadSize())->toBe(1024);
 });
+
+it('disables template assignments by default', function () {
+    expect(Visual::templateAssignmentsEnabled())->toBeFalse();
+});
+
+it('reads template assignment opt in setting', function () {
+    config()->set('bagisto_visual.template_assignments', true);
+
+    expect(Visual::templateAssignmentsEnabled())->toBeTrue();
+});
