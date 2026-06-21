@@ -29,6 +29,7 @@ function makeState(overrides: Partial<State> = {}): State {
     ],
     channel: 'default',
     locale: 'en',
+    localeInheritance: {},
     theme: null,
     templates: [],
     pageData: null,
@@ -66,6 +67,36 @@ describe('preview page data context sync', () => {
 
     expect(state.channel).toBe('mobile');
     expect(state.locale).toBe('fr');
+  });
+
+  it('replaces locale inheritance from preview page data', () => {
+    const state = makeState({
+      localeInheritance: {
+        fr: { parentChannel: 'default', parentLocale: 'en' },
+      },
+    });
+
+    syncEditorContextFromPageData(state, {
+      localeInheritance: {
+        en: { parentChannel: 'mobile', parentLocale: 'fr' },
+      },
+    });
+
+    expect(state.localeInheritance).toEqual({
+      en: { parentChannel: 'mobile', parentLocale: 'fr' },
+    });
+  });
+
+  it('clears locale inheritance when preview page data omits it', () => {
+    const state = makeState({
+      localeInheritance: {
+        fr: { parentChannel: 'default', parentLocale: 'en' },
+      },
+    });
+
+    syncEditorContextFromPageData(state, {});
+
+    expect(state.localeInheritance).toEqual({});
   });
 
   it('trusts preview locale even when it is not listed for the current channel', () => {

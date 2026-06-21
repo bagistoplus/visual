@@ -11,6 +11,7 @@ use BagistoPlus\Visual\Middlewares\DisableResponseCacheInDesignMode;
 use BagistoPlus\Visual\Middlewares\RegisterVisualSchemas;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
 use BagistoPlus\Visual\Models\VisualTemplateAssignment;
+use BagistoPlus\Visual\Persistence\EditorDataStore;
 use BagistoPlus\Visual\Settings\Support as SettingTransformers;
 use BagistoPlus\Visual\Support\BlockRenderFilter;
 use BagistoPlus\Visual\Support\ChannelThemeResolver;
@@ -363,7 +364,8 @@ class CoreServiceProvider extends ServiceProvider
         $this->app->singleton(ThemeSettingsLoader::class, function (Application $app) {
             return new ThemeSettingsLoader(
                 $app->get(ThemePathsResolver::class),
-                $app->get('files')
+                $app->get('files'),
+                $app->get(EditorDataStore::class),
             );
         });
 

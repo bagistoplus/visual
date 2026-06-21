@@ -3,39 +3,48 @@
 namespace BagistoPlus\Visual\Persistence;
 
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
+use BagistoPlus\Visual\Persistence\Data\ThemeSettingsUpdateData;
 use BagistoPlus\Visual\Theme\Theme;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\File;
 
 class PersistThemeSettings
 {
     public function __construct(
-        protected ThemeSettingsLoader $themeSettingsLoader
+        protected ThemeSettingsLoader $themeSettingsLoader,
+        protected EditorDataStore $editorDataStore,
+        protected ThemeSettingsDiffer $themeSettingsDiffer,
+        protected LocalizedProperties $localizedProperties,
     ) {}
 
-    public function handle(array $data): array
+    public function handle(ThemeSettingsUpdateData $data): array
     {
-        $theme = $data['theme'];
-        $channel = $data['channel'];
-        $locale = $data['locale'];
-        $updates = $data['updates'];
-
-        $filePath = $this->getThemeSettingsFilePath($theme, $channel, $locale);
+        $relativePath = $this->editorDataStore->relativePath($data->channel, $data->locale, 'theme.json');
 
         // Load existing settings
-        $existingSettings = $this->loadExistingSettings($theme, $channel, $locale);
+        $existingSettings = $this->editorDataStore->loadResolved($data->theme, $relativePath)
+            ?: $this->loadExistingSettings($data->theme, $data->channel, $data->locale);
 
         // Apply partial updates using dot notation
-        foreach ($updates as $key => $value) {
+        foreach ($data->updates as $key => $value) {
             data_set($existingSettings, $key, $value);
         }
 
-        // Save merged settings in flattened format
-        $this->saveThemeSettings($existingSettings, $filePath, $theme);
+        $parent = $this->selectParent($data->theme, $data->channel, $data->locale, $relativePath);
+        $parentData = $parent ? $this->editorDataStore->loadResolved($data->theme, $parent) : [];
+        $clean = $this->themeSettingsDiffer->clean($existingSettings, $parentData);
+        $diff = $parent ? $this->editorDataStore->diff($clean, $parentData) : $clean;
+
+        if ($parent && $this->editorDataStore->localeFromRelative($parent) !== $data->locale) {
+            $themeConfig = config("themes.shop.{$data->theme}");
+            $schema = $themeConfig ? Theme::make($themeConfig)->settingsSchema : [];
+            $diff = $this->editorDataStore->merge($diff, $this->localizedProperties->themeSettingsFragment($clean, $schema));
+        }
+
+        $this->editorDataStore->save($data->theme, $relativePath, $diff, $parent);
 
         // Clear cache
-        $this->clearCache($theme, $channel, $locale);
+        $this->clearCache($data->theme, $data->channel, $data->locale);
 
         return [
             'success' => true,
@@ -43,22 +52,10 @@ class PersistThemeSettings
         ];
     }
 
-    protected function getThemeSettingsFilePath(string $theme, string $channel, string $locale): string
+    protected function selectParent(string $theme, string $channel, string $locale, string $relativePath): ?string
     {
-        return ThemePathsResolver::resolvePath($theme, $channel, $locale, 'editor', 'theme.json');
-    }
-
-    protected function saveThemeSettings(array $settings, string $filePath, string $theme): void
-    {
-        File::ensureDirectoryExists(dirname($filePath));
-
-        $json = json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-
-        File::put($filePath, $json);
-
-        // Mark that edits have been made
-        $lastEditFile = ThemePathsResolver::getThemeBaseDataPath($theme, 'editor/.last-edit');
-        File::put($lastEditFile, (string) time());
+        return $this->editorDataStore->storedParent($theme, $relativePath)
+            ?? $this->editorDataStore->nearestFallbackParent($theme, $channel, $locale, 'theme.json');
     }
 
     protected function loadExistingSettings(string $themeCode, string $channel, string $locale): array

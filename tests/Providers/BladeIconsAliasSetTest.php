@@ -6,6 +6,7 @@ use BladeUI\Icons\IconsManifest;
 use Illuminate\Support\Facades\Blade;
 
 beforeEach(function () {
+    config()->set('blade-icons.components.disabled', false);
     config()->set('bagisto_visual_iconmap', [
         'icon-compare' => 'lucide-scale',
     ]);

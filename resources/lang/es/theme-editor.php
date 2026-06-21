@@ -88,6 +88,7 @@ return [
 
     'Channels' => 'Canales',
     'Locales' => 'Idiomas',
+    'Inherits' => 'Hereda de',
 
     'No sections' => 'Sin secciones',
     'Add Section' => 'Agregar sección',

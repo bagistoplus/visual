@@ -18,12 +18,14 @@ export function setupPreviewLoading(editor: CraftileEditor, state: State) {
 
   preview.loadUrl = (url: string) => {
     state.previewLoading = true;
+    state.localeInheritance = {};
 
     return loadUrl(url);
   };
 
   preview.reload = () => {
     state.previewLoading = true;
+    state.localeInheritance = {};
 
     return reload();
   };

@@ -32,56 +32,61 @@ Example file:
 <?php
 
 use BagistoPlus\Visual\Settings;
+use function BagistoPlus\Visual\t;
 
 return [
   [
-    'name' => 'Light Scheme Colors (default)',
+    'name' => t('awesome-theme::settings.groups.light_scheme'),
     'settings' => [
-      Settings\Color::make('light_background_color', 'Background')
+      Settings\Color::make('light_background_color', t('awesome-theme::settings.light_background_color'))
         ->default('#ffffff')
-        ->info('Default page color. Used for main page background and large content areas'),
+        ->info(t('awesome-theme::settings.light_background_color_info')),
 
-      Settings\Color::make('light_primary_color', 'Primary')
+      Settings\Color::make('light_primary_color', t('awesome-theme::settings.light_primary_color'))
         ->default('#92400e')
-        ->info('Main brand color. Used for buttons and key elements'),
+        ->info(t('awesome-theme::settings.light_primary_color_info')),
 
       // More color settings...
     ],
   ],
   [
-    'name' => 'Typography',
+    'name' => t('awesome-theme::settings.groups.typography'),
     'settings' => [
-      Settings\Font::make('heading_font', 'Heading Font')
+      Settings\Font::make('heading_font', t('awesome-theme::settings.heading_font'))
           ->default('Inter'),
 
-      Settings\Font::make('body_font', 'Body Font')
+      Settings\Font::make('body_font', t('awesome-theme::settings.body_font'))
           ->default('Roboto'),
     ],
   ],
   [
-    'name' => 'Social Media Links',
+    'name' => t('awesome-theme::settings.groups.social_links'),
     'settings' => [
-      Settings\Text::make('facebook_url', 'Facebook URL')
+      Settings\Text::make('facebook_url', t('awesome-theme::settings.facebook_url'))
         ->default('https://www.facebook.com'),
 
-      Settings\Text::make('instagram_url', 'Instagram URL')
+      Settings\Text::make('instagram_url', t('awesome-theme::settings.instagram_url'))
         ->default('https://www.instagram.com'),
 
-      Settings\Text::make('youtube_url', 'YouTube URL')
+      Settings\Text::make('youtube_url', t('awesome-theme::settings.youtube_url'))
         ->default('https://www.youtube.com'),
 
-      Settings\Text::make('tiktok_url', 'TikTok URL')
+      Settings\Text::make('tiktok_url', t('awesome-theme::settings.tiktok_url'))
         ->default('https://www.tiktok.com'),
 
-      Settings\Text::make('twitter_url', 'X/Twitter URL')
+      Settings\Text::make('twitter_url', t('awesome-theme::settings.twitter_url'))
         ->default('https://www.x.com'),
 
-      Settings\Text::make('snapchat_url', 'Snapchat')
+      Settings\Text::make('snapchat_url', t('awesome-theme::settings.snapchat_url'))
         ->default('https://www.snapchat.com'),
     ],
   ],
 ];
 ```
+
+Use Visual's `t()` helper for group names, labels, helper text, and default text that should adapt to the active locale until the merchant customizes it.
+
+`Text`, `Textarea`, and `RichText` settings are localized by default. Other setting types can opt in with `->localized()`.
 
 ## Accessing Theme Settings in Blade
 

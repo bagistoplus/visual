@@ -18,6 +18,7 @@ function makeState(overrides: Partial<State> = {}): State {
     channels: [],
     channel: 'default',
     locale: 'en',
+    localeInheritance: {},
     theme: null,
     templates: [],
     pageData: null,
@@ -40,8 +41,12 @@ function makeState(overrides: Partial<State> = {}): State {
 }
 
 describe('preview loading state', () => {
-  it('sets preview loading before loading a new url', () => {
-    const state = makeState();
+  it('sets preview loading and clears locale inheritance before loading a new url', () => {
+    const state = makeState({
+      localeInheritance: {
+        ar: { parentChannel: 'default', parentLocale: 'en' },
+      },
+    });
     const loadUrl = vi.fn();
     const editor = {
       preview: {
@@ -54,11 +59,16 @@ describe('preview loading state', () => {
     editor.preview.loadUrl('https://example.test');
 
     expect(state.previewLoading).toBe(true);
+    expect(state.localeInheritance).toEqual({});
     expect(loadUrl).toHaveBeenCalledWith('https://example.test');
   });
 
-  it('sets preview loading before reloading the preview', () => {
-    const state = makeState();
+  it('sets preview loading and clears locale inheritance before reloading the preview', () => {
+    const state = makeState({
+      localeInheritance: {
+        ar: { parentChannel: 'default', parentLocale: 'en' },
+      },
+    });
     const reload = vi.fn();
     const editor = {
       preview: {
@@ -71,6 +81,7 @@ describe('preview loading state', () => {
     editor.preview.reload();
 
     expect(state.previewLoading).toBe(true);
+    expect(state.localeInheritance).toEqual({});
     expect(reload).toHaveBeenCalled();
   });
 });

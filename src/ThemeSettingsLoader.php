@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual;
 
 use BagistoPlus\Visual\Facades\ThemeEditor;
+use BagistoPlus\Visual\Persistence\EditorDataStore;
 use BagistoPlus\Visual\Theme\Theme;
 use Craftile\Laravel\PropertyBag;
 use Illuminate\Filesystem\Filesystem;
@@ -22,7 +23,11 @@ class ThemeSettingsLoader
      *
      * @param  Filesystem  $files  The filesystem instance for file operations.
      */
-    public function __construct(protected ThemePathsResolver $themePathsResolver, protected Filesystem $files) {}
+    public function __construct(
+        protected ThemePathsResolver $themePathsResolver,
+        protected Filesystem $files,
+        protected EditorDataStore $editorDataStore,
+    ) {}
 
     /**
      * Load settings for the currently active theme.
@@ -66,7 +71,7 @@ class ThemeSettingsLoader
     protected function loadThemeSettingsFromFile(Theme $theme): PropertyBag
     {
         $dataPath = $this->getThemeSettingsFilePath($theme->code);
-        $data = $this->loadFileContent($dataPath);
+        $data = $this->loadThemeSettingsFile($theme->code, $dataPath);
 
         $settingsSchema = collect($theme->settingsSchema)
             ->map(fn ($group) => $group['settings'])
@@ -76,13 +81,35 @@ class ThemeSettingsLoader
             ->toArray();
 
         $settingsData = $data['settings'] ?? $data;
+        unset($settingsData['parent']);
         $settings = collect($settingsSchema)->mapWithKeys(function ($schema) use ($settingsData) {
+            $value = $settingsData[$schema['id']] ?? $schema['default'] ?? null;
+
             return [
-                $schema['id'] => $settingsData[$schema['id']] ?? $schema['default'] ?? null,
+                $schema['id'] => ($schema['localized'] ?? false) === true
+                    ? $this->resolveTranslationReferences($value, $schema)
+                    : $value,
             ];
         })->toArray();
 
         return new PropertyBag($settings, $settingsSchema);
+    }
+
+    protected function loadThemeSettingsFile(string $themeCode, ?string $path): array
+    {
+        if ($path === null) {
+            return [];
+        }
+
+        if (ThemeEditor::active()) {
+            $relativePath = $this->editorDataStore->relativePathFromAbsolute($themeCode, $path);
+
+            if ($relativePath) {
+                return $this->editorDataStore->loadResolved($themeCode, $relativePath);
+            }
+        }
+
+        return $this->loadFileContent($path);
     }
 
     /**
@@ -103,7 +130,7 @@ class ThemeSettingsLoader
 
         $content = json_decode($this->files->get($path), true);
 
-        return $this->cache[$path] = $content;
+        return $this->cache[$path] = is_array($content) ? $content : [];
     }
 
     /**
@@ -129,5 +156,31 @@ class ThemeSettingsLoader
     public function clearCache(): void
     {
         $this->cache = [];
+    }
+
+    protected function resolveTranslationReferences(mixed $value, array $schema): mixed
+    {
+        if (is_string($value)) {
+            return $this->resolveTranslationReference($value);
+        }
+
+        if (is_array($value) && ($schema['responsive'] ?? false) === true) {
+            foreach ($value as $key => $item) {
+                $value[$key] = is_string($item)
+                    ? $this->resolveTranslationReference($item)
+                    : $item;
+            }
+        }
+
+        return $value;
+    }
+
+    protected function resolveTranslationReference(string $value): mixed
+    {
+        if (str_starts_with($value, 't:') && $value !== 't:') {
+            return __(substr($value, 2));
+        }
+
+        return $value;
     }
 }

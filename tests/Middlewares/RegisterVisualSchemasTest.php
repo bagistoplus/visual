@@ -8,7 +8,7 @@ use Webkul\Theme\Facades\Themes as ThemesFacade;
 
 function bindThemeForVisualSchemaRegistration(mixed $theme): void
 {
-    app()->instance('themes', new class($theme)
+    ThemesFacade::swap(new class($theme)
     {
         public function __construct(protected mixed $theme) {}
 
@@ -17,8 +17,6 @@ function bindThemeForVisualSchemaRegistration(mixed $theme): void
             return $this->theme;
         }
     });
-
-    ThemesFacade::clearResolvedInstance('themes');
 }
 
 it('registers deferred schemas before handling a visual storefront request', function () {

@@ -48,6 +48,7 @@ class TestCase extends Orchestra
                 'prefix' => '',
             ]);
             $config->set('cache.default', 'array');
+            $config->set('blade-icons.components.disabled', true);
         });
     }
 }

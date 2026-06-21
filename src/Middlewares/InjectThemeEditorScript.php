@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Middlewares;
 
 use BagistoPlus\Visual\Support\EditorBlockSchemaSerializer;
+use BagistoPlus\Visual\Support\EditorInheritanceMetadata;
 use BagistoPlus\Visual\ThemeEditor;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use Craftile\Laravel\Middlewares\PreviewScriptMiddleware;
@@ -22,7 +23,8 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
         protected ThemeSettingsLoader $themeSettingsLoader,
         protected CategoryRepository $categoryRepository,
         protected ProductRepository $productRepository,
-        protected PreviewDataCollector $previewCollector
+        protected PreviewDataCollector $previewCollector,
+        protected EditorInheritanceMetadata $editorInheritanceMetadata,
     ) {}
 
     /**
@@ -69,15 +71,25 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
 
     protected function buildInjectedPageData(array $pageData, $routeTemplate, PropertyBag $settingsBag): array
     {
+        $channel = core()->getRequestedChannelCode();
+        $locale = core()->getRequestedLocaleCode();
+        $template = $this->themeEditor->getTemplateFromJsonViews($routeTemplate);
+
         return [
             'content' => $pageData,
             'template' => [
                 'url' => request()->fullUrl(),
-                'name' => $this->themeEditor->getTemplateFromJsonViews($routeTemplate),
+                'name' => $template,
                 'sources' => encrypt($this->themeEditor->jsonViews()),
             ],
-            'channel' => core()->getRequestedChannelCode(),
-            'locale' => core()->getRequestedLocaleCode(),
+            'channel' => $channel,
+            'locale' => $locale,
+            // Page-load metadata; autosaves do not refresh it until the next page-data event.
+            'localeInheritance' => $this->editorInheritanceMetadata->localeInheritanceForTemplate(
+                themes()->current()->code,
+                $channel,
+                $template
+            ),
             'blockSchemas' => app(EditorBlockSchemaSerializer::class)->all(),
             'settings' => $settingsBag->toArray(),
             'preloadedModels' => $this->themeEditor->preloadedModels(),
@@ -89,22 +101,6 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
 
         return collect(themes()->current())
             ->only(['code', 'name', 'version']);
-    }
-
-    protected function translateSettingsSchema(array $settingsSchema): array
-    {
-        return collect($settingsSchema)->map(function ($group) {
-            $group['name'] = trans($group['name']);
-
-            $group['settings'] = collect($group['settings'])->map(function ($setting) {
-                $setting['label'] = trans($setting['label']);
-                $setting['info'] = trans($setting['info']);
-
-                return $setting;
-            })->all();
-
-            return $group;
-        })->all();
     }
 
     protected function isHtmlResponse($response)

@@ -49,6 +49,11 @@ trait HasBlockBehavior
         return static::settings();
     }
 
+    protected static function t(string $key): string
+    {
+        return \BagistoPlus\Visual\t($key);
+    }
+
     protected function getViewData(): array
     {
         return [];

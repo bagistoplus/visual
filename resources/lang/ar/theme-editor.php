@@ -88,6 +88,7 @@ return [
 
     'Channels' => 'القنوات',
     'Locales' => 'اللغات',
+    'Inherits' => 'يرث من',
 
     'No sections' => 'لا توجد أقسام',
     'Add Section' => 'إضافة قسم',

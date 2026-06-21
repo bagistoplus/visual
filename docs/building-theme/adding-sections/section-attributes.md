@@ -50,9 +50,11 @@ protected static string $name = 'Announcement Bar';
 or
 
 ```php
+use function BagistoPlus\Visual\t;
+
 public static function name(): string
 {
-    return __('Announcement Bar');
+    return t('awesome-theme::sections.announcement_bar.name');
 }
 ```
 
@@ -118,9 +120,11 @@ protected static string $description = 'Used for banners or alerts.';
 or
 
 ```php
+use function BagistoPlus\Visual\t;
+
 public static function description(): string
 {
-    return __('Used for banners or alerts.');
+    return t('awesome-theme::sections.announcement_bar.description');
 }
 ```
 
@@ -135,9 +139,11 @@ protected static string $category = 'Marketing';
 or
 
 ```php
+use function BagistoPlus\Visual\t;
+
 public static function category(): string
 {
-    return __('Marketing');
+    return t('awesome-theme::sections.categories.marketing');
 }
 ```
 
@@ -201,61 +207,13 @@ protected static string $previewDescription = 'Displays a rotating announcement 
 or
 
 ```php
+use function BagistoPlus\Visual\t;
+
 public static function previewDescription(): string
 {
-    return __('Displays a rotating announcement banner.')
+    return t('awesome-theme::sections.announcement_bar.preview_description');
 }
 ```
-
-## presets
-
-Defines pre-configured variations of the section that merchants can choose from when adding the section. Presets allow you to provide quick-start templates with predefined settings and blocks.
-
-```php
-use BagistoPlus\Visual\Support\Preset;
-use BagistoPlus\Visual\Support\PresetBlock;
-
-public static function presets(): array
-{
-    return [
-        Preset::make('Centered Hero')
-            ->description('Full-width hero with centered content')
-            ->settings([
-                'heading' => 'Welcome to Our Store',
-                'layout' => 'centered',
-                'background_color' => '#4f46e5',
-            ])
-            ->blocks([
-                PresetBlock::make('@awesome-theme/heading')
-                    ->id('hero-title')
-                    ->settings(['text' => 'Welcome to Our Store', 'level' => 1]),
-
-                PresetBlock::make('@awesome-theme/button')
-                    ->id('hero-cta')
-                    ->settings(['text' => 'Shop Now', 'style' => 'primary']),
-            ]),
-
-        Preset::make('Image Left Layout')
-            ->description('Hero with image on the left side')
-            ->settings([
-                'heading' => 'Discover Our Products',
-                'layout' => 'left',
-            ]),
-    ];
-}
-```
-
-Presets support:
-
-- `name()` - Display name in the preset picker
-- `description()` - Optional description text
-- `settings()` - Default settings values
-- `children` - Pre-configured child blocks using PresetBlock
-- `icon()` - Optional icon (SVG string)
-- `category()` - Optional category for grouping
-- `previewImageUrl()` - Optional preview image URL
-
-For comprehensive documentation on creating presets with nested blocks, categories, and advanced features, see the [Presets Guide](../../core-concepts/presets.md).
 
 ## accepts
 
@@ -307,6 +265,57 @@ Render blocks in your section view using `@children`:
 </div>
 ```
 
+## presets
+
+Defines pre-configured variations of the section that merchants can choose from when adding the section. Presets allow you to provide quick-start templates with predefined settings and blocks.
+
+```php
+use BagistoPlus\Visual\Support\Preset;
+use BagistoPlus\Visual\Support\PresetBlock;
+use function BagistoPlus\Visual\t;
+
+public static function presets(): array
+{
+    return [
+        Preset::make(t('awesome-theme::presets.hero.centered.name'))
+            ->description(t('awesome-theme::presets.hero.centered.description'))
+            ->settings([
+                'heading' => t('awesome-theme::presets.hero.centered.heading'),
+                'layout' => 'centered',
+                'background_color' => '#4f46e5',
+            ])
+            ->blocks([
+                PresetBlock::make('@awesome-theme/heading')
+                    ->id('hero-title')
+                    ->settings(['text' => t('awesome-theme::presets.hero.centered.heading'), 'level' => 1]),
+
+                PresetBlock::make('@awesome-theme/button')
+                    ->id('hero-cta')
+                    ->settings(['text' => t('awesome-theme::presets.hero.centered.cta'), 'style' => 'primary']),
+            ]),
+
+        Preset::make(t('awesome-theme::presets.hero.image_left.name'))
+            ->description(t('awesome-theme::presets.hero.image_left.description'))
+            ->settings([
+                'heading' => t('awesome-theme::presets.hero.image_left.heading'),
+                'layout' => 'left',
+            ]),
+    ];
+}
+```
+
+Presets support:
+
+- `name()` - Display name in the preset picker
+- `description()` - Optional description text
+- `settings()` - Default settings values
+- `children` - Pre-configured child blocks using PresetBlock
+- `icon()` - Optional icon (SVG string)
+- `category()` - Optional category for grouping
+- `previewImageUrl()` - Optional preview image URL
+
+For comprehensive documentation on creating presets with nested blocks, categories, and advanced features, see the [Presets Guide](../../core-concepts/presets.md).
+
 ## settings
 
 Defines the configurable fields for the section that appear in the Visual Editor's settings panel.
@@ -315,17 +324,18 @@ Defines the configurable fields for the section that appear in the Visual Editor
 use BagistoPlus\Visual\Settings\Text;
 use BagistoPlus\Visual\Settings\Color;
 use BagistoPlus\Visual\Settings\Link;
+use function BagistoPlus\Visual\t;
 
 public static function settings(): array
 {
     return [
-        Text::make('heading', 'Heading')
-            ->default('Welcome to Our Store'),
+        Text::make('heading', t('awesome-theme::sections.hero.heading'))
+            ->default(t('awesome-theme::sections.hero.default_heading')),
 
-        Color::make('background_color', 'Background Color')
+        Color::make('background_color', t('awesome-theme::sections.hero.background_color'))
             ->default('#4f46e5'),
 
-        Link::make('cta_link', 'Call to Action Link'),
+        Link::make('cta_link', t('awesome-theme::sections.hero.cta_link')),
     ];
 }
 ```
@@ -335,16 +345,18 @@ public static function settings(): array
 Settings can use **dynamic sources** to populate defaults from runtime context:
 
 ```php
+use function BagistoPlus\Visual\t;
+
 public static function settings(): array
 {
     return [
-        Text::make('productName', 'Product Name')
+        Text::make('productName', t('awesome-theme::products.name'))
             ->default('@product.name'),
 
-        Number::make('price', 'Price')
+        Number::make('price', t('awesome-theme::products.price'))
             ->default('@product.price'),
 
-        Image::make('image', 'Product Image')
+        Image::make('image', t('awesome-theme::products.image'))
             ->default('@product.base_image.url'),
     ];
 }

@@ -95,6 +95,14 @@ it('rejects unsupported template filenames', function (string $filename) {
     'custom dotted slug' => 'product/gift.box.json',
 ]);
 
+it('resolves template keys to editor storage paths', function (string $key, string $path) {
+    expect(app(TemplateDiscovery::class)->templateStoragePath($key))->toBe($path);
+})->with([
+    'standard template' => ['index', 'templates/index.json'],
+    'default product template' => ['product', 'templates/product.json'],
+    'custom product template' => ['product.gift-box', 'templates/product/gift-box.json'],
+]);
+
 it('creates empty editor templates with only an empty main region', function () {
     $dataPath = sys_get_temp_dir().'/visual-create-template-'.uniqid();
     config()->set('bagisto_visual.data_path', $dataPath);

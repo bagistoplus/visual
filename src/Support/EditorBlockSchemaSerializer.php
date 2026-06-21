@@ -11,6 +11,8 @@ use Illuminate\Support\Collection;
 
 class EditorBlockSchemaSerializer
 {
+    public function __construct(protected SchemaTextTranslator $schemaTextTranslator) {}
+
     public function all(): array
     {
         /** @var Collection<string, BlockSchema> $schemas */
@@ -23,7 +25,7 @@ class EditorBlockSchemaSerializer
                     $propArray = $prop->toArray();
 
                     if ($propArray['type'] === 'header') {
-                        $currentGroup = $propArray['label'];
+                        $currentGroup = $this->schemaTextTranslator->translateText($propArray['label']);
 
                         return null;
                     }
@@ -36,7 +38,7 @@ class EditorBlockSchemaSerializer
                         $propArray['group'] = $currentGroup;
                     }
 
-                    return $propArray;
+                    return $this->schemaTextTranslator->translatePropertySchema($propArray);
                 })
                 ->filter()
                 ->values()
@@ -58,9 +60,13 @@ class EditorBlockSchemaSerializer
                 'type' => $blockSchema->type,
                 'properties' => $properties,
                 'accepts' => $blockSchema->accepts,
-                'presets' => $blockSchema->presets,
+                'presets' => collect($blockSchema->presets)
+                    ->map(fn ($preset) => $this->schemaTextTranslator->translatePreset(
+                        is_object($preset) && method_exists($preset, 'toArray') ? $preset->toArray() : (array) $preset
+                    ))
+                    ->all(),
                 'private' => $blockSchema->private,
-                'meta' => $meta,
+                'meta' => $this->schemaTextTranslator->translateBlockMeta($meta),
             ];
         })
             ->values()

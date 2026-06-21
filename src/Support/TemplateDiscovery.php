@@ -117,6 +117,17 @@ class TemplateDiscovery
         return in_array($type, self::ASSIGNABLE_TYPES, true) ? $type : null;
     }
 
+    public function templateStoragePath(string $key): string
+    {
+        $type = $this->typeForKey($key);
+
+        if ($type && $key !== $type) {
+            return 'templates/'.str_replace('.', '/', $key).'.json';
+        }
+
+        return "templates/{$key}.json";
+    }
+
     protected function defaults(): array
     {
         return collect(self::ASSIGNABLE_TYPES)

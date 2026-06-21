@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { Menu } from '@ark-ui/vue/menu';
 import { Button } from '@craftile/editor/ui';
+import { useState } from '../state';
 import useI18n from '../composables/i18n';
 
 const props = defineProps<{ channel: string }>();
 
 const { t } = useI18n();
+const { localeInheritance } = useState();
 const channels = window.editorConfig.channels || [];
 const selected = defineModel();
 
@@ -39,6 +41,33 @@ watch(() => props.channel, (newChannel) => {
 function onSelect({ value }: { value: string }) {
   selected.value = value;
 }
+
+function channelName(code: string): string {
+  return channels.find(c => c.code === code)?.name || code;
+}
+
+function localeName(channel: string, locale: string): string {
+  return channels
+    .find(c => c.code === channel)
+    ?.locales
+    ?.find(l => l.code === locale)
+    ?.name || locale;
+}
+
+function inheritanceLabel(locale: string): string | null {
+  const parent = localeInheritance.value[locale];
+
+  if (!parent) {
+    return null;
+  }
+
+  const parentLocale = localeName(parent.parentChannel, parent.parentLocale);
+  const parentContext = parent.parentChannel === props.channel
+    ? parentLocale
+    : `${channelName(parent.parentChannel)} / ${parentLocale}`;
+
+  return `${t('Inherits')} ${parentContext}`;
+}
 </script>
 
 <template>
@@ -69,9 +98,16 @@ function onSelect({ value }: { value: string }) {
             v-for="l in locales"
             :key="l.code"
             :value="l.code"
-            class="rounded cursor-pointer flex items-center h-9 px-3 gap-3 hover:bg-zinc-100"
+            class="rounded cursor-pointer flex flex-col items-start justify-center min-h-9 px-3 py-1.5 hover:bg-zinc-100"
           >
-            {{ l.name }}
+            <span>{{ l.name }}</span>
+            <span
+              v-if="inheritanceLabel(l.code)"
+              class="text-[10px] text-zinc-500 inline-flex items-center gap-1 -mt-0.5"
+            >
+              <i-heroicons-arrow-turn-down-right class="w-2.5 h-2.5" />
+              {{ inheritanceLabel(l.code) }}
+            </span>
           </Menu.Item>
         </Menu.ItemGroup>
       </Menu.Content>

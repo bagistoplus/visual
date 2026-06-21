@@ -38,6 +38,7 @@ declare module 'vue' {
     IconPicker: typeof import('./components/IconPicker.vue')['default']
     IHeroiconsArrowLeft: typeof import('~icons/heroicons/arrow-left')['default']
     IHeroiconsArrowTopRightOnSquareSolid: typeof import('~icons/heroicons/arrow-top-right-on-square-solid')['default']
+    IHeroiconsArrowTurnDownRight: typeof import('~icons/heroicons/arrow-turn-down-right')['default']
     IHeroiconsBold: typeof import('~icons/heroicons/bold')['default']
     IHeroiconsBuildingStorefront: typeof import('~icons/heroicons/building-storefront')['default']
     IHeroiconsCheck: typeof import('~icons/heroicons/check')['default']

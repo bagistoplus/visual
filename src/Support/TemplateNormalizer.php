@@ -2,6 +2,9 @@
 
 namespace BagistoPlus\Visual\Support;
 
+use BagistoPlus\Visual\Persistence\EditorDataStore;
+use Craftile\Laravel\Facades\Craftile;
+
 /**
  * Normalizes legacy template format to Craftile's standard format.
  *
@@ -12,11 +15,17 @@ namespace BagistoPlus\Visual\Support;
  */
 class TemplateNormalizer
 {
+    public function __construct(
+        protected ?EditorDataStore $editorDataStore = null,
+    ) {}
+
     /**
      * Normalize template data.
      */
-    public function __invoke(array $templateData): array
+    public function __invoke(array $templateData, string $path): array
     {
+        $templateData = $this->resolveParent($templateData, $path);
+
         if (isset($templateData['sections']) && ! isset($templateData['blocks'])) {
             $templateData['blocks'] = $templateData['sections'];
             unset($templateData['sections']);
@@ -27,6 +36,44 @@ class TemplateNormalizer
         }
 
         return $templateData;
+    }
+
+    protected function resolveParent(array $templateData, string $path): array
+    {
+        if (! Craftile::inPreview()) {
+            return $templateData;
+        }
+
+        $theme = $this->themeFromEditorPath($path);
+
+        if (! $theme || ! isset($templateData['parent']) || ! is_string($templateData['parent'])) {
+            return $templateData;
+        }
+
+        $store = $this->editorDataStore ?? app(EditorDataStore::class);
+        $parent = $templateData['parent'];
+
+        if (! $store->parentExists($theme, $parent)) {
+            unset($templateData['parent']);
+
+            return $templateData;
+        }
+
+        return $store->merge($store->loadResolved($theme, $parent), $templateData);
+    }
+
+    protected function themeFromEditorPath(string $path): ?string
+    {
+        $base = rtrim(str_replace('\\', '/', config('bagisto_visual.data_path')), '/').'/themes/';
+        $path = str_replace('\\', '/', $path);
+
+        if (! str_starts_with($path, $base)) {
+            return null;
+        }
+
+        [$theme, $mode] = array_pad(explode('/', substr($path, strlen($base)), 3), 2, null);
+
+        return $theme && $mode === 'editor' ? $theme : null;
     }
 
     /**

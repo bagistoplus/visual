@@ -135,7 +135,7 @@ it('preserves Visual Livewire block HTML attributes on snapshots', function () {
 });
 
 test('theme should be loaded', function () {
-    $theme = app('themes')->find('fake-theme');
+    $theme = themes()->find('fake-theme');
     expect($theme)->toHaveProperties([
         'code' => 'fake-theme',
         'name' => 'Fake Theme',

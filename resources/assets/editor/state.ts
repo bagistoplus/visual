@@ -1,4 +1,4 @@
-import { Category, Channel, CmsPage, Image, Product, Template, Theme, Video } from './types';
+import { Category, Channel, CmsPage, ContextInheritance, Image, Product, Template, Theme, Video } from './types';
 
 export const VISUAL_EDITOR_STATE = Symbol('VISUAL_EDITOR_STATE');
 
@@ -16,6 +16,7 @@ export interface State {
   channels: Channel[];
   channel: string;
   locale: string;
+  localeInheritance: Record<string, ContextInheritance>;
   theme: Theme | null;
   templates: Template[];
   pageData: {
@@ -55,6 +56,7 @@ export function createState(defaults: Partial<State> = {}): State {
     channels: defaults.channels || [],
     channel: defaults.channel || 'default',
     locale: defaults.locale || 'en',
+    localeInheritance: defaults.localeInheritance || {},
     theme: defaults.theme || null,
     templates,
     pageData: null,

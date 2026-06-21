@@ -3,6 +3,7 @@ import NProgress from 'nprogress';
 
 import type { State } from '../../state';
 import { populatePreloadedModels } from '../../state';
+import type { PreviewPageData } from '../../types';
 import { getUrlParam, removeUrlParam } from '../../utils/urlState';
 
 export function syncEditorBlockSchemas(editor: CraftileEditor, blockSchemas: any[]) {
@@ -17,7 +18,7 @@ export function syncEditorBlockSchemas(editor: CraftileEditor, blockSchemas: any
   });
 }
 
-export function syncEditorContextFromPageData(state: State, pageData: any) {
+export function syncEditorContextFromPageData(state: State, pageData: Partial<PreviewPageData>) {
   if (pageData.channel) {
     state.channel = pageData.channel;
   }
@@ -25,11 +26,15 @@ export function syncEditorContextFromPageData(state: State, pageData: any) {
   if (pageData.locale) {
     state.locale = pageData.locale;
   }
+
+  state.localeInheritance = pageData.localeInheritance ?? {};
 }
 
 export function setupPageDataHandler(editor: CraftileEditor, state: State) {
   editor.preview.onReady(() => {
-    editor.preview.onMessage('craftile.preview.page-data', ({ pageData }: any) => {
+    editor.preview.onMessage('craftile.preview.page-data', (data) => {
+      const pageData = data.pageData as unknown as PreviewPageData;
+
       NProgress.done();
 
       syncEditorContextFromPageData(state, pageData);

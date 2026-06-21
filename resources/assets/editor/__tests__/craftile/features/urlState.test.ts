@@ -148,7 +148,7 @@ describe('editor url state', () => {
     expect(loaded.searchParams.get('locale')).toBe('fr');
   });
 
-  it('loads the initial storefront preview with editor state channel and locale', () => {
+  it('loads the initial storefront preview from the configured storefront url', () => {
     (window as any).location = new URL(
       'http://localhost:3000/admin/visual/editor/fake-theme?channel=default&locale=fr'
     );
@@ -170,10 +170,6 @@ describe('editor url state', () => {
       } as any
     );
 
-    const loaded = new URL(loadUrl.mock.calls[0][0]);
-
-    expect(loaded.searchParams.get('_designMode')).toBe('fake-theme');
-    expect(loaded.searchParams.get('channel')).toBe('default');
-    expect(loaded.searchParams.get('locale')).toBe('fr');
+    expect(loadUrl).toHaveBeenCalledWith('http://localhost:3000?_designMode=fake-theme');
   });
 });

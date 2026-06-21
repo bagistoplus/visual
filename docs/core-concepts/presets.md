@@ -36,6 +36,7 @@ use BagistoPlus\Visual\Blocks\SimpleBlock;
 use BagistoPlus\Visual\Settings\Text;
 use BagistoPlus\Visual\Settings\Select;
 use BagistoPlus\Visual\Support\Preset;
+use function BagistoPlus\Visual\t;
 
 class Button extends SimpleBlock
 {
@@ -49,9 +50,9 @@ class Button extends SimpleBlock
     public static function presets(): array
     {
         return [
-            Preset::make('Primary CTA')
+            Preset::make(t('your-theme::presets.primary_cta.name'))
                 ->settings([
-                    'text' => 'Shop Now',
+                    'text' => t('your-theme::presets.primary_cta.text'),
                     'style' => 'primary',
                     'size' => 'large',
                 ]),
@@ -78,27 +79,28 @@ Each preset can have these properties:
 
 ```php
 use BagistoPlus\Visual\Support\Preset;
+use function BagistoPlus\Visual\t;
 
 public static function presets(): array
 {
     return [
-        Preset::make('Success Alert')
-            ->description('Green alert for success messages')
+        Preset::make(t('your-theme::presets.alerts.success.name'))
+            ->description(t('your-theme::presets.alerts.success.description'))
             ->icon('heroicon-o-check-circle')
-            ->category('Alerts')
+            ->category(t('your-theme::presets.categories.alerts'))
             ->previewImageUrl('/images/presets/success-alert.png')
             ->settings([
-                'message' => 'Success! Your action was completed.',
+                'message' => t('your-theme::presets.alerts.success.message'),
                 'type' => 'success',
                 'dismissible' => true,
             ]),
 
-        Preset::make('Error Alert')
-            ->description('Red alert for error messages')
+        Preset::make(t('your-theme::presets.alerts.error.name'))
+            ->description(t('your-theme::presets.alerts.error.description'))
             ->icon('heroicon-o-x-circle')
-            ->category('Alerts')
+            ->category(t('your-theme::presets.categories.alerts'))
             ->settings([
-                'message' => 'Error! Something went wrong.',
+                'message' => t('your-theme::presets.alerts.error.message'),
                 'type' => 'error',
                 'dismissible' => true,
             ]),
@@ -115,14 +117,15 @@ Sections and container blocks can include pre-configured child blocks in their p
 ```php
 use BagistoPlus\Visual\Support\Preset;
 use BagistoPlus\Visual\Support\PresetBlock;
+use function BagistoPlus\Visual\t;
 
 public static function presets(): array
 {
     return [
-        Preset::make('Hero with CTA')
-            ->description('Full-width hero with heading and call-to-action button')
+        Preset::make(t('your-theme::presets.hero_cta.name'))
+            ->description(t('your-theme::presets.hero_cta.description'))
             ->icon('heroicon-o-photograph')
-            ->category('Banners')
+            ->category(t('your-theme::presets.categories.banners'))
             ->settings([
                 'layout' => 'centered',
                 'background_color' => '#4f46e5',
@@ -131,41 +134,41 @@ public static function presets(): array
                 PresetBlock::make('heading')
                     ->id('hero-title')
                     ->settings([
-                        'text' => 'Welcome to Our Store',
+                        'text' => t('your-theme::presets.hero_cta.heading'),
                         'level' => 1,
                     ]),
 
                 PresetBlock::make('paragraph')
                     ->id('hero-subtitle')
                     ->settings([
-                        'text' => 'Discover amazing products at great prices',
+                        'text' => t('your-theme::presets.hero_cta.subtitle'),
                     ]),
 
                 PresetBlock::make('button')
                     ->id('hero-cta')
                     ->settings([
-                        'text' => 'Shop Now',
+                        'text' => t('your-theme::presets.hero_cta.button'),
                         'style' => 'primary',
                     ]),
             ]),
 
-        Preset::make('Hero with Email Signup')
-            ->description('Hero section with email capture form')
+        Preset::make(t('your-theme::presets.hero_signup.name'))
+            ->description(t('your-theme::presets.hero_signup.description'))
             ->icon('heroicon-o-mail')
-            ->category('Banners')
+            ->category(t('your-theme::presets.categories.banners'))
             ->settings([
                 'layout' => 'centered',
             ])
             ->blocks([
                 PresetBlock::make('heading')
-                    ->settings(['text' => 'Join Our Newsletter']),
+                    ->settings(['text' => t('your-theme::presets.hero_signup.heading')]),
 
                 PresetBlock::make('paragraph')
-                    ->settings(['text' => 'Get exclusive deals and updates']),
+                    ->settings(['text' => t('your-theme::presets.hero_signup.subtitle')]),
 
                 PresetBlock::make('email-input'),
                 PresetBlock::make('button')
-                    ->settings(['text' => 'Subscribe']),
+                    ->settings(['text' => t('your-theme::presets.hero_signup.button')]),
             ]),
     ];
 }
@@ -176,9 +179,11 @@ public static function presets(): array
 When defining child blocks in presets, use `PresetBlock::make()`:
 
 ```php
+use function BagistoPlus\Visual\t;
+
 PresetBlock::make('button')
     ->id('unique-id')                    // Semantic ID
-    ->name('Custom Name')                 // Display name in editor
+    ->name(t('your-theme::presets.blocks.button.name')) // Display name in editor
     ->settings([...])                     // Block settings values
     ->static()                            // Lock from editing
     ->children([...])                     // Nested child blocks
@@ -253,6 +258,7 @@ namespace Themes\YourTheme\Presets;
 
 use BagistoPlus\Visual\Support\Preset;
 use BagistoPlus\Visual\Support\PresetBlock;
+use function BagistoPlus\Visual\t;
 
 class HeroBanner extends Preset
 {
@@ -270,10 +276,10 @@ class HeroBanner extends Preset
     protected function build(): void
     {
         $this
-            ->name('Hero Banner')
-            ->description('Full-width hero with heading, text, and CTA')
+            ->name(t('your-theme::presets.hero_banner.name'))
+            ->description(t('your-theme::presets.hero_banner.description'))
             ->icon('heroicon-o-photograph')
-            ->category('Banners')
+            ->category(t('your-theme::presets.categories.banners'))
             ->settings([
                 'layout' => 'centered',
                 'background_color' => '#4f46e5',
@@ -283,7 +289,7 @@ class HeroBanner extends Preset
                 PresetBlock::make('@your-theme/heading')
                     ->id('hero-title')
                     ->settings([
-                        'text' => 'Welcome to Our Store',
+                        'text' => t('your-theme::presets.hero_banner.heading'),
                         'level' => 1,
                         'color' => 'white',
                     ]),
@@ -291,14 +297,14 @@ class HeroBanner extends Preset
                 PresetBlock::make('@your-theme/paragraph')
                     ->id('hero-subtitle')
                     ->settings([
-                        'text' => 'Discover amazing products at great prices',
+                        'text' => t('your-theme::presets.hero_banner.subtitle'),
                         'color' => 'white',
                     ]),
 
                 PresetBlock::make('@your-theme/button')
                     ->id('hero-cta')
                     ->settings([
-                        'text' => 'Shop Now',
+                        'text' => t('your-theme::presets.hero_banner.button'),
                         'style' => 'primary',
                         'size' => 'large',
                     ]),
@@ -314,17 +320,18 @@ Always use `PresetBlock` from the Visual package when defining child blocks in p
 ```php
 use BagistoPlus\Visual\Support\Preset;
 use BagistoPlus\Visual\Support\PresetBlock;
+use function BagistoPlus\Visual\t;
 
 public static function presets(): array
 {
     return [
-        Preset::make('Hero Banner')
+        Preset::make(t('your-theme::presets.hero_banner.name'))
             ->blocks([
                 PresetBlock::make('heading')
-                    ->settings(['text' => 'Welcome']),
+                    ->settings(['text' => t('your-theme::presets.hero_banner.heading')]),
 
                 PresetBlock::make('button')
-                    ->settings(['text' => 'Shop Now']),
+                    ->settings(['text' => t('your-theme::presets.hero_banner.button')]),
             ]),
     ];
 }
@@ -344,6 +351,7 @@ namespace Themes\YourTheme\Presets;
 
 use BagistoPlus\Visual\Support\Preset;
 use BagistoPlus\Visual\Support\PresetBlock;
+use function BagistoPlus\Visual\t;
 
 class FeatureGrid extends Preset
 {
@@ -355,9 +363,9 @@ class FeatureGrid extends Preset
     protected function build(): void
     {
         $this
-            ->name('Feature Grid')
-            ->description('Three-column feature grid with icons')
-            ->category('Content')
+            ->name(t('your-theme::presets.feature_grid.name'))
+            ->description(t('your-theme::presets.feature_grid.description'))
+            ->category(t('your-theme::presets.categories.content'))
             ->settings([
                 'layout' => 'grid',
                 'columns' => 3,
@@ -375,12 +383,12 @@ class FeatureGrid extends Preset
                             ]),
                         PresetBlock::make('@your-theme/heading')
                             ->settings([
-                                'text' => 'Fast Shipping',
+                                'text' => t('your-theme::presets.feature_grid.fast_shipping.title'),
                                 'level' => 3,
                             ]),
                         PresetBlock::make('@your-theme/paragraph')
                             ->settings([
-                                'text' => 'Get your order in 2-3 business days',
+                                'text' => t('your-theme::presets.feature_grid.fast_shipping.text'),
                             ]),
                     ]),
 
@@ -396,12 +404,12 @@ class FeatureGrid extends Preset
                             ]),
                         PresetBlock::make('@your-theme/heading')
                             ->settings([
-                                'text' => 'Secure Checkout',
+                                'text' => t('your-theme::presets.feature_grid.secure_checkout.title'),
                                 'level' => 3,
                             ]),
                         PresetBlock::make('@your-theme/paragraph')
                             ->settings([
-                                'text' => 'Your payment information is safe',
+                                'text' => t('your-theme::presets.feature_grid.secure_checkout.text'),
                             ]),
                     ]),
 
@@ -417,12 +425,12 @@ class FeatureGrid extends Preset
                             ]),
                         PresetBlock::make('@your-theme/heading')
                             ->settings([
-                                'text' => '100% Satisfaction',
+                                'text' => t('your-theme::presets.feature_grid.satisfaction.title'),
                                 'level' => 3,
                             ]),
                         PresetBlock::make('@your-theme/paragraph')
                             ->settings([
-                                'text' => 'Love it or return it within 30 days',
+                                'text' => t('your-theme::presets.feature_grid.satisfaction.text'),
                             ]),
                     ]),
             ]);
@@ -492,6 +500,7 @@ namespace Themes\YourTheme\Presets;
 
 use BagistoPlus\Visual\Support\Preset;
 use BagistoPlus\Visual\Support\PresetBlock;
+use function BagistoPlus\Visual\t;
 
 // Define a reusable preset
 class ProductCard extends Preset
@@ -504,8 +513,8 @@ class ProductCard extends Preset
     protected function build(): void
     {
         $this
-            ->name('Product Card with Overlay')
-            ->category('Products')
+            ->name(t('your-theme::presets.product_card_overlay.name'))
+            ->category(t('your-theme::presets.categories.products'))
             ->blocks([
                 PresetBlock::make('@your-theme/product-image')
                     ->settings(['aspect_ratio' => 'square']),
@@ -530,11 +539,11 @@ class ProductGrid extends Preset
     protected function build(): void
     {
         $this
-            ->name('Featured Products Grid')
+            ->name(t('your-theme::presets.featured_products_grid.name'))
             ->settings(['columns' => 4])
             ->blocks([
                 PresetBlock::make('@your-theme/heading')
-                    ->settings(['text' => 'Featured Products']),
+                    ->settings(['text' => t('your-theme::presets.featured_products_grid.heading')]),
 
                 // Reuse ProductCard preset as a child block
                 ProductCard::asChild()
@@ -553,47 +562,48 @@ class ProductGrid extends Preset
 ```php
 use BagistoPlus\Visual\Support\Preset;
 use BagistoPlus\Visual\Support\PresetBlock;
+use function BagistoPlus\Visual\t;
 
 public static function presets(): array
 {
     return [
-        Preset::make('Three Testimonials')
-            ->description('Grid of three customer testimonials')
+        Preset::make(t('your-theme::presets.testimonials_grid.name'))
+            ->description(t('your-theme::presets.testimonials_grid.description'))
             ->icon('heroicon-o-chat-bubble-left-right')
-            ->category('Social Proof')
+            ->category(t('your-theme::presets.categories.social_proof'))
             ->settings([
-                'heading' => 'What Our Customers Say',
+                'heading' => t('your-theme::presets.testimonials_grid.heading'),
                 'layout' => 'grid',
             ])
             ->blocks([
                 PresetBlock::make('testimonial')
                     ->settings([
-                        'quote' => 'Amazing product! Highly recommend.',
-                        'author' => 'John Doe',
+                        'quote' => t('your-theme::presets.testimonials_grid.first.quote'),
+                        'author' => t('your-theme::presets.testimonials_grid.first.author'),
                         'rating' => 5,
                     ]),
 
                 PresetBlock::make('testimonial')
                     ->settings([
-                        'quote' => 'Great quality and fast shipping.',
-                        'author' => 'Jane Smith',
+                        'quote' => t('your-theme::presets.testimonials_grid.second.quote'),
+                        'author' => t('your-theme::presets.testimonials_grid.second.author'),
                         'rating' => 5,
                     ]),
 
                 PresetBlock::make('testimonial')
                     ->settings([
-                        'quote' => 'Excellent customer service!',
-                        'author' => 'Bob Johnson',
+                        'quote' => t('your-theme::presets.testimonials_grid.third.quote'),
+                        'author' => t('your-theme::presets.testimonials_grid.third.author'),
                         'rating' => 5,
                     ]),
             ]),
 
-        Preset::make('Carousel Testimonials')
-            ->description('Scrolling carousel of testimonials')
+        Preset::make(t('your-theme::presets.testimonials_carousel.name'))
+            ->description(t('your-theme::presets.testimonials_carousel.description'))
             ->icon('heroicon-o-arrow-path')
-            ->category('Social Proof')
+            ->category(t('your-theme::presets.categories.social_proof'))
             ->settings([
-                'heading' => 'Customer Reviews',
+                'heading' => t('your-theme::presets.testimonials_carousel.heading'),
                 'layout' => 'carousel',
             ])
             ->blocks([
@@ -611,12 +621,13 @@ public static function presets(): array
 ```php
 use BagistoPlus\Visual\Support\Preset;
 use BagistoPlus\Visual\Support\PresetBlock;
+use function BagistoPlus\Visual\t;
 
 public static function presets(): array
 {
     return [
-        Preset::make('2 Column Grid')
-            ->category('Galleries')
+        Preset::make(t('your-theme::presets.gallery.two_column.name'))
+            ->category(t('your-theme::presets.categories.galleries'))
             ->settings(['columns' => 2])
             ->blocks([
                 PresetBlock::make('image'),
@@ -625,8 +636,8 @@ public static function presets(): array
                 PresetBlock::make('image'),
             ]),
 
-        Preset::make('3 Column Masonry')
-            ->category('Galleries')
+        Preset::make(t('your-theme::presets.gallery.three_column_masonry.name'))
+            ->category(t('your-theme::presets.categories.galleries'))
             ->settings(['columns' => 3, 'style' => 'masonry'])
             ->blocks([
                 PresetBlock::make('image'),
@@ -637,8 +648,8 @@ public static function presets(): array
                 PresetBlock::make('image'),
             ]),
 
-        Preset::make('Image Carousel')
-            ->category('Galleries')
+        Preset::make(t('your-theme::presets.gallery.carousel.name'))
+            ->category(t('your-theme::presets.categories.galleries'))
             ->settings(['style' => 'carousel', 'autoplay' => true])
             ->blocks([
                 PresetBlock::make('image')->repeated(),
@@ -654,24 +665,25 @@ public static function presets(): array
 ```php
 use BagistoPlus\Visual\Support\Preset;
 use BagistoPlus\Visual\Support\PresetBlock;
+use function BagistoPlus\Visual\t;
 
 public static function presets(): array
 {
     return [
-        Preset::make('Simple CTA')
-            ->category('CTAs')
+        Preset::make(t('your-theme::presets.simple_cta.name'))
+            ->category(t('your-theme::presets.categories.ctas'))
             ->settings(['layout' => 'simple'])
             ->blocks([
                 PresetBlock::make('heading')
-                    ->settings(['text' => 'Ready to get started?'])
+                    ->settings(['text' => t('your-theme::presets.simple_cta.heading')])
                     ->static(),
 
                 PresetBlock::make('button')
-                    ->settings(['text' => 'Get Started', 'style' => 'primary']),
+                    ->settings(['text' => t('your-theme::presets.simple_cta.button'), 'style' => 'primary']),
             ]),
 
-        Preset::make('Split CTA with Image')
-            ->category('CTAs')
+        Preset::make(t('your-theme::presets.split_cta.name'))
+            ->category(t('your-theme::presets.categories.ctas'))
             ->settings(['layout' => 'split'])
             ->blocks([
                 PresetBlock::make('image')
@@ -679,13 +691,13 @@ public static function presets(): array
                     ->static(),
 
                 PresetBlock::make('heading')
-                    ->settings(['text' => 'Join thousands of happy customers']),
+                    ->settings(['text' => t('your-theme::presets.split_cta.heading')]),
 
                 PresetBlock::make('paragraph')
-                    ->settings(['text' => 'Start your journey today']),
+                    ->settings(['text' => t('your-theme::presets.split_cta.text')]),
 
                 PresetBlock::make('button')
-                    ->settings(['text' => 'Sign Up Free']),
+                    ->settings(['text' => t('your-theme::presets.split_cta.button')]),
             ]),
     ];
 }
@@ -697,8 +709,9 @@ Add visual previews to help merchants choose:
 
 ```php
 use BagistoPlus\Visual\Support\Preset;
+use function BagistoPlus\Visual\t;
 
-Preset::make('Hero with Image Left')
+Preset::make(t('your-theme::presets.hero_image_left.name'))
     ->previewImageUrl('/images/presets/hero-image-left.png')
 ```
 

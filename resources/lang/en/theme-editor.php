@@ -88,6 +88,7 @@ return [
 
     'Channels' => 'Channels',
     'Locales' => 'Locales',
+    'Inherits' => 'Inherits',
 
     'No sections' => 'No sections',
     'Add Section' => 'Add Section',

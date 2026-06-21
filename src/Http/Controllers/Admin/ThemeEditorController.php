@@ -6,6 +6,9 @@ use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Http\Controllers\Controller;
 use BagistoPlus\Visual\Persistence\CreateTemplate;
+use BagistoPlus\Visual\Persistence\Data\EditorUpdateData;
+use BagistoPlus\Visual\Persistence\Data\FullPageEditorData;
+use BagistoPlus\Visual\Persistence\Data\ThemeSettingsUpdateData;
 use BagistoPlus\Visual\Persistence\PersistEditorUpdates;
 use BagistoPlus\Visual\Persistence\PersistThemeSettings;
 use BagistoPlus\Visual\Persistence\PublishTheme;
@@ -13,6 +16,7 @@ use BagistoPlus\Visual\Persistence\RenderPreview;
 use BagistoPlus\Visual\Settings\Support\ImageTransformer;
 use BagistoPlus\Visual\Settings\Support\VideoTransformer;
 use BagistoPlus\Visual\Support\ChannelThemeResolver;
+use BagistoPlus\Visual\Support\SchemaTextTranslator;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
 use BagistoPlus\Visual\Theme\Theme;
 use BagistoPlus\Visual\ThemeEditor;
@@ -96,14 +100,13 @@ class ThemeEditorController extends Controller
             'updates.regions' => ['present', 'array'],
         ]);
 
-        $result = $this->persistEditorUpdates->handle($validated);
+        $data = EditorUpdateData::fromValidated($validated);
+        $result = $this->persistEditorUpdates->handle($data);
         $loadedBlocks = $result['loadedBlocks'] ?? [];
 
-        $allBlockIds = $this->buildRenderSet($validated['updates'], $loadedBlocks);
+        $allBlockIds = $this->buildRenderSet($data, $loadedBlocks);
 
-        $url = $request->input('template.url');
-
-        return $this->renderPreview->execute($url, $allBlockIds);
+        return $this->renderPreview->execute($data->templateUrl, $allBlockIds);
     }
 
     public function persistThemeSettings(Request $request)
@@ -117,26 +120,25 @@ class ThemeEditorController extends Controller
             'updates' => ['required', 'array'],
         ]);
 
-        $this->persistThemeSettings->handle($validated);
+        $data = ThemeSettingsUpdateData::fromValidated($validated);
+        $this->persistThemeSettings->handle($data);
 
-        $url = $request->input('template.url');
-
-        return $this->renderPreview->execute($url);
+        return $this->renderPreview->execute($data->templateUrl);
     }
 
     public function publishTheme(Request $request)
     {
         $validated = $request->validate([
             'theme' => ['required', 'string'],
-            'channel' => ['nullable', 'string', Rule::in($this->getChannelCodes())],
-            'locale' => ['nullable', 'string'],
-            'template' => ['nullable', 'string'],
+            'channel' => ['required_with:page', 'nullable', 'string', Rule::in($this->getChannelCodes())],
+            'locale' => ['required_with:page', 'nullable', 'string', Rule::in($this->getLocaleCodes($request->input('channel')))],
+            'template' => ['required_with:page', 'nullable', 'string'],
             'page' => ['nullable', 'array'],
         ]);
 
         // If page data is provided, persist it first before publishing
         if (isset($validated['page'])) {
-            $this->persistEditorUpdates->handleFullPage($validated);
+            $this->persistEditorUpdates->handleFullPage(FullPageEditorData::fromValidated($validated));
         }
 
         $this->publishTheme->handle($validated['theme']);
@@ -432,20 +434,7 @@ class ThemeEditorController extends Controller
 
     protected function translateSettingsSchema(array $settingsSchema): array
     {
-        return collect($settingsSchema)->map(function ($group) {
-            $group['name'] = trans($group['name']);
-
-            $group['settings'] = collect($group['settings'])->map(function ($setting) {
-                $setting['label'] = trans($setting['label']);
-                if (isset($setting['info'])) {
-                    $setting['info'] = trans($setting['info']);
-                }
-
-                return $setting;
-            })->all();
-
-            return $group;
-        })->all();
+        return app(SchemaTextTranslator::class)->translateThemeSettingsSchema($settingsSchema);
     }
 
     protected function getChannels()
@@ -487,12 +476,10 @@ class ThemeEditorController extends Controller
     /**
      * Build complete render set: changed blocks + all their parents + all their children.
      */
-    protected function buildRenderSet(array $updates, array $loadedBlocks): array
+    protected function buildRenderSet(EditorUpdateData $data, array $loadedBlocks): array
     {
-        $changes = $updates['changes'] ?? [];
-        $addedIds = $changes['added'] ?? [];
-        $changedIds = array_keys($updates['blocks']);
-        // dd($changedIds, $loadedBlocks);
+        $addedIds = $data->addedBlockIds();
+        $changedIds = $data->changedBlockIds();
         $renderSet = [];
 
         foreach ($changedIds as $id) {

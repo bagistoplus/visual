@@ -10,6 +10,7 @@ class PublishTheme
 {
     public function __construct(
         protected Filesystem $files,
+        protected EditorDataStore $editorDataStore,
     ) {}
 
     /**
@@ -27,18 +28,30 @@ class PublishTheme
         $files = collect($this->files->allFiles($editorPath))
             ->filter(fn ($file) => $file->getFilename() !== '.last-edit');
 
-        // Copy files to versioned directory
+        // Copy resolved editor files to versioned directory
         foreach ($files as $file) {
             $sourcePath = $file->getPathname();
-            $targetPath = $newVersionPath.'/'.$file->getRelativePathname();
+            $relativePath = $file->getRelativePathname();
+            $targetPath = $newVersionPath.'/'.$relativePath;
 
             $this->files->ensureDirectoryExists(dirname($targetPath));
-            $this->files->copy($sourcePath, $targetPath);
+
+            if ($file->getExtension() === 'json') {
+                $data = $this->editorDataStore->loadResolved($themeCode, $relativePath);
+                unset($data['parent']);
+                $this->files->put($targetPath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+            } else {
+                $this->files->copy($sourcePath, $targetPath);
+            }
         }
 
         // Copy versioned directory to live path
         // We avoid relying on symlinks, which may not always behave consistently across different operating systems
         // This also allows developers to setup versions directory cleanup process
+        if ($this->files->exists($livePath)) {
+            $this->files->deleteDirectory($livePath);
+        }
+
         $this->files->copyDirectory($newVersionPath, $livePath);
 
         // Remove last edit marker - all edits are now published

@@ -88,6 +88,7 @@ return [
 
     'Channels' => 'चैनल',
     'Locales' => 'भाषाएँ',
+    'Inherits' => 'इनहेरिट करता है',
 
     'No sections' => 'कोई अनुभाग नहीं',
     'Add Section' => 'अनुभाग जोड़ें',

@@ -38,9 +38,11 @@ protected static string $name = 'Product Card';
 or
 
 ```php
+use function BagistoPlus\Visual\t;
+
 public static function name(): string
 {
-    return __('Product Card');
+    return t('awesome-theme::blocks.product_card.name');
 }
 ```
 
@@ -106,9 +108,11 @@ protected static string $description = 'Displays a product with image, title, an
 or
 
 ```php
+use function BagistoPlus\Visual\t;
+
 public static function description(): string
 {
-    return __('Displays a product with image, title, and price.');
+    return t('awesome-theme::blocks.product_card.description');
 }
 ```
 
@@ -123,9 +127,11 @@ protected static string $category = 'Product';
 or
 
 ```php
+use function BagistoPlus\Visual\t;
+
 public static function category(): string
 {
-    return __('Product');
+    return t('awesome-theme::blocks.categories.product');
 }
 ```
 
@@ -189,136 +195,13 @@ protected static string $previewDescription = 'Shows product information in a ca
 or
 
 ```php
+use function BagistoPlus\Visual\t;
+
 public static function previewDescription(): string
 {
-    return __('Shows product information in a card layout.');
+    return t('awesome-theme::blocks.product_card.preview_description');
 }
 ```
-
-## presets
-
-Defines pre-configured variations of the block that merchants can choose from when adding the block. Presets allow you to provide quick-start templates with predefined settings.
-
-```php
-use BagistoPlus\Visual\Support\Preset;
-
-public static function presets(): array
-{
-    return [
-        Preset::make('Primary Button')
-            ->description('Large primary call-to-action button')
-            ->settings([
-                'text' => 'Shop Now',
-                'style' => 'primary',
-                'size' => 'large',
-            ]),
-
-        Preset::make('Secondary Button')
-            ->description('Standard secondary button')
-            ->settings([
-                'text' => 'Learn More',
-                'style' => 'secondary',
-                'size' => 'medium',
-            ]),
-
-        Preset::make('Outline Button')
-            ->description('Minimal outline style button')
-            ->settings([
-                'text' => 'View Details',
-                'style' => 'outline',
-                'size' => 'medium',
-            ]),
-    ];
-}
-```
-
-Presets support:
-
-- `name()` - Display name in the preset picker
-- `description()` - Optional description text
-- `settings()` - Default settings values
-- `icon()` - Optional icon (SVG string)
-- `category()` - Optional category for grouping
-- `previewImageUrl()` - Optional preview image URL
-
-For comprehensive documentation on creating presets, see the [Presets Guide](../../core-concepts/presets.md).
-
-## settings
-
-Defines the configurable fields for the block that appear in the Visual Editor's settings panel.
-
-```php
-use BagistoPlus\Visual\Settings\Text;
-use BagistoPlus\Visual\Settings\Textarea;
-use BagistoPlus\Visual\Settings\Color;
-use BagistoPlus\Visual\Settings\Icon;
-
-public static function settings(): array
-{
-    return [
-        Icon::make('icon', 'Feature icon')
-            ->default('heroicon-o-star'),
-
-        Text::make('heading', 'Heading')
-            ->default('Amazing Feature'),
-
-        Textarea::make('description', 'Description')
-            ->default('This feature will transform your business.'),
-
-        Color::make('icon_color', 'Icon color')
-            ->default('#4f46e5'),
-    ];
-}
-```
-
-For all available setting types and their options, see the [Settings documentation](../../core-concepts/settings/types.md).
-
-## private
-
-Controls whether the block appears in the general block picker. Private blocks are hidden from the main picker but can be made available to specific parent blocks or sections through explicit accepts listing.
-
-```php
-protected static bool $private = true;
-```
-
-**Default:** `false` (block is public and appears in pickers)
-
-### Visibility Rules
-
-Private blocks follow strict visibility rules:
-
-1. **Hidden from General Picker**: Never appear in the main block picker
-2. **Explicit Accepts Required**: Only visible when explicitly listed in a parent's `accepts` array
-3. **Wildcards Don't Include Private**: Patterns like `'*'` or `'@vendor/*'` do NOT make private blocks visible
-
-**Example:**
-
-```php
-// Private block - only usable within specific contexts
-class TabItem extends SimpleBlock
-{
-    protected static bool $private = true;
-}
-
-// Section that explicitly accepts the private block
-class Tabs extends SimpleSection
-{
-    protected static array $accepts = [
-        '@awesome-theme/tab-item',  // Explicit - TabItem will appear
-    ];
-}
-
-// Section with wildcard - private block still hidden
-class Container extends SimpleSection
-{
-    protected static array $accepts = ['*'];  // TabItem NOT included
-}
-```
-
-Use private blocks for:
-- Component parts (like tab items, accordion panels)
-- Blocks that only make sense in specific contexts
-- Internal/structural blocks not meant for direct use
 
 ## accepts
 
@@ -376,6 +259,134 @@ Render child blocks in your block view using `@children`:
     </div>
 </div>
 ```
+
+## presets
+
+Defines pre-configured variations of the block that merchants can choose from when adding the block. Presets allow you to provide quick-start templates with predefined settings.
+
+```php
+use BagistoPlus\Visual\Support\Preset;
+use function BagistoPlus\Visual\t;
+
+public static function presets(): array
+{
+    return [
+        Preset::make(t('awesome-theme::presets.buttons.primary.name'))
+            ->description(t('awesome-theme::presets.buttons.primary.description'))
+            ->settings([
+                'text' => t('awesome-theme::presets.buttons.primary.text'),
+                'style' => 'primary',
+                'size' => 'large',
+            ]),
+
+        Preset::make(t('awesome-theme::presets.buttons.secondary.name'))
+            ->description(t('awesome-theme::presets.buttons.secondary.description'))
+            ->settings([
+                'text' => t('awesome-theme::presets.buttons.secondary.text'),
+                'style' => 'secondary',
+                'size' => 'medium',
+            ]),
+
+        Preset::make(t('awesome-theme::presets.buttons.outline.name'))
+            ->description(t('awesome-theme::presets.buttons.outline.description'))
+            ->settings([
+                'text' => t('awesome-theme::presets.buttons.outline.text'),
+                'style' => 'outline',
+                'size' => 'medium',
+            ]),
+    ];
+}
+```
+
+Presets support:
+
+- `name()` - Display name in the preset picker
+- `description()` - Optional description text
+- `settings()` - Default settings values
+- `icon()` - Optional icon (SVG string)
+- `category()` - Optional category for grouping
+- `previewImageUrl()` - Optional preview image URL
+
+For comprehensive documentation on creating presets, see the [Presets Guide](../../core-concepts/presets.md).
+
+## settings
+
+Defines the configurable fields for the block that appear in the Visual Editor's settings panel.
+
+```php
+use BagistoPlus\Visual\Settings\Text;
+use BagistoPlus\Visual\Settings\Textarea;
+use BagistoPlus\Visual\Settings\Color;
+use BagistoPlus\Visual\Settings\Icon;
+use function BagistoPlus\Visual\t;
+
+public static function settings(): array
+{
+    return [
+        Icon::make('icon', t('awesome-theme::blocks.feature.icon'))
+            ->default('heroicon-o-star'),
+
+        Text::make('heading', t('awesome-theme::blocks.feature.heading'))
+            ->default(t('awesome-theme::blocks.feature.default_heading')),
+
+        Textarea::make('description', t('awesome-theme::blocks.feature.description'))
+            ->default(t('awesome-theme::blocks.feature.default_description')),
+
+        Color::make('icon_color', t('awesome-theme::blocks.feature.icon_color'))
+            ->default('#4f46e5'),
+    ];
+}
+```
+
+For all available setting types and their options, see the [Settings documentation](../../core-concepts/settings/types.md).
+
+## private
+
+Controls whether the block appears in the general block picker. Private blocks are hidden from the main picker but can be made available to specific parent blocks or sections through explicit accepts listing.
+
+```php
+protected static bool $private = true;
+```
+
+**Default:** `false` (block is public and appears in pickers)
+
+### Visibility Rules
+
+Private blocks follow strict visibility rules:
+
+1. **Hidden from General Picker**: Never appear in the main block picker
+2. **Explicit Accepts Required**: Only visible when explicitly listed in a parent's `accepts` array
+3. **Wildcards Don't Include Private**: Patterns like `'*'` or `'@vendor/*'` do NOT make private blocks visible
+
+**Example:**
+
+```php
+// Private block - only usable within specific contexts
+class TabItem extends SimpleBlock
+{
+    protected static bool $private = true;
+}
+
+// Section that explicitly accepts the private block
+class Tabs extends SimpleSection
+{
+    protected static array $accepts = [
+        '@awesome-theme/tab-item',  // Explicit - TabItem will appear
+    ];
+}
+
+// Section with wildcard - private block still hidden
+class Container extends SimpleSection
+{
+    protected static array $accepts = ['*'];  // TabItem NOT included
+}
+```
+
+Use private blocks for:
+
+- Component parts (like tab items, accordion panels)
+- Blocks that only make sense in specific contexts
+- Internal/structural blocks not meant for direct use
 
 ---
 

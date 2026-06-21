@@ -17,7 +17,6 @@ class ViewServiceProvider extends ServiceProvider
         $this->bootViewComposers();
 
         $this->app->bind(\Webkul\Theme\Themes::class, Themes::class);
-        $this->app->singleton('themes', fn () => new Themes);
 
         $this->app->singleton(ThemePathsResolver::class, function () {
             return new ThemePathsResolver;

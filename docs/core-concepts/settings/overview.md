@@ -49,18 +49,36 @@ Each input type improves merchant experience by offering the most natural way to
 
 Settings changes are safe, reversible, and visual, making customization intuitive even for non-technical users.
 
+## Multi-locale Starter Content
+
+When your theme supports multiple locales, use Visual's `t()` helper for editor schema text and default content instead of Laravel's `__()` or `trans()` helpers.
+
+Use it when the text should adapt to the active locale until the merchant customizes it:
+
+```php
+use BagistoPlus\Visual\Settings\Text;
+use function BagistoPlus\Visual\t;
+
+Text::make('heading', t('awesome-theme::blocks.hero.heading'))
+    ->default(t('awesome-theme::blocks.hero.default_heading'));
+```
+
+Laravel translation helpers are still fine for normal Blade/runtime text. Prefer Visual's `t()` helper for settings labels, helper text, defaults, presets, block names, and section names shown in the editor.
+
 ## Dynamic Defaults
 
 Settings can use **dynamic sources** to set default values from runtime context:
 
 ```php
-Text::make('productName', 'Product Name')
+use function BagistoPlus\Visual\t;
+
+Text::make('productName', t('awesome-theme::products.name'))
     ->default('@product.name'),  // Resolves from $product variable
 
-Number::make('price', 'Price')
+Number::make('price', t('awesome-theme::products.price'))
     ->default('@product.price'),
 
-Image::make('image', 'Image')
+Image::make('image', t('awesome-theme::products.image'))
     ->default('@product.base_image.url'),
 ```
 

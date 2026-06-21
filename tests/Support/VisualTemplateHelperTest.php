@@ -6,17 +6,11 @@ use BagistoPlus\Visual\Support\TemplateDiscovery;
 use BagistoPlus\Visual\Theme\Theme;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Core\Models\Channel;
+use Webkul\Theme\Facades\Themes as ThemesFacade;
 
 class VisualTemplateHelperTestModel extends Model
 {
     protected $guarded = [];
-}
-
-if (! function_exists('themes')) {
-    function themes()
-    {
-        return app('themes');
-    }
 }
 
 function visualTemplateHelperTheme(): Theme
@@ -30,7 +24,7 @@ function visualTemplateHelperTheme(): Theme
 
 function bindCurrentTheme(mixed $theme): void
 {
-    app()->instance('themes', new class($theme)
+    ThemesFacade::swap(new class($theme)
     {
         public function __construct(protected mixed $theme) {}
 

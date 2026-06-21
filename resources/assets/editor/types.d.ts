@@ -66,6 +66,30 @@ export interface ThemeEditorConfig {
   haveEdits: boolean;
 }
 
+export interface ContextInheritance {
+  parentChannel: string;
+  parentLocale: string;
+}
+
+export interface PreviewPageData {
+  content: any;
+  template: {
+    url: string;
+    name: string;
+    sources: string;
+  };
+  channel: string;
+  locale: string;
+  localeInheritance: Record<string, ContextInheritance>;
+  blockSchemas: BlockSchema[];
+  settings: Record<string, SettingValue>;
+  preloadedModels: {
+    categories?: Category[];
+    products?: Product[];
+    cms_pages?: CmsPage[];
+  };
+}
+
 export interface Template {
   template: string;
   label: string;
