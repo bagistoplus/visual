@@ -2,6 +2,13 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.22](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.21...v2.0.0-alpha.22) (2026-06-22)
+
+
+### Bug Fixes
+
+* support older Bagisto product suggestions ([dfb944d](https://github.com/bagistoplus/visual/commit/dfb944d7fb6ed5678c91b89984969e5f340f487a))
+
 # [2.0.0-alpha.21](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.20...v2.0.0-alpha.21) (2026-06-22)
 
 
