@@ -85,7 +85,16 @@ final readonly class GetProducts
 
         return [
             'original_query' => $originalQuery,
-            'effective_query' => $this->productRepository->getSuggestions($originalQuery),
+            'effective_query' => $this->resolveSuggestedQuery($originalQuery),
         ];
+    }
+
+    protected function resolveSuggestedQuery(string $query): ?string
+    {
+        if (! method_exists(get_class($this->productRepository), 'getSuggestions')) {
+            return null;
+        }
+
+        return $this->productRepository->getSuggestions($query);
     }
 }
