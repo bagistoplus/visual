@@ -2,6 +2,20 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.20](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.19...v2.0.0-alpha.20) (2026-06-22)
+
+
+### Bug Fixes
+
+* **editor:** make back button leave preview editor ([5f7bd58](https://github.com/bagistoplus/visual/commit/5f7bd58ca17cca099e83413e1831a8b09e7c8904))
+* **editor:** show loader on preview navigation ([9af8936](https://github.com/bagistoplus/visual/commit/9af8936c1e6776dc9cc64887169b3cdec13fa17a))
+
+
+### Features
+
+* implement theme customization inheritance between channels and locales ([1699b1f](https://github.com/bagistoplus/visual/commit/1699b1f86a5d76092a6775b68bd1994c6ee7ed21))
+* make template assignments opt in ([be14439](https://github.com/bagistoplus/visual/commit/be144394d413a4e08f0313cfcd4df0d84ee4d4e9))
+
 # [2.0.0-alpha.19](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.18...v2.0.0-alpha.19) (2026-06-17)
 
 
