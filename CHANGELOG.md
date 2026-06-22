@@ -2,6 +2,13 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.21](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.20...v2.0.0-alpha.21) (2026-06-22)
+
+
+### Bug Fixes
+
+* **editor:** ignore translation references in block labels ([c3e6311](https://github.com/bagistoplus/visual/commit/c3e6311e98eadfbef2b9aea694711d22f85480ab))
+
 # [2.0.0-alpha.20](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.19...v2.0.0-alpha.20) (2026-06-22)
 
 
