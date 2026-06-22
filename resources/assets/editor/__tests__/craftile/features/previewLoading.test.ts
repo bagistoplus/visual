@@ -52,6 +52,7 @@ describe('preview loading state', () => {
       preview: {
         loadUrl,
         reload: vi.fn(),
+        onDocumentReady: vi.fn(),
       },
     } as any;
 
@@ -74,6 +75,7 @@ describe('preview loading state', () => {
       preview: {
         loadUrl: vi.fn(),
         reload,
+        onDocumentReady: vi.fn(),
       },
     } as any;
 

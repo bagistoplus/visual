@@ -15,23 +15,33 @@ export function setupPreviewLoading(editor: CraftileEditor, state: State) {
 
   const loadUrl = editor.preview.loadUrl.bind(editor.preview);
   const reload = editor.preview.reload.bind(editor.preview);
-
-  preview.loadUrl = (url: string) => {
+  const startLoading = () => {
     state.previewLoading = true;
     state.localeInheritance = {};
+  };
+
+  preview.loadUrl = (url: string) => {
+    startLoading();
 
     return loadUrl(url);
   };
 
   preview.reload = () => {
-    state.previewLoading = true;
-    state.localeInheritance = {};
+    startLoading();
 
     return reload();
   };
 
   preview[WRAPPED_PREVIEW_LOADING] = true;
+  preview.onDocumentReady(() => bindPreviewFrameNavigationLoading(editor, startLoading));
   mountBlocksTreeLoadingOverlay(editor);
+}
+
+function bindPreviewFrameNavigationLoading(editor: CraftileEditor, startLoading: () => void) {
+  const frame = editor.preview.getFrame()!;
+
+  frame.contentWindow!.addEventListener('pagehide', startLoading);
+  frame.contentWindow!.addEventListener('beforeunload', startLoading);
 }
 
 function mountBlocksTreeLoadingOverlay(editor: CraftileEditor) {
