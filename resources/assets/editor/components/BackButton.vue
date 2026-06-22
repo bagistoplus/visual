@@ -2,7 +2,7 @@
 import { Button } from '@craftile/editor/ui';
 
 function onBackClick() {
-  history.back();
+  window.location.assign(window.editorConfig.routes.themesIndex);
 }
 </script>
 
