@@ -11,6 +11,8 @@ beforeEach(function () {
         'icon-compare' => 'lucide-scale',
     ]);
 
+    app()->forgetInstance(Factory::class);
+
     $manifest = app(IconsManifest::class);
     $property = new ReflectionProperty($manifest, 'manifest');
     $property->setValue($manifest, null);
