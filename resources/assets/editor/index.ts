@@ -111,6 +111,10 @@ const getText = (block: Block, schema?: BlockSchema) => {
   }
 
   const text = block.properties[textProp.id];
+  if (typeof text === 'string' && text.startsWith('t:')) {
+    return null;
+  }
+
   return text ? sanitizeString(text as string) : null;
 };
 
