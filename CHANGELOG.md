@@ -2,6 +2,13 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.23](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.22...v2.0.0-alpha.23) (2026-07-02)
+
+
+### Bug Fixes
+
+* allow symfony/filesystem 7 ([69913a8](https://github.com/bagistoplus/visual/commit/69913a89f358631c69d584750e243a3ab2a09ff3))
+
 # [2.0.0-alpha.22](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.21...v2.0.0-alpha.22) (2026-06-22)
 
 
