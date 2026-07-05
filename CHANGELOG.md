@@ -2,6 +2,13 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.24](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.23...v2.0.0-alpha.24) (2026-07-05)
+
+
+### Bug Fixes
+
+* sync resolved blocks after persist ([b943182](https://github.com/bagistoplus/visual/commit/b943182f5ad5ff73db43edbc6d3a91d48d7b37b6))
+
 # [2.0.0-alpha.23](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.22...v2.0.0-alpha.23) (2026-07-02)
 
 
