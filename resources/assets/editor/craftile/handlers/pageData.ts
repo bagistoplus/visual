@@ -4,6 +4,7 @@ import NProgress from 'nprogress';
 import type { State } from '../../state';
 import { populatePreloadedModels } from '../../state';
 import type { PreviewPageData } from '../../types';
+import { clearResolvedTranslationRefs } from '../../utils/resolvedTranslationRefs';
 import { getUrlParam, removeUrlParam } from '../../utils/urlState';
 
 export function syncEditorBlockSchemas(editor: CraftileEditor, blockSchemas: any[]) {
@@ -36,6 +37,7 @@ export function setupPageDataHandler(editor: CraftileEditor, state: State) {
       const pageData = data.pageData as unknown as PreviewPageData;
 
       NProgress.done();
+      clearResolvedTranslationRefs();
 
       syncEditorContextFromPageData(state, pageData);
 

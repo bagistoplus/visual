@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import type { UpdatesEvent } from '@craftile/types';
 import {
   mergeUpdates,
@@ -6,7 +6,13 @@ import {
   determineBlocksToProcess,
   findClosestRepeated,
   computeEffects,
+  extractPageDataFromHtml,
+  patchResolvedBlocksFromHtml,
 } from '../../../craftile/features/updatePersistence';
+import {
+  canonicalizePage,
+  clearResolvedTranslationRefs,
+} from '../../../utils/resolvedTranslationRefs';
 
 function createUpdatesEvent(
   changes: {
@@ -448,6 +454,128 @@ describe('updatePersistence utilities', () => {
       expect(result.css).toEqual([]);
       expect(result.js).toEqual([]);
       expect(result.html).toEqual({});
+    });
+  });
+
+  describe('extractPageDataFromHtml', () => {
+    it('parses the injected page data script', () => {
+      const html = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <script type="application/json" id="page-data">
+              {"content":{"blocks":{"hero":{"id":"hero","type":"hero","properties":{"title":"Resolved title"},"children":[]}},"regions":[]}}
+            </script>
+          </head>
+          <body></body>
+        </html>
+      `;
+
+      const result = extractPageDataFromHtml(html);
+
+      expect(result.content.blocks.hero.properties.title).toBe('Resolved title');
+    });
+
+    it('returns null when page data is not present', () => {
+      const result = extractPageDataFromHtml('<html><body></body></html>');
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('patchResolvedBlocksFromHtml', () => {
+    it('merges resolved partial blocks into the current page without replacing regions', () => {
+      const previousPage = {
+        blocks: {
+          hero: {
+            id: 'hero',
+            type: 'hero',
+            properties: { title: 't:block.title', subtitle: 'Keep me' },
+            children: ['button'],
+          },
+          button: {
+            id: 'button',
+            type: 'button',
+            parentId: 'hero',
+            properties: { label: 'Buy' },
+            children: [],
+          },
+        },
+        regions: [{ id: 'main', name: 'Main', blocks: ['hero'] }],
+      };
+      const replacePageState = vi.fn();
+      const emit = vi.fn();
+      const editor = {
+        engine: {
+          getPage: vi.fn(() => structuredClone(previousPage)),
+          getBlockSchema: vi.fn(() => ({
+            type: 'hero',
+            properties: [{ id: 'title', localized: true }],
+          })),
+          replacePageState,
+          emit,
+        },
+      } as any;
+      const html = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <script type="application/json" id="page-data">
+              {"content":{"blocks":{"hero":{"id":"hero","type":"hero","properties":{"title":"Resolved title"},"children":["button"]}},"regions":[{"id":"partial","name":"Partial","blocks":["hero"]}]}}
+            </script>
+          </head>
+          <body></body>
+        </html>
+      `;
+
+      patchResolvedBlocksFromHtml(editor, html);
+
+      expect(replacePageState).toHaveBeenCalledWith({
+        blocks: {
+          hero: {
+            id: 'hero',
+            type: 'hero',
+            properties: { title: 'Resolved title' },
+            children: ['button'],
+          },
+          button: previousPage.blocks.button,
+        },
+        regions: previousPage.regions,
+      });
+      expect(emit).toHaveBeenCalledWith('page:set', {
+        previousPage,
+        newPage: {
+          blocks: {
+            hero: {
+              id: 'hero',
+              type: 'hero',
+              properties: { title: 'Resolved title' },
+              children: ['button'],
+            },
+            button: previousPage.blocks.button,
+          },
+          regions: previousPage.regions,
+        },
+      });
+      expect(canonicalizePage(replacePageState.mock.calls[0][0]).blocks.hero.properties.title).toBe('t:block.title');
+
+      clearResolvedTranslationRefs();
+    });
+
+    it('does nothing when the response has no partial blocks', () => {
+      const editor = {
+        engine: {
+          getPage: vi.fn(),
+          replacePageState: vi.fn(),
+          emit: vi.fn(),
+        },
+      } as any;
+
+      patchResolvedBlocksFromHtml(editor, '<html><body></body></html>');
+
+      expect(editor.engine.getPage).not.toHaveBeenCalled();
+      expect(editor.engine.replacePageState).not.toHaveBeenCalled();
+      expect(editor.engine.emit).not.toHaveBeenCalled();
     });
   });
 });

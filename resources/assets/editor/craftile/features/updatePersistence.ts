@@ -1,11 +1,12 @@
 import type { EngineEvents } from '@craftile/core';
 import type { CraftileEditor } from '@craftile/editor';
-import type { UpdatesEvent } from '@craftile/types';
+import type { Page, UpdatesEvent } from '@craftile/types';
 import { debounce } from 'perfect-debounce';
 
 import type { State } from '../../state';
 import { persistUpdates } from '../../api';
 import useI18n from '../../composables/i18n';
+import { recordResolvedTranslationRefs } from '../../utils/resolvedTranslationRefs';
 
 const { t } = useI18n();
 
@@ -137,6 +138,42 @@ export function computeEffects(html: string, blocksToUpdate: string[]) {
   return effects;
 }
 
+export function extractPageDataFromHtml(html: string): any | null {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const script = doc.querySelector<HTMLScriptElement>('script#page-data[type="application/json"]');
+
+  return script?.textContent ? JSON.parse(script.textContent) : null;
+}
+
+export function patchResolvedBlocksFromHtml(editor: CraftileEditor, html: string): void {
+  const pageData = extractPageDataFromHtml(html);
+  const resolvedBlocks = pageData?.content?.blocks;
+
+  if (!resolvedBlocks || Object.keys(resolvedBlocks).length === 0) {
+    return;
+  }
+
+  const previousPage = editor.engine.getPage();
+  recordResolvedTranslationRefs(previousPage.blocks, resolvedBlocks, (type) => editor.engine.getBlockSchema(type));
+
+  const newPage: Page = {
+    ...previousPage,
+    blocks: {
+      ...previousPage.blocks,
+      ...resolvedBlocks,
+    },
+  };
+
+  const engine = editor.engine as any;
+
+  engine.replacePageState(newPage);
+  engine.emit('page:set', {
+    previousPage,
+    newPage: structuredClone(newPage),
+  });
+}
+
 export function setupUpdatePersistence(editor: CraftileEditor, state: State) {
   let pendingUpdates: UpdatesEvent[] = [];
   let failedUpdates: UpdatesEvent[] = [];
@@ -171,6 +208,7 @@ export function setupUpdatePersistence(editor: CraftileEditor, state: State) {
       const blocksToUpdate = determineBlocksToProcess(directlyModifiedIds, allBlocks);
 
       const effects = computeEffects(htmlResponse, blocksToUpdate);
+      patchResolvedBlocksFromHtml(editor, htmlResponse);
 
       editor.preview.sendMessage('updates.effects', {
         effects,

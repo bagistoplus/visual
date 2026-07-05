@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { setupPageDataHandler, syncEditorContextFromPageData } from '../../../craftile/handlers/pageData';
 import type { State } from '../../../state';
+import { canonicalizePage, recordResolvedTranslationRefs } from '../../../utils/resolvedTranslationRefs';
 
 vi.mock('nprogress', () => ({
   default: {
@@ -158,5 +159,75 @@ describe('preview page data context sync', () => {
     expect(editor.engine.setPage).toHaveBeenCalledWith({ blocks: {}, regions: [] });
     expect(state.previewLoading).toBe(false);
     expect(calls).toEqual(['unregister', 'register', 'setPage']);
+  });
+
+  it('clears resolved translation refs when full page data is handled', () => {
+    recordResolvedTranslationRefs(
+      {
+        hero: {
+          id: 'hero',
+          type: 'hero',
+          properties: { title: 't:block.title' },
+          children: [],
+        },
+      },
+      {
+        hero: {
+          id: 'hero',
+          type: 'hero',
+          properties: { title: 'Resolved title' },
+          children: [],
+        },
+      },
+      () => ({
+        type: 'hero',
+        properties: [{ id: 'title', localized: true }],
+      } as any)
+    );
+
+    const state = makeState();
+    let handler: any;
+    const editor = {
+      preview: {
+        onReady: (callback: Function) => callback(),
+        onMessage: (_event: string, callback: Function) => {
+          handler = callback;
+        },
+      },
+      engine: {
+        getBlocksManager: () => ({
+          has: vi.fn(() => false),
+          register: vi.fn(),
+        }),
+        setPage: vi.fn(),
+      },
+    } as any;
+
+    setupPageDataHandler(editor, state);
+
+    handler({
+      pageData: {
+        content: { blocks: {}, regions: [] },
+        template: {
+          url: 'https://example.test',
+          name: 'index',
+          sources: 'encrypted',
+        },
+      },
+    });
+
+    const canonical = canonicalizePage({
+      blocks: {
+        hero: {
+          id: 'hero',
+          type: 'hero',
+          properties: { title: 'Resolved title' },
+          children: [],
+        },
+      },
+      regions: [{ name: 'main', blocks: ['hero'] }],
+    });
+
+    expect(canonical.blocks.hero.properties.title).toBe('Resolved title');
   });
 });

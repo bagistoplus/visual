@@ -1,6 +1,7 @@
 import { UpdatesEvent } from '@craftile/types';
 import { useHttpClient } from './composables/http';
 import { useState } from './state';
+import { canonicalizePage, canonicalizeUpdates } from './utils/resolvedTranslationRefs';
 
 export function persistUpdates(updates: UpdatesEvent) {
   const { state } = useState();
@@ -15,7 +16,7 @@ export function persistUpdates(updates: UpdatesEvent) {
       name: state.pageData?.template || 'index',
       sources: state.pageData?.sources,
     },
-    updates,
+    updates: canonicalizeUpdates(updates),
   }).text();
 
   return request;
@@ -53,7 +54,7 @@ export function publishTheme(pageData?: any) {
     channel: state.channel || window.editorConfig.defaultChannel,
     locale: state.locale || window.editorConfig.editorLocale,
     template: state.pageData?.template || 'index',
-    page: pageData,
+    page: canonicalizePage(pageData),
   });
 
   request.onError((error) => {
