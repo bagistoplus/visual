@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import Vue from '@vitejs/plugin-vue';
-import VueMacros from 'unplugin-vue-macros/vite';
+import VueMacros from 'vue-macros/vite';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import IconsResolver from 'unplugin-icons/resolver';
