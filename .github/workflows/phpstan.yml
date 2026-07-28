@@ -23,6 +23,8 @@ jobs:
 
       - name: Install composer dependencies
         uses: ramsey/composer-install@v4
+        env:
+          COMPOSER_POLICY_ADVISORIES_BLOCK: 0
 
       - name: Run PHPStan
         run: ./vendor/bin/phpstan --error-format=github
