@@ -4,7 +4,7 @@ import NProgress from 'nprogress';
 import type { State } from '../../state';
 import { populatePreloadedModels } from '../../state';
 import type { PreviewPageData } from '../../types';
-import { clearResolvedTranslationRefs } from '../../utils/resolvedTranslationRefs';
+import { clearResolvedTranslationRefs, recordResolvedTranslationRefs } from '../../utils/resolvedTranslationRefs';
 import { getUrlParam, removeUrlParam } from '../../utils/urlState';
 
 export function syncEditorBlockSchemas(editor: CraftileEditor, blockSchemas: any[]) {
@@ -44,6 +44,12 @@ export function setupPageDataHandler(editor: CraftileEditor, state: State) {
       if (pageData.blockSchemas) {
         syncEditorBlockSchemas(editor, pageData.blockSchemas);
       }
+
+      recordResolvedTranslationRefs(
+        pageData.translationReferences?.blocks ?? {},
+        pageData.content?.blocks ?? {},
+        (type) => editor.engine.getBlockSchema(type)
+      );
 
       editor.engine.setPage(pageData.content);
       state.previewLoading = false;

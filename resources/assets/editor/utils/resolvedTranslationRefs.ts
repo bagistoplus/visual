@@ -5,6 +5,13 @@ type ResolvedTranslationRef = {
   resolved: any;
 };
 
+type BlocksProperties = Record<
+  string,
+  {
+    properties?: Block['properties'];
+  }
+>;
+
 const refs = new Map<string, Map<string, ResolvedTranslationRef>>();
 
 export function isTranslationReference(value: unknown): boolean {
@@ -16,7 +23,7 @@ export function clearResolvedTranslationRefs(): void {
 }
 
 export function recordResolvedTranslationRefs(
-  currentBlocks: Record<string, Block>,
+  currentBlocks: BlocksProperties,
   resolvedBlocks: Record<string, Block>,
   getBlockSchema: (type: string) => BlockSchema | undefined
 ): void {

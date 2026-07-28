@@ -1,13 +1,18 @@
 <?php
 
+use BagistoPlus\Visual\Blocks\SimpleBlock;
+use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
 use BagistoPlus\Visual\Persistence\EditorDataStore;
+use BagistoPlus\Visual\Settings\Text;
 use BagistoPlus\Visual\Support\EditorInheritanceMetadata;
+use BagistoPlus\Visual\Support\EditorTranslationReferenceCollector;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
 use BagistoPlus\Visual\Theme\Theme;
 use BagistoPlus\Visual\ThemeEditor;
 use BagistoPlus\Visual\ThemePathsResolver as ThemePathsResolverConcrete;
 use BagistoPlus\Visual\ThemeSettingsLoader;
+use Craftile\Laravel\BlockSchemaRegistry;
 use Craftile\Laravel\PreviewDataCollector;
 use Craftile\Laravel\PropertyBag;
 use Illuminate\Filesystem\Filesystem;
@@ -43,6 +48,18 @@ class TestableInjectThemeEditorScript extends InjectThemeEditorScript
     protected function fixCategoryOrProductRoute($routeName)
     {
         return 'shop.home.index';
+    }
+}
+
+class InjectThemeEditorScriptTranslationReferenceBlock extends SimpleBlock
+{
+    protected static string $type = 'injected-script-translation-reference-block';
+
+    public static function settings(): array
+    {
+        return [
+            Text::make('title', 'Title'),
+        ];
     }
 }
 
@@ -132,6 +149,59 @@ it('includes the resolved preview channel and locale in page data', function () 
         ->toHaveKey('locale', 'en')
         ->toHaveKey('localeInheritance', [])
         ->toHaveKey('blockSchemas', []);
+});
+
+it('includes translation references for rendered blocks in page data', function () {
+    bindPreviewCurrentTheme();
+
+    $collector = app(EditorTranslationReferenceCollector::class);
+    app(BlockSchemaRegistry::class)->register(BlockSchema::fromClass(InjectThemeEditorScriptTranslationReferenceBlock::class));
+    $collector->reset();
+    $collector->collect([
+        'id' => 'hero',
+        'type' => 'injected-script-translation-reference-block',
+        'properties' => [
+            'title' => 't:block.title',
+        ],
+    ]);
+    $collector->collect([
+        'id' => 'unused',
+        'type' => 'injected-script-translation-reference-block',
+        'properties' => [
+            'title' => 't:block.unused',
+        ],
+    ]);
+
+    $themeEditor = Mockery::mock(ThemeEditor::class);
+    $themeEditor->shouldReceive('getTemplateFromJsonViews')->with('index')->andReturn('index');
+    $themeEditor->shouldReceive('jsonViews')->andReturn([]);
+    $themeEditor->shouldReceive('preloadedModels')->andReturn([]);
+
+    $themeSettingsLoader = Mockery::mock(ThemeSettingsLoader::class);
+    $themeSettingsLoader->shouldReceive('loadActiveThemeSettings')->andReturn(new PropertyBag);
+
+    $middleware = testableInjectThemeEditorScript(
+        $themeEditor,
+        $themeSettingsLoader,
+        app(EditorInheritanceMetadata::class),
+    );
+
+    $payload = $middleware->payload([
+        'blocks' => [
+            'hero' => ['id' => 'hero', 'type' => 'injected-script-translation-reference-block'],
+        ],
+        'regions' => [],
+    ]);
+
+    expect($payload['translationReferences'])->toBe([
+        'blocks' => [
+            'hero' => [
+                'properties' => [
+                    'title' => 't:block.title',
+                ],
+            ],
+        ],
+    ]);
 });
 
 it('includes locale inheritance for the current template in page data', function () {

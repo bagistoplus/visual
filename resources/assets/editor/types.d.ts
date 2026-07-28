@@ -73,6 +73,14 @@ export interface ContextInheritance {
 
 export interface PreviewPageData {
   content: any;
+  translationReferences?: {
+    blocks?: Record<
+      string,
+      {
+        properties?: Record<string, any>;
+      }
+    >;
+  };
   template: {
     url: string;
     name: string;

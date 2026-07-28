@@ -4,8 +4,10 @@ namespace BagistoPlus\Visual\Middlewares;
 
 use BagistoPlus\Visual\Support\EditorBlockSchemaSerializer;
 use BagistoPlus\Visual\Support\EditorInheritanceMetadata;
+use BagistoPlus\Visual\Support\EditorTranslationReferenceCollector;
 use BagistoPlus\Visual\ThemeEditor;
 use BagistoPlus\Visual\ThemeSettingsLoader;
+use Closure;
 use Craftile\Laravel\Middlewares\PreviewScriptMiddleware;
 use Craftile\Laravel\PreviewDataCollector;
 use Craftile\Laravel\PropertyBag;
@@ -26,6 +28,17 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
         protected PreviewDataCollector $previewCollector,
         protected EditorInheritanceMetadata $editorInheritanceMetadata,
     ) {}
+
+    public function handle(Request $request, Closure $next): Response
+    {
+        app(EditorTranslationReferenceCollector::class)->reset();
+
+        try {
+            return parent::handle($request, $next);
+        } finally {
+            app(EditorTranslationReferenceCollector::class)->reset();
+        }
+    }
 
     /**
      * Inject preview client and page data scripts into the response.
@@ -90,6 +103,8 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
                 $channel,
                 $template
             ),
+            'translationReferences' => app(EditorTranslationReferenceCollector::class)
+                ->forBlockIds(array_keys($pageData['blocks'] ?? [])),
             'blockSchemas' => app(EditorBlockSchemaSerializer::class)->all(),
             'settings' => $settingsBag->toArray(),
             'preloadedModels' => $this->themeEditor->preloadedModels(),

@@ -15,6 +15,7 @@ use BagistoPlus\Visual\Persistence\EditorDataStore;
 use BagistoPlus\Visual\Settings\Support as SettingTransformers;
 use BagistoPlus\Visual\Support\BlockRenderFilter;
 use BagistoPlus\Visual\Support\ChannelThemeResolver;
+use BagistoPlus\Visual\Support\EditorTranslationReferenceCollector;
 use BagistoPlus\Visual\Support\IconMapFilesystemAdapter;
 use BagistoPlus\Visual\Support\TemplateAssignment;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
@@ -113,6 +114,14 @@ class CoreServiceProvider extends ServiceProvider
 
         Craftile::detectPreviewUsing(function () {
             return ThemeEditor::inDesignMode();
+        });
+
+        Craftile::createBlockDataUsing(function (array $blockData, mixed $resolveChildData = null) {
+            if (ThemeEditor::inDesignMode()) {
+                app(EditorTranslationReferenceCollector::class)->collect($blockData);
+            }
+
+            return BlockData::make($blockData, $resolveChildData);
         });
 
         Craftile::normalizeTemplateUsing(new TemplateNormalizer);
@@ -375,6 +384,7 @@ class CoreServiceProvider extends ServiceProvider
         $this->app->singleton(ChannelThemeResolver::class);
         $this->app->singleton(TemplateAssignment::class);
         $this->app->singleton(VisualDiscoveryFilter::class);
+        $this->app->singleton(EditorTranslationReferenceCollector::class);
     }
 
     protected function registerCustomUrlGenerator(): void

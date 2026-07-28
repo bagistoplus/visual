@@ -136,6 +136,7 @@ describe('preview page data context sync', () => {
       },
       engine: {
         getBlocksManager: () => blocksManager,
+        getBlockSchema: vi.fn(() => undefined),
         setPage: vi.fn(() => calls.push('setPage')),
       },
     } as any;
@@ -199,6 +200,7 @@ describe('preview page data context sync', () => {
           has: vi.fn(() => false),
           register: vi.fn(),
         }),
+        getBlockSchema: vi.fn(() => undefined),
         setPage: vi.fn(),
       },
     } as any;
@@ -229,5 +231,79 @@ describe('preview page data context sync', () => {
     });
 
     expect(canonical.blocks.hero.properties.title).toBe('Resolved title');
+  });
+
+  it('seeds resolved translation refs from full page data translation references', () => {
+    const state = makeState();
+    let handler: any;
+    const editor = {
+      preview: {
+        onReady: (callback: Function) => callback(),
+        onMessage: (_event: string, callback: Function) => {
+          handler = callback;
+        },
+      },
+      engine: {
+        getBlocksManager: () => ({
+          has: vi.fn(() => false),
+          register: vi.fn(),
+        }),
+        getBlockSchema: vi.fn(() => ({
+          type: 'hero',
+          properties: [
+            { id: 'title', localized: true },
+            { id: 'color', localized: false },
+          ],
+        })),
+        setPage: vi.fn(),
+      },
+    } as any;
+
+    setupPageDataHandler(editor, state);
+
+    handler({
+      pageData: {
+        content: {
+          blocks: {
+            hero: {
+              id: 'hero',
+              type: 'hero',
+              properties: { title: 'Resolved title', color: '#000000' },
+              children: [],
+            },
+          },
+          regions: [{ name: 'main', blocks: ['hero'] }],
+        },
+        translationReferences: {
+          blocks: {
+            hero: {
+              properties: { title: 't:block.title' },
+            },
+          },
+        },
+        template: {
+          url: 'https://example.test',
+          name: 'index',
+          sources: 'encrypted',
+        },
+      },
+    });
+
+    const canonical = canonicalizePage({
+      blocks: {
+        hero: {
+          id: 'hero',
+          type: 'hero',
+          properties: { title: 'Resolved title', color: '#ffffff' },
+          children: [],
+        },
+      },
+      regions: [{ name: 'main', blocks: ['hero'] }],
+    });
+
+    expect(canonical.blocks.hero.properties).toEqual({
+      title: 't:block.title',
+      color: '#ffffff',
+    });
   });
 });
