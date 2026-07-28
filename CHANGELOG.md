@@ -2,6 +2,13 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.25](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.24...v2.0.0-alpha.25) (2026-07-28)
+
+
+### Bug Fixes
+
+* preserve translation references on initial page load ([941648b](https://github.com/bagistoplus/visual/commit/941648bb826887728548bb65406786aebbeec3c8))
+
 # [2.0.0-alpha.24](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.23...v2.0.0-alpha.24) (2026-07-05)
 
 
