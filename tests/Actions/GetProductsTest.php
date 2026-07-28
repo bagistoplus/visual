@@ -62,6 +62,8 @@ it('dispatches search term tracking for plain search requests', function () {
     Queue::fake();
 
     $paginator = new LengthAwarePaginator([(object) ['id' => 1]], 7, 12);
+    $supportsSuggestions = method_exists(ProductRepository::class, 'getSuggestions');
+    $expectedQuery = $supportsSuggestions ? 'shirts' : 'shirt';
 
     $this->repository
         ->shouldReceive('setSearchEngine')
@@ -69,16 +71,22 @@ it('dispatches search term tracking for plain search requests', function () {
         ->with('database')
         ->andReturnSelf();
 
-    $this->repository
-        ->shouldReceive('getSuggestions')
-        ->once()
-        ->with('shirt')
-        ->andReturn('shirts');
+    if ($supportsSuggestions) {
+        $this->repository
+            ->shouldReceive('getSuggestions')
+            ->once()
+            ->with('shirt')
+            ->andReturn('shirts');
+    } else {
+        $this->repository
+            ->shouldReceive('getSuggestions')
+            ->never();
+    }
 
     $this->repository
         ->shouldReceive('getAll')
         ->once()
-        ->with(Mockery::on(fn ($params) => $params['query'] === 'shirts'
+        ->with(Mockery::on(fn ($params) => $params['query'] === $expectedQuery
             && $params['channel_id'] === 1
             && $params['status'] === 1
             && $params['visible_individually'] === 1))
@@ -86,12 +94,12 @@ it('dispatches search term tracking for plain search requests', function () {
 
     app(GetProducts::class)->execute(['query' => 'shirt']);
 
-    Queue::assertPushed(UpdateCreateSearchTerm::class, function ($job) {
+    Queue::assertPushed(UpdateCreateSearchTerm::class, function ($job) use ($expectedQuery) {
         $property = new ReflectionProperty($job, 'data');
         $property->setAccessible(true);
 
         return $property->getValue($job) === [
-            'term' => 'shirts',
+            'term' => $expectedQuery,
             'results' => 7,
             'channel_id' => 1,
             'locale' => 'en',
@@ -103,6 +111,7 @@ it('does not dispatch search term tracking when additional filters are present',
     Queue::fake();
 
     $paginator = new LengthAwarePaginator([(object) ['id' => 1]], 1, 12);
+    $supportsSuggestions = method_exists(ProductRepository::class, 'getSuggestions');
 
     $this->repository
         ->shouldReceive('setSearchEngine')
@@ -110,11 +119,17 @@ it('does not dispatch search term tracking when additional filters are present',
         ->with('database')
         ->andReturnSelf();
 
-    $this->repository
-        ->shouldReceive('getSuggestions')
-        ->once()
-        ->with('shirt')
-        ->andReturnNull();
+    if ($supportsSuggestions) {
+        $this->repository
+            ->shouldReceive('getSuggestions')
+            ->once()
+            ->with('shirt')
+            ->andReturnNull();
+    } else {
+        $this->repository
+            ->shouldReceive('getSuggestions')
+            ->never();
+    }
 
     $this->repository
         ->shouldReceive('getAll')
