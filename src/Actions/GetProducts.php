@@ -15,7 +15,7 @@ final readonly class GetProducts
      *
      * @return LengthAwarePaginator
      */
-    public function execute(array $params)
+    public function execute(array $params, bool $trackSearch = true)
     {
         request()->query->add($params);
 
@@ -38,7 +38,7 @@ final readonly class GetProducts
             ])
         );
 
-        if ($this->shouldTrackSearchTerm($query)) {
+        if ($trackSearch && $this->shouldTrackSearchTerm($query)) {
             UpdateCreateSearchTermJob::dispatch([
                 'term' => $query,
                 'results' => $products->total(),

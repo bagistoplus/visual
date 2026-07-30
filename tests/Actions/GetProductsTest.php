@@ -107,6 +107,50 @@ it('dispatches search term tracking for plain search requests', function () {
     });
 });
 
+it('does not dispatch search term tracking when tracking is disabled', function () {
+    Queue::fake();
+
+    $paginator = new LengthAwarePaginator([(object) ['id' => 1]], 7, 12);
+    $supportsSuggestions = method_exists(ProductRepository::class, 'getSuggestions');
+    $expectedQuery = $supportsSuggestions ? 'shirts' : 'shirt';
+
+    $this->repository
+        ->shouldReceive('setSearchEngine')
+        ->once()
+        ->with('database')
+        ->andReturnSelf();
+
+    if ($supportsSuggestions) {
+        $this->repository
+            ->shouldReceive('getSuggestions')
+            ->once()
+            ->with('shirt')
+            ->andReturn('shirts');
+    } else {
+        $this->repository
+            ->shouldReceive('getSuggestions')
+            ->never();
+    }
+
+    $this->repository
+        ->shouldReceive('getAll')
+        ->once()
+        ->with(Mockery::on(fn ($params) => $params['query'] === $expectedQuery
+            && $params['channel_id'] === 1
+            && $params['status'] === 1
+            && $params['visible_individually'] === 1))
+        ->andReturn($paginator);
+
+    $products = app(GetProducts::class)->execute(
+        ['query' => 'shirt'],
+        trackSearch: false,
+    );
+
+    expect($products)->toBe($paginator);
+
+    Queue::assertNotPushed(UpdateCreateSearchTerm::class);
+});
+
 it('does not dispatch search term tracking when additional filters are present', function () {
     Queue::fake();
 
