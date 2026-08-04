@@ -4,7 +4,8 @@ import { Block } from '@craftile/types';
 import morphdom from 'morphdom';
 
 const previewClient = new PreviewClient();
-let shouldIgnoreLivewireError = false;
+
+const livewireEnvelopeAttributes = ['wire:id', 'wire:snapshot', 'wire:effects', 'wire:key'];
 
 const recentlyLiveUpdated = new Set<string>();
 const liveUpdatedProperties = new Map<string, string>();
@@ -20,15 +21,47 @@ function hasRecentLiveUpdate(el: HTMLElement): boolean {
   return attrs.some((attr) => recentlyLiveUpdated.has(attr.name));
 }
 
-window.addEventListener('error', (event) => {
-  if (!shouldIgnoreLivewireError) {
-    return;
-  }
+function preserveLivewireEnvelope(fromEl: HTMLElement, toEl: HTMLElement): void {
+  for (const attribute of livewireEnvelopeAttributes) {
+    const value = fromEl.getAttribute(attribute);
 
-  if (event.message === 'Uncaught Could not find Livewire component in DOM tree') {
-    event.preventDefault(); // Prevents it from showing in the console
+    if (value === null) {
+      toEl.removeAttribute(attribute);
+    } else {
+      toEl.setAttribute(attribute, value);
+    }
   }
-});
+}
+
+function morphKey(el: Element): string | undefined {
+  return (el.getAttribute('data-block') ?? el.getAttribute('wire:key') ?? el.id) || undefined;
+}
+
+function morphWithAlpine(fromEl: HTMLElement, toEl: HTMLElement, livewireRoot?: HTMLElement): void {
+  window.Alpine.morph(fromEl, toEl, {
+    updating(
+      oldEl: Element,
+      newEl: Element,
+      childrenOnly: () => void,
+      skip: () => void
+    ) {
+      if (!(oldEl instanceof HTMLElement) || !(newEl instanceof HTMLElement)) {
+        return;
+      }
+
+      if (oldEl.hasAttribute('data-morph-ignore') || hasRecentLiveUpdate(oldEl)) {
+        skip();
+
+        return;
+      }
+
+      if (oldEl !== livewireRoot && oldEl.hasAttribute('wire:id')) {
+        childrenOnly();
+      }
+    },
+    key: morphKey,
+  });
+}
 
 function createMorphdomHandler() {
   return function onBeforeElUpdated(fromEl: Element, toEl: Element): boolean {
@@ -40,45 +73,32 @@ function createMorphdomHandler() {
       return false;
     }
 
-    if (fromEl instanceof HTMLElement && fromEl.hasAttribute('wire:id') && toEl.hasAttribute('wire:id')) {
-      // @ts-ignore
-      const livewireComponent = fromEl.__livewire;
+    if (
+      fromEl instanceof HTMLElement &&
+      toEl instanceof HTMLElement &&
+      fromEl.hasAttribute('wire:id') &&
+      toEl.hasAttribute('wire:id')
+    ) {
+      if (fromEl.tagName !== toEl.tagName || typeof window.Alpine?.morph !== 'function') {
+        fromEl.replaceWith(toEl);
 
-      if (!livewireComponent) {
-        return true;
+        return false;
       }
 
-      const newSnapshot = toEl.getAttribute('wire:snapshot');
-      const effects = JSON.parse(toEl.getAttribute('wire:effects') as string);
-
-      effects.html = toEl.outerHTML;
-      livewireComponent.mergeNewSnapshot(newSnapshot, effects);
-
-      shouldIgnoreLivewireError = true;
-      livewireComponent.processEffects(effects);
-
-      setTimeout(() => {
-        shouldIgnoreLivewireError = false;
-      });
+      preserveLivewireEnvelope(fromEl, toEl);
+      morphWithAlpine(fromEl, toEl, fromEl);
 
       return false;
     }
 
     // @ts-ignore
-    if (fromEl['_x_dataStack'] && typeof window.Alpine?.morph === 'function') {
-      window.Alpine.morph(fromEl, toEl, {
-        updating(oldEl: Element, newEl: Element, childrenOnly: () => void) {
-          if (oldEl instanceof HTMLElement && newEl instanceof HTMLElement) {
-            if (hasRecentLiveUpdate(oldEl)) {
-              return false;
-            }
-
-            if (oldEl.hasAttribute('wire:id')) {
-              return childrenOnly();
-            }
-          }
-        },
-      });
+    if (
+      fromEl instanceof HTMLElement &&
+      toEl instanceof HTMLElement &&
+      fromEl['_x_dataStack'] &&
+      typeof window.Alpine?.morph === 'function'
+    ) {
+      morphWithAlpine(fromEl, toEl);
 
       return false;
     }

@@ -18,9 +18,11 @@ vi.mock('@craftile/preview-client-html', () => ({
 describe('morphdom handler', () => {
   let RawHtmlRenderer: any;
   let morphdomHandler: any;
+  let previewClient: any;
 
   beforeEach(async () => {
     vi.resetModules();
+    delete (window as any).Alpine;
 
     const htmlModule = await import('@craftile/preview-client-html');
     RawHtmlRenderer = htmlModule.default;
@@ -29,6 +31,13 @@ describe('morphdom handler', () => {
 
     const initCall = RawHtmlRenderer.init.mock.calls[0];
     morphdomHandler = initCall?.[1]?.morphdom?.onBeforeElUpdated;
+
+    const previewModule = await import('@craftile/preview-client');
+    previewClient = (previewModule.PreviewClient as any).mock.instances[0];
+  });
+
+  afterEach(() => {
+    delete (window as any).Alpine;
   });
 
   describe('data-morph-ignore attribute', () => {
@@ -126,6 +135,218 @@ describe('morphdom handler', () => {
 
       expect(container.querySelector('#ignored')?.textContent).toBe('Ignored content');
       expect(container.querySelector('#updated')?.textContent).toBe('Updated content');
+    });
+  });
+
+  describe('Livewire and Alpine morphing', () => {
+    it('morphs a Livewire root with Alpine while preserving its Livewire envelope', () => {
+      const mergeNewSnapshot = vi.fn();
+      const processEffects = vi.fn();
+      const alpineState = { open: true };
+      const alpineMorph = vi.fn((fromEl: HTMLElement, toEl: HTMLElement) => {
+        for (const attribute of Array.from(fromEl.attributes)) {
+          if (!toEl.hasAttribute(attribute.name)) {
+            fromEl.removeAttribute(attribute.name);
+          }
+        }
+
+        for (const attribute of Array.from(toEl.attributes)) {
+          fromEl.setAttribute(attribute.name, attribute.value);
+        }
+
+        fromEl.innerHTML = toEl.innerHTML;
+      });
+
+      (window as any).Alpine = { morph: alpineMorph };
+
+      const container = document.createElement('div');
+      const fromEl = document.createElement('section');
+      fromEl.setAttribute('data-block', 'hero');
+      fromEl.setAttribute('wire:id', 'existing-component');
+      fromEl.setAttribute('wire:snapshot', 'existing-snapshot');
+      fromEl.setAttribute('wire:effects', '{"listeners":["existing"]}');
+      fromEl.setAttribute('wire:key', 'existing-key');
+      fromEl.setAttribute('class', 'old-class');
+      (fromEl as any)._x_dataStack = [alpineState];
+      (fromEl as any).__livewire = { mergeNewSnapshot, processEffects };
+      fromEl.textContent = 'Old heading';
+      container.appendChild(fromEl);
+
+      const toEl = document.createElement('section');
+      toEl.setAttribute('data-block', 'hero');
+      toEl.setAttribute('wire:id', 'fresh-component');
+      toEl.setAttribute('wire:snapshot', 'fresh-snapshot');
+      toEl.setAttribute('wire:effects', '{"listeners":["fresh"]}');
+      toEl.setAttribute('wire:key', 'fresh-key');
+      toEl.setAttribute('class', 'new-class');
+      toEl.textContent = 'New heading';
+
+      expect(morphdomHandler(fromEl, toEl)).toBe(false);
+      expect(alpineMorph).toHaveBeenCalledOnce();
+      expect(container.firstElementChild).toBe(fromEl);
+      expect(fromEl.className).toBe('new-class');
+      expect(fromEl.textContent).toBe('New heading');
+      expect((fromEl as any)._x_dataStack[0]).toBe(alpineState);
+      expect(fromEl.getAttribute('wire:id')).toBe('existing-component');
+      expect(fromEl.getAttribute('wire:snapshot')).toBe('existing-snapshot');
+      expect(fromEl.getAttribute('wire:effects')).toBe('{"listeners":["existing"]}');
+      expect(fromEl.getAttribute('wire:key')).toBe('existing-key');
+      expect(mergeNewSnapshot).not.toHaveBeenCalled();
+      expect(processEffects).not.toHaveBeenCalled();
+    });
+
+    it('updates the active Livewire root and morphs nested Livewire children only', () => {
+      const alpineMorph = vi.fn();
+      (window as any).Alpine = { morph: alpineMorph };
+
+      const fromEl = document.createElement('section');
+      fromEl.setAttribute('wire:id', 'existing-component');
+      fromEl.setAttribute('wire:snapshot', 'existing-snapshot');
+
+      const toEl = document.createElement('section');
+      toEl.setAttribute('wire:id', 'fresh-component');
+      toEl.setAttribute('wire:snapshot', 'fresh-snapshot');
+
+      morphdomHandler(fromEl, toEl);
+
+      const options = alpineMorph.mock.calls[0][2];
+      const rootChildrenOnly = vi.fn();
+      const rootSkip = vi.fn();
+
+      options.updating(fromEl, toEl, rootChildrenOnly, rootSkip);
+
+      expect(rootChildrenOnly).not.toHaveBeenCalled();
+      expect(rootSkip).not.toHaveBeenCalled();
+
+      const nestedFrom = document.createElement('div');
+      nestedFrom.setAttribute('wire:id', 'nested-existing');
+      const nestedTo = document.createElement('div');
+      nestedTo.setAttribute('wire:id', 'nested-fresh');
+      const nestedChildrenOnly = vi.fn();
+
+      options.updating(nestedFrom, nestedTo, nestedChildrenOnly, vi.fn());
+
+      expect(nestedChildrenOnly).toHaveBeenCalledOnce();
+    });
+
+    it('skips ignored descendants inside the Alpine morph', () => {
+      const alpineMorph = vi.fn();
+      (window as any).Alpine = { morph: alpineMorph };
+
+      const fromEl = document.createElement('section');
+      fromEl.setAttribute('wire:id', 'existing-component');
+      const toEl = document.createElement('section');
+      toEl.setAttribute('wire:id', 'fresh-component');
+
+      morphdomHandler(fromEl, toEl);
+
+      const ignoredFrom = document.createElement('div');
+      ignoredFrom.setAttribute('data-morph-ignore', '');
+      const ignoredTo = document.createElement('div');
+      const skip = vi.fn();
+
+      alpineMorph.mock.calls[0][2].updating(ignoredFrom, ignoredTo, vi.fn(), skip);
+
+      expect(skip).toHaveBeenCalledOnce();
+    });
+
+    it('skips recently live-updated descendants inside the Alpine morph', () => {
+      vi.stubGlobal('CSS', {
+        escape: (value: string) => value.replace(/[^a-zA-Z0-9_-]/g, '\\$&'),
+      });
+
+      const alpineMorph = vi.fn();
+      (window as any).Alpine = { morph: alpineMorph };
+
+      const fromEl = document.createElement('section');
+      fromEl.setAttribute('wire:id', 'existing-component');
+      const toEl = document.createElement('section');
+      toEl.setAttribute('wire:id', 'fresh-component');
+      morphdomHandler(fromEl, toEl);
+
+      const liveUpdatedFrom = document.createElement('div');
+      liveUpdatedFrom.setAttribute('data-live-update-block-123.heading', 'text');
+      document.body.appendChild(liveUpdatedFrom);
+
+      const propertyUpdateHandler = previewClient.on.mock.calls.find(
+        ([eventName]: [string]) => eventName === 'block.property.updated'
+      )[1];
+
+      propertyUpdateHandler({
+        block: { id: 'block-123' },
+        key: 'heading',
+        value: 'Fresh heading',
+        oldValue: 'Old heading',
+      });
+
+      const skip = vi.fn();
+      alpineMorph.mock.calls[0][2].updating(
+        liveUpdatedFrom,
+        document.createElement('div'),
+        vi.fn(),
+        skip
+      );
+
+      expect(skip).toHaveBeenCalledOnce();
+
+      liveUpdatedFrom.remove();
+      vi.unstubAllGlobals();
+    });
+
+    it('uses stable Visual and DOM keys for Alpine morphing', () => {
+      const alpineMorph = vi.fn();
+      (window as any).Alpine = { morph: alpineMorph };
+
+      const fromEl = document.createElement('section');
+      fromEl.setAttribute('wire:id', 'existing-component');
+      const toEl = document.createElement('section');
+      toEl.setAttribute('wire:id', 'fresh-component');
+
+      morphdomHandler(fromEl, toEl);
+
+      const key = alpineMorph.mock.calls[0][2].key;
+      const block = document.createElement('div');
+      block.setAttribute('data-block', 'block-key');
+      block.setAttribute('wire:key', 'wire-key');
+      block.id = 'element-key';
+
+      expect(key(block)).toBe('block-key');
+
+      block.removeAttribute('data-block');
+      expect(key(block)).toBe('wire-key');
+
+      block.removeAttribute('wire:key');
+      expect(key(block)).toBe('element-key');
+    });
+
+    it('continues to morph simple Alpine components', () => {
+      const alpineMorph = vi.fn();
+      (window as any).Alpine = { morph: alpineMorph };
+
+      const fromEl = document.createElement('div');
+      const toEl = document.createElement('div');
+      (fromEl as any)._x_dataStack = [{ open: true }];
+
+      expect(morphdomHandler(fromEl, toEl)).toBe(false);
+      expect(alpineMorph).toHaveBeenCalledWith(fromEl, toEl, expect.any(Object));
+    });
+
+    it.each([
+      ['Alpine Morph is unavailable', 'section', 'section', undefined],
+      ['the root tag changes', 'section', 'div', { morph: vi.fn() }],
+    ])('replaces the Livewire root when %s', (_, fromTag, toTag, Alpine) => {
+      (window as any).Alpine = Alpine;
+
+      const container = document.createElement('div');
+      const fromEl = document.createElement(fromTag);
+      fromEl.setAttribute('wire:id', 'existing-component');
+      container.appendChild(fromEl);
+
+      const toEl = document.createElement(toTag);
+      toEl.setAttribute('wire:id', 'fresh-component');
+
+      expect(morphdomHandler(fromEl, toEl)).toBe(false);
+      expect(container.firstElementChild).toBe(toEl);
     });
   });
 });
