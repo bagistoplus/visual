@@ -2,6 +2,18 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.26](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.25...v2.0.0-alpha.26) (2026-08-04)
+
+
+### Bug Fixes
+
+* preserve Livewire state during preview morphs ([cad6a76](https://github.com/bagistoplus/visual/commit/cad6a764214b7b7b74d0f31f5ff7245eb1cc464d))
+
+
+### Features
+
+* allow disabling search tracking ([a75c714](https://github.com/bagistoplus/visual/commit/a75c71497d100cd1b905e0f1537fc85de825e8cc))
+
 # [2.0.0-alpha.25](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.24...v2.0.0-alpha.25) (2026-07-28)
 
 
