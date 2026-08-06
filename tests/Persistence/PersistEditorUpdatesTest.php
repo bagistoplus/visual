@@ -173,6 +173,55 @@ describe('collectRegionBlocks', function () {
 });
 
 describe('handleFullPage', function () {
+    test('does not restore blocks omitted from the complete page state', function () {
+        $basePath = 'themes/test-theme/editor/default/en';
+        $templatePath = $basePath.'/templates/index.json';
+        $regionPath = $basePath.'/regions/header.json';
+
+        Storage::disk('themes-data')->put($templatePath, json_encode([
+            'blocks' => [
+                'kept-main' => ['id' => 'kept-main', 'type' => 'text'],
+                'removed-main' => ['id' => 'removed-main', 'type' => 'group', 'children' => ['removed-main-child']],
+                'removed-main-child' => ['id' => 'removed-main-child', 'type' => 'text', 'parentId' => 'removed-main'],
+            ],
+            'regions' => [['name' => 'main', 'shared' => false, 'blocks' => ['kept-main', 'removed-main']]],
+        ]));
+        Storage::disk('themes-data')->put($regionPath, json_encode([
+            'blocks' => [
+                'kept-header' => ['id' => 'kept-header', 'type' => 'text'],
+                'removed-header' => ['id' => 'removed-header', 'type' => 'text'],
+            ],
+            'regions' => [['name' => 'header', 'shared' => true, 'blocks' => ['kept-header', 'removed-header']]],
+        ]));
+
+        $this->persistEditorUpdates->handleFullPage(fullPageEditorData([
+            'theme' => 'test-theme',
+            'channel' => 'default',
+            'locale' => 'en',
+            'template' => 'index',
+            'page' => [
+                'blocks' => [
+                    'kept-main' => ['id' => 'kept-main', 'type' => 'text'],
+                    'kept-header' => ['id' => 'kept-header', 'type' => 'text'],
+                ],
+                'regions' => [
+                    ['name' => 'header', 'shared' => true, 'blocks' => ['kept-header']],
+                    ['name' => 'main', 'shared' => false, 'blocks' => ['kept-main']],
+                ],
+            ],
+        ]));
+
+        $template = json_decode(Storage::disk('themes-data')->get($templatePath), true);
+        $region = json_decode(Storage::disk('themes-data')->get($regionPath), true);
+
+        expect($template['blocks'])
+            ->toHaveKey('kept-main')
+            ->not->toHaveKeys(['removed-main', 'removed-main-child'])
+            ->and($region['blocks'])
+            ->toHaveKey('kept-header')
+            ->not->toHaveKey('removed-header');
+    });
+
     test('saves shared regions separately', function () {
 
         $basePath = 'themes/test-theme/editor/default/en';
@@ -447,6 +496,107 @@ describe('handleFullPage', function () {
 });
 
 describe('handle', function () {
+    test('persists a complete template update without restoring a removed block tree', function () {
+        $basePath = 'themes/test-theme/editor/default/en';
+        $templatePath = $basePath.'/templates/index.json';
+        $absoluteTemplatePath = Storage::disk('themes-data')->path($templatePath);
+
+        Storage::disk('themes-data')->put($templatePath, json_encode([
+            'blocks' => [
+                'kept' => ['id' => 'kept', 'type' => 'text'],
+                'removed' => ['id' => 'removed', 'type' => 'group', 'children' => ['removed-child']],
+                'removed-child' => ['id' => 'removed-child', 'type' => 'text', 'parentId' => 'removed'],
+            ],
+            'regions' => [['name' => 'main', 'shared' => false, 'blocks' => ['kept', 'removed']]],
+        ]));
+
+        $current = [
+            'blocks' => [
+                'kept' => ['id' => 'kept', 'type' => 'text'],
+            ],
+            'regions' => [['name' => 'main', 'shared' => false, 'blocks' => ['kept']]],
+        ];
+
+        $handleUpdates = Mockery::mock(HandleUpdates::class);
+        $handleUpdates->shouldReceive('execute')
+            ->once()
+            ->with($absoluteTemplatePath, Mockery::type(UpdateRequest::class), ['main'])
+            ->andReturn(['updated' => true, 'data' => $current]);
+
+        persistEditorUpdatesWith($handleUpdates)->handle(editorUpdateData([
+            'theme' => 'test-theme',
+            'channel' => 'default',
+            'locale' => 'en',
+            'template' => [
+                'name' => 'index',
+                'sources' => encrypt([]),
+            ],
+            'updates' => [
+                'blocks' => [],
+                'regions' => $current['regions'],
+                'changes' => [
+                    'added' => [],
+                    'updated' => [],
+                    'removed' => ['removed'],
+                ],
+            ],
+        ]));
+
+        $saved = json_decode(Storage::disk('themes-data')->get($templatePath), true);
+
+        expect($saved)->toBe($current);
+    });
+
+    test('persists a complete shared region update without restoring removed blocks', function () {
+        $basePath = 'themes/test-theme/editor/default/en';
+        $regionPath = $basePath.'/regions/header.json';
+        $absoluteRegionPath = Storage::disk('themes-data')->path($regionPath);
+
+        Storage::disk('themes-data')->put($regionPath, json_encode([
+            'blocks' => [
+                'kept' => ['id' => 'kept', 'type' => 'text'],
+                'removed' => ['id' => 'removed', 'type' => 'text'],
+            ],
+            'regions' => [['name' => 'header', 'shared' => true, 'blocks' => ['kept', 'removed']]],
+        ]));
+
+        $current = [
+            'blocks' => [
+                'kept' => ['id' => 'kept', 'type' => 'text'],
+            ],
+            'regions' => [['name' => 'header', 'shared' => true, 'blocks' => ['kept']]],
+        ];
+
+        $handleUpdates = Mockery::mock(HandleUpdates::class);
+        $handleUpdates->shouldReceive('execute')
+            ->once()
+            ->with($absoluteRegionPath, Mockery::type(UpdateRequest::class), ['header'])
+            ->andReturn(['updated' => true, 'data' => $current]);
+
+        persistEditorUpdatesWith($handleUpdates)->handle(editorUpdateData([
+            'theme' => 'test-theme',
+            'channel' => 'default',
+            'locale' => 'en',
+            'template' => [
+                'name' => 'index',
+                'sources' => encrypt([]),
+            ],
+            'updates' => [
+                'blocks' => [],
+                'regions' => $current['regions'],
+                'changes' => [
+                    'added' => [],
+                    'updated' => [],
+                    'removed' => ['removed'],
+                ],
+            ],
+        ]));
+
+        $saved = json_decode(Storage::disk('themes-data')->get($regionPath), true);
+
+        expect($saved)->toBe($current);
+    });
+
     test('uses preview context when parsing shared region source data', function () {
         Storage::fake('local');
         app()->setLocale('en');
@@ -629,19 +779,7 @@ describe('handle', function () {
 
         $parser = Mockery::mock(JsonViewParser::class);
         $parser->shouldReceive('clearCache')->twice();
-        $parser->shouldReceive('parse')
-            ->once()
-            ->with($baseTemplate)
-            ->andReturn([
-                'blocks' => [
-                    'hero' => [
-                        'id' => 'hero',
-                        'type' => 'theme::hero',
-                        'properties' => ['title' => 'Base', 'subtitle' => 'Same'],
-                    ],
-                ],
-                'regions' => [['id' => 'main-content', 'name' => 'Main', 'shared' => false, 'blocks' => ['hero']]],
-            ]);
+        $parser->shouldNotReceive('parse');
         app()->instance(JsonViewParser::class, $parser);
 
         $handleUpdates = Mockery::mock(HandleUpdates::class);
@@ -748,18 +886,7 @@ describe('handle', function () {
 
         $parser = Mockery::mock(JsonViewParser::class);
         $parser->shouldReceive('clearCache')->twice();
-        $parser->shouldReceive('parse')
-            ->once()
-            ->with($childTemplate)
-            ->andReturn([
-                'parent' => 'default/en/templates/index.json',
-                'blocks' => [
-                    'banner' => [
-                        'properties' => ['title' => 'Banner AR'],
-                    ],
-                ],
-                'regions' => [['id' => 'main-content', 'name' => 'Main', 'shared' => false, 'blocks' => ['banner', 'hero']]],
-            ]);
+        $parser->shouldNotReceive('parse');
         app()->instance(JsonViewParser::class, $parser);
 
         $handleUpdates = Mockery::mock(HandleUpdates::class);
@@ -935,7 +1062,7 @@ describe('handle', function () {
 
         $parser = Mockery::mock(JsonViewParser::class);
         $parser->shouldReceive('clearCache')->twice();
-        $parser->shouldReceive('parse')->once()->with($baseTemplate)->andReturn($baseData);
+        $parser->shouldNotReceive('parse');
         app()->instance(JsonViewParser::class, $parser);
 
         $handleUpdates = Mockery::mock(HandleUpdates::class);

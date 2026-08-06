@@ -144,7 +144,7 @@ class PersistEditorUpdates
         $result = $this->executeUpdates($sourceDataPath, $updateRequest, [$regionKey]);
 
         if ($result['updated']) {
-            $this->persistRegionData($region, $result['data'], $theme, $channel, $locale, $sources, $sourceDataPath);
+            $this->persistRegionData($region, $result['data'], $theme, $channel, $locale, $sources);
         }
 
         return $result;
@@ -173,33 +173,29 @@ class PersistEditorUpdates
         $result = $this->executeUpdates($sourceDataPath, $updateRequest, $regionKeys);
 
         if ($result['updated']) {
-            $this->persistTemplateData($result['data'], $theme, $channel, $locale, $template, $sources, $sourceDataPath);
+            $this->persistTemplateData($result['data'], $theme, $channel, $locale, $template, $sources);
         }
 
         return $result;
     }
 
-    protected function persistRegionData(array $region, array $data, string $theme, string $channel, string $locale, array $sources, ?string $sourceDataPath = null): void
+    protected function persistRegionData(array $region, array $data, string $theme, string $channel, string $locale, array $sources): void
     {
         $regionKey = $this->regionKey($region);
         $logicalPath = "regions/{$regionKey}.json";
         $relativePath = $this->editorDataStore->relativePath($channel, $locale, $logicalPath);
         $parent = $this->selectParent($theme, $channel, $locale, $relativePath, $logicalPath, $sources);
-        $sourceDataPath ??= $this->getRegionFilePath($theme, $channel, $locale, $regionKey);
-        $sourceData = $this->sourceDataForSave($theme, $sourceDataPath, $parent, null);
 
-        $this->saveEditorData($theme, $relativePath, $parent, $data, $sourceData);
+        $this->saveEditorData($theme, $relativePath, $parent, $data);
     }
 
-    protected function persistTemplateData(array $data, string $theme, string $channel, string $locale, string $template, array $sources, ?string $sourceDataPath = null): void
+    protected function persistTemplateData(array $data, string $theme, string $channel, string $locale, string $template, array $sources): void
     {
         $logicalPath = $this->templateDiscovery->templateStoragePath($template);
         $relativePath = $this->editorDataStore->relativePath($channel, $locale, $logicalPath);
         $parent = $this->selectParent($theme, $channel, $locale, $relativePath, $logicalPath, $sources);
-        $sourceDataPath ??= $this->getTemplateFilePath($theme, $channel, $locale, $template);
-        $sourceData = $this->sourceDataForSave($theme, $sourceDataPath, $parent, null);
 
-        $this->saveEditorData($theme, $relativePath, $parent, $data, $sourceData);
+        $this->saveEditorData($theme, $relativePath, $parent, $data);
     }
 
     protected function executeUpdates(?string $sourceDataPath, UpdateRequest $updateRequest, array $regionKeys): array
@@ -248,12 +244,11 @@ class PersistEditorUpdates
         return $resolvedChannel;
     }
 
-    protected function saveEditorData(string $theme, string $relativePath, ?string $parent, array $current, array $sourceData): void
+    protected function saveEditorData(string $theme, string $relativePath, ?string $parent, array $current): void
     {
-        $clean = $this->templateDataDiffer->clean($current, $sourceData);
         $parentData = $parent ? $this->editorDataStore->loadResolved($theme, $parent) : [];
-        $resolvedCurrent = $parent ? $this->editorDataStore->merge($parentData, $clean) : $clean;
-        $diff = $parent ? $this->editorDataStore->diff($resolvedCurrent, $parentData) : $clean;
+        $resolvedCurrent = $parent ? $this->editorDataStore->merge($parentData, $current) : $current;
+        $diff = $parent ? $this->editorDataStore->diff($resolvedCurrent, $parentData) : $current;
         $diff = $this->templateDataDiffer->forceLocalizedValues(
             current: $resolvedCurrent,
             diff: $diff,
@@ -269,19 +264,6 @@ class PersistEditorUpdates
         return $this->editorDataStore->storedParent($theme, $relativePath)
             ?? $this->editorDataStore->parentFromSources($theme, $logicalPath, $sources, $relativePath)
             ?? $this->editorDataStore->nearestFallbackParent($theme, $channel, $locale, $logicalPath);
-    }
-
-    protected function sourceDataForSave(string $theme, ?string $sourceDataPath, ?string $parent, ?array $fallback): array
-    {
-        if ($sourceDataPath && File::exists($sourceDataPath)) {
-            return app(JsonViewParser::class)->parse($sourceDataPath);
-        }
-
-        if ($parent) {
-            return $this->editorDataStore->loadResolved($theme, $parent);
-        }
-
-        return $fallback ?? [];
     }
 
     protected function getTemplateFilePath(string $theme, string $channel, string $locale, string $template): string
