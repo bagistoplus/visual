@@ -10,7 +10,7 @@ class BlockRenderFilter
 
     public function __construct()
     {
-        $key = request()->query('_vkey');
+        $key = request()->query('_visual_render');
 
         if ($key) {
             $this->blockIds = session()->get("visual.render.{$key}", []);

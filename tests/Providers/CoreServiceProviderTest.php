@@ -4,6 +4,7 @@ use BagistoPlus\Visual\Blocks\SimpleBlock;
 use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Middlewares\DisableResponseCacheInDesignMode;
+use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
 use BagistoPlus\Visual\Middlewares\RegisterVisualSchemas;
 use BagistoPlus\Visual\Providers\CoreServiceProvider;
 use BagistoPlus\Visual\Settings\Text;
@@ -25,11 +26,13 @@ class CoreServiceProviderTranslationReferenceBlock extends SimpleBlock
     }
 }
 
-it('does not register design mode cache disabling middleware on the application http kernel', function () {
+it('does not register storefront middlewares on the application http kernel', function () {
     $kernel = app(Kernel::class);
     $middleware = (new ReflectionProperty($kernel, 'middleware'))->getValue($kernel);
 
-    expect($middleware)->not->toContain(DisableResponseCacheInDesignMode::class);
+    expect($middleware)
+        ->not->toContain(DisableResponseCacheInDesignMode::class)
+        ->not->toContain(InjectThemeEditorScript::class);
 });
 
 it('registers visual storefront middlewares on the shop middleware group', function () {
@@ -39,8 +42,11 @@ it('registers visual storefront middlewares on the shop middleware group', funct
     expect($shopMiddleware)
         ->toContain(DisableResponseCacheInDesignMode::class)
         ->toContain(RegisterVisualSchemas::class)
+        ->toContain(InjectThemeEditorScript::class)
         ->and(array_search(DisableResponseCacheInDesignMode::class, $shopMiddleware, true))
-        ->toBeLessThan(array_search(RegisterVisualSchemas::class, $shopMiddleware, true));
+        ->toBeLessThan(array_search(RegisterVisualSchemas::class, $shopMiddleware, true))
+        ->and(array_search(RegisterVisualSchemas::class, $shopMiddleware, true))
+        ->toBeLessThan(array_search(InjectThemeEditorScript::class, $shopMiddleware, true));
 });
 
 it('registers discovered schemas after the app boots in console', function () {

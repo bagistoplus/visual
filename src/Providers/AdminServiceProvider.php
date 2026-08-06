@@ -9,7 +9,6 @@ use BagistoPlus\Visual\Actions\Admin\PrepareCmsPageVisualDatagrid;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Middlewares\AllowSameOriginIframeInEditor;
 use BagistoPlus\Visual\Middlewares\DispatchServingThemeEditor;
-use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
 use BagistoPlus\Visual\ThemeEditor;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\Facades\Event;
@@ -58,7 +57,6 @@ class AdminServiceProvider extends ServiceProvider
         $kernel = $this->app->get(Kernel::class);
 
         $kernel->prependMiddleware(AllowSameOriginIframeInEditor::class);
-        $kernel->pushMiddleware(InjectThemeEditorScript::class);
         $kernel->pushMiddleware(DispatchServingThemeEditor::class);
     }
 

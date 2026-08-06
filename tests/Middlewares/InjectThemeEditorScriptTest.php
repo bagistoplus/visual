@@ -5,6 +5,7 @@ use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
 use BagistoPlus\Visual\Persistence\EditorDataStore;
 use BagistoPlus\Visual\Settings\Text;
+use BagistoPlus\Visual\Support\EditorBlockSchemaSerializer;
 use BagistoPlus\Visual\Support\EditorInheritanceMetadata;
 use BagistoPlus\Visual\Support\EditorTranslationReferenceCollector;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
@@ -35,12 +36,17 @@ class TestableInjectThemeEditorScript extends InjectThemeEditorScript
         return $this->buildInjectedPageData($pageData, 'index', new PropertyBag);
     }
 
+    public function payloadForRequest(array $pageData, Request $request): array
+    {
+        return $this->buildInjectedPageDataForRequest($pageData, 'index', $request);
+    }
+
     protected function getCurrentPageData(): array
     {
         return ['title' => 'Preview'];
     }
 
-    protected function buildPreviewScripts(array $pageData): string
+    protected function buildPreviewScriptsForRequest(array $pageData, Request $request): string
     {
         return '<script id="preview-script">window.previewValue = "$1";</script>';
     }
@@ -148,7 +154,48 @@ it('includes the resolved preview channel and locale in page data', function () 
         ->toHaveKey('channel', 'default')
         ->toHaveKey('locale', 'en')
         ->toHaveKey('localeInheritance', [])
-        ->toHaveKey('blockSchemas', []);
+        ->toHaveKey('blockSchemas', [])
+        ->toHaveKey('settings', []);
+});
+
+it('omits page-load metadata from selective render page data without loading it', function () {
+    bindPreviewCurrentTheme();
+
+    $themeEditor = Mockery::mock(ThemeEditor::class);
+    $themeEditor->shouldReceive('getTemplateFromJsonViews')->with('index')->andReturn('index');
+    $themeEditor->shouldReceive('jsonViews')->andReturn([]);
+    $themeEditor->shouldReceive('preloadedModels')->andReturn([]);
+
+    $themeSettingsLoader = Mockery::mock(ThemeSettingsLoader::class);
+    $themeSettingsLoader->shouldNotReceive('loadActiveThemeSettings');
+
+    $schemaSerializer = Mockery::mock(EditorBlockSchemaSerializer::class);
+    $schemaSerializer->shouldNotReceive('all');
+    app()->instance(EditorBlockSchemaSerializer::class, $schemaSerializer);
+
+    $middleware = testableInjectThemeEditorScript(
+        $themeEditor,
+        $themeSettingsLoader,
+        app(EditorInheritanceMetadata::class),
+    );
+
+    $payload = $middleware->payloadForRequest(
+        ['blocks' => [], 'regions' => []],
+        Request::create('/?_visual_render=render-key'),
+    );
+
+    expect($payload)
+        ->not->toHaveKey('blockSchemas')
+        ->not->toHaveKey('settings')
+        ->toHaveKeys([
+            'content',
+            'template',
+            'channel',
+            'locale',
+            'localeInheritance',
+            'translationReferences',
+            'preloadedModels',
+        ]);
 });
 
 it('includes translation references for rendered blocks in page data', function () {

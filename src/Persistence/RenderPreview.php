@@ -32,7 +32,7 @@ class RenderPreview
             session()->put("visual.render.{$key}", $blockIds);
 
             $separator = str_contains($url, '?') ? '&' : '?';
-            $url .= $separator.'_vkey='.$key;
+            $url .= $separator.'_visual_render='.$key;
         }
         // Handle subdirectory installs by redirecting
         if ($basePath !== null) {

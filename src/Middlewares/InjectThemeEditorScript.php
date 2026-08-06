@@ -55,7 +55,7 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
         }
 
         $pageData = $this->getCurrentPageData();
-        $scripts = $this->buildPreviewScripts($pageData);
+        $scripts = $this->buildPreviewScriptsForRequest($pageData, $request);
 
         $content = preg_replace_callback(
             '/<head\b[^>]*>/i',
@@ -70,25 +70,43 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
     /**
      * Build the scripts to inject for preview functionality.
      */
-    protected function buildPreviewScripts(array $pageData): string
+    protected function buildPreviewScriptsForRequest(array $pageData, Request $request): string
     {
-        $settingsBag = $this->themeSettingsLoader->loadActiveThemeSettings();
         $routeTemplate = $this->themeEditor->getTemplateForRoute(
             $this->fixCategoryOrProductRoute(Route::currentRouteName())
         );
 
         return view()->make('visual::admin.editor.injected-script', [
-            'pageData' => $this->buildInjectedPageData($pageData, $routeTemplate, $settingsBag),
+            'pageData' => $this->buildInjectedPageDataForRequest($pageData, $routeTemplate, $request),
         ])->render();
     }
 
-    protected function buildInjectedPageData(array $pageData, $routeTemplate, PropertyBag $settingsBag): array
+    protected function buildInjectedPageDataForRequest(array $pageData, $routeTemplate, Request $request): array
     {
+        $includePageLoadMetadata = ! $request->query->has('_visual_render');
+        $settingsBag = $includePageLoadMetadata
+            ? $this->themeSettingsLoader->loadActiveThemeSettings()
+            : null;
+
+        return $this->buildInjectedPageData(
+            $pageData,
+            $routeTemplate,
+            $settingsBag,
+            $includePageLoadMetadata,
+        );
+    }
+
+    protected function buildInjectedPageData(
+        array $pageData,
+        $routeTemplate,
+        ?PropertyBag $settingsBag,
+        bool $includePageLoadMetadata = true,
+    ): array {
         $channel = core()->getRequestedChannelCode();
         $locale = core()->getRequestedLocaleCode();
         $template = $this->themeEditor->getTemplateFromJsonViews($routeTemplate);
 
-        return [
+        $payload = [
             'content' => $pageData,
             'template' => [
                 'url' => request()->fullUrl(),
@@ -105,10 +123,15 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
             ),
             'translationReferences' => app(EditorTranslationReferenceCollector::class)
                 ->forBlockIds(array_keys($pageData['blocks'] ?? [])),
-            'blockSchemas' => app(EditorBlockSchemaSerializer::class)->all(),
-            'settings' => $settingsBag->toArray(),
             'preloadedModels' => $this->themeEditor->preloadedModels(),
         ];
+
+        if ($includePageLoadMetadata) {
+            $payload['blockSchemas'] = app(EditorBlockSchemaSerializer::class)->all();
+            $payload['settings'] = $settingsBag?->toArray() ?? [];
+        }
+
+        return $payload;
     }
 
     protected function getCurrentTheme()

@@ -8,6 +8,7 @@ use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Middlewares\DisableResponseCacheInDesignMode;
+use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
 use BagistoPlus\Visual\Middlewares\RegisterVisualSchemas;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
 use BagistoPlus\Visual\Models\VisualTemplateAssignment;
@@ -135,7 +136,7 @@ class CoreServiceProvider extends ServiceProvider
                 return false;
             }
 
-            if (ThemeEditor::inDesignMode() && request()->has('_vkey')) {
+            if (ThemeEditor::inDesignMode() && request()->has('_visual_render')) {
                 $filter = app(BlockRenderFilter::class);
 
                 return $filter->shouldRender($blockData);
@@ -208,7 +209,8 @@ class CoreServiceProvider extends ServiceProvider
                 ->removeMiddlewareFromGroup('shop', Theme::class)
                 ->pushMiddlewareToGroup('shop', UseShopThemeFromRequest::class)
                 ->pushMiddlewareToGroup('shop', DisableResponseCacheInDesignMode::class)
-                ->pushMiddlewareToGroup('shop', RegisterVisualSchemas::class);
+                ->pushMiddlewareToGroup('shop', RegisterVisualSchemas::class)
+                ->pushMiddlewareToGroup('shop', InjectThemeEditorScript::class);
         });
     }
 
