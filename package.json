@@ -63,7 +63,7 @@
     "unplugin-auto-import": "^21.0.0",
     "unplugin-icons": "^23.0.1",
     "unplugin-vue-components": "^32.1.0",
-    "vite": "^8.0.16",
+    "vite": "^8.2.1",
     "vitepress": "^2.0.0-alpha.17",
     "vitepress-plugin-llms": "^1.13.4",
     "vitest": "^4.1.9",
