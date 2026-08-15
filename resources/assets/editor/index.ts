@@ -38,6 +38,7 @@ NProgress.configure({
 const editorInstance = createCraftileEditor({
   el: '#app',
   blockSchemas: window.editorConfig.blockSchemas || [],
+  previewUpdateDelay: 0,
   devices: {
     presets: [
       { id: 'mobile', label: 'Mobile', width: 376, icon: 'mobile' },

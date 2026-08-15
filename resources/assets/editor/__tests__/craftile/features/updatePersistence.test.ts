@@ -1,5 +1,14 @@
-import { describe, it, expect, vi } from 'vitest';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import type { UpdatesEvent } from '@craftile/types';
+
+const { persistUpdatesMock } = vi.hoisted(() => ({
+  persistUpdatesMock: vi.fn(),
+}));
+
+vi.mock('../../../api', () => ({
+  persistUpdates: persistUpdatesMock,
+}));
+
 import {
   mergeUpdates,
   hasChanges,
@@ -8,11 +17,18 @@ import {
   computeEffects,
   extractPageDataFromHtml,
   patchResolvedBlocksFromHtml,
+  setupUpdatePersistence,
 } from '../../../craftile/features/updatePersistence';
 import {
   canonicalizePage,
   clearResolvedTranslationRefs,
 } from '../../../utils/resolvedTranslationRefs';
+
+afterEach(() => {
+  vi.useRealTimers();
+  vi.restoreAllMocks();
+  persistUpdatesMock.mockReset();
+});
 
 function createUpdatesEvent(
   changes: {
@@ -38,7 +54,226 @@ function createUpdatesEvent(
   };
 }
 
+function createControlledRequest() {
+  const successCallbacks: Array<(response: string) => void> = [];
+  const errorCallbacks: Array<(error: Error) => void> = [];
+  const finishCallbacks: Array<() => void> = [];
+  let resolveExecution: (() => void) | undefined;
+
+  return {
+    onSuccess(callback: (response: string) => void) {
+      successCallbacks.push(callback);
+    },
+    onError(callback: (error: Error) => void) {
+      errorCallbacks.push(callback);
+    },
+    onFinish(callback: () => void) {
+      finishCallbacks.push(callback);
+    },
+    execute: vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveExecution = resolve;
+        })
+    ),
+    succeed(response: string) {
+      successCallbacks.forEach((callback) => callback(response));
+      finishCallbacks.forEach((callback) => callback());
+      resolveExecution?.();
+    },
+    fail(error: Error) {
+      errorCallbacks.forEach((callback) => callback(error));
+      finishCallbacks.forEach((callback) => callback());
+      resolveExecution?.();
+    },
+  };
+}
+
+function pageResponse(blocks: Record<string, any>): string {
+  const renderedBlocks = Object.keys(blocks)
+    .map((blockId) => `<div data-block="${blockId}"></div>`)
+    .join('');
+
+  return `
+    <html>
+      <head>
+        <script id="page-data" type="application/json">${JSON.stringify({
+          content: {
+            blocks,
+            regions: [{ id: 'main', name: 'Main', blocks: Object.keys(blocks) }],
+          },
+        })}</script>
+      </head>
+      <body>${renderedBlocks}</body>
+    </html>
+  `;
+}
+
+function createPersistenceHarness(initialBlocks: Record<string, any>) {
+  let page = {
+    blocks: structuredClone(initialBlocks),
+    regions: [{ id: 'main', name: 'Main', blocks: Object.keys(initialBlocks) }],
+  };
+  let updatesHandler: ((updates: UpdatesEvent) => void) | undefined;
+  const replacePageState = vi.fn((newPage) => {
+    page = structuredClone(newPage);
+  });
+  const sendMessage = vi.fn();
+  const toast = vi.fn();
+  const editor = {
+    engine: {
+      getPage: vi.fn(() => structuredClone(page)),
+      getBlockById: vi.fn((blockId: string) => structuredClone(page.blocks[blockId])),
+      getBlockSchema: vi.fn(() => undefined),
+      replacePageState,
+      emit: vi.fn(),
+      on: vi.fn(),
+    },
+    events: {
+      on: vi.fn((event: string, handler: (updates: UpdatesEvent) => void) => {
+        if (event === 'updates') {
+          updatesHandler = handler;
+        }
+      }),
+    },
+    preview: {
+      sendMessage,
+    },
+    ui: {
+      toast,
+    },
+  } as any;
+
+  setupUpdatePersistence(editor, { haveEdits: false } as any);
+
+  return {
+    emitUpdates(updates: UpdatesEvent) {
+      updatesHandler!(updates);
+    },
+    replacePageState,
+    sendMessage,
+    toast,
+  };
+}
+
 describe('updatePersistence utilities', () => {
+  describe('setupUpdatePersistence', () => {
+    it('discards stale same-block responses and persists only the latest merged snapshot', async () => {
+      vi.useFakeTimers();
+
+      const firstRequest = createControlledRequest();
+      const secondRequest = createControlledRequest();
+      persistUpdatesMock.mockReturnValueOnce(firstRequest).mockReturnValueOnce(secondRequest);
+
+      const initialBlock = { id: 'hero', type: 'hero', properties: { text: 'Initial' }, children: [] };
+      const harness = createPersistenceHarness({ hero: initialBlock });
+      const firstUpdate = createUpdatesEvent(
+        { updated: ['hero'] },
+        { hero: { ...initialBlock, properties: { text: 'Shu' } } }
+      );
+      const latestUpdate = createUpdatesEvent(
+        { updated: ['hero'] },
+        { hero: { ...initialBlock, properties: { text: 'Shup' } } }
+      );
+
+      harness.emitUpdates(firstUpdate);
+      await vi.advanceTimersByTimeAsync(300);
+      expect(persistUpdatesMock).toHaveBeenCalledTimes(1);
+
+      harness.emitUpdates(latestUpdate);
+      firstRequest.succeed(pageResponse(firstUpdate.blocks));
+
+      await vi.waitFor(() => expect(persistUpdatesMock).toHaveBeenCalledTimes(2));
+
+      expect(harness.replacePageState).not.toHaveBeenCalled();
+      expect(harness.sendMessage).not.toHaveBeenCalledWith('updates.effects', expect.anything());
+      expect(persistUpdatesMock.mock.calls[1][0].changes.updated).toEqual(['hero']);
+      expect(persistUpdatesMock.mock.calls[1][0].blocks.hero.properties.text).toBe('Shup');
+
+      secondRequest.succeed(pageResponse(latestUpdate.blocks));
+      await vi.waitFor(() => expect(harness.replacePageState).toHaveBeenCalledTimes(1));
+
+      expect(harness.sendMessage).toHaveBeenCalledWith(
+        'updates.effects',
+        expect.objectContaining({
+          changes: expect.objectContaining({ updated: ['hero'] }),
+        })
+      );
+    });
+
+    it('carries different-block updates into the next request when discarding a stale response', async () => {
+      vi.useFakeTimers();
+
+      const firstRequest = createControlledRequest();
+      const secondRequest = createControlledRequest();
+      persistUpdatesMock.mockReturnValueOnce(firstRequest).mockReturnValueOnce(secondRequest);
+
+      const hero = { id: 'hero', type: 'hero', properties: { text: 'Initial' }, children: [] };
+      const footer = { id: 'footer', type: 'footer', properties: { text: 'Initial' }, children: [] };
+      const harness = createPersistenceHarness({ hero, footer });
+      const heroUpdate = createUpdatesEvent(
+        { updated: ['hero'] },
+        { hero: { ...hero, properties: { text: 'Updated hero' } } }
+      );
+      const footerUpdate = createUpdatesEvent(
+        { updated: ['footer'] },
+        { footer: { ...footer, properties: { text: 'Updated footer' } } }
+      );
+
+      harness.emitUpdates(heroUpdate);
+      await vi.advanceTimersByTimeAsync(300);
+      harness.emitUpdates(footerUpdate);
+      firstRequest.succeed(pageResponse(heroUpdate.blocks));
+
+      await vi.waitFor(() => expect(persistUpdatesMock).toHaveBeenCalledTimes(2));
+
+      const replayedUpdates = persistUpdatesMock.mock.calls[1][0];
+      expect(replayedUpdates.changes.updated).toEqual(['hero', 'footer']);
+      expect(Object.keys(replayedUpdates.blocks)).toEqual(['hero', 'footer']);
+      expect(replayedUpdates.blocks.hero.properties.text).toBe('Updated hero');
+      expect(replayedUpdates.blocks.footer.properties.text).toBe('Updated footer');
+    });
+
+    it('retains failed updates for the next persistence attempt', async () => {
+      vi.useFakeTimers();
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      const firstRequest = createControlledRequest();
+      const secondRequest = createControlledRequest();
+      persistUpdatesMock.mockReturnValueOnce(firstRequest).mockReturnValueOnce(secondRequest);
+
+      const hero = { id: 'hero', type: 'hero', properties: { text: 'Initial' }, children: [] };
+      const footer = { id: 'footer', type: 'footer', properties: { text: 'Initial' }, children: [] };
+      const harness = createPersistenceHarness({ hero, footer });
+      const heroUpdate = createUpdatesEvent(
+        { updated: ['hero'] },
+        { hero: { ...hero, properties: { text: 'Updated hero' } } }
+      );
+      const footerUpdate = createUpdatesEvent(
+        { updated: ['footer'] },
+        { footer: { ...footer, properties: { text: 'Updated footer' } } }
+      );
+
+      harness.emitUpdates(heroUpdate);
+      await vi.advanceTimersByTimeAsync(300);
+      firstRequest.fail(new Error('Server unavailable'));
+      await Promise.resolve();
+
+      expect(harness.toast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'error',
+        })
+      );
+
+      harness.emitUpdates(footerUpdate);
+      await vi.advanceTimersByTimeAsync(300);
+
+      const retriedUpdates = persistUpdatesMock.mock.calls[1][0];
+      expect(retriedUpdates.changes.updated).toEqual(['hero', 'footer']);
+      expect(Object.keys(retriedUpdates.blocks)).toEqual(['hero', 'footer']);
+    });
+  });
+
   describe('mergeUpdates', () => {
     it('should merge multiple updates into one', () => {
       const updates: UpdatesEvent[] = [

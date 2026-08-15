@@ -199,6 +199,14 @@ export function setupUpdatePersistence(editor: CraftileEditor, state: State) {
     const request = persistUpdates(mergedUpdates);
 
     request.onSuccess((htmlResponse) => {
+      if (pendingUpdates.length > 0) {
+        // Persistence succeeded, but its rendered response is stale. Replay the batch so the
+        // next response contains fresh effects for every block touched by either batch.
+        pendingUpdates.unshift(...updatesToProcess);
+
+        return;
+      }
+
       const allBlocks = editor.engine.getPage().blocks;
       const directlyModifiedIds = [
         ...(mergedUpdates.changes.added || []),
