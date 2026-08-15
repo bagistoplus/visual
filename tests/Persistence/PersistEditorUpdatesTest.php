@@ -520,7 +520,11 @@ describe('handle', function () {
         $handleUpdates = Mockery::mock(HandleUpdates::class);
         $handleUpdates->shouldReceive('execute')
             ->once()
-            ->with($absoluteTemplatePath, Mockery::type(UpdateRequest::class), ['main'])
+            ->with(
+                Mockery::on(fn (string $path) => str_replace('\\', '/', $path) === str_replace('\\', '/', $absoluteTemplatePath)),
+                Mockery::type(UpdateRequest::class),
+                ['main']
+            )
             ->andReturn(['updated' => true, 'data' => $current]);
 
         persistEditorUpdatesWith($handleUpdates)->handle(editorUpdateData([
@@ -570,7 +574,11 @@ describe('handle', function () {
         $handleUpdates = Mockery::mock(HandleUpdates::class);
         $handleUpdates->shouldReceive('execute')
             ->once()
-            ->with($absoluteRegionPath, Mockery::type(UpdateRequest::class), ['header'])
+            ->with(
+                Mockery::on(fn (string $path) => str_replace('\\', '/', $path) === str_replace('\\', '/', $absoluteRegionPath)),
+                Mockery::type(UpdateRequest::class),
+                ['header']
+            )
             ->andReturn(['updated' => true, 'data' => $current]);
 
         persistEditorUpdatesWith($handleUpdates)->handle(editorUpdateData([
