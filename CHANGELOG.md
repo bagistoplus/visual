@@ -2,6 +2,21 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.27](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.26...v2.0.0-alpha.27) (2026-08-15)
+
+
+### Bug Fixes
+
+* preserve editor text whitespace ([0c6a336](https://github.com/bagistoplus/visual/commit/0c6a336e9f754a65de4f567303be71619e7a127c))
+* prevent localized text from reverting ([00ff30f](https://github.com/bagistoplus/visual/commit/00ff30f1906569a9675bd2c10857385f8085c574))
+* prevent stale persistence responses ([d416483](https://github.com/bagistoplus/visual/commit/d4164834286085e498b1f82b9d04635a7d263cfb))
+* trust complete editor persistence state ([53f09cf](https://github.com/bagistoplus/visual/commit/53f09cfc2945398dfbca16762ec78d0248f9fdfb))
+
+
+### Performance Improvements
+
+* slim selective preview responses ([f66131a](https://github.com/bagistoplus/visual/commit/f66131ae935ff3a1f97515d1401e26c245602e66))
+
 # [2.0.0-alpha.26](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.25...v2.0.0-alpha.26) (2026-08-04)
 
 
