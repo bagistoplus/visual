@@ -11,6 +11,9 @@ use BagistoPlus\Visual\Middlewares\AllowSameOriginIframeInEditor;
 use BagistoPlus\Visual\Middlewares\DispatchServingThemeEditor;
 use BagistoPlus\Visual\ThemeEditor;
 use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
+use Illuminate\Foundation\Http\Middleware\TrimStrings;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -28,6 +31,7 @@ class AdminServiceProvider extends ServiceProvider
     {
         $this->bootRoutes();
         $this->bootMiddlewares();
+        $this->bootInputNormalizationExceptions();
         $this->bootViewEventListeners();
 
         if (Visual::templateAssignmentsEnabled()) {
@@ -58,6 +62,21 @@ class AdminServiceProvider extends ServiceProvider
 
         $kernel->prependMiddleware(AllowSameOriginIframeInEditor::class);
         $kernel->pushMiddleware(DispatchServingThemeEditor::class);
+    }
+
+    protected function bootInputNormalizationExceptions(): void
+    {
+        $adminPrefix = trim((string) config('app.admin_url'), '/');
+        $editorApiPrefix = ($adminPrefix === '' ? '' : $adminPrefix.'/').'visual/editor/api';
+
+        $shouldPreserveEditorInput = fn (Request $request): bool => $request->is(
+            $editorApiPrefix.'/persist-updates',
+            $editorApiPrefix.'/persist-settings',
+            $editorApiPrefix.'/publish-theme',
+        );
+
+        TrimStrings::skipWhen($shouldPreserveEditorInput);
+        ConvertEmptyStringsToNull::skipWhen($shouldPreserveEditorInput);
     }
 
     protected function bootViewEventListeners()
