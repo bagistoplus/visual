@@ -46,10 +46,12 @@ export function recordResolvedTranslationRefs(
       const resolvedValue = resolvedProperties[propertyId];
       const currentValue = currentProperties[propertyId];
       const existing = getRef(blockId, propertyId);
-      const rawValue = existing?.raw ?? currentValue;
+      const rawValue = rawValueForRecording(existing, currentValue);
       const ref = makeResolvedTranslationRef(rawValue, resolvedValue, property);
 
       if (!ref) {
+        deleteRef(blockId, propertyId);
+
         continue;
       }
 
@@ -163,12 +165,46 @@ function getRef(blockId: string, propertyId: string): ResolvedTranslationRef | u
   return refs.get(blockId)?.get(propertyId);
 }
 
+function rawValueForRecording(existing: ResolvedTranslationRef | undefined, currentValue: unknown): unknown {
+  if (!existing) {
+    return currentValue;
+  }
+
+  if (isPlainObject(existing.raw) && isPlainObject(existing.resolved) && isPlainObject(currentValue)) {
+    const rawValue = structuredClone(currentValue);
+
+    for (const [key, resolvedItem] of Object.entries(existing.resolved)) {
+      if (currentValue[key] === resolvedItem) {
+        rawValue[key] = existing.raw[key];
+      }
+    }
+
+    return rawValue;
+  }
+
+  return currentValue === existing.resolved ? existing.raw : currentValue;
+}
+
 function setRef(blockId: string, propertyId: string, ref: ResolvedTranslationRef): void {
   if (!refs.has(blockId)) {
     refs.set(blockId, new Map());
   }
 
   refs.get(blockId)!.set(propertyId, ref);
+}
+
+function deleteRef(blockId: string, propertyId: string): void {
+  const blockRefs = refs.get(blockId);
+
+  if (!blockRefs) {
+    return;
+  }
+
+  blockRefs.delete(propertyId);
+
+  if (blockRefs.size === 0) {
+    refs.delete(blockId);
+  }
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {

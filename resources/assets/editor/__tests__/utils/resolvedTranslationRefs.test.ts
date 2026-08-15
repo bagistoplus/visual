@@ -89,6 +89,63 @@ describe('resolved translation refs', () => {
     expect(canonicalizeUpdates(updates).blocks.hero.properties.title).toBe('Custom title');
   });
 
+  it('does not restore a stale translation reference after persisting a literal override', () => {
+    const localizedSchema = schema([{ id: 'label', localized: true }, { id: 'width', localized: false }]);
+
+    recordResolvedTranslationRefs(
+      {
+        hero: block('hero', { label: 't:block.label', width: 'dropdown' }),
+      },
+      {
+        hero: block('hero', { label: 'Mega menu', width: 'dropdown' }),
+      },
+      localizedSchema
+    );
+
+    const editedBlock = block('hero', { label: 'Shup', width: 'dropdown' });
+
+    expect(
+      canonicalizeUpdates({
+        blocks: { hero: editedBlock },
+        regions: [],
+        changes: {
+          added: [],
+          updated: ['hero'],
+          removed: [],
+          moved: {},
+        },
+      }).blocks.hero.properties.label
+    ).toBe('Shup');
+
+    recordResolvedTranslationRefs(
+      {
+        hero: editedBlock,
+      },
+      {
+        hero: block('hero', { label: 'Shup', width: 'dropdown' }),
+      },
+      localizedSchema
+    );
+
+    const unrelatedUpdate: UpdatesEvent = {
+      blocks: {
+        hero: block('hero', { label: 'Shup', width: 'container' }),
+      },
+      regions: [],
+      changes: {
+        added: [],
+        updated: ['hero'],
+        removed: [],
+        moved: {},
+      },
+    };
+
+    expect(canonicalizeUpdates(unrelatedUpdate).blocks.hero.properties).toEqual({
+      label: 'Shup',
+      width: 'container',
+    });
+  });
+
   it('canonicalizes full page payloads', () => {
     recordResolvedTranslationRefs(
       {
@@ -128,6 +185,45 @@ describe('resolved translation refs', () => {
     const page: Page = {
       blocks: {
         hero: block('hero', { title: { _default: 'desktop', desktop: 'Custom desktop', mobile: 'Mobile title' } }),
+      },
+      regions: [{ name: 'main', blocks: ['hero'] }],
+    };
+
+    expect(canonicalizePage(page).blocks.hero.properties.title).toEqual({
+      _default: 'desktop',
+      desktop: 'Custom desktop',
+      mobile: 't:block.mobile',
+    });
+  });
+
+  it('does not restore stale responsive references after persisting an edited breakpoint', () => {
+    const responsiveSchema = schema([{ id: 'title', localized: true, responsive: true }]);
+
+    recordResolvedTranslationRefs(
+      {
+        hero: block('hero', { title: { _default: 'desktop', desktop: 't:block.desktop', mobile: 't:block.mobile' } }),
+      },
+      {
+        hero: block('hero', { title: { _default: 'desktop', desktop: 'Desktop title', mobile: 'Mobile title' } }),
+      },
+      responsiveSchema
+    );
+
+    const editedTitle = { _default: 'desktop', desktop: 'Custom desktop', mobile: 'Mobile title' };
+
+    recordResolvedTranslationRefs(
+      {
+        hero: block('hero', { title: editedTitle }),
+      },
+      {
+        hero: block('hero', { title: editedTitle }),
+      },
+      responsiveSchema
+    );
+
+    const page: Page = {
+      blocks: {
+        hero: block('hero', { title: editedTitle }),
       },
       regions: [{ name: 'main', blocks: ['hero'] }],
     };
