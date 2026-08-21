@@ -2,6 +2,13 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.28](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.27...v2.0.0-alpha.28) (2026-08-21)
+
+
+### Features
+
+* integrate visual themes into bagisto appearance theme gallery ([1579438](https://github.com/bagistoplus/visual/commit/1579438033517ae27c8688005e9bdcbc087f9c90))
+
 # [2.0.0-alpha.27](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.26...v2.0.0-alpha.27) (2026-08-15)
 
 
