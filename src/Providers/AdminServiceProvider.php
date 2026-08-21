@@ -4,11 +4,13 @@ namespace BagistoPlus\Visual\Providers;
 
 use BagistoPlus\Visual\Actions\Admin\AddCmsPageEditVisualEditorButton;
 use BagistoPlus\Visual\Actions\Admin\AddTemplateAssignmentField;
+use BagistoPlus\Visual\Actions\Admin\EnrichVisualThemesInThemeGallery;
 use BagistoPlus\Visual\Actions\Admin\PersistTemplateAssignment;
 use BagistoPlus\Visual\Actions\Admin\PrepareCmsPageVisualDatagrid;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Middlewares\AllowSameOriginIframeInEditor;
 use BagistoPlus\Visual\Middlewares\DispatchServingThemeEditor;
+use BagistoPlus\Visual\Middlewares\RedirectVisualThemeCustomization;
 use BagistoPlus\Visual\ThemeEditor;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
@@ -16,6 +18,7 @@ use Illuminate\Foundation\Http\Middleware\TrimStrings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AdminServiceProvider extends ServiceProvider
@@ -32,6 +35,7 @@ class AdminServiceProvider extends ServiceProvider
         $this->bootRoutes();
         $this->bootMiddlewares();
         $this->bootInputNormalizationExceptions();
+        $this->bootViewComposers();
         $this->bootViewEventListeners();
 
         if (Visual::templateAssignmentsEnabled()) {
@@ -62,6 +66,7 @@ class AdminServiceProvider extends ServiceProvider
 
         $kernel->prependMiddleware(AllowSameOriginIframeInEditor::class);
         $kernel->pushMiddleware(DispatchServingThemeEditor::class);
+        $kernel->pushMiddleware(RedirectVisualThemeCustomization::class);
     }
 
     protected function bootInputNormalizationExceptions(): void
@@ -77,6 +82,13 @@ class AdminServiceProvider extends ServiceProvider
 
         TrimStrings::skipWhen($shouldPreserveEditorInput);
         ConvertEmptyStringsToNull::skipWhen($shouldPreserveEditorInput);
+    }
+
+    protected function bootViewComposers(): void
+    {
+        View::composer('admin::appearance.themes.index', function ($view) {
+            app(EnrichVisualThemesInThemeGallery::class)($view);
+        });
     }
 
     protected function bootViewEventListeners()

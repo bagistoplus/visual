@@ -5,6 +5,7 @@ return [
     'name' => '{{ title }}',
     'version' => '1.0.0',
     'author' => '{{ author }}',
+    'description' => '',
     'assets_path' => 'public/themes/shop/{{ slug }}',
     'views_path' => 'resources/themes/{{ slug }}/views',
     'preview_image' => 'images/theme-preview.png',

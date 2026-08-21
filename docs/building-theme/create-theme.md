@@ -87,6 +87,7 @@ return [
     "name" => "Awesome Theme",
     "version" => "1.0.0",
     "author" => "Your Company Name",
+    "description" => "A short description shown in the admin theme list",
     "assets_path" => "public/themes/shop/awesome-theme",
     "views_path" => "resources/themes/awesome-theme/views",
     "preview_image" => "public/themes/shop/awesome-theme/preview.png",

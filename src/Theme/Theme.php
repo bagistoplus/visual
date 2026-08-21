@@ -53,6 +53,7 @@ class Theme extends BagistoTheme
             author: $attributes['author'] ?? '',
             previewImage: $attributes['preview_image'] ?? '',
             documentationUrl: $attributes['documentation_url'] ?? '',
+            description: $attributes['description'] ?? null,
             isVisualTheme: $attributes['visual_theme'] ?? false,
             settingsSchema: $attributes['settings_schema'] ?? []
         );
@@ -70,6 +71,7 @@ class Theme extends BagistoTheme
         public ?string $author = '',
         public ?string $previewImage = '',
         public ?string $documentationUrl = '',
+        public ?string $description = null,
         public bool $isVisualTheme = false,
         public array $settingsSchema = []
     ) {
