@@ -76,7 +76,7 @@ class ThemeSettingsLoader
         $settingsSchema = collect($theme->settingsSchema)
             ->map(fn ($group) => $group['settings'])
             ->flatten(1)
-            ->reject(fn ($schema) => $schema['type'] === 'header')
+            ->reject(fn ($schema) => in_array($schema['type'], ['header', 'description'], true))
             ->keyBy('id')
             ->toArray();
 

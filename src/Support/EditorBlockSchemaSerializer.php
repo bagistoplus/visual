@@ -38,6 +38,10 @@ class EditorBlockSchemaSerializer
                         $propArray['group'] = $currentGroup;
                     }
 
+                    if ($propArray['type'] === 'description') {
+                        return $this->schemaTextTranslator->translateDescriptionSchema($propArray);
+                    }
+
                     return $this->schemaTextTranslator->translatePropertySchema($propArray);
                 })
                 ->filter()

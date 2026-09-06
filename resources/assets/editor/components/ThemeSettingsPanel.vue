@@ -6,6 +6,7 @@ import useI18n from '../composables/i18n';
 import { useState } from '../state';
 import { persistThemeSettings as persistThemeSettingsApi } from '../api';
 import { CRAFTILE_EDITOR } from '../craftile/plugin';
+import DescriptionField from './DescriptionField.vue';
 
 const { t } = useI18n();
 const { state, theme } = useState();
@@ -85,8 +86,8 @@ const updateSetting = (id: string, value: any) => {
             </Accordion.ItemTrigger>
             <Accordion.ItemContent class="px-4 py-3 space-y-4">
               <template
-                v-for="setting in group.settings"
-                :key="setting.id"
+                v-for="(setting, index) in group.settings"
+                :key="setting.id ?? index"
               >
                 <div
                   v-if="setting.type === 'header'"
@@ -94,6 +95,10 @@ const updateSetting = (id: string, value: any) => {
                 >
                   <h3 class="text-sm font-medium">{{ setting.label }}</h3>
                 </div>
+                <DescriptionField
+                  v-else-if="setting.type === 'description'"
+                  :field="setting"
+                />
                 <PropertyField
                   v-else
                   :field="setting"

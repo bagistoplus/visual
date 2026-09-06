@@ -2,6 +2,7 @@
 
 use BagistoPlus\Visual\Blocks\SimpleBlock;
 use BagistoPlus\Visual\Data\BlockSchema;
+use BagistoPlus\Visual\Settings\Description;
 use BagistoPlus\Visual\Settings\Header;
 use BagistoPlus\Visual\Settings\Select;
 use BagistoPlus\Visual\Settings\Text;
@@ -81,6 +82,7 @@ class TranslatedBlockSchemaBlock extends SimpleBlock
     {
         return [
             Header::make('t:schema.group'),
+            Description::make('t:schema.description')->visibleIf(fn ($rule) => $rule->when('style', 'featured')),
             Text::make('title', 't:schema.title')->info('schema.title_info'),
             Select::make('style', 'schema.style')->options([
                 'featured' => 't:schema.option_featured',
@@ -148,6 +150,7 @@ it('translates editor block schema ui text without translating starter data', fu
         'schema.block_description' => 'Translated block description',
         'schema.block_category' => 'Sections',
         'schema.group' => 'Content',
+        'schema.description' => '<p>Translated <strong>description</strong></p>',
         'schema.title' => 'Title',
         'schema.title_info' => 'Title info',
         'schema.style' => 'Style',
@@ -177,14 +180,21 @@ it('translates editor block schema ui text without translating starter data', fu
             'category' => 'Sections',
         ])
         ->and($block['properties'][0])
+        ->toBe([
+            'type' => 'description',
+            'content' => '<p>Translated <strong>description</strong></p>',
+            'visibleIf' => ['field' => 'style', 'operator' => 'equals', 'value' => 'featured'],
+            'group' => 'Content',
+        ])
+        ->and($block['properties'][1])
         ->toMatchArray([
             'label' => 'Title',
             'info' => 'Title info',
             'group' => 'Content',
         ])
-        ->and($block['properties'][1]['label'])->toBe('Style')
-        ->and($block['properties'][1]['options'][0]['label'])->toBe('Featured option')
-        ->and($block['properties'][1]['options'][0]['value'])->toBe('featured')
+        ->and($block['properties'][2]['label'])->toBe('Style')
+        ->and($block['properties'][2]['options'][0]['label'])->toBe('Featured option')
+        ->and($block['properties'][2]['options'][0]['value'])->toBe('featured')
         ->and($block['presets'][0])
         ->toMatchArray([
             'name' => 'Hero preset',

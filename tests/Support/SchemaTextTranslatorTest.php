@@ -63,6 +63,7 @@ it('translates theme settings schema ui text', function () {
         [
             'name' => 't:schema.group',
             'settings' => [
+                ['type' => 'description', 'content' => 't:schema.description'],
                 [
                     'id' => 'style',
                     'type' => 'select',
@@ -76,8 +77,9 @@ it('translates theme settings schema ui text', function () {
     ]);
 
     expect($schema[0]['name'])->toBe('Content')
-        ->and($schema[0]['settings'][0]['label'])->toBe('Hero')
-        ->and($schema[0]['settings'][0]['options'][0]['label'])->toBe('Featured');
+        ->and($schema[0]['settings'][0])->toBe(['type' => 'description', 'content' => 'Hero description'])
+        ->and($schema[0]['settings'][1]['label'])->toBe('Hero')
+        ->and($schema[0]['settings'][1]['options'][0]['label'])->toBe('Featured');
 });
 
 it('recursively translates preset child names only', function () {

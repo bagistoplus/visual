@@ -1567,3 +1567,49 @@ public static function settings(): array
 > They are not available inside Blade templates.
 
 <SettingPreview image="/setting-header.png" title="Header setting type preview"/>
+
+---
+
+### Description
+
+Presentation only block of help text inside settings groups. Useful for explaining how a group of settings works, linking to documentation, or warning about side effects.
+
+Like the Header type, the Description type:
+
+- Does **not** require an `id`
+- Only needs the **content** to display
+- **Does not produce any setting data** (not available inside Blade)
+
+The content is rendered as raw HTML in the editor. It is written by the theme developer and is not sanitized, so only place trusted markup in it.
+
+```php
+use BagistoPlus\Visual\Settings\Description;
+use BagistoPlus\Visual\Settings\Header;
+use BagistoPlus\Visual\Settings\Select;
+use BagistoPlus\Visual\Settings\Text;
+
+public static function settings(): array
+{
+    return [
+        Header::make('Tracking'),
+
+        Description::make('<p>Paste the snippet from your <a href="https://analytics.example.com" target="_blank">analytics dashboard</a>. It is only loaded on the storefront, never inside the editor.</p>'),
+
+        Text::make('tracking_id', 'Tracking ID'),
+
+        Select::make('layout', 'Layout')
+            ->options(['grid' => 'Grid', 'list' => 'List'])
+            ->default('grid'),
+
+        Description::make('<p>The list layout ignores the column settings below.</p>')
+            ->visibleIf(fn ($rule) => $rule->when('layout', 'list')),
+    ];
+}
+```
+
+The content supports translation references, so `Description::make('t:shop::settings.tracking_help')` resolves the text from the theme language files.
+
+**Conditional visibility:** `visibleIf()` and `visibleWhen()` work the same way as on other settings, so a description can appear only alongside the fields it explains. Inside block settings the description is placed under the nearest preceding `Header` group.
+
+> **Note:** Description settings are **only used inside the theme editor** to display help text.
+> They are not available inside Blade templates. Conditional visibility is evaluated in block settings only, theme settings do not evaluate `visibleIf` for any setting type.

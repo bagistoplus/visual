@@ -1,6 +1,8 @@
 <?php
 
 use BagistoPlus\Visual\Persistence\EditorDataStore;
+use BagistoPlus\Visual\Settings\Description;
+use BagistoPlus\Visual\Settings\Header;
 use BagistoPlus\Visual\Settings\Select;
 use BagistoPlus\Visual\Settings\Text;
 use BagistoPlus\Visual\Theme\Theme;
@@ -18,6 +20,8 @@ function theme_settings_loader_theme(): Theme
             [
                 'name' => 'Content',
                 'settings' => [
+                    Header::make('Content')->toArray(),
+                    Description::make('<p>Content settings</p>')->toArray(),
                     Text::make('title', 'Title')->default('t:settings.default_title')->toArray(),
                     Select::make('handle', 'Handle')->default('t:settings.default_handle')->toArray(),
                     Text::make('responsive_title', 'Responsive title')->responsive()->default([

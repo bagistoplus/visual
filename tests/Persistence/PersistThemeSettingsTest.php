@@ -20,6 +20,8 @@ beforeEach(function () {
             [
                 'name' => 'General',
                 'settings' => [
+                    ['type' => 'header', 'label' => 'General'],
+                    ['type' => 'description', 'content' => '<p>General settings</p>'],
                     ['id' => 'headline', 'type' => 'text', 'default' => 'Default headline', 'localized' => true],
                     ['id' => 'handle', 'type' => 'text', 'default' => 'default-handle', 'localized' => false],
                     ['id' => 'colors', 'type' => 'text', 'default' => ['primary' => '#000000'], 'localized' => false],

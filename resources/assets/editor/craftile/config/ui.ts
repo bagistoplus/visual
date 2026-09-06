@@ -23,6 +23,7 @@ import VideoField from '../../components/VideoField.vue';
 import RichtextEditor from '../../components/RichtextEditor.vue';
 import GradientPicker from '../../components/GradientPicker.vue';
 import SpacingField from '../../components/SpacingField.vue';
+import DescriptionField from '../../components/DescriptionField.vue';
 import TypographyPresets from '../../components/TypographyPresets.vue';
 import TypographyPicker from '../../components/TypographyPicker.vue';
 import PublishAction from '../../components/PublishAction.vue';
@@ -181,6 +182,11 @@ function registerPropertyFields(ui: PluginContext['editor']['ui']) {
   ui.registerPropertyField({
     type: 'spacing',
     render: SpacingField,
+  });
+
+  ui.registerPropertyField({
+    type: 'description',
+    render: DescriptionField,
   });
 
   ui.registerPropertyField({

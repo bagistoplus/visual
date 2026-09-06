@@ -28,6 +28,7 @@ declare module 'vue' {
     ColorTokenPicker: typeof import('./components/ColorTokenPicker.vue')['default']
     ConfirmPublish: typeof import('./components/ConfirmPublish.vue')['default']
     CreateTemplateModal: typeof import('./components/CreateTemplateModal.vue')['default']
+    DescriptionField: typeof import('./components/DescriptionField.vue')['default']
     EditColorScheme: typeof import('./components/EditColorScheme.vue')['default']
     FontPicker: typeof import('./components/FontPicker.vue')['default']
     GradientPicker: typeof import('./components/GradientPicker.vue')['default']

@@ -40,6 +40,17 @@ class SchemaTextTranslator
         return $property;
     }
 
+    public function translateDescriptionSchema(array $description): array
+    {
+        foreach (['content', 'group'] as $key) {
+            if (array_key_exists($key, $description)) {
+                $description[$key] = $this->translateText($description[$key]);
+            }
+        }
+
+        return $description;
+    }
+
     public function translateBlockMeta(array $meta): array
     {
         foreach (['name', 'description', 'category'] as $key) {
@@ -94,7 +105,9 @@ class SchemaTextTranslator
 
             if (isset($group['settings']) && is_array($group['settings'])) {
                 $group['settings'] = collect($group['settings'])
-                    ->map(fn (array $setting) => $this->translatePropertySchema($setting))
+                    ->map(fn (array $setting) => ($setting['type'] ?? null) === 'description'
+                        ? $this->translateDescriptionSchema($setting)
+                        : $this->translatePropertySchema($setting))
                     ->all();
             }
 
