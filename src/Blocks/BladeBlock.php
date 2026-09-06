@@ -40,6 +40,7 @@ abstract class BladeBlock extends Component implements BlockInterface, Condition
             'name',
             'wrapper',
             'accepts',
+            'rejects',
             'description',
             'settings',
             'presets',

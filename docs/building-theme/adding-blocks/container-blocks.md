@@ -47,6 +47,26 @@ class Columns extends SimpleBlock
 }
 ```
 
+### Excluding Blocks
+
+Use `$rejects` to carve exceptions out of a wildcard. This is useful when a container should accept every theme block except a few:
+
+```php
+class Columns extends SimpleBlock
+{
+    protected static string $view = 'shop::blocks.columns';
+
+    protected static array $accepts = ['@awesome-theme/*'];
+
+    protected static array $rejects = [
+        '@awesome-theme/section-*',  // No sections inside columns
+        Columns::class,              // No columns inside columns
+    ];
+}
+```
+
+`$rejects` supports the same type strings, wildcards, and class names as `$accepts`, and always wins when both match.
+
 ## Rendering Child Blocks
 
 In the container block's view, use the `@children` directive to render child blocks:

@@ -257,6 +257,18 @@ protected static array $accepts = [
 
 **Default:** `['*']`
 
+## rejects
+
+Excludes block types from `accepts`, even when they match one of its patterns. It supports the same type strings, wildcards, and class names as `accepts`.
+
+```php
+protected static array $accepts = ['*'];
+
+protected static array $rejects = ['@awesome-theme/section-*'];
+```
+
+**Default:** `[]` (rejects nothing)
+
 Render blocks in your section view using `@children`:
 
 ```blade

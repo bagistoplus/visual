@@ -245,6 +245,23 @@ protected static array $accepts = [
 
 **Default:** `[]` (does not accept children)
 
+## rejects
+
+Excludes block types from `accepts`, even when they match one of its patterns. It supports the same type strings, wildcards, and class names as `accepts`.
+
+```php
+protected static array $accepts = ['@awesome-theme/*'];
+
+protected static array $rejects = [
+    '@awesome-theme/section-*',
+    Columns::class,
+];
+```
+
+A block listed in `rejects` can never be nested, even if it is a private block explicitly listed in `accepts`.
+
+**Default:** `[]` (rejects nothing)
+
 ### Rendering Children
 
 Render child blocks in your block view using `@children`:

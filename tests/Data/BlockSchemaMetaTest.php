@@ -36,6 +36,13 @@ class BlockSchemaMetaReservedKeysBlock extends SimpleBlock
     ];
 }
 
+class BlockSchemaRejectsBlock extends SimpleBlock
+{
+    protected static array $accepts = ['@theme/*'];
+
+    protected static array $rejects = ['@theme/section-*', BlockSchemaMetaBlock::class];
+}
+
 class TranslatedBlockSchemaPreset extends BlockPreset
 {
     protected function build(): void
@@ -122,6 +129,17 @@ it('keeps built-in admin meta keys reserved', function () {
             'enabledOn' => ['product'],
             'badge' => 'Featured',
         ]);
+});
+
+it('serializes accepts and rejects for the editor', function () {
+    $registry = new BlockSchemaRegistry;
+    $registry->register(BlockSchema::fromClass(BlockSchemaRejectsBlock::class));
+    app()->instance(BlockSchemaRegistry::class, $registry);
+
+    $block = app(EditorBlockSchemaSerializer::class)->all()[0];
+
+    expect($block['accepts'])->toBe(['@theme/*'])
+        ->and($block['rejects'])->toBe(['@theme/section-*', BlockSchemaMetaBlock::type()]);
 });
 
 it('translates editor block schema ui text without translating starter data', function () {

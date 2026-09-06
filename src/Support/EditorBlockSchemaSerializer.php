@@ -60,6 +60,7 @@ class EditorBlockSchemaSerializer
                 'type' => $blockSchema->type,
                 'properties' => $properties,
                 'accepts' => $blockSchema->accepts,
+                'rejects' => $blockSchema->rejects,
                 'presets' => collect($blockSchema->presets)
                     ->map(fn ($preset) => $this->schemaTextTranslator->translatePreset(
                         is_object($preset) && method_exists($preset, 'toArray') ? $preset->toArray() : (array) $preset
