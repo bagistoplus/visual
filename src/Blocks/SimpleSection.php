@@ -18,10 +18,11 @@ class SimpleSection extends SimpleBlock
         return null;
     }
 
-    public function data()
+    public function data(): array
     {
-        return [
-            'section' => $this->block,
-        ];
+        return array_merge(
+            parent::data(),
+            ['section' => $this->block]
+        );
     }
 }

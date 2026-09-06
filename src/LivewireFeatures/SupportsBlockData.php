@@ -58,7 +58,11 @@ class SupportsBlockData extends ComponentHook
 
         $craftileContext = array_merge($context, $this->component->share());
 
-        $view->with(array_merge($context, ['__craftileContext' => $craftileContext]));
+        $view->with(array_merge(
+            $context,
+            $this->component->data(),
+            ['__craftileContext' => $craftileContext],
+        ));
     }
 
     public function rerender($view)

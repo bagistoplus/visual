@@ -19,10 +19,11 @@ abstract class BladeBlock extends Component implements BlockInterface, Condition
         $this->attributes = $this->attributes ?: $this->newAttributeBag();
 
         return array_merge(
+            $this->context,
             $this->extractPublicProperties(),
             $this->extractPublicMethods(),
+            $this->getViewData(),
             $this->getVisualData(),
-            $this->context
         );
     }
 

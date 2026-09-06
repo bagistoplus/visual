@@ -64,12 +64,17 @@ trait HasBlockBehavior
         return [];
     }
 
+    public function data(): array
+    {
+        return $this->getViewData();
+    }
+
     public function render(): mixed
     {
         if (empty(static::$view)) {
             throw new \RuntimeException('View not specified for block '.static::class);
         }
 
-        return view()->make(static::$view, $this->getViewData());
+        return view()->make(static::$view);
     }
 }
