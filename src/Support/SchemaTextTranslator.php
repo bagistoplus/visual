@@ -27,7 +27,7 @@ class SchemaTextTranslator
 
     public function translatePropertySchema(array $property): array
     {
-        foreach (['label', 'info', 'group'] as $key) {
+        foreach (['label', 'info', 'placeholder', 'group'] as $key) {
             if (array_key_exists($key, $property)) {
                 $property[$key] = $this->translateText($property[$key]);
             }

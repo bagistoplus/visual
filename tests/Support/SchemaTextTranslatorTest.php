@@ -6,6 +6,7 @@ beforeEach(function () {
     app('translator')->addLines([
         'schema.hero' => 'Hero',
         'schema.description' => 'Hero description',
+        'schema.placeholder' => 'Enter a title',
         'schema.group' => 'Content',
         'schema.option' => 'Featured',
         'schema.child' => 'Child',
@@ -32,6 +33,7 @@ it('translates only known schema ui keys and option labels', function () {
         'type' => 'select',
         'label' => 't:schema.hero',
         'info' => 'schema.description',
+        'placeholder' => 't:schema.placeholder',
         'group' => 't:schema.group',
         'default' => 't:schema.default',
         'options' => [
@@ -44,6 +46,7 @@ it('translates only known schema ui keys and option labels', function () {
         ->toMatchArray([
             'label' => 'Hero',
             'info' => 'Hero description',
+            'placeholder' => 'Enter a title',
             'group' => 'Content',
             'default' => 't:schema.default',
             'options' => [
