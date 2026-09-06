@@ -30,8 +30,10 @@ import PublishAction from '../../components/PublishAction.vue';
 import PreviewAction from '../../components/PreviewAction.vue';
 import ConfirmPublish from '../../components/ConfirmPublish.vue';
 import CreateTemplateModal from '../../components/CreateTemplateModal.vue';
+import UnsupportedPageModal from '../../components/UnsupportedPageModal.vue';
 import BackButton from '../../components/BackButton.vue';
 import useI18n from '../../composables/i18n';
+import { UNSUPPORTED_PAGE_MODAL } from '../features/unsupportedPage';
 
 const { t } = useI18n();
 
@@ -95,6 +97,13 @@ function configureHeader(ui: PluginContext['editor']['ui']) {
     title: t('Create a template'),
     size: 'xl',
     render: CreateTemplateModal,
+  });
+
+  ui.registerModal({
+    id: UNSUPPORTED_PAGE_MODAL,
+    title: t('Page not editable'),
+    size: 'xl',
+    render: UnsupportedPageModal,
   });
 }
 

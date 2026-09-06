@@ -32,7 +32,7 @@ function makeState(overrides: Partial<State> = {}): State {
     locale: 'en',
     localeInheritance: {},
     theme: null,
-    templates: [],
+    templates: [{ template: 'index', label: 'Home', icon: '', previewUrl: 'https://example.test' }],
     pageData: null,
     images: [],
     videos: [],
@@ -41,6 +41,7 @@ function makeState(overrides: Partial<State> = {}): State {
     cmsPages: new Map(),
     haveEdits: false,
     previewLoading: false,
+    unsupportedPage: null,
     templateForm: {
       type: 'product',
       name: '',
@@ -305,5 +306,65 @@ describe('preview page data context sync', () => {
       title: 't:block.title',
       color: '#ffffff',
     });
+  });
+});
+
+describe('unsupported page detection', () => {
+  function makeEditor() {
+    let handler: any;
+    const editor = {
+      preview: {
+        onReady: (callback: Function) => callback(),
+        onMessage: (_event: string, callback: Function) => {
+          handler = callback;
+        },
+      },
+      engine: {
+        getBlocksManager: () => ({
+          has: vi.fn(() => false),
+          unregister: vi.fn(),
+          register: vi.fn(),
+        }),
+        getBlockSchema: vi.fn(() => undefined),
+        setPage: vi.fn(),
+        getBlockById: vi.fn(),
+      },
+      ui: {
+        openModal: vi.fn(),
+      },
+    } as any;
+
+    return { editor, dispatch: (pageData: any) => handler({ pageData }) };
+  }
+
+  const templates = [{ template: 'index', label: 'Home', icon: '', previewUrl: 'https://example.test' }];
+
+  it('opens the modal when the page template is not registered', () => {
+    const state = makeState({ templates, previewLoading: true });
+    const { editor, dispatch } = makeEditor();
+
+    setupPageDataHandler(editor, state);
+    dispatch({
+      content: { blocks: {}, regions: [] },
+      template: { url: 'https://example.test/login', name: 'shop-customer-session-index', sources: '' },
+    });
+
+    expect(state.unsupportedPage).toBe('missing-template');
+    expect(state.previewLoading).toBe(false);
+    expect(editor.ui.openModal).toHaveBeenCalledWith('unsupported-page');
+  });
+
+  it('clears the unsupported flag when a registered template loads', () => {
+    const state = makeState({ templates, unsupportedPage: 'load-failed' });
+    const { editor, dispatch } = makeEditor();
+
+    setupPageDataHandler(editor, state);
+    dispatch({
+      content: { blocks: {}, regions: [] },
+      template: { url: 'https://example.test', name: 'index', sources: '' },
+    });
+
+    expect(state.unsupportedPage).toBeNull();
+    expect(editor.ui.openModal).not.toHaveBeenCalled();
   });
 });

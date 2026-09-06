@@ -3,6 +3,7 @@ import { Category, Channel, CmsPage, ContextInheritance, Image, Product, Templat
 export const VISUAL_EDITOR_STATE = Symbol('VISUAL_EDITOR_STATE');
 
 export type TemplateVariantType = 'product' | 'category' | 'page';
+export type UnsupportedPageReason = 'missing-template' | 'load-failed';
 
 export interface TemplateForm {
   type: TemplateVariantType;
@@ -34,6 +35,7 @@ export interface State {
   cmsPages: Map<number, CmsPage>;
   haveEdits: boolean;
   previewLoading: boolean;
+  unsupportedPage: UnsupportedPageReason | null;
   templateForm: TemplateForm;
 }
 
@@ -67,6 +69,7 @@ export function createState(defaults: Partial<State> = {}): State {
     cmsPages: defaults.cmsPages || new Map(),
     haveEdits: defaults.haveEdits || false,
     previewLoading: defaults.previewLoading || false,
+    unsupportedPage: defaults.unsupportedPage || null,
     templateForm: {
       ...defaultTemplateForm(),
       ...(defaults.templateForm || {}),

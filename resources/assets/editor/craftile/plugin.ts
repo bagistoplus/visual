@@ -4,6 +4,7 @@ import type { ThemeEditorConfig } from '../types';
 import { useState } from '../state';
 import { configureUI } from './config/ui';
 import { setupPreviewLoading } from './features/previewLoading';
+import { setupUnsupportedPage } from './features/unsupportedPage';
 import { setupUpdatePersistence } from './features/updatePersistence';
 import { setupUrlState } from './features/urlState';
 import { setupPageDataHandler } from './handlers/pageData';
@@ -19,6 +20,7 @@ export default function (editorConfig: ThemeEditorConfig): CraftileEditorPlugin 
     configureUI(editor.ui);
     setupPreviewLoading(editor, state);
     setupPageDataHandler(editor, state);
+    setupUnsupportedPage(editor, state);
     setupUpdatePersistence(editor, state);
     setupUrlState(editor, state, editorConfig);
   };

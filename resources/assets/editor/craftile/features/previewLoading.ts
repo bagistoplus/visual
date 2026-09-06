@@ -23,6 +23,16 @@ export function setupPreviewLoading(editor: CraftileEditor, state: State) {
   preview.loadUrl = (url: string) => {
     startLoading();
 
+    const frame = editor.preview.getFrame();
+
+    if (frame && preview.state?.previewUrl === url) {
+      // The iframe may have navigated away on its own, so the bound src no longer reflects
+      // the current page and re-assigning the same url would not trigger a load.
+      frame.src = url;
+
+      return;
+    }
+
     return loadUrl(url);
   };
 

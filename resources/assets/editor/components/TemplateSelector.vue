@@ -24,8 +24,15 @@ watch(isOpen, (open) => {
 
 const rootTemplates = computed(() => templates.value.filter((template) => !isCustomTemplateVariant(template)));
 
-const currentIcon = computed(() => currentTemplate.value?.icon || templates.value[0]?.icon || '');
-const currentLabel = computed(() => currentTemplate.value?.label || templates.value[0]?.label || 'Select template');
+const isInitialLoad = computed(() => state.pageData === null && state.previewLoading);
+const currentIcon = computed(() => currentTemplate.value?.icon || (isInitialLoad.value ? templates.value[0]?.icon : '') || '');
+const currentLabel = computed(() => {
+  if (currentTemplate.value) {
+    return currentTemplate.value.label;
+  }
+
+  return isInitialLoad.value ? templates.value[0]?.label || '' : t('No template');
+});
 
 function variantTemplates(type: TemplateVariantType) {
   return templates.value.filter((template) => template.type === type && template.template !== type);
@@ -102,6 +109,10 @@ function defaultTemplateLabel(type: TemplateVariantType) {
             v-if="currentIcon"
             v-html="currentIcon"
           ></span>
+          <i-heroicons-document
+            v-else
+            class="w-4"
+          />
           {{ currentLabel }}
           <i-heroicons-chevron-down class="inline w-4" />
         </Button>

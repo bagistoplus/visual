@@ -639,3 +639,75 @@ describe('Visual editor event forwarding', () => {
     expectNoEvent('visual:block:setting:updated:undefined');
   });
 });
+
+describe('external link interception', () => {
+  let confirmSpy: any;
+  let openSpy: any;
+
+  beforeEach(async () => {
+    vi.resetModules();
+    confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+
+    await import('../injected');
+  });
+
+  afterEach(() => {
+    confirmSpy.mockRestore();
+    openSpy.mockRestore();
+    document.body.innerHTML = '';
+  });
+
+  function clickLink(attributes: Record<string, string>, init: MouseEventInit = {}) {
+    const anchor = document.createElement('a');
+
+    Object.entries(attributes).forEach(([name, value]) => anchor.setAttribute(name, value));
+    document.body.appendChild(anchor);
+
+    const event = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0, ...init });
+    anchor.dispatchEvent(event);
+
+    return event;
+  }
+
+  it('asks for confirmation and opens external links in a new window', () => {
+    const event = clickLink({ href: 'https://themefullstack.com/' });
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(confirmSpy).toHaveBeenCalledWith(expect.stringContaining('https://themefullstack.com/'));
+    expect(openSpy).toHaveBeenCalledWith('https://themefullstack.com/', '_blank');
+  });
+
+  it('does not open the link when the confirmation is cancelled', () => {
+    confirmSpy.mockReturnValue(false);
+
+    const event = clickLink({ href: 'https://themefullstack.com/' });
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(openSpy).not.toHaveBeenCalled();
+  });
+
+  it('ignores same origin links', () => {
+    const event = clickLink({ href: '/products/shoes' });
+
+    expect(event.defaultPrevented).toBe(false);
+    expect(confirmSpy).not.toHaveBeenCalled();
+  });
+
+  it('ignores links that already open in a new tab, downloads and non http schemes', () => {
+    clickLink({ href: 'https://themefullstack.com/', target: '_blank' });
+    clickLink({ href: 'https://themefullstack.com/file.zip', download: '' });
+    clickLink({ href: 'mailto:hello@example.com' });
+    clickLink({ href: 'tel:+123456' });
+
+    expect(confirmSpy).not.toHaveBeenCalled();
+  });
+
+  it('ignores modifier and middle button clicks', () => {
+    clickLink({ href: 'https://themefullstack.com/' }, { metaKey: true });
+    clickLink({ href: 'https://themefullstack.com/' }, { ctrlKey: true });
+    clickLink({ href: 'https://themefullstack.com/' }, { button: 1 });
+
+    expect(confirmSpy).not.toHaveBeenCalled();
+  });
+});

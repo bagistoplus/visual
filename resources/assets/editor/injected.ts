@@ -240,6 +240,60 @@ function normalizePercentage(value: unknown): number {
 
 previewClient.on('block.property.updated', handlePropertyUpdate);
 
+const EXTERNAL_LINK_MESSAGE =
+  'This link cannot be opened inside the editor. It will be opened in a new window (:url). Click OK to continue.';
+
+function findExternalLink(event: MouseEvent): string | null {
+  if (event.defaultPrevented || event.button !== 0) {
+    return null;
+  }
+
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+    return null;
+  }
+
+  const target = event.target as Element | null;
+  const anchor = target?.closest?.('a[href]') as HTMLAnchorElement | null;
+
+  if (!anchor || anchor.target === '_blank' || anchor.hasAttribute('download')) {
+    return null;
+  }
+
+  let url: URL;
+
+  try {
+    url = new URL(anchor.getAttribute('href') || '', window.location.href);
+  } catch {
+    return null;
+  }
+
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    return null;
+  }
+
+  if (url.origin === window.location.origin) {
+    return null;
+  }
+
+  return url.href;
+}
+
+function handleExternalLinkClick(event: MouseEvent): void {
+  const href = findExternalLink(event);
+
+  if (!href) {
+    return;
+  }
+
+  event.preventDefault();
+
+  if (window.confirm(EXTERNAL_LINK_MESSAGE.replace(':url', href))) {
+    window.open(href, '_blank');
+  }
+}
+
+document.addEventListener('click', handleExternalLinkClick, true);
+
 class VisualObject {
   inDesignMode: true = true;
 

@@ -4,6 +4,7 @@ import NProgress from 'nprogress';
 import type { State } from '../../state';
 import { populatePreloadedModels } from '../../state';
 import type { PreviewPageData } from '../../types';
+import { isTemplateRegistered, openUnsupportedPageModal } from '../features/unsupportedPage';
 import { clearResolvedTranslationRefs, recordResolvedTranslationRefs } from '../../utils/resolvedTranslationRefs';
 import { getUrlParam, removeUrlParam } from '../../utils/urlState';
 
@@ -69,6 +70,12 @@ export function setupPageDataHandler(editor: CraftileEditor, state: State) {
 
       if (pageData.preloadedModels) {
         populatePreloadedModels(pageData.preloadedModels);
+      }
+
+      if (isTemplateRegistered(state, pageData.template.name)) {
+        state.unsupportedPage = null;
+      } else {
+        openUnsupportedPageModal(editor, state, 'missing-template');
       }
 
       const blockIdToRestore = getUrlParam('block');

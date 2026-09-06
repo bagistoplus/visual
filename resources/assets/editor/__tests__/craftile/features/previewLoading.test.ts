@@ -29,6 +29,7 @@ function makeState(overrides: Partial<State> = {}): State {
     cmsPages: new Map(),
     haveEdits: false,
     previewLoading: false,
+    unsupportedPage: null,
     templateForm: {
       type: 'product',
       name: '',
@@ -50,9 +51,11 @@ describe('preview loading state', () => {
     const loadUrl = vi.fn();
     const editor = {
       preview: {
+        state: { previewUrl: '' },
         loadUrl,
         reload: vi.fn(),
         onDocumentReady: vi.fn(),
+        getFrame: () => null,
       },
     } as any;
 
@@ -73,9 +76,11 @@ describe('preview loading state', () => {
     const reload = vi.fn();
     const editor = {
       preview: {
+        state: { previewUrl: '' },
         loadUrl: vi.fn(),
         reload,
         onDocumentReady: vi.fn(),
+        getFrame: () => null,
       },
     } as any;
 
@@ -85,5 +90,27 @@ describe('preview loading state', () => {
     expect(state.previewLoading).toBe(true);
     expect(state.localeInheritance).toEqual({});
     expect(reload).toHaveBeenCalled();
+  });
+
+  it('forces the frame to reload when the requested url matches the bound preview url', () => {
+    const state = makeState();
+    const loadUrl = vi.fn();
+    const frame = document.createElement('iframe');
+    const editor = {
+      preview: {
+        state: { previewUrl: 'https://example.test/' },
+        loadUrl,
+        reload: vi.fn(),
+        onDocumentReady: vi.fn(),
+        getFrame: () => frame,
+      },
+    } as any;
+
+    setupPreviewLoading(editor, state);
+    editor.preview.loadUrl('https://example.test/');
+
+    expect(state.previewLoading).toBe(true);
+    expect(frame.src).toBe('https://example.test/');
+    expect(loadUrl).not.toHaveBeenCalled();
   });
 });
