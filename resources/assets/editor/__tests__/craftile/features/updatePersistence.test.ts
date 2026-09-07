@@ -9,14 +9,6 @@ vi.mock('../../../api', () => ({
   persistUpdates: persistUpdatesMock,
 }));
 
-const { removeUrlParamMock } = vi.hoisted(() => ({
-  removeUrlParamMock: vi.fn(),
-}));
-
-vi.mock('../../../utils/urlState', () => ({
-  removeUrlParam: removeUrlParamMock,
-}));
-
 import {
   mergeUpdates,
   hasChanges,
@@ -25,7 +17,6 @@ import {
   computeEffects,
   extractPageDataFromHtml,
   patchResolvedBlocksFromHtml,
-  collectVanishedDescendants,
   setupUpdatePersistence,
 } from '../../../craftile/features/updatePersistence';
 import {
@@ -37,7 +28,6 @@ afterEach(() => {
   vi.useRealTimers();
   vi.restoreAllMocks();
   persistUpdatesMock.mockReset();
-  removeUrlParamMock.mockReset();
 });
 
 function createUpdatesEvent(
@@ -125,8 +115,8 @@ function createPersistenceHarness(initialBlocks: Record<string, any>) {
     regions: [{ id: 'main', name: 'Main', blocks: Object.keys(initialBlocks) }],
   };
   let updatesHandler: ((updates: UpdatesEvent) => void) | undefined;
-  const replacePageState = vi.fn((newPage) => {
-    page = structuredClone(newPage);
+  const patchBlocks = vi.fn((blocks: Record<string, any>) => {
+    page = { ...page, blocks: { ...page.blocks, ...structuredClone(blocks) } };
   });
   const sendMessage = vi.fn();
   const toast = vi.fn();
@@ -135,8 +125,7 @@ function createPersistenceHarness(initialBlocks: Record<string, any>) {
       getPage: vi.fn(() => structuredClone(page)),
       getBlockById: vi.fn((blockId: string) => structuredClone(page.blocks[blockId])),
       getBlockSchema: vi.fn(() => undefined),
-      replacePageState,
-      emit: vi.fn(),
+      patchBlocks,
       on: vi.fn(),
     },
     events: {
@@ -160,7 +149,7 @@ function createPersistenceHarness(initialBlocks: Record<string, any>) {
     emitUpdates(updates: UpdatesEvent) {
       updatesHandler!(updates);
     },
-    replacePageState,
+    patchBlocks,
     sendMessage,
     toast,
   };
@@ -195,13 +184,13 @@ describe('updatePersistence utilities', () => {
 
       await vi.waitFor(() => expect(persistUpdatesMock).toHaveBeenCalledTimes(2));
 
-      expect(harness.replacePageState).not.toHaveBeenCalled();
+      expect(harness.patchBlocks).not.toHaveBeenCalled();
       expect(harness.sendMessage).not.toHaveBeenCalledWith('updates.effects', expect.anything());
       expect(persistUpdatesMock.mock.calls[1][0].changes.updated).toEqual(['hero']);
       expect(persistUpdatesMock.mock.calls[1][0].blocks.hero.properties.text).toBe('Shup');
 
       secondRequest.succeed(pageResponse(latestUpdate.blocks));
-      await vi.waitFor(() => expect(harness.replacePageState).toHaveBeenCalledTimes(1));
+      await vi.waitFor(() => expect(harness.patchBlocks).toHaveBeenCalledTimes(1));
 
       expect(harness.sendMessage).toHaveBeenCalledWith(
         'updates.effects',
@@ -728,27 +717,8 @@ describe('updatePersistence utilities', () => {
     });
   });
 
-  const conditionalPage = {
-    blocks: {
-      hero: { id: 'hero', type: 'hero', properties: {}, children: ['title', 'subtitle'] },
-      title: { id: 'title', type: 'heading', parentId: 'hero', properties: {}, children: [] },
-      subtitle: {
-        id: 'subtitle',
-        type: 'paragraph',
-        parentId: 'hero',
-        properties: {},
-        children: ['subtitle-icon'],
-        static: true,
-      },
-      'subtitle-icon': { id: 'subtitle-icon', type: 'icon', parentId: 'subtitle', properties: {}, children: [] },
-      footer: { id: 'footer', type: 'footer', properties: {}, children: ['signup'] },
-      signup: { id: 'signup', type: 'newsletter', parentId: 'footer', properties: {}, children: [], static: true },
-    },
-    regions: [{ id: 'main', name: 'Main', blocks: ['hero', 'footer'] }],
-  };
-
   describe('patchResolvedBlocksFromHtml', () => {
-    it('merges resolved partial blocks into the current page without replacing regions', () => {
+    it('patches resolved partial blocks into the engine and records translation refs', () => {
       const previousPage = {
         blocks: {
           hero: {
@@ -767,8 +737,7 @@ describe('updatePersistence utilities', () => {
         },
         regions: [{ id: 'main', name: 'Main', blocks: ['hero'] }],
       };
-      const replacePageState = vi.fn();
-      const emit = vi.fn();
+      const patchBlocks = vi.fn();
       const editor = {
         engine: {
           getPage: vi.fn(() => structuredClone(previousPage)),
@@ -776,8 +745,7 @@ describe('updatePersistence utilities', () => {
             type: 'hero',
             properties: [{ id: 'title', localized: true }],
           })),
-          replacePageState,
-          emit,
+          patchBlocks,
         },
       } as any;
       const html = `
@@ -794,34 +762,18 @@ describe('updatePersistence utilities', () => {
 
       patchResolvedBlocksFromHtml(editor, html);
 
-      expect(replacePageState).toHaveBeenCalledWith({
-        blocks: {
-          hero: {
-            id: 'hero',
-            type: 'hero',
-            properties: { title: 'Resolved title' },
-            children: ['button'],
-          },
-          button: previousPage.blocks.button,
-        },
-        regions: previousPage.regions,
-      });
-      expect(emit).toHaveBeenCalledWith('page:set', {
-        previousPage,
-        newPage: {
-          blocks: {
-            hero: {
-              id: 'hero',
-              type: 'hero',
-              properties: { title: 'Resolved title' },
-              children: ['button'],
-            },
-            button: previousPage.blocks.button,
-          },
-          regions: previousPage.regions,
+      expect(patchBlocks).toHaveBeenCalledTimes(1);
+      expect(patchBlocks).toHaveBeenCalledWith({
+        hero: {
+          id: 'hero',
+          type: 'hero',
+          properties: { title: 'Resolved title' },
+          children: ['button'],
         },
       });
-      expect(canonicalizePage(replacePageState.mock.calls[0][0]).blocks.hero.properties.title).toBe('t:block.title');
+      expect(
+        canonicalizePage({ blocks: patchBlocks.mock.calls[0][0], regions: [] }).blocks.hero.properties.title
+      ).toBe('t:block.title');
 
       clearResolvedTranslationRefs();
     });
@@ -830,147 +782,14 @@ describe('updatePersistence utilities', () => {
       const editor = {
         engine: {
           getPage: vi.fn(),
-          replacePageState: vi.fn(),
-          emit: vi.fn(),
+          patchBlocks: vi.fn(),
         },
       } as any;
 
       patchResolvedBlocksFromHtml(editor, '<html><body></body></html>');
 
       expect(editor.engine.getPage).not.toHaveBeenCalled();
-      expect(editor.engine.replacePageState).not.toHaveBeenCalled();
-      expect(editor.engine.emit).not.toHaveBeenCalled();
-    });
-
-    function pageDataHtml(blocks: Record<string, any>): string {
-      return `<html><head><script type="application/json" id="page-data">${JSON.stringify({
-        content: { blocks, regions: [] },
-      })}</script></head><body></body></html>`;
-    }
-
-    function createPruneEditor(previousPage: any, selectedBlockId: string | null = null) {
-      return {
-        engine: {
-          getPage: vi.fn(() => structuredClone(previousPage)),
-          getBlockSchema: vi.fn(() => undefined),
-          replacePageState: vi.fn(),
-          emit: vi.fn(),
-        },
-        ui: {
-          state: { selectedBlockId },
-          clearSelectedBlock: vi.fn(),
-        },
-      } as any;
-    }
-
-
-    it('prunes descendants no longer listed by a rendered parent', () => {
-      const editor = createPruneEditor(conditionalPage);
-      const html = pageDataHtml({
-        hero: { id: 'hero', type: 'hero', properties: {}, children: ['title'] },
-        title: { id: 'title', type: 'heading', parentId: 'hero', properties: {}, children: [] },
-      });
-
-      patchResolvedBlocksFromHtml(editor, html);
-
-      const newPage = editor.engine.replacePageState.mock.calls[0][0];
-
-      expect(Object.keys(newPage.blocks).sort()).toEqual(['footer', 'hero', 'signup', 'title']);
-      expect(newPage.blocks.hero.children).toEqual(['title']);
-      expect(newPage.regions).toEqual(conditionalPage.regions);
-      expect(editor.ui.clearSelectedBlock).not.toHaveBeenCalled();
-      expect(removeUrlParamMock).not.toHaveBeenCalled();
-    });
-
-    it('leaves blocks outside the payload untouched', () => {
-      const editor = createPruneEditor(conditionalPage);
-      const html = pageDataHtml({
-        title: { id: 'title', type: 'heading', parentId: 'hero', properties: { text: 'Hi' }, children: [] },
-      });
-
-      patchResolvedBlocksFromHtml(editor, html);
-
-      const newPage = editor.engine.replacePageState.mock.calls[0][0];
-
-      expect(Object.keys(newPage.blocks).sort()).toEqual(Object.keys(conditionalPage.blocks).sort());
-      expect(newPage.blocks.footer.children).toEqual(['signup']);
-      expect(newPage.blocks.title.properties).toEqual({ text: 'Hi' });
-    });
-
-    it('re-adds a child that reappears in the payload', () => {
-      const previousPage = {
-        blocks: {
-          hero: { id: 'hero', type: 'hero', properties: {}, children: ['title'] },
-          title: { id: 'title', type: 'heading', parentId: 'hero', properties: {}, children: [] },
-        },
-        regions: [{ id: 'main', name: 'Main', blocks: ['hero'] }],
-      };
-      const editor = createPruneEditor(previousPage);
-      const html = pageDataHtml({
-        hero: { id: 'hero', type: 'hero', properties: {}, children: ['title', 'subtitle'] },
-        title: { id: 'title', type: 'heading', parentId: 'hero', properties: {}, children: [] },
-        subtitle: { id: 'subtitle', type: 'paragraph', parentId: 'hero', properties: {}, children: [], static: true },
-      });
-
-      patchResolvedBlocksFromHtml(editor, html);
-
-      const newPage = editor.engine.replacePageState.mock.calls[0][0];
-
-      expect(newPage.blocks.hero.children).toEqual(['title', 'subtitle']);
-      expect(newPage.blocks.subtitle).toBeDefined();
-    });
-
-    it('clears the selection and url param when the selected block is pruned', () => {
-      const editor = createPruneEditor(conditionalPage, 'subtitle-icon');
-      const html = pageDataHtml({
-        hero: { id: 'hero', type: 'hero', properties: {}, children: ['title'] },
-        title: { id: 'title', type: 'heading', parentId: 'hero', properties: {}, children: [] },
-      });
-
-      patchResolvedBlocksFromHtml(editor, html);
-
-      expect(editor.ui.clearSelectedBlock).toHaveBeenCalledTimes(1);
-      expect(removeUrlParamMock).toHaveBeenCalledWith('block');
-    });
-
-    it('keeps the selection when an unrelated block is pruned', () => {
-      const editor = createPruneEditor(conditionalPage, 'title');
-      const html = pageDataHtml({
-        hero: { id: 'hero', type: 'hero', properties: {}, children: ['title'] },
-        title: { id: 'title', type: 'heading', parentId: 'hero', properties: {}, children: [] },
-      });
-
-      patchResolvedBlocksFromHtml(editor, html);
-
-      expect(editor.ui.clearSelectedBlock).not.toHaveBeenCalled();
-      expect(removeUrlParamMock).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('collectVanishedDescendants', () => {
-    it('collects the whole subtree of a dropped child', () => {
-      const vanished = collectVanishedDescendants(conditionalPage.blocks as any, {
-        hero: { id: 'hero', type: 'hero', properties: {}, children: ['title'] },
-      } as any);
-
-      expect([...vanished].sort()).toEqual(['subtitle', 'subtitle-icon']);
-    });
-
-    it('never prunes a block that is still in the payload', () => {
-      const vanished = collectVanishedDescendants(conditionalPage.blocks as any, {
-        hero: { id: 'hero', type: 'hero', properties: {}, children: ['title'] },
-        subtitle: { id: 'subtitle', type: 'paragraph', parentId: 'footer', properties: {}, children: ['subtitle-icon'] },
-      } as any);
-
-      expect(vanished.size).toBe(0);
-    });
-
-    it('ignores payload blocks unknown to the client', () => {
-      const vanished = collectVanishedDescendants(conditionalPage.blocks as any, {
-        fresh: { id: 'fresh', type: 'hero', properties: {}, children: [] },
-      } as any);
-
-      expect(vanished.size).toBe(0);
+      expect(editor.engine.patchBlocks).not.toHaveBeenCalled();
     });
   });
 });

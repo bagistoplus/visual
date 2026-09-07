@@ -110,6 +110,7 @@ export function useColorSchemeContext() {
       editor.engine.on('block:property:set', bump),
       editor.engine.on('block:update', bump),
       editor.engine.on('page:set', bump),
+      editor.engine.on('blocks:patch', bump),
     ];
 
     onScopeDispose(() => {

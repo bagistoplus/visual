@@ -1,13 +1,12 @@
 import type { EngineEvents } from '@craftile/core';
 import type { CraftileEditor } from '@craftile/editor';
-import type { Block, Page, UpdatesEvent } from '@craftile/types';
+import type { Block, UpdatesEvent } from '@craftile/types';
 import { debounce } from 'perfect-debounce';
 
 import type { State } from '../../state';
 import { persistUpdates } from '../../api';
 import useI18n from '../../composables/i18n';
 import { recordResolvedTranslationRefs } from '../../utils/resolvedTranslationRefs';
-import { removeUrlParam } from '../../utils/urlState';
 
 const { t } = useI18n();
 
@@ -149,87 +148,17 @@ export function extractPageDataFromHtml(html: string): any | null {
 
 export function patchResolvedBlocksFromHtml(editor: CraftileEditor, html: string): void {
   const pageData = extractPageDataFromHtml(html);
-  const resolvedBlocks = pageData?.content?.blocks;
+  const resolvedBlocks: Record<string, Block> | undefined = pageData?.content?.blocks;
 
   if (!resolvedBlocks || Object.keys(resolvedBlocks).length === 0) {
     return;
   }
 
-  const previousPage = editor.engine.getPage();
-  recordResolvedTranslationRefs(previousPage.blocks, resolvedBlocks, (type) => editor.engine.getBlockSchema(type));
+  recordResolvedTranslationRefs(editor.engine.getPage().blocks, resolvedBlocks, (type) =>
+    editor.engine.getBlockSchema(type)
+  );
 
-  const blocks: Record<string, Block> = {
-    ...previousPage.blocks,
-    ...resolvedBlocks,
-  };
-
-  const prunedIds = collectVanishedDescendants(previousPage.blocks, resolvedBlocks);
-
-  for (const blockId of prunedIds) {
-    delete blocks[blockId];
-  }
-
-  const newPage: Page = {
-    ...previousPage,
-    blocks,
-  };
-
-  const engine = editor.engine as any;
-
-  engine.replacePageState(newPage);
-  engine.emit('page:set', {
-    previousPage,
-    newPage: structuredClone(newPage),
-  });
-
-  const selectedBlockId = editor.ui?.state?.selectedBlockId;
-
-  if (selectedBlockId && prunedIds.has(selectedBlockId)) {
-    editor.ui.clearSelectedBlock();
-    removeUrlParam('block');
-  }
-}
-
-/**
- * Every block in the partial payload rendered its body, so its children list is authoritative.
- * Client descendants no longer reachable from it have vanished (a false condition, an empty loop).
- * Blocks still present in the payload are never pruned, even when their previous parent dropped them.
- */
-export function collectVanishedDescendants(
-  previousBlocks: Record<string, Block>,
-  resolvedBlocks: Record<string, Block>
-): Set<string> {
-  const vanished = new Set<string>();
-
-  const collectSubtree = (blockId: string) => {
-    if (resolvedBlocks[blockId] || vanished.has(blockId)) {
-      return;
-    }
-
-    vanished.add(blockId);
-
-    for (const childId of previousBlocks[blockId]?.children ?? []) {
-      collectSubtree(childId);
-    }
-  };
-
-  for (const [blockId, resolvedBlock] of Object.entries(resolvedBlocks)) {
-    const previousBlock = previousBlocks[blockId];
-
-    if (!previousBlock) {
-      continue;
-    }
-
-    const keptChildren = new Set(resolvedBlock.children ?? []);
-
-    for (const childId of previousBlock.children ?? []) {
-      if (!keptChildren.has(childId)) {
-        collectSubtree(childId);
-      }
-    }
-  }
-
-  return vanished;
+  editor.engine.patchBlocks(resolvedBlocks);
 }
 
 export function setupUpdatePersistence(editor: CraftileEditor, state: State) {
