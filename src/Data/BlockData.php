@@ -30,6 +30,7 @@ class BlockData extends LaravelBlockData
             static: $blockData['static'] ?? false,
             repeated: $blockData['repeated'] ?? false,
             ghost: $blockData['ghost'] ?? false,
+            keepInTree: $blockData['keepInTree'] ?? false,
             semanticId: $blockData['semanticId'] ?? null,
             index: $blockData['index'] ?? null,
             resolveChildData: $resolveChildData,

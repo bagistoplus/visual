@@ -9,6 +9,14 @@ vi.mock('../../../api', () => ({
   persistUpdates: persistUpdatesMock,
 }));
 
+const { removeUrlParamMock } = vi.hoisted(() => ({
+  removeUrlParamMock: vi.fn(),
+}));
+
+vi.mock('../../../utils/urlState', () => ({
+  removeUrlParam: removeUrlParamMock,
+}));
+
 import {
   mergeUpdates,
   hasChanges,
@@ -17,6 +25,7 @@ import {
   computeEffects,
   extractPageDataFromHtml,
   patchResolvedBlocksFromHtml,
+  collectVanishedDescendants,
   setupUpdatePersistence,
 } from '../../../craftile/features/updatePersistence';
 import {
@@ -28,6 +37,7 @@ afterEach(() => {
   vi.useRealTimers();
   vi.restoreAllMocks();
   persistUpdatesMock.mockReset();
+  removeUrlParamMock.mockReset();
 });
 
 function createUpdatesEvent(
@@ -718,6 +728,25 @@ describe('updatePersistence utilities', () => {
     });
   });
 
+  const conditionalPage = {
+    blocks: {
+      hero: { id: 'hero', type: 'hero', properties: {}, children: ['title', 'subtitle'] },
+      title: { id: 'title', type: 'heading', parentId: 'hero', properties: {}, children: [] },
+      subtitle: {
+        id: 'subtitle',
+        type: 'paragraph',
+        parentId: 'hero',
+        properties: {},
+        children: ['subtitle-icon'],
+        static: true,
+      },
+      'subtitle-icon': { id: 'subtitle-icon', type: 'icon', parentId: 'subtitle', properties: {}, children: [] },
+      footer: { id: 'footer', type: 'footer', properties: {}, children: ['signup'] },
+      signup: { id: 'signup', type: 'newsletter', parentId: 'footer', properties: {}, children: [], static: true },
+    },
+    regions: [{ id: 'main', name: 'Main', blocks: ['hero', 'footer'] }],
+  };
+
   describe('patchResolvedBlocksFromHtml', () => {
     it('merges resolved partial blocks into the current page without replacing regions', () => {
       const previousPage = {
@@ -811,6 +840,137 @@ describe('updatePersistence utilities', () => {
       expect(editor.engine.getPage).not.toHaveBeenCalled();
       expect(editor.engine.replacePageState).not.toHaveBeenCalled();
       expect(editor.engine.emit).not.toHaveBeenCalled();
+    });
+
+    function pageDataHtml(blocks: Record<string, any>): string {
+      return `<html><head><script type="application/json" id="page-data">${JSON.stringify({
+        content: { blocks, regions: [] },
+      })}</script></head><body></body></html>`;
+    }
+
+    function createPruneEditor(previousPage: any, selectedBlockId: string | null = null) {
+      return {
+        engine: {
+          getPage: vi.fn(() => structuredClone(previousPage)),
+          getBlockSchema: vi.fn(() => undefined),
+          replacePageState: vi.fn(),
+          emit: vi.fn(),
+        },
+        ui: {
+          state: { selectedBlockId },
+          clearSelectedBlock: vi.fn(),
+        },
+      } as any;
+    }
+
+
+    it('prunes descendants no longer listed by a rendered parent', () => {
+      const editor = createPruneEditor(conditionalPage);
+      const html = pageDataHtml({
+        hero: { id: 'hero', type: 'hero', properties: {}, children: ['title'] },
+        title: { id: 'title', type: 'heading', parentId: 'hero', properties: {}, children: [] },
+      });
+
+      patchResolvedBlocksFromHtml(editor, html);
+
+      const newPage = editor.engine.replacePageState.mock.calls[0][0];
+
+      expect(Object.keys(newPage.blocks).sort()).toEqual(['footer', 'hero', 'signup', 'title']);
+      expect(newPage.blocks.hero.children).toEqual(['title']);
+      expect(newPage.regions).toEqual(conditionalPage.regions);
+      expect(editor.ui.clearSelectedBlock).not.toHaveBeenCalled();
+      expect(removeUrlParamMock).not.toHaveBeenCalled();
+    });
+
+    it('leaves blocks outside the payload untouched', () => {
+      const editor = createPruneEditor(conditionalPage);
+      const html = pageDataHtml({
+        title: { id: 'title', type: 'heading', parentId: 'hero', properties: { text: 'Hi' }, children: [] },
+      });
+
+      patchResolvedBlocksFromHtml(editor, html);
+
+      const newPage = editor.engine.replacePageState.mock.calls[0][0];
+
+      expect(Object.keys(newPage.blocks).sort()).toEqual(Object.keys(conditionalPage.blocks).sort());
+      expect(newPage.blocks.footer.children).toEqual(['signup']);
+      expect(newPage.blocks.title.properties).toEqual({ text: 'Hi' });
+    });
+
+    it('re-adds a child that reappears in the payload', () => {
+      const previousPage = {
+        blocks: {
+          hero: { id: 'hero', type: 'hero', properties: {}, children: ['title'] },
+          title: { id: 'title', type: 'heading', parentId: 'hero', properties: {}, children: [] },
+        },
+        regions: [{ id: 'main', name: 'Main', blocks: ['hero'] }],
+      };
+      const editor = createPruneEditor(previousPage);
+      const html = pageDataHtml({
+        hero: { id: 'hero', type: 'hero', properties: {}, children: ['title', 'subtitle'] },
+        title: { id: 'title', type: 'heading', parentId: 'hero', properties: {}, children: [] },
+        subtitle: { id: 'subtitle', type: 'paragraph', parentId: 'hero', properties: {}, children: [], static: true },
+      });
+
+      patchResolvedBlocksFromHtml(editor, html);
+
+      const newPage = editor.engine.replacePageState.mock.calls[0][0];
+
+      expect(newPage.blocks.hero.children).toEqual(['title', 'subtitle']);
+      expect(newPage.blocks.subtitle).toBeDefined();
+    });
+
+    it('clears the selection and url param when the selected block is pruned', () => {
+      const editor = createPruneEditor(conditionalPage, 'subtitle-icon');
+      const html = pageDataHtml({
+        hero: { id: 'hero', type: 'hero', properties: {}, children: ['title'] },
+        title: { id: 'title', type: 'heading', parentId: 'hero', properties: {}, children: [] },
+      });
+
+      patchResolvedBlocksFromHtml(editor, html);
+
+      expect(editor.ui.clearSelectedBlock).toHaveBeenCalledTimes(1);
+      expect(removeUrlParamMock).toHaveBeenCalledWith('block');
+    });
+
+    it('keeps the selection when an unrelated block is pruned', () => {
+      const editor = createPruneEditor(conditionalPage, 'title');
+      const html = pageDataHtml({
+        hero: { id: 'hero', type: 'hero', properties: {}, children: ['title'] },
+        title: { id: 'title', type: 'heading', parentId: 'hero', properties: {}, children: [] },
+      });
+
+      patchResolvedBlocksFromHtml(editor, html);
+
+      expect(editor.ui.clearSelectedBlock).not.toHaveBeenCalled();
+      expect(removeUrlParamMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('collectVanishedDescendants', () => {
+    it('collects the whole subtree of a dropped child', () => {
+      const vanished = collectVanishedDescendants(conditionalPage.blocks as any, {
+        hero: { id: 'hero', type: 'hero', properties: {}, children: ['title'] },
+      } as any);
+
+      expect([...vanished].sort()).toEqual(['subtitle', 'subtitle-icon']);
+    });
+
+    it('never prunes a block that is still in the payload', () => {
+      const vanished = collectVanishedDescendants(conditionalPage.blocks as any, {
+        hero: { id: 'hero', type: 'hero', properties: {}, children: ['title'] },
+        subtitle: { id: 'subtitle', type: 'paragraph', parentId: 'footer', properties: {}, children: ['subtitle-icon'] },
+      } as any);
+
+      expect(vanished.size).toBe(0);
+    });
+
+    it('ignores payload blocks unknown to the client', () => {
+      const vanished = collectVanishedDescendants(conditionalPage.blocks as any, {
+        fresh: { id: 'fresh', type: 'hero', properties: {}, children: [] },
+      } as any);
+
+      expect(vanished.size).toBe(0);
     });
   });
 });

@@ -122,7 +122,39 @@ One of the key advantages of static blocks is the ability to conditionally rende
 </div>
 ```
 
-The Visual Editor provides visual cues to merchants when conditional static blocks are hidden, helping them understand why a block isn't currently visible.
+When the condition is false, the block is not rendered and it disappears from the Visual Editor block tree. It comes back as soon as the condition is true again. This keeps the tree in line with what the merchant sees in the preview.
+
+### Keeping a Hidden Block in the Tree
+
+Sometimes a hidden block should stay visible in the block tree so merchants can still find it and edit its settings. Pass `keep()` as the fourth parameter:
+
+```blade
+@if($section->settings->show_subtitle)
+    @visualBlock('paragraph', 'features-subtitle', [], keep())
+@endif
+```
+
+`keep()` also accepts an expression, evaluated at render time:
+
+```blade
+@visualBlock('paragraph', 'features-subtitle', [], keep($section->settings->pin_subtitle))
+```
+
+The tag form uses a `keep` attribute, bare or bound:
+
+```blade
+<visual:block type="paragraph" id="features-subtitle" keep />
+<visual:block type="paragraph" id="features-subtitle" :keep="$section->settings->pin_subtitle" />
+```
+
+The flag can also be set from a preset, so the block is kept from the moment the section is added:
+
+```php
+PresetBlock::make('paragraph')
+    ->id('features-subtitle')
+    ->static()
+    ->keepInTree()
+```
 
 ### Rendering in Loops
 

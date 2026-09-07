@@ -145,6 +145,14 @@ class CoreServiceProvider extends ServiceProvider
             return true;
         });
 
+        Craftile::shouldCollectBlockUsing(function (BlockData $blockData) {
+            if (ThemeEditor::inDesignMode() && request()->has('_visual_render')) {
+                return app(BlockRenderFilter::class)->shouldRender($blockData);
+            }
+
+            return true;
+        });
+
         $this->registerPropertyTransformers();
         $this->registerBlockCompilers();
     }

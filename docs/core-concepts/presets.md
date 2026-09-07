@@ -186,6 +186,7 @@ PresetBlock::make('button')
     ->name(t('your-theme::presets.blocks.button.name')) // Display name in editor
     ->settings([...])                     // Block settings values
     ->static()                            // Lock from editing
+    ->keepInTree()                        // Stay in the editor tree when not rendered
     ->children([...])                     // Nested child blocks
     ->order(['id1', 'id2'])              // Rendering order
 ```
@@ -235,8 +236,11 @@ This is especially useful for static blocks that need to display different data 
 | `name(string)`    | Custom display name in editor             |
 | `settings(array)` | Block settings values                     |
 | `static(bool)`    | Mark as static (non-editable by merchant) |
+| `keepInTree(bool)` | Keep the block in the editor tree when the template does not render it |
 | `children(array)` | Nested child blocks                       |
 | `order(array)`    | Order of child block IDs                  |
+
+`keepInTree()` only matters for static or repeated blocks that a template renders conditionally. See [Keeping a Hidden Block in the Tree](/building-theme/adding-blocks/static-blocks#keeping-a-hidden-block-in-the-tree).
 
 ## Reusable Preset Classes
 
