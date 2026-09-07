@@ -247,6 +247,10 @@ class PersistEditorUpdates
     protected function saveEditorData(string $theme, string $relativePath, ?string $parent, array $current): void
     {
         $parentData = $parent ? $this->editorDataStore->loadResolved($theme, $parent) : [];
+        $storedData = $this->editorDataStore->exists($theme, $relativePath)
+            ? $this->editorDataStore->loadResolved($theme, $relativePath)
+            : $parentData;
+        $current['blocks'] = $this->withStoredStaticBlocks($current['blocks'] ?? [], $storedData['blocks'] ?? []);
         $resolvedCurrent = $parent ? $this->editorDataStore->merge($parentData, $current) : $current;
         $diff = $parent ? $this->editorDataStore->diff($resolvedCurrent, $parentData) : $current;
         $diff = $this->templateDataDiffer->forceLocalizedValues(
@@ -257,6 +261,29 @@ class PersistEditorUpdates
         );
 
         $this->editorDataStore->save($theme, $relativePath, $diff, $parent);
+    }
+
+    /**
+     * Static blocks belong to their template, not to the page state the editor
+     * sends. A template that stops rendering one drops it from its parent's
+     * children, so the editor no longer reaches it, but its data and subtree
+     * stay stored until the template renders it again.
+     */
+    protected function withStoredStaticBlocks(array $blocks, array $storedBlocks): array
+    {
+        foreach ($storedBlocks as $blockId => $storedBlock) {
+            if (isset($blocks[$blockId]) || ! ($storedBlock['static'] ?? false)) {
+                continue;
+            }
+
+            foreach ($this->collectRegionBlocks($storedBlocks, [$blockId]) as $subtreeId => $subtreeBlock) {
+                if (! isset($blocks[$subtreeId])) {
+                    $blocks[$subtreeId] = $subtreeBlock;
+                }
+            }
+        }
+
+        return $blocks;
     }
 
     protected function selectParent(string $theme, string $channel, string $locale, string $relativePath, string $logicalPath, array $sources): ?string

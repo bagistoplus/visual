@@ -222,6 +222,59 @@ describe('handleFullPage', function () {
             ->not->toHaveKey('removed-header');
     });
 
+    test('keeps stored static blocks the page no longer reaches', function () {
+        $basePath = 'themes/test-theme/editor/default/en';
+        $templatePath = $basePath.'/templates/index.json';
+        $regionPath = $basePath.'/regions/header.json';
+
+        Storage::disk('themes-data')->put($templatePath, json_encode([
+            'blocks' => [
+                'section' => ['id' => 'section', 'type' => 'group', 'children' => ['zone', 'card']],
+                'zone' => ['id' => 'zone', 'type' => 'group', 'static' => true, 'parentId' => 'section', 'children' => ['zone-child']],
+                'zone-child' => ['id' => 'zone-child', 'type' => 'text', 'parentId' => 'zone'],
+                'card' => ['id' => 'card', 'type' => 'text', 'static' => true, 'repeated' => true, 'parentId' => 'section'],
+                'removed-main' => ['id' => 'removed-main', 'type' => 'text'],
+            ],
+            'regions' => [['name' => 'main', 'shared' => false, 'blocks' => ['section', 'removed-main']]],
+        ]));
+        Storage::disk('themes-data')->put($regionPath, json_encode([
+            'blocks' => [
+                'header' => ['id' => 'header', 'type' => 'group', 'children' => ['header-zone']],
+                'header-zone' => ['id' => 'header-zone', 'type' => 'text', 'static' => true, 'parentId' => 'header'],
+            ],
+            'regions' => [['name' => 'header', 'shared' => true, 'blocks' => ['header']]],
+        ]));
+
+        $this->persistEditorUpdates->handleFullPage(fullPageEditorData([
+            'theme' => 'test-theme',
+            'channel' => 'default',
+            'locale' => 'en',
+            'template' => 'index',
+            'page' => [
+                'blocks' => [
+                    'section' => ['id' => 'section', 'type' => 'group', 'children' => ['card']],
+                    'card' => ['id' => 'card', 'type' => 'text', 'static' => true, 'repeated' => true, 'parentId' => 'section'],
+                    'header' => ['id' => 'header', 'type' => 'group', 'children' => []],
+                ],
+                'regions' => [
+                    ['name' => 'header', 'shared' => true, 'blocks' => ['header']],
+                    ['name' => 'main', 'shared' => false, 'blocks' => ['section']],
+                ],
+            ],
+        ]));
+
+        $template = json_decode(Storage::disk('themes-data')->get($templatePath), true);
+        $region = json_decode(Storage::disk('themes-data')->get($regionPath), true);
+
+        expect($template['blocks'])
+            ->toHaveKeys(['section', 'card', 'zone', 'zone-child'])
+            ->not->toHaveKey('removed-main')
+            ->and($template['blocks']['section']['children'])->toBe(['card'])
+            ->and($template['blocks']['zone']['children'])->toBe(['zone-child'])
+            ->and($region['blocks'])->toHaveKeys(['header', 'header-zone'])
+            ->and($region['blocks']['header']['children'])->toBe([]);
+    });
+
     test('saves shared regions separately', function () {
 
         $basePath = 'themes/test-theme/editor/default/en';
