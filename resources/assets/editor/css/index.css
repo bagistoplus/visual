@@ -3,7 +3,7 @@
 @import 'tailwindcss/utilities.css' layer(utilities) source('../components');
 
 @theme {
-  --color-primary: #0041ff;
+  /* --color-primary: #0041ff; */
 
   --animate-fade-in: fadeIn 0.25s ease-out;
   --animate-fade-out: fadeOut 0.25s ease-out;
