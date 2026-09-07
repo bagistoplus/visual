@@ -381,6 +381,64 @@ In Blade:
 - Negative values are supported for margins (set appropriate min value)
   :::
 
+### Radius
+
+Border radius picker. Useful for corner rounding on cards, inputs, buttons, or any box the merchant should be able to soften or square off.
+
+The visual editor shows one swatch per size, drawn with the radius applied, so the merchant picks a shape rather than a number. The stored value is the size key, and the resolved value in Blade is a `RadiusValue` object exposing the key and the matching CSS length.
+
+Available keys follow the Tailwind CSS radius scale:
+
+| Key    | CSS value               |
+| :----- | :---------------------- |
+| `none` | `0`                     |
+| `xs`   | `0.125rem`              |
+| `sm`   | `0.25rem`               |
+| `md`   | `0.375rem`              |
+| `lg`   | `0.5rem`                |
+| `xl`   | `0.75rem`               |
+| `full` | `calc(infinity * 1px)`  |
+
+In addition to the standard attributes, Radius type settings have the following attributes:
+
+| Attribute | Description                                                   | Required |
+| :-------- | :------------------------------------------------------------ | :------- |
+| `options` | Subset of keys to offer. Unknown keys are ignored. All by default | No       |
+
+```php
+use BagistoPlus\Visual\Settings\Radius;
+
+public static function settings(): array
+{
+    return [
+        Radius::make('card_radius', 'Card corners'),
+
+        Radius::make('button_radius', 'Button shape')
+            ->options(['none', 'md', 'full'])
+            ->default('full'),
+    ];
+}
+```
+
+In Blade:
+
+```blade
+<div style="border-radius: {{ $section->settings->card_radius }};">
+    <!-- Card content -->
+</div>
+
+@if ($section->settings->button_radius->key === 'full')
+    <!-- Pill shaped button -->
+@endif
+```
+
+::: info
+
+- The default is `md` unless overridden with `default()`
+- A stored value that is not on the scale resolves to the setting default, then to `md`
+- `$value->key` gives the size key, `$value->value` or string casting gives the CSS length
+  :::
+
 ---
 
 ### Color

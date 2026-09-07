@@ -82,6 +82,7 @@ declare module 'vue' {
     ProductListPicker: typeof import('./components/ProductListPicker.vue')['default']
     ProductPicker: typeof import('./components/ProductPicker.vue')['default']
     PublishAction: typeof import('./components/PublishAction.vue')['default']
+    RadiusField: typeof import('./components/RadiusField.vue')['default']
     RichtextEditor: typeof import('./components/RichtextEditor.vue')['default']
     SpacingField: typeof import('./components/SpacingField.vue')['default']
     Spinner: typeof import('./components/Spinner.vue')['default']
