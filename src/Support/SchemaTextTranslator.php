@@ -37,7 +37,30 @@ class SchemaTextTranslator
             $property['options'] = $this->translateOptions($property['options']);
         }
 
+        foreach ($property as $key => $value) {
+            if ($key === 'default') {
+                continue;
+            }
+
+            $property[$key] = $this->translateReferences($value);
+        }
+
         return $property;
+    }
+
+    protected function translateReferences(mixed $value): mixed
+    {
+        if (is_string($value)) {
+            return str_starts_with($value, 't:') ? $this->translateText($value) : $value;
+        }
+
+        if (is_array($value)) {
+            foreach ($value as $key => $item) {
+                $value[$key] = $this->translateReferences($item);
+            }
+        }
+
+        return $value;
     }
 
     public function translateDescriptionSchema(array $description): array

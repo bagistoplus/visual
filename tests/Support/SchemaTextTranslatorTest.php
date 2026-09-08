@@ -25,7 +25,7 @@ it('translates schema text references and plain translation keys', function () {
         ->and($translator->translateText(null))->toBeNull();
 });
 
-it('translates only known schema ui keys and option labels', function () {
+it('translates known property schema keys and any key holding a translation reference', function () {
     $translator = app(SchemaTextTranslator::class);
 
     $schema = $translator->translatePropertySchema([
@@ -35,6 +35,12 @@ it('translates only known schema ui keys and option labels', function () {
         'info' => 'schema.description',
         'placeholder' => 't:schema.placeholder',
         'group' => 't:schema.group',
+        'allowNone' => 't:schema.option',
+        'unit' => 't:schema.option',
+        'externalSources' => [
+            ['host' => 'youtube', 'label' => 't:schema.option'],
+            ['host' => 'vimeo', 'label' => 'Vimeo'],
+        ],
         'default' => 't:schema.default',
         'options' => [
             ['value' => 'featured', 'label' => 't:schema.option'],
@@ -44,10 +50,18 @@ it('translates only known schema ui keys and option labels', function () {
 
     expect($schema)
         ->toMatchArray([
+            'id' => 'hero',
+            'type' => 'select',
             'label' => 'Hero',
             'info' => 'Hero description',
             'placeholder' => 'Enter a title',
             'group' => 'Content',
+            'allowNone' => 'Featured',
+            'unit' => 'Featured',
+            'externalSources' => [
+                ['host' => 'youtube', 'label' => 'Featured'],
+                ['host' => 'vimeo', 'label' => 'Vimeo'],
+            ],
             'default' => 't:schema.default',
             'options' => [
                 ['value' => 'featured', 'label' => 'Featured'],
