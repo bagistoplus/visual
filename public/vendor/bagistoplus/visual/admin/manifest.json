@@ -1,12 +1,20 @@
 {
   "resources/assets/admin/css/admin.css": {
-    "file": "assets/admin-DCE2KNgW.css",
+    "file": "assets/admin-CpGkAHKw.css",
     "name": "admin",
     "names": [
       "admin.css"
     ],
     "src": "resources/assets/admin/css/admin.css",
     "isEntry": true
+  },
+  "resources/assets/admin/images/default_theme_preview.png": {
+    "file": "assets/default_theme_preview-BkZ1bWrW.png",
+    "src": "resources/assets/admin/images/default_theme_preview.png"
+  },
+  "resources/assets/admin/images/logo.svg": {
+    "file": "assets/logo-B5JQEkd6.svg",
+    "src": "resources/assets/admin/images/logo.svg"
   },
   "resources/assets/admin/ts/index.ts": {
     "file": "assets/index-BvRk9kiK.js",

@@ -6,6 +6,12 @@ return [
         'themes' => 'थीम',
     ],
 
+    'acl' => [
+        'visual' => 'Bagisto Visual',
+        'themes' => 'थीम',
+        'editor' => 'थीम संपादक',
+    ],
+
     'themes' => [
         'title' => 'थीम',
         'customize' => 'अनुकूलित करें',

@@ -5,6 +5,7 @@ use BagistoPlus\Visual\Support\ChannelThemeResolver;
 use BagistoPlus\Visual\Support\CmsPageVisualEditorUrlResolver;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
 use BagistoPlus\Visual\Theme\Theme;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Webkul\Core\Models\Channel;
 use Webkul\DataGrid\DataGrid;
@@ -139,4 +140,21 @@ it('does not add the cms visual editor datagrid action when there is no visual t
     app(PrepareCmsPageVisualDatagrid::class)->prepareActions($datagrid);
 
     expect($datagrid->getActions())->toBe([]);
+});
+
+it('prefixes the raw template column with the connection table prefix', function () {
+    DB::connection()->setTablePrefix('pfx_');
+
+    $datagrid = new CmsVisualActionTestDataGrid;
+    (new ReflectionProperty($datagrid, 'queryBuilder'))->setValue($datagrid, DB::table('cms_pages'));
+
+    try {
+        app(PrepareCmsPageVisualDatagrid::class)->prepareQuery($datagrid);
+
+        expect($datagrid->getQueryBuilder()->toSql())
+            ->toContain('MAX(pfx_visual_template_assignments.template_key) as visual_template')
+            ->toContain('"pfx_visual_template_assignments"');
+    } finally {
+        DB::connection()->setTablePrefix('');
+    }
 });

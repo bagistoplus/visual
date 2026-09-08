@@ -49,6 +49,7 @@ class AdminServiceProvider extends ServiceProvider
     protected function registerConfig(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../../config/admin-menu.php', 'menu.admin');
+        $this->mergeConfigFrom(__DIR__.'/../../config/acl.php', 'acl');
         $this->mergeConfigFrom(__DIR__.'/../../config/viters.php', 'bagisto-vite.viters');
     }
 

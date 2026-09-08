@@ -6,7 +6,6 @@ return [
         'name' => 'visual::admin.sidebar.visual',
         'sort' => 7,
         'icon' => 'bagisto-visual-icon',
-        'icon-class' => 'bagisto-visual-icon',
         'route' => 'visual.admin.themes.index',
     ],
     [

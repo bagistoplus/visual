@@ -121,3 +121,13 @@ it('allows reading settings on a freshly constructed theme without uninitialized
 
     expect($theme->settings->get('some-key'))->toBe('some-value');
 });
+
+it('keeps the configured views namespace', function () {
+    $theme = Theme::make([
+        'code' => 'fake-theme',
+        'name' => 'Fake Theme',
+        'views_namespace' => 'fake',
+    ]);
+
+    expect($theme->viewsNamespace)->toBe('fake');
+});

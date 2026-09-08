@@ -6,6 +6,12 @@ return [
         'themes' => 'Temas',
     ],
 
+    'acl' => [
+        'visual' => 'Bagisto Visual',
+        'themes' => 'Temas',
+        'editor' => 'Editor de temas',
+    ],
+
     'themes' => [
         'title' => 'Temas',
         'customize' => 'Personalizar',

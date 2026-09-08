@@ -6,6 +6,12 @@ return [
         'themes' => 'السمات',
     ],
 
+    'acl' => [
+        'visual' => 'Bagisto Visual',
+        'themes' => 'السمات',
+        'editor' => 'محرر السمات',
+    ],
+
     'themes' => [
         'title' => 'السمات',
         'customize' => 'تخصيص',

@@ -56,7 +56,7 @@ class PrepareCmsPageVisualDatagrid
                     ->whereNull('visual_template_assignments.channel')
                     ->whereColumn('visual_template_assignments.locale', 'cms_page_translations.locale');
             })
-            ->addSelect(DB::raw('MAX(visual_template_assignments.template_key) as visual_template'));
+            ->addSelect(DB::raw('MAX('.DB::getTablePrefix().'visual_template_assignments.template_key) as visual_template'));
     }
 
     public function prepareActions(DataGrid $datagrid): void

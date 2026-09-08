@@ -1,7 +1,7 @@
 @extends('shop::layouts.default')
 
 @section('page_title')
-  @lang("admin::app.errors.{$errorCode}.title")
+  @lang("shop::app.errors.{$errorCode}.title")
 @stop
 
 @visual_content

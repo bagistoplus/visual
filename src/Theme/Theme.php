@@ -65,7 +65,7 @@ class Theme extends BagistoTheme
         public $basePath,
         public $assetsPath = null,
         public $viewsPath = null,
-        public $viewsNamespace = null,
+        $viewsNamespace = null,
         public $vite = [],
         public ?string $version = '0.0.0',
         public ?string $author = '',
@@ -80,6 +80,7 @@ class Theme extends BagistoTheme
             name: $name,
             assetsPath: $assetsPath,
             viewsPath: $viewsPath,
+            viewsNamespace: $viewsNamespace,
             vite: $vite
         );
     }
