@@ -22,8 +22,23 @@ it('returns the css variable for the token', function () {
     expect($value->cssVar())->toBe('var(--color-danger)');
 });
 
+it('resolves the default token to the on-background css variable', function () {
+    $value = new ColorTokenValue('default');
+
+    expect($value->cssVar())->toBe('var(--color-on-background)')
+        ->and((string) $value)->toBe('default')
+        ->and($value->isToken())->toBeTrue();
+});
+
+it('exposes the css variable aliases', function () {
+    expect(ColorTokenValue::CSS_VAR_ALIASES)->toBe([
+        'default' => 'on-background',
+    ]);
+});
+
 it('exposes the canonical token list', function () {
     expect(ColorTokenValue::TOKENS)->toBe([
+        'default',
         'primary',
         'secondary',
         'accent',

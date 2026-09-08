@@ -7,6 +7,7 @@ class ColorTokenValue
     public const EMPTY_VALUE = '__none__';
 
     public const TOKENS = [
+        'default',
         'primary',
         'secondary',
         'accent',
@@ -15,6 +16,10 @@ class ColorTokenValue
         'warning',
         'danger',
         'info',
+    ];
+
+    public const CSS_VAR_ALIASES = [
+        'default' => 'on-background',
     ];
 
     public function __construct(public readonly ?string $token = null) {}
@@ -45,7 +50,9 @@ class ColorTokenValue
             return null;
         }
 
-        return "var(--color-{$this->token})";
+        $name = self::CSS_VAR_ALIASES[$this->token] ?? $this->token;
+
+        return "var(--color-{$name})";
     }
 
     public function __toString(): string

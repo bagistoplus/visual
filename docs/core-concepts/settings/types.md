@@ -1209,6 +1209,8 @@ Semantic color token picker. Useful when a section or block should reference a r
 
 A `ColorToken` value stays a token string at every layer of the stack. At render time it resolves to a CSS variable like `var(--color-primary)`, so the same value automatically adapts to the active `data-color-scheme` on the page.
 
+Available tokens are `default`, `primary`, `secondary`, `accent`, `neutral`, `success`, `warning`, `danger` and `info`. The `default` token stands for the scheme's default text color and resolves to `var(--color-on-background)`.
+
 How it differs from the other color related setting types:
 
 - [Color](#color) stores a literal color value (hex, rgba, etc.).

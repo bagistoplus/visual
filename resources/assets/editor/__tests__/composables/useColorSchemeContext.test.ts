@@ -252,7 +252,7 @@ describe('useColorSchemeContext wiring', () => {
         { name: 'Colors', settings: [{ id: 'palette', type: 'color_scheme_group', label: 'Palette', component: 'c' }] },
       ],
       settings: {
-        palette: { light: { primary: '#ff0000' } },
+        palette: { light: { primary: '#ff0000', 'on-background': '#111111' } },
         default_scheme: 'light',
       },
     });
@@ -277,9 +277,43 @@ describe('useColorSchemeContext wiring', () => {
 
     expect(ctx.activeSchemeId.value).toBe('light');
     expect(ctx.resolveTokenColor('primary')).toBe('#ff0000');
+    // The default token maps to the scheme's on-background color
+    expect(ctx.resolveTokenColor('default')).toBe('#111111');
     // Missing token returns null without changing resolved scheme
     expect(ctx.resolveTokenColor('danger')).toBeNull();
     expect(ctx.activeSchemeId.value).toBe('light');
+  });
+
+  it('returns null for the default token when the scheme has no on-background color', async () => {
+    const theme = makeTheme({
+      settingsSchema: [
+        { name: 'Colors', settings: [{ id: 'palette', type: 'color_scheme_group', label: 'Palette', component: 'c' }] },
+      ],
+      settings: {
+        palette: { light: { primary: '#ff0000' } },
+        default_scheme: 'light',
+      },
+    });
+
+    vi.doMock('../../state', () => ({
+      useState: () => ({ theme: { value: theme } }),
+    }));
+    vi.doMock('../../composables/useCraftileEditor', () => ({
+      useCraftileEditor: () => ({
+        getActiveBlock: () => undefined,
+        events: { on: () => () => {} },
+        engine: {
+          on: () => () => {},
+          getBlockById: () => undefined,
+          getBlockSchema: () => undefined,
+        },
+      }),
+    }));
+
+    const { useColorSchemeContext } = await loadComposableModule();
+    const ctx = useColorSchemeContext();
+
+    expect(ctx.resolveTokenColor('default')).toBeNull();
   });
 
   it('repaints when an ancestor scheme changes for a child without its own color_scheme', async () => {

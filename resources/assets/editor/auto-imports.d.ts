@@ -8,6 +8,7 @@ export {}
 declare global {
   const COLOR_TOKEN_EMPTY_VALUE: typeof import('./composables/useColorSchemeContext').COLOR_TOKEN_EMPTY_VALUE
   const COLOR_TOKEN_OPTIONS: typeof import('./composables/useColorSchemeContext').COLOR_TOKEN_OPTIONS
+  const COLOR_TOKEN_SCHEME_KEYS: typeof import('./composables/useColorSchemeContext').COLOR_TOKEN_SCHEME_KEYS
   const EffectScope: typeof import('vue').EffectScope
   const asyncComputed: typeof import('@vueuse/core').asyncComputed
   const autoResetRef: typeof import('@vueuse/core').autoResetRef
@@ -333,6 +334,7 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     readonly COLOR_TOKEN_EMPTY_VALUE: UnwrapRef<typeof import('./composables/useColorSchemeContext')['COLOR_TOKEN_EMPTY_VALUE']>
     readonly COLOR_TOKEN_OPTIONS: UnwrapRef<typeof import('./composables/useColorSchemeContext')['COLOR_TOKEN_OPTIONS']>
+    readonly COLOR_TOKEN_SCHEME_KEYS: UnwrapRef<typeof import('./composables/useColorSchemeContext')['COLOR_TOKEN_SCHEME_KEYS']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>

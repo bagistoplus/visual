@@ -5,6 +5,7 @@ import { useCraftileEditor } from './useCraftileEditor';
 import type { Theme } from '../types';
 
 export const COLOR_TOKEN_OPTIONS = [
+  'default',
   'primary',
   'secondary',
   'accent',
@@ -16,6 +17,11 @@ export const COLOR_TOKEN_OPTIONS = [
 ] as const;
 
 export type ColorTokenOption = (typeof COLOR_TOKEN_OPTIONS)[number];
+
+// Must stay in sync with ColorTokenValue::CSS_VAR_ALIASES on the PHP side.
+export const COLOR_TOKEN_SCHEME_KEYS: Partial<Record<ColorTokenOption, string>> = {
+  default: 'on-background',
+};
 
 // Must stay in sync with ColorTokenValue::EMPTY_VALUE on the PHP side.
 export const COLOR_TOKEN_EMPTY_VALUE = '__none__';
@@ -160,7 +166,8 @@ export function useColorSchemeContext() {
       return null;
     }
 
-    const value = tokens[token];
+    const schemeKey = COLOR_TOKEN_SCHEME_KEYS[token as ColorTokenOption] ?? token;
+    const value = tokens[schemeKey];
     return typeof value === 'string' && value !== '' ? value : null;
   }
 

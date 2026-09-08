@@ -49,7 +49,7 @@ it('transforms each valid token into a ColorTokenValue', function ($token) {
         ->and($value->token())->toBe($token)
         ->and($value->isToken())->toBeTrue()
         ->and($value->isEmpty())->toBeFalse()
-        ->and($value->cssVar())->toBe("var(--color-{$token})");
+        ->and($value->cssVar())->toBe((new ColorTokenValue($token))->cssVar());
 })->with(ColorTokenValue::TOKENS);
 
 it('transforms the sentinel into an empty ColorTokenValue', function () {

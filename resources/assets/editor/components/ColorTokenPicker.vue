@@ -28,7 +28,7 @@ const noneLabel = computed<string | null>(() => {
 const isNoneAllowed = computed(() => noneLabel.value !== null);
 const isNoneSelected = computed(() => model.value === COLOR_TOKEN_EMPTY_VALUE);
 const isTokenSelected = computed(
-  () => typeof model.value === 'string' && model.value !== '' && !isNoneSelected.value,
+  () => typeof model.value === 'string' && (colorTokenOptions as readonly string[]).includes(model.value),
 );
 
 const selectedTokenColor = computed(() => {
