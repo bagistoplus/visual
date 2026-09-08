@@ -70,5 +70,8 @@
     "vue": "^3.5.38",
     "vue-macros": "^3.1.4",
     "vue3-tabs-component": "^1.4.0"
+  },
+  "overrides": {
+    "markdown-it": "^14.2.0"
   }
 }
