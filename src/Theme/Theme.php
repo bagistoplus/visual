@@ -14,6 +14,8 @@ class Theme extends BagistoTheme
 {
     private ?PropertyBag $settings = null;
 
+    public $viewsNamespace = null;
+
     public function __get(string $name): mixed
     {
         if ($name === 'settings') {
@@ -80,9 +82,12 @@ class Theme extends BagistoTheme
             name: $name,
             assetsPath: $assetsPath,
             viewsPath: $viewsPath,
-            viewsNamespace: $viewsNamespace,
             vite: $vite
         );
+
+        // Assigned after the parent constructor: Bagisto >= 2.4 promotes this property and would reset it,
+        // Bagisto 2.3 does not declare it at all.
+        $this->viewsNamespace = $viewsNamespace;
     }
 
     public function isVisualTheme(): bool
