@@ -2,6 +2,27 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.29](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.28...v2.0.0-alpha.29) (2026-09-08)
+
+
+### Bug Fixes
+
+* keep template-hidden static blocks renderable and stored ([a8d97e2](https://github.com/bagistoplus/visual/commit/a8d97e262dd4b8828625a45cfdef2fcc36f5de46))
+* make block view data authoritative ([3930a79](https://github.com/bagistoplus/visual/commit/3930a790e1c1b6a0f7797758fa0d8b9d8de1565e))
+* patch resolved blocks through the engine so undo history stays valid ([71e2a7d](https://github.com/bagistoplus/visual/commit/71e2a7d6c0d9286637520902e8b58ab12701ce36))
+
+
+### Features
+
+* add default color token resolving to on-background ([f417e07](https://github.com/bagistoplus/visual/commit/f417e075d81f1ca1dbd64825ec2e082bfb6267cd))
+* add description setting type ([aeffa2e](https://github.com/bagistoplus/visual/commit/aeffa2e54903712d2c9210b8344a2bd37ff1996a))
+* add radius setting type ([1e3c294](https://github.com/bagistoplus/visual/commit/1e3c2940e5a3ea01b9838ab672080f0978894271))
+* alert when the previewed page has no editor template ([b3f76de](https://github.com/bagistoplus/visual/commit/b3f76de5f8295f07a53f262ee7441f551a6b1991))
+* expose block rejects to the editor ([0a41eae](https://github.com/bagistoplus/visual/commit/0a41eaeba3c58f46bad04e6984c5686a499225dc))
+* prune static blocks hidden by templates from the editor tree ([e3795d4](https://github.com/bagistoplus/visual/commit/e3795d4f29e5a01948a976160572098724f428c7))
+* translate any property schema key holding a translation reference ([cb2ef09](https://github.com/bagistoplus/visual/commit/cb2ef09ca040576b58104c74aa5d444e0365c729))
+* translate property placeholder text ([9be169e](https://github.com/bagistoplus/visual/commit/9be169e617602fd73c0d80e66132df2173fb7cee))
+
 # [2.0.0-alpha.28](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.27...v2.0.0-alpha.28) (2026-08-21)
 
 
