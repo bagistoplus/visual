@@ -2,6 +2,20 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.30](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.29...v2.0.0-alpha.30) (2026-09-08)
+
+
+### Bug Fixes
+
+* keep theme views namespace on Bagisto 2.3 without forwarding it to the parent constructor ([e577c00](https://github.com/bagistoplus/visual/commit/e577c00a0cae0a5437b1d02b9fc8bf080eb73eba))
+* register admin acl, restore admin image assets and align theme, error view and datagrid with Bagisto ([e815bd2](https://github.com/bagistoplus/visual/commit/e815bd2f44da0945055881eb6e74e8853985ca72))
+
+
+### Features
+
+* add dedicated preview route for the error template ([ebbe187](https://github.com/bagistoplus/visual/commit/ebbe187f85a6c50dc67acdcfa0a99ba1221fcf05))
+* support Bagisto 2.5 and Laravel 13 ([bc080a8](https://github.com/bagistoplus/visual/commit/bc080a8b0fa07eb1e9b69a4f5ebf3df76eb18647))
+
 # [2.0.0-alpha.29](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.28...v2.0.0-alpha.29) (2026-09-08)
 
 
