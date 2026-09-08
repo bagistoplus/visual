@@ -13,6 +13,7 @@ use BagistoPlus\Visual\TemplateRegistrar;
 use Craftile\Laravel\BlockSchemaRegistry;
 use Craftile\Laravel\Facades\Craftile;
 use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class CoreServiceProviderTranslationReferenceBlock extends SimpleBlock
 {
@@ -97,4 +98,12 @@ it('does not collect editor translation references outside design mode', functio
     ]);
 
     expect($collector->forBlockIds(['hero']))->toBe([]);
+});
+
+it('maps the theme morph key to the theme section model that exists', function () {
+    $section = 'Webkul\Theme\Models\Section';
+    $expected = class_exists($section) ? $section : 'Webkul\Theme\Models\ThemeCustomization';
+
+    expect(Relation::getMorphedModel('theme'))->toBe($expected)
+        ->and(class_exists(Relation::getMorphedModel('theme')))->toBeTrue();
 });

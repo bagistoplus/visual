@@ -51,7 +51,6 @@ use Webkul\CMS\Models\Page;
 use Webkul\Core\Models\Channel;
 use Webkul\Product\Models\Product;
 use Webkul\Shop\Http\Middleware\Theme;
-use Webkul\Theme\Models\ThemeCustomization;
 
 class CoreServiceProvider extends ServiceProvider
 {
@@ -284,6 +283,18 @@ class CoreServiceProvider extends ServiceProvider
         $property->setValue($manifest, null);
     }
 
+    /**
+     * Bagisto renamed ThemeCustomization to Section in 2.4.x; keep the "theme" morph key valid on both.
+     *
+     * @return class-string
+     */
+    protected function themeSectionModel(): string
+    {
+        $section = 'Webkul\Theme\Models\Section';
+
+        return class_exists($section) ? $section : 'Webkul\Theme\Models\ThemeCustomization';
+    }
+
     protected function bootMorphMap(): void
     {
         Relation::morphMap([
@@ -291,7 +302,7 @@ class CoreServiceProvider extends ServiceProvider
             'category' => Category::class,
             'page' => Page::class,
             'attribute' => Attribute::class,
-            'theme' => ThemeCustomization::class,
+            'theme' => $this->themeSectionModel(),
             'channel' => Channel::class,
             'visualtpl' => VisualTemplateAssignment::class,
         ]);

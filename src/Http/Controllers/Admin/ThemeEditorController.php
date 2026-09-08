@@ -309,7 +309,7 @@ class ThemeEditorController extends Controller
                     ->where('cms_page_translations.locale', '=', $currentLocale);
             })
             ->when($request->has('query'), function ($query) use ($request) {
-                $query->where('cms_page_translations.page_title', 'LIKE', "%{$request->query('query')}%");
+                $query->where('cms_page_translations.page_title', $this->caseInsensitiveLike(), "%{$request->query('query')}%");
             })
             ->get();
     }
@@ -351,6 +351,18 @@ class ThemeEditorController extends Controller
             'sets' => collect($sets)->map(fn ($set, $key) => ['id' => $key, 'prefix' => $set['prefix'], 'name' => Str::headline($key)])->values(),
             'icons' => $icons->values(),
         ];
+    }
+
+    /**
+     * Bagisto 2.5 exposes db_grammar() so LIKE resolves to ILIKE on PostgreSQL.
+     */
+    protected function caseInsensitiveLike(): string
+    {
+        if (function_exists('db_grammar')) {
+            return db_grammar()->caseInsensitiveLike();
+        }
+
+        return 'LIKE';
     }
 
     protected function loadTheme($themeCode)

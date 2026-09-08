@@ -4,6 +4,7 @@ namespace BagistoPlus\Visual\Actions;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Webkul\Marketing\Jobs\UpdateCreateSearchTerm as UpdateCreateSearchTermJob;
+use Webkul\Product\Enums\SearchContextEnum;
 use Webkul\Product\Repositories\ProductRepository;
 
 final readonly class GetProducts
@@ -19,11 +20,9 @@ final readonly class GetProducts
     {
         request()->query->add($params);
 
-        // Mirrors the non-response-building parts of Bagisto's shop ProductController::index().
+        // Mirrors the non-response-building parts of Bagisto's shop API ProductController::index().
         // Keep this in sync when Bagisto changes storefront search/listing behavior.
-        $searchEngine = $this->resolveSearchEngine();
-
-        $this->productRepository->setSearchEngine($searchEngine);
+        $this->applySearchContext();
 
         $searchData = $this->resolveSearchQueryData();
 
@@ -54,6 +53,20 @@ final readonly class GetProducts
     {
         return ! empty($query)
             && array_keys(request()->except(['mode', 'sort', 'limit'])) === ['query'];
+    }
+
+    /**
+     * Bagisto 2.5 replaced setSearchEngine(string) with setSearchContext(SearchContextEnum).
+     */
+    protected function applySearchContext(): void
+    {
+        if (class_exists(SearchContextEnum::class)) {
+            $this->productRepository->setSearchContext(SearchContextEnum::STOREFRONT);
+
+            return;
+        }
+
+        $this->productRepository->setSearchEngine($this->resolveSearchEngine());
     }
 
     protected function resolveSearchEngine(): string

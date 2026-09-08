@@ -34,3 +34,12 @@ parameters:
         -
             message: '#Parameter \#1 \$column of method #'
             path: src/Http/Controllers/Admin/ThemeEditorController.php
+        # ProductRepository search API differs between Bagisto < 2.5 and >= 2.5; only one exists in the installed version
+        -
+            message: '#Call to an undefined method Webkul\\Product\\Repositories\\ProductRepository::setSearchEngine\(\)#'
+            path: src/Actions/GetProducts.php
+            reportUnmatched: false
+        -
+            message: '#Call to an undefined method Webkul\\Product\\Repositories\\ProductRepository::setSearchContext\(\)#'
+            path: src/Actions/GetProducts.php
+            reportUnmatched: false

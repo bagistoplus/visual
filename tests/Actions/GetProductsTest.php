@@ -4,8 +4,31 @@ use BagistoPlus\Visual\Actions\GetProducts;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Queue;
+use Mockery\MockInterface;
 use Webkul\Marketing\Jobs\UpdateCreateSearchTerm;
+use Webkul\Product\Enums\SearchContextEnum;
 use Webkul\Product\Repositories\ProductRepository;
+
+function expectStorefrontSearchContext(MockInterface $repository): void
+{
+    if (class_exists(SearchContextEnum::class)) {
+        $repository->shouldNotReceive('setSearchEngine');
+
+        $repository
+            ->shouldReceive('setSearchContext')
+            ->once()
+            ->with(SearchContextEnum::STOREFRONT)
+            ->andReturnSelf();
+
+        return;
+    }
+
+    $repository
+        ->shouldReceive('setSearchEngine')
+        ->once()
+        ->with('database')
+        ->andReturnSelf();
+}
 
 beforeEach(function () {
     $this->repository = Mockery::mock(ProductRepository::class);
@@ -21,11 +44,7 @@ afterEach(function () {
 it('returns product paginator from the product repository', function () {
     $paginator = new LengthAwarePaginator([(object) ['id' => 1]], 1, 12);
 
-    $this->repository
-        ->shouldReceive('setSearchEngine')
-        ->once()
-        ->with('database')
-        ->andReturnSelf();
+    expectStorefrontSearchContext($this->repository);
 
     $this->repository
         ->shouldReceive('getSuggestions')
@@ -65,11 +84,7 @@ it('dispatches search term tracking for plain search requests', function () {
     $supportsSuggestions = method_exists(ProductRepository::class, 'getSuggestions');
     $expectedQuery = $supportsSuggestions ? 'shirts' : 'shirt';
 
-    $this->repository
-        ->shouldReceive('setSearchEngine')
-        ->once()
-        ->with('database')
-        ->andReturnSelf();
+    expectStorefrontSearchContext($this->repository);
 
     if ($supportsSuggestions) {
         $this->repository
@@ -114,11 +129,7 @@ it('does not dispatch search term tracking when tracking is disabled', function 
     $supportsSuggestions = method_exists(ProductRepository::class, 'getSuggestions');
     $expectedQuery = $supportsSuggestions ? 'shirts' : 'shirt';
 
-    $this->repository
-        ->shouldReceive('setSearchEngine')
-        ->once()
-        ->with('database')
-        ->andReturnSelf();
+    expectStorefrontSearchContext($this->repository);
 
     if ($supportsSuggestions) {
         $this->repository
@@ -157,11 +168,7 @@ it('does not dispatch search term tracking when additional filters are present',
     $paginator = new LengthAwarePaginator([(object) ['id' => 1]], 1, 12);
     $supportsSuggestions = method_exists(ProductRepository::class, 'getSuggestions');
 
-    $this->repository
-        ->shouldReceive('setSearchEngine')
-        ->once()
-        ->with('database')
-        ->andReturnSelf();
+    expectStorefrontSearchContext($this->repository);
 
     if ($supportsSuggestions) {
         $this->repository
@@ -193,11 +200,7 @@ it('uses the original query without suggestions when suggestions are disabled', 
 
     $paginator = new LengthAwarePaginator([(object) ['id' => 1]], 1, 12);
 
-    $this->repository
-        ->shouldReceive('setSearchEngine')
-        ->once()
-        ->with('database')
-        ->andReturnSelf();
+    expectStorefrontSearchContext($this->repository);
 
     $this->repository
         ->shouldReceive('getSuggestions')
