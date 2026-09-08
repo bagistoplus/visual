@@ -88,6 +88,14 @@ class TemplatePreviewController extends Controller
         return view()->make('shop::checkout.success', compact('order'));
     }
 
+    /**
+     * Preview the error page
+     */
+    public function error()
+    {
+        return view()->make('shop::errors.index', ['errorCode' => 404]);
+    }
+
     protected function getFakeProductImage()
     {
         $path = 'product-fake.svg';

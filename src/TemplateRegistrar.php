@@ -127,10 +127,10 @@ class TemplateRegistrar
 
         $templates[] = new Template(
             template: 'error',
-            route: 'shop.error.index',
+            route: ['shop.error.index', 'visual.template-preview.error'],
             label: __('visual::theme-editor.templates.error'),
             icon: 'lucide-file-question',
-            previewUrl: url('/not-found')
+            previewUrl: route('visual.template-preview.error')
         );
 
         foreach ($templates as $template) {
