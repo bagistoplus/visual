@@ -6,7 +6,6 @@ use Illuminate\Support\Str;
 use Spatie\ResponseCache\CacheProfiles\CacheAllSuccessfulGetRequests;
 use Spatie\ResponseCache\Hasher\RequestHasher;
 use Spatie\ResponseCache\Middlewares\CacheResponse;
-use Spatie\ResponseCache\Serializers\JsonSerializer;
 
 /**
  * Mirrors Bagisto's hasher, which drops the query string, so the editor request and the public
@@ -21,17 +20,26 @@ class QueryAgnosticRequestHasher implements RequestHasher
 }
 
 beforeEach(function () {
+    // The serializer is left alone: v7 and v8 ship different defaults and only v8 has JsonSerializer.
     config([
         'responsecache.enabled' => true,
+        'responsecache.cache_profile' => CacheAllSuccessfulGetRequests::class,
+        'responsecache.replacers' => [],
+        'responsecache.debug.enabled' => false,
+
+        // spatie/laravel-responsecache 8 config shape
         'responsecache.cache.store' => 'array',
         'responsecache.cache.tag' => '',
         'responsecache.cache.lifetime_in_seconds' => 3600,
-        'responsecache.cache_profile' => CacheAllSuccessfulGetRequests::class,
-        'responsecache.replacers' => [],
-        'responsecache.serializer' => JsonSerializer::class,
-        'responsecache.debug.enabled' => false,
         'responsecache.bypass.header_name' => null,
         'responsecache.bypass.header_value' => null,
+
+        // spatie/laravel-responsecache 7 config shape
+        'responsecache.cache_store' => 'array',
+        'responsecache.cache_tag' => '',
+        'responsecache.cache_lifetime_in_seconds' => 3600,
+        'responsecache.add_cache_time_header' => false,
+        'responsecache.cache_bypass_header' => ['name' => null, 'value' => null],
     ]);
 
     $this->app->bind(RequestHasher::class, QueryAgnosticRequestHasher::class);
