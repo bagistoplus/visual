@@ -73,7 +73,7 @@ it('loads resolved editor parent settings before applying schema defaults', func
     ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
     $themeEditor = Mockery::mock(ThemeEditor::class);
-    $themeEditor->shouldReceive('active')->andReturnTrue();
+    $themeEditor->shouldReceive('usesEditorData')->andReturnTrue();
     app()->instance(ThemeEditor::class, $themeEditor);
 
     $resolver = Mockery::mock(ThemePathsResolver::class);
@@ -122,7 +122,7 @@ it('resolves translation references only for localized theme settings', function
     ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
     $themeEditor = Mockery::mock(ThemeEditor::class);
-    $themeEditor->shouldReceive('active')->andReturnFalse();
+    $themeEditor->shouldReceive('usesEditorData')->andReturnFalse();
     app()->instance(ThemeEditor::class, $themeEditor);
 
     $resolver = Mockery::mock(ThemePathsResolver::class);
@@ -157,7 +157,7 @@ it('uses schema defaults when theme settings json is invalid or non array', func
     file_put_contents($path, $content);
 
     $themeEditor = Mockery::mock(ThemeEditor::class);
-    $themeEditor->shouldReceive('active')->andReturnFalse();
+    $themeEditor->shouldReceive('usesEditorData')->andReturnFalse();
     app()->instance(ThemeEditor::class, $themeEditor);
 
     $resolver = Mockery::mock(ThemePathsResolver::class);

@@ -12,7 +12,7 @@ class UseShopThemeFromRequest extends Theme
 {
     public function handle($request, Closure $next)
     {
-        if (ThemeEditor::inDesignMode() || ThemeEditor::inPreviewMode()) {
+        if (ThemeEditor::inDesignMode() || ThemeEditor::inPreviewMode() || ThemeEditor::inDraftPreviewMode()) {
             themes()->set(ThemeEditor::activeTheme());
 
             return $this->shareVisualTheme($request, $next);

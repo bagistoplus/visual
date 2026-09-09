@@ -63,11 +63,16 @@ it('never serves a cached response to the theme editor', function (array $parame
     'preview mode' => [['_previewMode' => 'fake-theme'], []],
     'design mode header' => [[], ['x-visual-editor-theme' => 'fake-theme']],
     'preview mode header' => [[], ['x-visual-preview-theme' => 'fake-theme']],
+    'draft preview' => [['_draftPreview' => 'fake-theme'], []],
+    'draft preview header' => [[], ['x-visual-draft-preview-theme' => 'fake-theme']],
 ]);
 
-it('never writes an editor response to the cache', function () {
-    $editor = $this->get('/response-cache-design-mode?_designMode=fake-theme')->getContent();
+it('never writes an editor response to the cache', function (string $query) {
+    $editor = $this->get('/response-cache-design-mode?'.$query)->getContent();
     $visitor = $this->get('/response-cache-design-mode')->getContent();
 
     expect($visitor)->not->toBe($editor);
-});
+})->with([
+    'design mode' => '_designMode=fake-theme',
+    'draft preview' => '_draftPreview=fake-theme',
+]);

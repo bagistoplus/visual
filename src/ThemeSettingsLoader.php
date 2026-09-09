@@ -51,8 +51,8 @@ class ThemeSettingsLoader
     {
         $cacheTtl = config('bagisto_visual.settings_cache_ttl', 86400);
 
-        // Skip cache in design mode, editor routes, or if cache is disabled
-        if (ThemeEditor::active() || $cacheTtl <= 0) {
+        // Skip cache when reading draft data (design mode, editor routes, draft preview) or if cache is disabled
+        if (ThemeEditor::usesEditorData() || $cacheTtl <= 0) {
             return $this->loadThemeSettingsFromFile($theme);
         }
 
@@ -101,7 +101,7 @@ class ThemeSettingsLoader
             return [];
         }
 
-        if (ThemeEditor::active()) {
+        if (ThemeEditor::usesEditorData()) {
             $relativePath = $this->editorDataStore->relativePathFromAbsolute($themeCode, $path);
 
             if ($relativePath) {
@@ -138,7 +138,7 @@ class ThemeSettingsLoader
      */
     protected function getThemeSettingsFilePath(string $themeCode): ?string
     {
-        $mode = ThemeEditor::active() ? 'editor' : 'live';
+        $mode = ThemeEditor::usesEditorData() ? 'editor' : 'live';
         $channel = core()->getRequestedChannelCode();
         $locale = core()->getRequestedLocaleCode();
 

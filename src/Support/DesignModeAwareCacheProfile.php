@@ -20,7 +20,7 @@ class DesignModeAwareCacheProfile implements CacheProfile
 
     public function enabled(Request $request): bool
     {
-        if (ThemeEditor::inDesignMode() || ThemeEditor::inPreviewMode()) {
+        if (ThemeEditor::inDesignMode() || ThemeEditor::inPreviewMode() || ThemeEditor::inDraftPreviewMode()) {
             return false;
         }
 

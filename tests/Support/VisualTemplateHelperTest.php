@@ -53,10 +53,10 @@ it('returns the default template type when the current theme is not visual', fun
     expect(visual_template_for('product', new VisualTemplateHelperTestModel))->toBe('product');
 });
 
-it('uses a valid requested template in design mode with the current visual theme', function () {
+it('uses a valid requested template in editor data modes with the current visual theme', function (string $parameter) {
     $theme = visualTemplateHelperTheme();
     bindCurrentTheme($theme);
-    request()->query->set('_designMode', 'fake-theme');
+    request()->query->set($parameter, 'fake-theme');
     request()->query->set('_template', 'product.gift-box');
 
     app()->instance(TemplateDiscovery::class, new class($theme) extends TemplateDiscovery
@@ -88,7 +88,10 @@ it('uses a valid requested template in design mode with the current visual theme
     });
 
     expect(visual_template_for('product'))->toBe('product.gift-box');
-});
+})->with([
+    'design mode' => '_designMode',
+    'draft preview' => '_draftPreview',
+]);
 
 it('passes the current visual theme into template assignment resolution', function () {
     config()->set('bagisto_visual.template_assignments', true);

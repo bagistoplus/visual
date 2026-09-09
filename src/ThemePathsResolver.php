@@ -58,7 +58,7 @@ class ThemePathsResolver
      */
     public function resolveThemeViewsPaths(string $themeCode): array
     {
-        $mode = ThemeEditor::active() ? 'editor' : 'live';
+        $mode = ThemeEditor::usesEditorData() ? 'editor' : 'live';
 
         /** @var Channel $requestedChannel */
         $requestedChannel = core()->getRequestedChannel();

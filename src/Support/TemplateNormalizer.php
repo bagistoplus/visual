@@ -2,8 +2,8 @@
 
 namespace BagistoPlus\Visual\Support;
 
+use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Persistence\EditorDataStore;
-use Craftile\Laravel\Facades\Craftile;
 
 /**
  * Normalizes legacy template format to Craftile's standard format.
@@ -40,7 +40,7 @@ class TemplateNormalizer
 
     protected function resolveParent(array $templateData, string $path): array
     {
-        if (! Craftile::inPreview()) {
+        if (! ThemeEditor::usesEditorData()) {
             return $templateData;
         }
 

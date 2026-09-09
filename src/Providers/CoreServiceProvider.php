@@ -27,11 +27,13 @@ use BagistoPlus\Visual\TemplateRegistrar;
 use BagistoPlus\Visual\ThemePathsResolver;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use BagistoPlus\Visual\View\Compilers\LivewireBlockCompiler;
+use BagistoPlus\Visual\View\DraftAwareJsonViewParser;
 use BladeUI\Icons\Factory as BladeIconsFactory;
 use BladeUI\Icons\IconsManifest;
 use Craftile\Laravel\Events\JsonViewLoaded;
 use Craftile\Laravel\Facades\Craftile;
 use Craftile\Laravel\View\BlockCompilerRegistry;
+use Craftile\Laravel\View\JsonViewParser;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -418,6 +420,10 @@ class CoreServiceProvider extends ServiceProvider
         $this->app->singleton(TemplateAssignment::class);
         $this->app->singleton(VisualDiscoveryFilter::class);
         $this->app->singleton(EditorTranslationReferenceCollector::class);
+
+        $this->app->extend(JsonViewParser::class, function (JsonViewParser $parser) {
+            return $parser instanceof DraftAwareJsonViewParser ? $parser : new DraftAwareJsonViewParser;
+        });
     }
 
     protected function registerCustomUrlGenerator(): void

@@ -53,7 +53,7 @@ namespace {
             $templates = app(TemplateDiscovery::class);
 
             if (
-                ThemeEditor::inDesignMode()
+                ThemeEditor::usesEditorData()
                 && ($requested = request()->query('_template'))
                 && $templates->typeForKey($requested) === $type
                 && $templates->exists($theme, $requested, $type, $channel, $locale, true)
@@ -68,7 +68,7 @@ namespace {
                     theme: $theme,
                     channel: $channel,
                     locale: $locale,
-                    includeEditorDrafts: ThemeEditor::inDesignMode(),
+                    includeEditorDrafts: ThemeEditor::usesEditorData(),
                 );
             }
 

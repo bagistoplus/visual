@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool inDesignMode()
  * @method static string activeTheme()
  * @method static bool inPreviewMode()
+ * @method static bool inDraftPreviewMode()
+ * @method static bool usesEditorData()
  * @method static void addJsonView(string $path)
  * @method static array jsonViews()
  * @method static mixed registerTemplate(\BagistoPlus\Visual\Data\Template $template)

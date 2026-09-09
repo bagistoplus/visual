@@ -18,7 +18,7 @@ class UrlGenerator extends RoutingUrlGenerator
     {
         $url = parent::current();
 
-        if (ThemeEditor::inDesignMode() || ThemeEditor::inPreviewMode()) {
+        if (ThemeEditor::inDesignMode() || ThemeEditor::inPreviewMode() || ThemeEditor::inDraftPreviewMode()) {
             $url = explode('?', $url)[0];
         }
 
@@ -67,6 +67,8 @@ class UrlGenerator extends RoutingUrlGenerator
 
         if (ThemeEditor::inDesignMode()) {
             $query = '_designMode='.ThemeEditor::activeTheme();
+        } elseif (ThemeEditor::inDraftPreviewMode()) {
+            $query = '_draftPreview='.ThemeEditor::activeTheme();
         } elseif (ThemeEditor::inPreviewMode()) {
             $query = '_previewMode='.ThemeEditor::activeTheme();
         }
@@ -83,7 +85,7 @@ class UrlGenerator extends RoutingUrlGenerator
 
     protected function withTemplateParameterForRoute(Route $route, mixed $parameters): mixed
     {
-        if (! ThemeEditor::inDesignMode() || ! request()->query->has('_template')) {
+        if (! ThemeEditor::usesEditorData() || ! request()->query->has('_template')) {
             return $parameters;
         }
 

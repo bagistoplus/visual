@@ -33,6 +33,8 @@ it('disables the response cache for editor requests', function (Request $request
     'preview mode query' => fn () => Request::create('/', 'GET', ['_previewMode' => 'fake-theme']),
     'design mode header' => fn () => Request::create('/', 'GET', [], [], [], ['HTTP_X_VISUAL_EDITOR_THEME' => 'fake-theme']),
     'preview mode header' => fn () => Request::create('/', 'GET', [], [], [], ['HTTP_X_VISUAL_PREVIEW_THEME' => 'fake-theme']),
+    'draft preview query' => fn () => Request::create('/', 'GET', ['_draftPreview' => 'fake-theme']),
+    'draft preview header' => fn () => Request::create('/', 'GET', [], [], [], ['HTTP_X_VISUAL_DRAFT_PREVIEW_THEME' => 'fake-theme']),
 ]);
 
 it('defers to the wrapped profile outside the editor', function (bool $enabled) {

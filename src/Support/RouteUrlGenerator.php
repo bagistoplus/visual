@@ -16,6 +16,8 @@ class RouteUrlGenerator extends RoutingRouteUrlGenerator
     {
         if (ThemeEditor::inDesignMode()) {
             $parameters['_designMode'] = ThemeEditor::activeTheme();
+        } elseif (ThemeEditor::inDraftPreviewMode()) {
+            $parameters['_draftPreview'] = ThemeEditor::activeTheme();
         } elseif (ThemeEditor::inPreviewMode()) {
             $parameters['_previewMode'] = ThemeEditor::activeTheme();
         }

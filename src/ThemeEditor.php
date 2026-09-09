@@ -44,8 +44,12 @@ class ThemeEditor
 
     public function activeTheme(): string
     {
-        if (self::inDesignMode()) {
+        if ($this->inDesignMode()) {
             return request()->query->get('_designMode', request()->headers->get('x-visual-editor-theme'));
+        }
+
+        if ($this->inDraftPreviewMode()) {
+            return request()->query->get('_draftPreview', request()->headers->get('x-visual-draft-preview-theme'));
         }
 
         return request()->query->get('_previewMode', request()->headers->get('x-visual-preview-theme'));
@@ -54,6 +58,22 @@ class ThemeEditor
     public function inPreviewMode(): bool
     {
         return request()->query->has('_previewMode') || request()->headers->has('x-visual-preview-theme');
+    }
+
+    /**
+     * Preview of the unpublished editor data, rendered without the editor client.
+     */
+    public function inDraftPreviewMode(): bool
+    {
+        return request()->query->has('_draftPreview') || request()->headers->has('x-visual-draft-preview-theme');
+    }
+
+    /**
+     * Whether theme views and settings should be read from the editor (draft) data instead of live.
+     */
+    public function usesEditorData(): bool
+    {
+        return $this->active() || $this->inDraftPreviewMode();
     }
 
     public function addJsonView(string $path): void

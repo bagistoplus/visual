@@ -12,7 +12,9 @@ beforeEach(function () {
     app(JsonViewParser::class)->clearCache();
 });
 
-it('resolves editor parent data from the parsed editor file path', function () {
+it('resolves editor parent data from the parsed editor file path', function (string $parameter) {
+    request()->query->set($parameter, 'visual-debut');
+
     $dataPath = sys_get_temp_dir().'/visual-template-normalizer-'.uniqid();
     config()->set('bagisto_visual.data_path', $dataPath);
 
@@ -58,6 +60,30 @@ it('resolves editor parent data from the parsed editor file path', function () {
             'properties' => ['section_width' => 'container'],
             'children' => ['content', 'image'],
         ]);
+
+    File::deleteDirectory($dataPath);
+})->with([
+    'design mode' => '_designMode',
+    'draft preview' => '_draftPreview',
+]);
+
+it('leaves the parent pointer untouched outside editor data modes', function () {
+    $dataPath = sys_get_temp_dir().'/visual-template-normalizer-'.uniqid();
+    config()->set('bagisto_visual.data_path', $dataPath);
+
+    app()->instance(ThemePathsResolver::class, new ThemePathsResolver);
+
+    $childPath = "{$dataPath}/themes/visual-debut/editor/default/fr/templates/index.json";
+    File::ensureDirectoryExists(dirname($childPath));
+
+    File::put($childPath, json_encode([
+        'parent' => 'default/en/templates/index.json',
+        'blocks' => ['section' => ['children' => ['content']]],
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+    $parsed = app(JsonViewParser::class)->parse($childPath);
+
+    expect($parsed)->toHaveKey('parent', 'default/en/templates/index.json');
 
     File::deleteDirectory($dataPath);
 });
