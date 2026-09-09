@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Livewire\LivewireServiceProvider;
 use MallardDuck\LucideIcons\BladeLucideIconsServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Spatie\ResponseCache\ResponseCacheServiceProvider;
 
 class TestCase extends Orchestra
 {
@@ -32,6 +33,7 @@ class TestCase extends Orchestra
             BladeLucideIconsServiceProvider::class,
             LivewireServiceProvider::class,
             CraftileServiceProvider::class,
+            ResponseCacheServiceProvider::class,
             VisualServiceProvider::class,
             FakeThemeServiceProvider::class,
         ];

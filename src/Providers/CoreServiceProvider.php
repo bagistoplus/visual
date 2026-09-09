@@ -7,7 +7,6 @@ use BagistoPlus\Visual\Data\BlockData;
 use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
-use BagistoPlus\Visual\Middlewares\DisableResponseCacheInDesignMode;
 use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
 use BagistoPlus\Visual\Middlewares\RegisterVisualSchemas;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
@@ -16,6 +15,7 @@ use BagistoPlus\Visual\Persistence\EditorDataStore;
 use BagistoPlus\Visual\Settings\Support as SettingTransformers;
 use BagistoPlus\Visual\Support\BlockRenderFilter;
 use BagistoPlus\Visual\Support\ChannelThemeResolver;
+use BagistoPlus\Visual\Support\DesignModeAwareCacheProfile;
 use BagistoPlus\Visual\Support\EditorTranslationReferenceCollector;
 use BagistoPlus\Visual\Support\IconMapFilesystemAdapter;
 use BagistoPlus\Visual\Support\TemplateAssignment;
@@ -45,6 +45,7 @@ use Illuminate\View\DynamicComponent;
 use League\Flysystem\Filesystem;
 use Livewire\Component;
 use ReflectionProperty;
+use Spatie\ResponseCache\CacheProfiles\CacheProfile;
 use Webkul\Attribute\Models\Attribute;
 use Webkul\Category\Models\Category;
 use Webkul\CMS\Models\Page;
@@ -71,6 +72,7 @@ class CoreServiceProvider extends ServiceProvider
         $this->bootShopRoutes();
         $this->bootViewsAndTranslations();
         $this->bootMiddlewares();
+        $this->bootResponseCache();
         $this->bootVisualSections();
         $this->bootConsoleSchemaRegistration();
         $this->bootBladeIcons();
@@ -208,10 +210,27 @@ class CoreServiceProvider extends ServiceProvider
             $app->get('router')
                 ->removeMiddlewareFromGroup('shop', Theme::class)
                 ->pushMiddlewareToGroup('shop', UseShopThemeFromRequest::class)
-                ->pushMiddlewareToGroup('shop', DisableResponseCacheInDesignMode::class)
                 ->pushMiddlewareToGroup('shop', RegisterVisualSchemas::class)
                 ->pushMiddlewareToGroup('shop', InjectThemeEditorScript::class);
         });
+    }
+
+    /**
+     * Keep the full page cache out of the way while the editor renders the storefront.
+     *
+     * The profile is decorated rather than rebound so that a later binding from another package
+     * cannot drop the bypass, and so that whatever profile the store configured keeps working.
+     */
+    protected function bootResponseCache(): void
+    {
+        if (! interface_exists(CacheProfile::class)) {
+            return;
+        }
+
+        $this->app->extend(
+            CacheProfile::class,
+            fn (CacheProfile $profile) => new DesignModeAwareCacheProfile($profile)
+        );
     }
 
     protected function bootVisualSections(): void

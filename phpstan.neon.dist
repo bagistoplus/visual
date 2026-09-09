@@ -43,3 +43,12 @@ parameters:
             message: '#Call to an undefined method Webkul\\Product\\Repositories\\ProductRepository::setSearchContext\(\)#'
             path: src/Actions/GetProducts.php
             reportUnmatched: false
+        # The cache profile lifetime accessor was renamed in spatie/laravel-responsecache 8; only one exists in the installed version
+        -
+            message: '#Call to an undefined method Spatie\\ResponseCache\\CacheProfiles\\CacheProfile::cacheRequestUntil\(\)#'
+            path: src/Support/DesignModeAwareCacheProfile.php
+            reportUnmatched: false
+        -
+            message: '#Call to an undefined method Spatie\\ResponseCache\\CacheProfiles\\CacheProfile::cacheLifetimeInSeconds\(\)#'
+            path: src/Support/DesignModeAwareCacheProfile.php
+            reportUnmatched: false

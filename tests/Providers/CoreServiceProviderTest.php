@@ -3,9 +3,9 @@
 use BagistoPlus\Visual\Blocks\SimpleBlock;
 use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Facades\ThemeEditor;
-use BagistoPlus\Visual\Middlewares\DisableResponseCacheInDesignMode;
 use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
 use BagistoPlus\Visual\Middlewares\RegisterVisualSchemas;
+use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
 use BagistoPlus\Visual\Providers\CoreServiceProvider;
 use BagistoPlus\Visual\Settings\Text;
 use BagistoPlus\Visual\Support\EditorTranslationReferenceCollector;
@@ -32,7 +32,7 @@ it('does not register storefront middlewares on the application http kernel', fu
     $middleware = (new ReflectionProperty($kernel, 'middleware'))->getValue($kernel);
 
     expect($middleware)
-        ->not->toContain(DisableResponseCacheInDesignMode::class)
+        ->not->toContain(RegisterVisualSchemas::class)
         ->not->toContain(InjectThemeEditorScript::class);
 });
 
@@ -41,10 +41,10 @@ it('registers visual storefront middlewares on the shop middleware group', funct
     $shopMiddleware = $middlewareGroups['shop'] ?? [];
 
     expect($shopMiddleware)
-        ->toContain(DisableResponseCacheInDesignMode::class)
+        ->toContain(UseShopThemeFromRequest::class)
         ->toContain(RegisterVisualSchemas::class)
         ->toContain(InjectThemeEditorScript::class)
-        ->and(array_search(DisableResponseCacheInDesignMode::class, $shopMiddleware, true))
+        ->and(array_search(UseShopThemeFromRequest::class, $shopMiddleware, true))
         ->toBeLessThan(array_search(RegisterVisualSchemas::class, $shopMiddleware, true))
         ->and(array_search(RegisterVisualSchemas::class, $shopMiddleware, true))
         ->toBeLessThan(array_search(InjectThemeEditorScript::class, $shopMiddleware, true));
