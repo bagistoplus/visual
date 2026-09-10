@@ -33,18 +33,17 @@ function preserveLivewireEnvelope(fromEl: HTMLElement, toEl: HTMLElement): void 
   }
 }
 
-function morphKey(el: Element): string | undefined {
-  return (el.getAttribute('data-block') ?? el.getAttribute('wire:key') ?? el.id) || undefined;
+function morphKey(node: Node): string | undefined {
+  if (!(node instanceof Element)) {
+    return undefined;
+  }
+
+  return (node.getAttribute('data-block') ?? node.getAttribute('wire:key') ?? node.id) || undefined;
 }
 
 function morphWithAlpine(fromEl: HTMLElement, toEl: HTMLElement, livewireRoot?: HTMLElement): void {
   window.Alpine.morph(fromEl, toEl, {
-    updating(
-      oldEl: Element,
-      newEl: Element,
-      childrenOnly: () => void,
-      skip: () => void
-    ) {
+    updating(oldEl: Element, newEl: Element, childrenOnly: () => void, skip: () => void) {
       if (!(oldEl instanceof HTMLElement) || !(newEl instanceof HTMLElement)) {
         return;
       }
@@ -63,54 +62,55 @@ function morphWithAlpine(fromEl: HTMLElement, toEl: HTMLElement, livewireRoot?: 
   });
 }
 
-function createMorphdomHandler() {
-  return function onBeforeElUpdated(fromEl: Element, toEl: Element): boolean {
-    if (fromEl instanceof HTMLElement && fromEl.hasAttribute('data-morph-ignore')) {
-      return false;
-    }
+function createMorphdomOptions() {
+  return {
+    getNodeKey: morphKey,
+    onBeforeElUpdated(fromEl: Element, toEl: Element): boolean {
+      if (fromEl instanceof HTMLElement && fromEl.hasAttribute('data-morph-ignore')) {
+        return false;
+      }
 
-    if (fromEl instanceof HTMLElement && hasRecentLiveUpdate(fromEl)) {
-      return false;
-    }
+      if (fromEl instanceof HTMLElement && hasRecentLiveUpdate(fromEl)) {
+        return false;
+      }
 
-    if (
-      fromEl instanceof HTMLElement &&
-      toEl instanceof HTMLElement &&
-      fromEl.hasAttribute('wire:id') &&
-      toEl.hasAttribute('wire:id')
-    ) {
-      if (fromEl.tagName !== toEl.tagName || typeof window.Alpine?.morph !== 'function') {
-        fromEl.replaceWith(toEl);
+      if (
+        fromEl instanceof HTMLElement &&
+        toEl instanceof HTMLElement &&
+        fromEl.hasAttribute('wire:id') &&
+        toEl.hasAttribute('wire:id')
+      ) {
+        if (fromEl.tagName !== toEl.tagName || typeof window.Alpine?.morph !== 'function') {
+          fromEl.replaceWith(toEl);
+
+          return false;
+        }
+
+        preserveLivewireEnvelope(fromEl, toEl);
+        morphWithAlpine(fromEl, toEl, fromEl);
 
         return false;
       }
 
-      preserveLivewireEnvelope(fromEl, toEl);
-      morphWithAlpine(fromEl, toEl, fromEl);
+      if (
+        fromEl instanceof HTMLElement &&
+        toEl instanceof HTMLElement &&
+        // @ts-ignore
+        fromEl['_x_dataStack'] &&
+        typeof window.Alpine?.morph === 'function'
+      ) {
+        morphWithAlpine(fromEl, toEl);
 
-      return false;
-    }
+        return false;
+      }
 
-    // @ts-ignore
-    if (
-      fromEl instanceof HTMLElement &&
-      toEl instanceof HTMLElement &&
-      fromEl['_x_dataStack'] &&
-      typeof window.Alpine?.morph === 'function'
-    ) {
-      morphWithAlpine(fromEl, toEl);
-
-      return false;
-    }
-
-    return true;
+      return true;
+    },
   };
 }
 
 RawHtmlRenderer.init(previewClient, {
-  morphdom: {
-    onBeforeElUpdated: createMorphdomHandler(),
-  },
+  morphdom: createMorphdomOptions(),
 });
 
 // Theme settings refresh - morph head and body separately
@@ -124,7 +124,7 @@ previewClient.on('page.refresh', (data: { html: string }) => {
 
   morphdom(document.body, newDoc.body, {
     childrenOnly: true,
-    onBeforeElUpdated: createMorphdomHandler(),
+    ...createMorphdomOptions(),
   });
 });
 

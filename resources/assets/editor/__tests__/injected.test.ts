@@ -17,6 +17,7 @@ vi.mock('@craftile/preview-client-html', () => ({
 
 describe('morphdom handler', () => {
   let RawHtmlRenderer: any;
+  let morphdomOptions: any;
   let morphdomHandler: any;
   let previewClient: any;
 
@@ -30,7 +31,8 @@ describe('morphdom handler', () => {
     await import('../injected');
 
     const initCall = RawHtmlRenderer.init.mock.calls[0];
-    morphdomHandler = initCall?.[1]?.morphdom?.onBeforeElUpdated;
+    morphdomOptions = initCall?.[1]?.morphdom;
+    morphdomHandler = morphdomOptions?.onBeforeElUpdated;
 
     const previewModule = await import('@craftile/preview-client');
     previewClient = (previewModule.PreviewClient as any).mock.instances[0];
@@ -83,6 +85,47 @@ describe('morphdom handler', () => {
       toEl.setAttribute('wire:effects', '{}');
 
       expect(morphdomHandler(fromEl, toEl)).toBe(false);
+    });
+  });
+
+  describe('node keying', () => {
+    it('gives morphdom a getNodeKey resolver', () => {
+      expect(typeof morphdomOptions?.getNodeKey).toBe('function');
+    });
+
+    it('prefers data-block, then wire:key, then id', () => {
+      const el = document.createElement('div');
+      el.setAttribute('data-block', 'block-key');
+      el.setAttribute('wire:key', 'wire-key');
+      el.id = 'element-key';
+
+      expect(morphdomOptions.getNodeKey(el)).toBe('block-key');
+
+      el.removeAttribute('data-block');
+      expect(morphdomOptions.getNodeKey(el)).toBe('wire-key');
+
+      el.removeAttribute('wire:key');
+      expect(morphdomOptions.getNodeKey(el)).toBe('element-key');
+    });
+
+    it('returns undefined for unkeyed elements and non-element nodes', () => {
+      expect(morphdomOptions.getNodeKey(document.createElement('div'))).toBeUndefined();
+      expect(morphdomOptions.getNodeKey(document.createTextNode('text'))).toBeUndefined();
+      expect(morphdomOptions.getNodeKey(document.createComment('comment'))).toBeUndefined();
+    });
+
+    it('moves keyed blocks instead of rewriting them when siblings are reordered', () => {
+      const container = document.createElement('div');
+      container.innerHTML = '<div data-block="first">First</div><div data-block="second">Second</div>';
+      const [first, second] = Array.from(container.children);
+
+      const newContainer = document.createElement('div');
+      newContainer.innerHTML =
+        '<div data-block="second">Second</div><div data-block="first">First</div>';
+
+      morphdom(container, newContainer, morphdomOptions);
+
+      expect(Array.from(container.children)).toEqual([second, first]);
     });
   });
 
