@@ -2,6 +2,19 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.31](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.30...v2.0.0-alpha.31) (2026-09-10)
+
+
+### Bug Fixes
+
+* bypass the full page cache in design and preview mode regardless of middleware order ([c44c24d](https://github.com/bagistoplus/visual/commit/c44c24dfc77080719a32c6e59e813b44134b6142))
+
+
+### Features
+
+* add draft preview mode rendering editor edits without the editor client ([a3694dc](https://github.com/bagistoplus/visual/commit/a3694dcac31165da5d2fd1583179191c9301852e))
+* add wishlist and compare storefront events with a typescript mirror ([88557df](https://github.com/bagistoplus/visual/commit/88557df011b5806849e229f205268302e4c25198))
+
 # [2.0.0-alpha.30](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.29...v2.0.0-alpha.30) (2026-09-08)
 
 
