@@ -6,6 +6,10 @@ interface Events
 {
     public const CART_UPDATED = 'visual:cart_updated';
 
+    public const WISHLIST_UPDATED = 'visual:wishlist_updated';
+
+    public const COMPARE_UPDATED = 'visual:compare_updated';
+
     public const SHIPPING_METHOD_SET = 'visual:shipping_method_set';
 
     public const COUPON_APPLIED = 'visual:coupon_applied';
