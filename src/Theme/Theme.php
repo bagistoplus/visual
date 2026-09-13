@@ -59,7 +59,8 @@ class Theme extends BagistoTheme
             documentationUrl: $attributes['documentation_url'] ?? '',
             description: $attributes['description'] ?? null,
             isVisualTheme: $attributes['visual_theme'] ?? false,
-            settingsSchema: $attributes['settings_schema'] ?? []
+            settingsSchema: $attributes['settings_schema'] ?? [],
+            customize: $attributes['customize'] ?? []
         );
     }
 
@@ -77,7 +78,8 @@ class Theme extends BagistoTheme
         public ?string $documentationUrl = '',
         public ?string $description = null,
         public bool $isVisualTheme = false,
-        public array $settingsSchema = []
+        public array $settingsSchema = [],
+        public array $customize = []
     ) {
         parent::__construct(
             code: $code,
@@ -112,6 +114,29 @@ class Theme extends BagistoTheme
         }
 
         return ThemeEditorMode::Unsupported;
+    }
+
+    /**
+     * Whether the visual editor is the one this theme is customized with, which
+     * decides where Bagisto's own customize button leads.
+     *
+     * A theme states its choice as `customize.editor`. Left unsaid, a visual
+     * theme is customized in the visual editor and any other theme in Bagisto's
+     * appearance editor.
+     */
+    public function usesVisualEditor(): bool
+    {
+        if (! $this->editorMode()->isEditable()) {
+            return false;
+        }
+
+        $declared = $this->customize['editor'] ?? null;
+
+        if ($declared !== null) {
+            return $declared === ThemeEditorMode::Visual->value;
+        }
+
+        return $this->isVisualTheme;
     }
 
     /**

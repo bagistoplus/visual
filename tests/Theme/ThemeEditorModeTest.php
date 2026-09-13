@@ -1,26 +1,7 @@
 <?php
 
 use BagistoPlus\Visual\Enums\ThemeEditorMode;
-use BagistoPlus\Visual\Support\SectionSystem;
 use BagistoPlus\Visual\Theme\Theme;
-
-function fakeSectionSystem(bool $available, bool $registry = false): void
-{
-    app()->instance(SectionSystem::class, new class($available, $registry) extends SectionSystem
-    {
-        public function __construct(protected bool $isAvailable, protected bool $hasRegistry) {}
-
-        public function available(): bool
-        {
-            return $this->isAvailable;
-        }
-
-        public function supportsTypeRegistry(): bool
-        {
-            return $this->hasRegistry;
-        }
-    });
-}
 
 it('edits a visual theme in visual mode whatever bagisto offers', function () {
     fakeSectionSystem(available: false);
@@ -48,4 +29,52 @@ it('leaves a plain theme unedited when bagisto has no section system', function 
 
     expect($theme->editorMode())->toBe(ThemeEditorMode::Unsupported)
         ->and($theme->editorMode()->isEditable())->toBeFalse();
+});
+
+it('customizes a visual theme in the visual editor by default', function () {
+    fakeSectionSystem(available: true);
+
+    $theme = Theme::make(['code' => 'visual-debut', 'name' => 'Debut', 'visual_theme' => true]);
+
+    expect($theme->usesVisualEditor())->toBeTrue();
+});
+
+it('customizes a plain theme in bagisto\'s appearance editor by default', function () {
+    fakeSectionSystem(available: true);
+
+    $theme = Theme::make(['code' => 'default', 'name' => 'Default']);
+
+    expect($theme->usesVisualEditor())->toBeFalse();
+});
+
+it('honours the editor a theme names for itself', function () {
+    fakeSectionSystem(available: true);
+
+    $plain = Theme::make([
+        'code' => 'default',
+        'name' => 'Default',
+        'customize' => ['editor' => 'visual'],
+    ]);
+
+    $visual = Theme::make([
+        'code' => 'visual-debut',
+        'name' => 'Debut',
+        'visual_theme' => true,
+        'customize' => ['editor' => 'native'],
+    ]);
+
+    expect($plain->usesVisualEditor())->toBeTrue()
+        ->and($visual->usesVisualEditor())->toBeFalse();
+});
+
+it('customizes nothing in the visual editor when the theme cannot be edited', function () {
+    fakeSectionSystem(available: false);
+
+    $theme = Theme::make([
+        'code' => 'default',
+        'name' => 'Default',
+        'customize' => ['editor' => 'visual'],
+    ]);
+
+    expect($theme->usesVisualEditor())->toBeFalse();
 });

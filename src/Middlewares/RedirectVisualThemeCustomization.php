@@ -2,12 +2,13 @@
 
 namespace BagistoPlus\Visual\Middlewares;
 
+use BagistoPlus\Visual\Theme\Theme;
 use Closure;
 use Illuminate\Http\Request;
 
 /**
- * The customize button of Bagisto's theme gallery always points at its own section editor,
- * which knows nothing about visual themes. Send those to the visual editor instead.
+ * The customize button of Bagisto's theme gallery always points at its own section editor.
+ * Send the themes that are customized in the visual editor there instead.
  */
 class RedirectVisualThemeCustomization
 {
@@ -38,10 +39,16 @@ class RedirectVisualThemeCustomization
         $segments = explode('/', trim($request->decodedPath(), '/'));
         $code = $segments[count($segments) - 2] ?? null;
 
-        if (! $code || ! config("themes.shop.{$code}.visual_theme", false)) {
+        if (! $code) {
             return null;
         }
 
-        return $code;
+        $attributes = config("themes.shop.{$code}");
+
+        if (! $attributes) {
+            return null;
+        }
+
+        return Theme::make(['code' => $code] + $attributes)->usesVisualEditor() ? $code : null;
     }
 }

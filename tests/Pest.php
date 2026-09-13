@@ -1,5 +1,6 @@
 <?php
 
+use BagistoPlus\Visual\Support\SectionSystem;
 use BagistoPlus\Visual\Tests\TestCase;
 use Illuminate\Support\Collection;
 use Konekt\Concord\Contracts\Concord;
@@ -13,6 +14,29 @@ use Webkul\Core\Models\LocaleProxy;
 use Webkul\Theme\Facades\Themes as ThemesFacade;
 
 uses(TestCase::class)->in(__DIR__);
+
+if (! function_exists('fakeSectionSystem')) {
+    function fakeSectionSystem(bool $available, bool $registry = false): void
+    {
+        app()->instance(
+            SectionSystem::class,
+            new class($available, $registry) extends SectionSystem
+            {
+                public function __construct(protected bool $isAvailable, protected bool $hasRegistry) {}
+
+                public function available(): bool
+                {
+                    return $this->isAvailable;
+                }
+
+                public function supportsTypeRegistry(): bool
+                {
+                    return $this->hasRegistry;
+                }
+            }
+        );
+    }
+}
 
 if (! function_exists('themes')) {
     function themes()

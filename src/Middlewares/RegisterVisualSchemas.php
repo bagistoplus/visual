@@ -13,7 +13,7 @@ class RegisterVisualSchemas
     {
         $theme = themes()->current();
 
-        if ($theme instanceof VisualTheme && $theme->isVisualTheme()) {
+        if ($theme instanceof VisualTheme && $theme->editorMode()->isVisual()) {
             Craftile::registerDiscoveredSchemas();
         }
 

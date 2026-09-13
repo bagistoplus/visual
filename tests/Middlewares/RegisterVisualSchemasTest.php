@@ -48,3 +48,18 @@ it('does not register deferred schemas when the current theme is not visual', fu
     expect($response)->toBe('next');
     Craftile::shouldNotHaveReceived('registerDiscoveredSchemas');
 });
+
+it('does not register deferred schemas for a theme edited in native mode', function () {
+    fakeSectionSystem(available: true);
+
+    bindThemeForVisualSchemaRegistration(Theme::make([
+        'code' => 'default',
+        'name' => 'Default',
+    ]));
+
+    Craftile::spy();
+
+    (new RegisterVisualSchemas)->handle(Request::create('/'), fn () => 'next');
+
+    Craftile::shouldNotHaveReceived('registerDiscoveredSchemas');
+});
