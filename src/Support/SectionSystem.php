@@ -2,12 +2,16 @@
 
 namespace BagistoPlus\Visual\Support;
 
+use BagistoPlus\Visual\Data\NativeSectionType;
+use Illuminate\Support\Collection;
+
 /**
- * What the installed Bagisto's section system can do.
+ * Whether the installed Bagisto stores sections the way native mode reads and
+ * writes them, and the section types a theme offers.
  *
  * Bagisto renamed ThemeCustomization to Section and moved drafts onto the row
- * in 2.5, then made section types extensible shortly after. Every check of
- * either lives here so nothing else has to sniff versions.
+ * in 2.5, then made section types extensible shortly after. Native mode needs
+ * both, so both are checked here and nothing else has to sniff versions.
  */
 class SectionSystem
 {
@@ -16,22 +20,60 @@ class SectionSystem
     protected const SECTION_SCHEMA = 'Webkul\Theme\SectionSchema';
 
     /**
-     * Whether sections are stored the way native mode reads and writes them,
-     * which is Bagisto 2.5 onwards.
+     * Whether sections are stored, and their types declared, the way native
+     * mode needs. A release that keeps its section types to itself is not
+     * editable here, because no theme could add one.
      */
     public function available(): bool
     {
         return class_exists(self::SECTION_MODEL)
-            && class_exists(self::SECTION_SCHEMA);
+            && class_exists(self::SECTION_SCHEMA)
+            && method_exists($this->schema(), 'types');
     }
 
     /**
-     * Whether a theme may declare its own section types, rather than being
-     * offered the six Bagisto ships. Absent in 2.5.0-beta2.
+     * The section types a theme offers, keyed by code, in the order the editor
+     * lists them.
+     *
+     * @return Collection<string, NativeSectionType>
      */
-    public function supportsTypeRegistry(): bool
+    public function types(?string $themeCode = null): Collection
     {
-        return $this->available()
-            && method_exists(self::SECTION_SCHEMA, 'types');
+        if (! $this->available()) {
+            return collect();
+        }
+
+        return collect($this->schema()->types($themeCode))
+            ->map(fn (mixed $type) => new NativeSectionType(
+                code: $type->getCode(),
+                title: $type->getTitle(),
+                icon: $type->getIcon(),
+                singleton: $type->isSingleton(),
+                pinned: $type->isPinned(),
+                rendersInLayout: $type->rendersInLayout(),
+                fieldsResolver: fn () => $type->getFields(),
+            ))
+            ->keyBy(fn (NativeSectionType $type) => $type->code);
+    }
+
+    /**
+     * The single type a code names, or null when the theme does not offer it.
+     */
+    public function type(?string $themeCode, ?string $code): ?NativeSectionType
+    {
+        if (blank($code)) {
+            return null;
+        }
+
+        return $this->types($themeCode)->get($code);
+    }
+
+    /**
+     * Bagisto's section schema service, asked of the container so a store that
+     * swapped it is the one answered about.
+     */
+    protected function schema(): mixed
+    {
+        return app(self::SECTION_SCHEMA);
     }
 }

@@ -16,22 +16,17 @@ use Webkul\Theme\Facades\Themes as ThemesFacade;
 uses(TestCase::class)->in(__DIR__);
 
 if (! function_exists('fakeSectionSystem')) {
-    function fakeSectionSystem(bool $available, bool $registry = false): void
+    function fakeSectionSystem(bool $available): void
     {
         app()->instance(
             SectionSystem::class,
-            new class($available, $registry) extends SectionSystem
+            new class($available) extends SectionSystem
             {
-                public function __construct(protected bool $isAvailable, protected bool $hasRegistry) {}
+                public function __construct(protected bool $isAvailable) {}
 
                 public function available(): bool
                 {
                     return $this->isAvailable;
-                }
-
-                public function supportsTypeRegistry(): bool
-                {
-                    return $this->hasRegistry;
                 }
             }
         );
