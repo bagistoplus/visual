@@ -2,7 +2,9 @@
 
 namespace BagistoPlus\Visual\Theme;
 
+use BagistoPlus\Visual\Enums\ThemeEditorMode;
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
+use BagistoPlus\Visual\Support\SectionSystem;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use Craftile\Laravel\PropertyBag;
 use Webkul\Theme\Theme as BagistoTheme;
@@ -93,6 +95,23 @@ class Theme extends BagistoTheme
     public function isVisualTheme(): bool
     {
         return $this->isVisualTheme;
+    }
+
+    /**
+     * How this theme is edited, which decides where its page structure is read
+     * from and written to.
+     */
+    public function editorMode(): ThemeEditorMode
+    {
+        if ($this->isVisualTheme) {
+            return ThemeEditorMode::Visual;
+        }
+
+        if (app(SectionSystem::class)->available()) {
+            return ThemeEditorMode::Native;
+        }
+
+        return ThemeEditorMode::Unsupported;
     }
 
     /**
