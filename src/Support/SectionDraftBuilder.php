@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Support;
 
+use BagistoPlus\Visual\Data\NativeSectionType;
 use BagistoPlus\Visual\Data\SectionDraft;
 use Illuminate\Support\Collection;
 
@@ -46,10 +47,9 @@ class SectionDraftBuilder
         $order = 0;
 
         foreach ($this->rootIds($regions) as $blockId) {
-            $rowId = $this->ids->rowId($blockId);
             $block = $blocks[$blockId] ?? null;
 
-            if ($rowId === null || ! is_array($block)) {
+            if (! is_array($block)) {
                 continue;
             }
 
@@ -59,8 +59,13 @@ class SectionDraftBuilder
                 continue;
             }
 
+            $rowId = $this->ids->rowId($blockId);
+
             $drafts->push(new SectionDraft(
+                blockId: $blockId,
                 rowId: $rowId,
+                type: $type->code,
+                name: $this->name($block, $type),
                 options: $this->options($block, $type->fields(), $blocks, $existingOptions[$rowId] ?? []),
                 status: ! ($block['disabled'] ?? false),
                 sortOrder: ++$order,
@@ -68,6 +73,19 @@ class SectionDraftBuilder
         }
 
         return $drafts;
+    }
+
+    /**
+     * What the section is called, falling back to the name of its type for one
+     * the merchant has just added and not yet named.
+     *
+     * @param  array<string, mixed>  $block
+     */
+    protected function name(array $block, NativeSectionType $type): string
+    {
+        $name = $block['name'] ?? null;
+
+        return is_string($name) && $name !== '' ? $name : $type->title;
     }
 
     /**

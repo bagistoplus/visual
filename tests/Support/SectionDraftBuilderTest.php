@@ -25,6 +25,10 @@ it('reads a section block back as the options its row should hold', function () 
 
     expect($draft)->toBeInstanceOf(SectionDraft::class)
         ->and($draft->rowId)->toBe(7)
+        ->and($draft->blockId)->toBe('section-7')
+        ->and($draft->type)->toBe('image_carousel')
+        ->and($draft->name)->toBe('Hero')
+        ->and($draft->isNew())->toBeFalse()
         ->and($draft->status)->toBeTrue()
         ->and($draft->sortOrder)->toBe(1)
         ->and($draft->options)->toBe([
@@ -132,7 +136,7 @@ it('empties a list the editor removed every entry from', function () {
     expect(draftsFrom($page, [7 => ['images' => [['link' => '/one']]]])->first()->options['images'])->toBe([]);
 });
 
-it('ignores a block that is not a section row', function () {
+it('ignores a block that is not a section', function () {
     offerTypes(['image_carousel' => carouselType()]);
 
     $page = app(SectionPageBuilder::class)->build([
@@ -142,4 +146,55 @@ it('ignores a block that is not a section row', function () {
     $page['regions'][0]['blocks'] = ['section-7', 'section-7.images', 'stray'];
 
     expect(draftsFrom($page)->pluck('rowId')->all())->toBe([7]);
+});
+
+it('describes a section the merchant just added as one with no row yet', function () {
+    offerTypes(['image_carousel' => carouselType()]);
+
+    $page = app(SectionPageBuilder::class)->build([
+        new SectionRecord(7, 'image_carousel', 'Hero', true, 1, []),
+    ]);
+
+    $page['blocks']['newly-added'] = [
+        'id' => 'newly-added',
+        'type' => 'image_carousel',
+        'properties' => ['title' => 'Promo'],
+        'children' => [],
+    ];
+
+    $page['regions'][0]['blocks'] = ['section-7', 'newly-added'];
+
+    $drafts = draftsFrom($page);
+
+    expect($drafts->map(fn (SectionDraft $d) => [$d->blockId, $d->rowId, $d->sortOrder])->all())
+        ->toBe([['section-7', 7, 1], ['newly-added', null, 2]])
+        ->and($drafts->last()->isNew())->toBeTrue()
+        ->and($drafts->last()->type)->toBe('image_carousel')
+        ->and($drafts->last()->options['title'])->toBe('Promo');
+});
+
+it('names a section the merchant has not named after its type', function () {
+    offerTypes(['image_carousel' => carouselType()]);
+
+    $page = [
+        'blocks' => [
+            'fresh' => ['id' => 'fresh', 'type' => 'image_carousel', 'properties' => [], 'children' => []],
+        ],
+        'regions' => [['name' => 'content', 'shared' => false, 'blocks' => ['fresh']]],
+    ];
+
+    expect(draftsFrom($page)->first()->name)->toBe('Image Carousel');
+});
+
+it('stops describing a section the page no longer holds', function () {
+    offerTypes(['image_carousel' => carouselType()]);
+
+    $page = app(SectionPageBuilder::class)->build([
+        new SectionRecord(7, 'image_carousel', 'Hero', true, 1, []),
+        new SectionRecord(8, 'image_carousel', 'Promo', true, 2, []),
+    ]);
+
+    $page['regions'][0]['blocks'] = ['section-8'];
+
+    expect(draftsFrom($page)->pluck('rowId')->all())->toBe([8]);
 });

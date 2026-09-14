@@ -48,18 +48,70 @@ class SectionStore
     /**
      * Hold what the editor arranged, until it is published.
      *
+     * A section the merchant added is stored at once, switched off live and on
+     * in draft, which is where Bagisto's own editor leaves a new one. A section
+     * they removed is deleted at once, which is also what Bagisto does: there
+     * is no draft that remembers a deletion, so discarding will not bring it
+     * back.
+     *
      * @param  Collection<int, SectionDraft>  $drafts
      */
-    public function saveDrafts(Collection $drafts, string $locale): void
+    public function saveDrafts(Collection $drafts, int $channelId, string $themeCode, string $locale): void
+    {
+        $repository = $this->repository();
+        $rowIds = [];
+
+        foreach ($drafts as $draft) {
+            $rowId = $draft->isNew()
+                ? $this->create($draft, $channelId, $themeCode)
+                : $draft->rowId;
+
+            $repository->saveDraft($rowId, $locale, $draft->options);
+            $repository->saveStatusDraft($rowId, $draft->status);
+
+            $rowIds[] = $rowId;
+        }
+
+        $this->deleteMissing($channelId, $themeCode, $rowIds);
+
+        $repository->saveOrderDraft($rowIds);
+    }
+
+    /**
+     * Store a section the merchant added, and answer the row it was given.
+     */
+    protected function create(SectionDraft $draft, int $channelId, string $themeCode): int
+    {
+        $section = $this->repository()->create([
+            'name' => $draft->name,
+            'type' => $draft->type,
+            'channel_id' => $channelId,
+            'theme_code' => $themeCode,
+            'sort_order' => $draft->sortOrder,
+            'status' => 0,
+            'draft_status' => true,
+        ]);
+
+        return (int) $section->id;
+    }
+
+    /**
+     * Delete the sections of a channel's theme the page no longer holds.
+     *
+     * @param  array<int, int>  $keep
+     */
+    protected function deleteMissing(int $channelId, string $themeCode, array $keep): void
     {
         $repository = $this->repository();
 
-        foreach ($drafts as $draft) {
-            $repository->saveDraft($draft->rowId, $locale, $draft->options);
-            $repository->saveStatusDraft($draft->rowId, $draft->status);
-        }
+        $stored = collect($repository->findWhere([
+            'channel_id' => $channelId,
+            'theme_code' => $themeCode,
+        ]))->map(fn (mixed $section) => (int) $section->id);
 
-        $repository->saveOrderDraft($drafts->map(fn (SectionDraft $draft) => $draft->rowId)->all());
+        foreach ($stored->diff($keep) as $rowId) {
+            $repository->delete($rowId);
+        }
     }
 
     /**
