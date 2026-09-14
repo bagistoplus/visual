@@ -71,6 +71,8 @@ return [
     'Add media' => 'Añadir medio',
     'Uploading...' => 'Subiendo...',
     'Failed to add media' => 'No se pudo añadir el medio',
+    'Loading...' => 'Cargando...',
+    'Available once the section is saved' => 'Disponible cuando la sección se haya guardado',
     'Search' => 'Buscar',
     'No match' => 'Sin coincidencias',
     'Remove' => 'Quitar',

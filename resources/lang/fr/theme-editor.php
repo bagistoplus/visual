@@ -71,6 +71,8 @@ return [
     'Add media' => 'Ajouter un média',
     'Uploading...' => 'Téléversement...',
     'Failed to add media' => 'Échec de l\'ajout du média',
+    'Loading...' => 'Chargement...',
+    'Available once the section is saved' => 'Disponible une fois la section enregistrée',
     'Search' => 'Rechercher',
     'No match' => 'Aucun résultat',
     'Remove' => 'Retirer',

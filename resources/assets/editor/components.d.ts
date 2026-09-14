@@ -91,6 +91,7 @@ declare module 'vue' {
     PublishAction: typeof import('./components/PublishAction.vue')['default']
     RadiusField: typeof import('./components/RadiusField.vue')['default']
     RichtextEditor: typeof import('./components/RichtextEditor.vue')['default']
+    SectionImagePicker: typeof import('./components/SectionImagePicker.vue')['default']
     SelectInput: typeof import('./components/SelectInput.vue')['default']
     SpacingField: typeof import('./components/SpacingField.vue')['default']
     Spinner: typeof import('./components/Spinner.vue')['default']

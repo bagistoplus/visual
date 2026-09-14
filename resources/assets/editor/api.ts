@@ -96,6 +96,43 @@ export function uploadSectionMedia(section: number, file: File) {
   );
 }
 
+export interface SectionMedia {
+  path: string;
+  url: string;
+  section: number;
+}
+
+/**
+ * Every file the theme's sections hold. A section can be pointed at one another
+ * section already uses, which is what makes this a library rather than a list of
+ * what this section uploaded.
+ */
+export function listSectionMedia() {
+  const { state } = useState();
+  const { get } = useHttpClient();
+
+  const url = `${window.editorConfig.routes.listSectionMedia}?theme=${encodeURIComponent(state.theme!.code)}`;
+
+  return get<SectionMedia[]>(url);
+}
+
+/**
+ * Keep a copy of a file among the given section's own media.
+ *
+ * Bagisto deletes every file a section's options stop naming, so a section
+ * pointed at a file another one owns would lose it on that section's next save.
+ */
+export function copySectionMedia(section: number, path: string) {
+  const { state } = useState();
+  const { post } = useHttpClient();
+
+  return post<{ path: string; url: string }>(window.editorConfig.routes.copySectionMedia, {
+    theme: state.theme!.code,
+    section,
+    path,
+  });
+}
+
 export function createTemplate(payload: { type: string; name: string; basedOn?: string | null }) {
   const { state } = useState();
   const { post } = useHttpClient();

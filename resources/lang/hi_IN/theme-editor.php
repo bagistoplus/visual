@@ -71,6 +71,8 @@ return [
     'Add media' => 'मीडिया जोड़ें',
     'Uploading...' => 'अपलोड हो रहा है...',
     'Failed to add media' => 'मीडिया नहीं जोड़ा जा सका',
+    'Loading...' => 'लोड हो रहा है...',
+    'Available once the section is saved' => 'अनुभाग सहेजने के बाद उपलब्ध',
     'Search' => 'खोजें',
     'No match' => 'कोई मेल नहीं',
     'Remove' => 'हटाएं',

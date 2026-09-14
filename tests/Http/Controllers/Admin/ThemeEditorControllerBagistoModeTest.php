@@ -159,3 +159,98 @@ it('refuses a file for a theme holding its edits in files', function () {
 
     callEditorMethod('uploadSectionMedia', [mediaRequest('visual-demo', 7)], ['sectionStore' => mediaStore('visual-demo')]);
 })->throws(NotFoundHttpException::class);
+
+function libraryStore(?string $theme, array $media = [], ?array $copy = null): SectionStore
+{
+    return new class($theme, $media, $copy) extends SectionStore
+    {
+        public array $copied = [];
+
+        public function __construct(protected ?string $theme, protected array $media, protected ?array $copy) {}
+
+        public function themeOf(int $rowId): ?string
+        {
+            return $this->theme;
+        }
+
+        public function media(string $themeCode): array
+        {
+            return $this->media;
+        }
+
+        public function copyMedia(int $rowId, string $path, string $themeCode): ?array
+        {
+            $this->copied = [$rowId, $path, $themeCode];
+
+            return $this->copy;
+        }
+    };
+}
+
+it('lists every file the theme sections hold', function () {
+    fakeSectionSystem(available: true);
+
+    $files = [['path' => 'themes/default/sections/7/a.png', 'url' => '/storage/a.png', 'section' => 7]];
+
+    $response = callEditorMethod(
+        'listSectionMedia',
+        [Request::create('/', 'GET', ['theme' => 'default'])],
+        ['sectionStore' => libraryStore('default', $files)],
+    );
+
+    expect($response->getData(true))->toBe($files);
+});
+
+it('lists nothing for a theme holding its edits in files', function () {
+    fakeSectionSystem(available: true);
+
+    callEditorMethod('listSectionMedia', [Request::create('/', 'GET', ['theme' => 'visual-demo'])]);
+})->throws(NotFoundHttpException::class);
+
+it('copies a file into the section it is to be drawn by', function () {
+    fakeSectionSystem(available: true);
+
+    $copy = ['path' => 'themes/default/sections/9/b.png', 'url' => '/storage/b.png'];
+    $store = libraryStore('default', [], $copy);
+
+    $response = callEditorMethod(
+        'copySectionMedia',
+        [Request::create('/', 'POST', [
+            'theme' => 'default',
+            'section' => 9,
+            'path' => 'themes/default/sections/7/a.png',
+        ])],
+        ['sectionStore' => $store],
+    );
+
+    expect($store->copied)->toBe([9, 'themes/default/sections/7/a.png', 'default'])
+        ->and($response->getData(true))->toBe($copy);
+});
+
+it('refuses to copy a file the theme does not hold', function () {
+    fakeSectionSystem(available: true);
+
+    callEditorMethod(
+        'copySectionMedia',
+        [Request::create('/', 'POST', [
+            'theme' => 'default',
+            'section' => 9,
+            'path' => '../../../.env',
+        ])],
+        ['sectionStore' => libraryStore('default', [], null)],
+    );
+})->throws(NotFoundHttpException::class);
+
+it('refuses to copy into a section stored under another theme', function () {
+    fakeSectionSystem(available: true);
+
+    callEditorMethod(
+        'copySectionMedia',
+        [Request::create('/', 'POST', [
+            'theme' => 'default',
+            'section' => 9,
+            'path' => 'themes/default/sections/7/a.png',
+        ])],
+        ['sectionStore' => libraryStore('other', [], ['path' => 'x', 'url' => 'x'])],
+    );
+})->throws(NotFoundHttpException::class);

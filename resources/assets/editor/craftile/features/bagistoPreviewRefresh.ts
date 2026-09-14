@@ -119,8 +119,7 @@ export function createBagistoPreviewRefresh(editor: CraftileEditor, state?: Stat
    * every edit here. On a screen wide enough to keep the settings panel beside
    * the preview, that panel is drawn only while something is selected, so it
    * would close and open again on every keystroke, resizing the preview with
-   * it. The selection is held across a reload this feature asked for, and let
-   * go of once the page it asked for has arrived.
+   * it. The selection is held across edits reload.
    */
   let holding = false;
   let holdTimer: ReturnType<typeof setTimeout> | undefined;

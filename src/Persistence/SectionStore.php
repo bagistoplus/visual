@@ -6,6 +6,7 @@ use BagistoPlus\Visual\Data\SectionDraft;
 use BagistoPlus\Visual\Data\SectionRecord;
 use BagistoPlus\Visual\Support\SectionOptions;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -197,6 +198,89 @@ class SectionStore
         return array_merge($media, [
             'url' => $this->mediaUrl($media['path'] ?? null),
         ]);
+    }
+
+    /**
+     * Every file the theme's sections hold, newest first.
+     *
+     * Bagisto deletes any file a section's options stop naming, so what is left
+     * on the disk is what is still in use, and the disk is the library.
+     *
+     * @return array<int, array{path: string, url: ?string, section: int}>
+     */
+    public function media(string $themeCode): array
+    {
+        $files = [];
+
+        foreach (Storage::directories($this->themeMediaDirectory($themeCode)) as $directory) {
+            foreach (Storage::files($directory) as $path) {
+                $files[] = [
+                    'path' => $path,
+                    'url' => $this->mediaUrl($path),
+                    'section' => (int) basename($directory),
+                    'modified' => Storage::lastModified($path),
+                ];
+            }
+        }
+
+        usort($files, fn (array $left, array $right) => $right['modified'] <=> $left['modified']);
+
+        return array_map(fn (array $file) => Arr::except($file, 'modified'), $files);
+    }
+
+    /**
+     * Keep a copy of another section's file among this one's own media.
+     *
+     * Pointing a section at a file another one owns is unsafe: the next save of
+     * the owning section deletes every file its own options stop naming, taking
+     * the file this one was drawing with it. A copy under a name of its own is
+     * what makes the reference survive.
+     *
+     * @return array{path: string, url: ?string}|null
+     */
+    public function copyMedia(int $rowId, string $path, string $themeCode): ?array
+    {
+        $source = $this->normalizeMediaPath($path);
+
+        if (! Str::startsWith($source, $this->themeMediaDirectory($themeCode).'/') || ! Storage::exists($source)) {
+            return null;
+        }
+
+        $copy = $this->themeMediaDirectory($themeCode).'/'.$rowId.'/'.Str::random(40).'.'.pathinfo($source, PATHINFO_EXTENSION);
+
+        Storage::copy($source, $copy);
+
+        return [
+            'path' => $copy,
+            'url' => $this->mediaUrl($copy),
+        ];
+    }
+
+    /**
+     * Where a theme keeps the media of all its sections, as
+     * `SectionRepository::mediaDirectory()` files them.
+     */
+    protected function themeMediaDirectory(string $themeCode): string
+    {
+        return 'themes/'.$themeCode.'/sections';
+    }
+
+    /**
+     * A stored path as the disk holds it.
+     *
+     * Section media is written and read through the default disk, which is what
+     * Bagisto's own repository uses, so whichever disk a store configures is the
+     * one both editors file under. A value may still carry the `storage/` prefix
+     * used before paths and urls were told apart, which the release that
+     * resolves its own paths reads off itself.
+     */
+    protected function normalizeMediaPath(string $path): string
+    {
+        if ($storage = $this->themeStorage()) {
+            return (string) $storage->normalize($path);
+        }
+
+        return ltrim(Str::chopStart(ltrim($path, '/'), 'storage/'), '/');
     }
 
     /**

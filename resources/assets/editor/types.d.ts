@@ -55,6 +55,8 @@ export interface ThemeEditorConfig {
     publishTheme: string;
     discardTheme: string;
     uploadSectionMedia: string;
+    listSectionMedia: string;
+    copySectionMedia: string;
     createTemplate: string;
     themesIndex: string;
     uploadImage: string;

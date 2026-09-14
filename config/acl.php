@@ -23,6 +23,8 @@ return [
             'visual.admin.editor.api.publish',
             'visual.admin.editor.api.discard',
             'visual.admin.editor.api.section_media',
+            'visual.admin.editor.api.section_media.list',
+            'visual.admin.editor.api.section_media.copy',
             'visual.admin.editor.api.templates.create',
             'visual.admin.editor.api.upload',
             'visual.admin.editor.api.images',

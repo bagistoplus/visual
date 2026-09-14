@@ -72,6 +72,8 @@ class ThemeEditorController extends Controller
                     'publishTheme' => route('visual.admin.editor.api.publish'),
                     'discardTheme' => route('visual.admin.editor.api.discard'),
                     'uploadSectionMedia' => route('visual.admin.editor.api.section_media'),
+                    'listSectionMedia' => route('visual.admin.editor.api.section_media.list'),
+                    'copySectionMedia' => route('visual.admin.editor.api.section_media.copy'),
                     'createTemplate' => route('visual.admin.editor.api.templates.create'),
                     'uploadImage' => route('visual.admin.editor.api.upload'),
                     'listImages' => route('visual.admin.editor.api.images'),
@@ -223,6 +225,50 @@ class ThemeEditorController extends Controller
         return response()->json(
             $this->sectionStore->storeMedia($validated['section'], $request->file('file'))
         );
+    }
+
+    /**
+     * Every file the theme's sections hold, so that a section can be pointed at
+     * one another section already uses.
+     */
+    public function listSectionMedia(Request $request)
+    {
+        $validated = $request->validate([
+            'theme' => ['required', 'string', Rule::in($this->getEditableThemes())],
+        ]);
+
+        abort_unless($this->resolveTheme($validated['theme'])->editorMode()->isBagisto(), 404);
+
+        return response()->json($this->sectionStore->media($validated['theme']));
+    }
+
+    /**
+     * Keep a copy of another section's file among this one's own media.
+     *
+     * The file has to be copied rather than referenced: Bagisto deletes every
+     * file a section's own options stop naming, so the section that owns it
+     * would take it away on its next save.
+     */
+    public function copySectionMedia(Request $request)
+    {
+        $validated = $request->validate([
+            'theme' => ['required', 'string', Rule::in($this->getEditableThemes())],
+            'section' => ['required', 'integer'],
+            'path' => ['required', 'string'],
+        ]);
+
+        abort_unless($this->resolveTheme($validated['theme'])->editorMode()->isBagisto(), 404);
+        abort_unless($this->sectionStore->themeOf($validated['section']) === $validated['theme'], 404);
+
+        $media = $this->sectionStore->copyMedia(
+            $validated['section'],
+            $validated['path'],
+            $validated['theme']
+        );
+
+        abort_if(is_null($media), 404);
+
+        return response()->json($media);
     }
 
     public function createTemplate(Request $request)

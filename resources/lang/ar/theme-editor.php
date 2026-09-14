@@ -71,6 +71,8 @@ return [
     'Add media' => 'إضافة وسائط',
     'Uploading...' => 'جارٍ الرفع...',
     'Failed to add media' => 'تعذّرت إضافة الوسائط',
+    'Loading...' => 'جارٍ التحميل...',
+    'Available once the section is saved' => 'متاح بعد حفظ القسم',
     'Search' => 'بحث',
     'No match' => 'لا توجد نتائج',
     'Remove' => 'إزالة',

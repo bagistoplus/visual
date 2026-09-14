@@ -19,6 +19,7 @@ import ColorSchemeGroup from '../../components/ColorSchemeGroup.vue';
 import ColorTokenPicker from '../../components/ColorTokenPicker.vue';
 import IconPicker from '../../components/IconPicker.vue';
 import ImagePicker from '../../components/ImagePicker.vue';
+import SectionImagePicker from '../../components/SectionImagePicker.vue';
 import VideoField from '../../components/VideoField.vue';
 import RichtextEditor from '../../components/RichtextEditor.vue';
 import GradientPicker from '../../components/GradientPicker.vue';
@@ -134,7 +135,7 @@ function configureHeader(ui: PluginContext['editor']['ui'], bagistoTheme: boolea
   });
 }
 
-function registerPropertyFields(ui: PluginContext['editor']['ui']) {
+function registerPropertyFields(ui: PluginContext['editor']['ui'], bagistoTheme: boolean) {
   ui.registerPropertyField({
     type: 'category',
     render: CategoryPicker,
@@ -195,9 +196,11 @@ function registerPropertyFields(ui: PluginContext['editor']['ui']) {
     render: IconPicker,
   });
 
+  // A Bagisto section's image lives among that section's own media, which is
+  // where its own editor keeps it and where its storefront reads it from.
   ui.registerPropertyField({
     type: 'image',
-    render: ImagePicker,
+    render: bagistoTheme ? SectionImagePicker : ImagePicker,
   });
 
   ui.registerPropertyField({
@@ -255,5 +258,5 @@ function registerPropertyFields(ui: PluginContext['editor']['ui']) {
 
 export function configureUI(ui: PluginContext['editor']['ui'], bagistoTheme = false) {
   configureHeader(ui, bagistoTheme);
-  registerPropertyFields(ui);
+  registerPropertyFields(ui, bagistoTheme);
 }

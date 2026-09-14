@@ -71,6 +71,8 @@ return [
     'Add media' => 'Add media',
     'Uploading...' => 'Uploading...',
     'Failed to add media' => 'Failed to add media',
+    'Loading...' => 'Loading...',
+    'Available once the section is saved' => 'Available once the section is saved',
     'Search' => 'Search',
     'No match' => 'No match',
     'Remove' => 'Remove',
