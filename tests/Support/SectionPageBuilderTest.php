@@ -92,6 +92,18 @@ it('marks a section that is switched off as disabled rather than dropping it', f
         ->and($page['regions'][0]['blocks'])->toBe(['section-7']);
 });
 
+it('fixes a section its type pins where it is', function () {
+    offerTypes(['image_carousel' => carouselType(), 'footer_links' => footerType()]);
+
+    $page = buildPage([
+        new SectionRecord(7, 'image_carousel', 'Hero', true, 1, []),
+        new SectionRecord(9, 'footer_links', 'Footer', true, 2, []),
+    ]);
+
+    expect($page['blocks']['section-9']['static'])->toBeTrue()
+        ->and($page['blocks']['section-7']['static'])->toBeFalse();
+});
+
 it('leaves out a row whose type the theme no longer offers', function () {
     offerTypes(['image_carousel' => carouselType()]);
 

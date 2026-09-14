@@ -111,6 +111,9 @@ class SectionPageBuilder
             'properties' => $this->scalarProperties($fields, $record->options),
             'children' => $this->listBlocks($id, $type->code, $fields, $record->options, $blocks),
             'disabled' => ! $record->status,
+            // A section its type pins is fixed where it is, as it is in
+            // Bagisto's own editor, which draws no drag handle for one.
+            'static' => $type->pinned,
         ];
     }
 
