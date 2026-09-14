@@ -10,10 +10,12 @@ use Illuminate\Support\Collection;
  * Reads `theme_sections` rows as the page the editor arranges.
  *
  * Craftile holds a page as a flat map of blocks that name their children by id,
- * gathered into regions. A section row becomes one block, the repeating lists
- * its type declares become blocks beneath it, and each entry of a list becomes
- * a block of its own, which is what lets an entry be selected and dragged
- * rather than edited down a column of the sidebar.
+ * gathered into regions. A section row becomes one block, and each entry of a
+ * repeating list its type declares becomes a block of its own, which is what
+ * lets an entry be selected and dragged rather than edited down a column of the
+ * sidebar. A type declaring several lists gets a block per list, so that an
+ * entry's place says which list it belongs to; declaring one, the entries are
+ * held by the section itself.
  *
  * The sections a type draws on every page are gathered into their own region,
  * so that editing a footer from the home page does not read as a change to the
@@ -113,13 +115,16 @@ class SectionPageBuilder
         array $values,
         array &$blocks
     ): array {
+        $repeaters = $this->fieldMapper->repeaters($fields);
+        $flatten = count($repeaters) === 1;
         $ids = [];
 
-        foreach ($this->fieldMapper->repeaters($fields) as $key => $repeater) {
+        foreach ($repeaters as $key => $repeater) {
             $listId = $this->ids->child($parentId, $key);
             $listType = $parentType.SectionBlockSchemaFactory::SEPARATOR.$key;
             $entryType = $listType.SectionBlockSchemaFactory::SEPARATOR.SectionBlockSchemaFactory::ENTRY;
             $entryFields = is_array($repeater['fields'] ?? null) ? $repeater['fields'] : [];
+            $holderId = $flatten ? $parentId : $listId;
 
             $entryIds = [];
 
@@ -129,13 +134,17 @@ class SectionPageBuilder
                 $blocks[$entryId] = [
                     'id' => $entryId,
                     'type' => $entryType,
-                    'parentId' => $listId,
+                    'parentId' => $holderId,
                     'index' => $index,
                     'properties' => $this->scalarProperties($entryFields, $entry),
                     'children' => $this->listBlocks($entryId, $entryType, $entryFields, $entry, $blocks),
                 ];
 
                 $entryIds[] = $entryId;
+            }
+
+            if ($flatten) {
+                return $entryIds;
             }
 
             $blocks[$listId] = [

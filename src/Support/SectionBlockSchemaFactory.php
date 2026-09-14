@@ -17,14 +17,22 @@ use Illuminate\Support\Str;
  * holds its entries, and the option key it is stored under is the block's own
  * place in the tree rather than a name its children have to carry.
  *
- * An image carousel is read as:
+ * Declare one list and its entries are held by whatever declared them:
  *
  *     image_carousel
- *     └── image_carousel.images          the repeater
- *         └── image_carousel.images.item an entry
+ *     └── image_carousel.images.item     a slide
  *
- * A repeater declared inside an entry nests the same way, which is how footer
- * links reach their columns and the links within them.
+ * Declare several and each gets a block of its own, so that an entry's place
+ * says which list it belongs to:
+ *
+ *     rich_section
+ *     ├── rich_section.slides            the first list
+ *     │   └── rich_section.slides.item
+ *     └── rich_section.services          the second
+ *         └── rich_section.services.item
+ *
+ * A list declared inside an entry nests the same way, which is how footer links
+ * reach their columns and the links within them.
  *
  * Building a schema reads the fields of the type it is built from, and a
  * product carousel builds its filter options from the catalogue. Schemas are
@@ -46,6 +54,7 @@ class SectionBlockSchemaFactory
     public function __construct(
         protected SectionFieldMapper $fieldMapper,
         protected SectionSystem $sectionSystem,
+        protected SectionIcons $icons,
     ) {}
 
     /**
@@ -98,45 +107,71 @@ class SectionBlockSchemaFactory
      */
     protected function repeaterSchemas(string $parentType, array $fields): array
     {
+        $repeaters = $this->fieldMapper->repeaters($fields);
+        $flatten = $this->flattens($fields);
         $schemas = [];
 
-        foreach ($this->fieldMapper->repeaters($fields) as $key => $repeater) {
+        foreach ($repeaters as $key => $repeater) {
             $listType = $parentType.self::SEPARATOR.$key;
             $entryType = $listType.self::SEPARATOR.self::ENTRY;
             $entryFields = is_array($repeater['fields'] ?? null) ? $repeater['fields'] : [];
 
-            $list = $this->schema(
-                type: $listType,
-                name: $this->label($repeater, $key),
-                icon: 'icon-list',
-                fields: [],
-                class: BagistoSectionBlock::class,
-                accepts: [$entryType],
-            );
+            if (! $flatten) {
+                $list = $this->schema(
+                    type: $listType,
+                    name: $this->label($repeater, $key),
+                    icon: 'icon-list',
+                    fields: [],
+                    class: BagistoSectionBlock::class,
+                    accepts: [$entryType],
+                );
 
-            $list->meta = [
-                'native' => true,
-                'repeater' => $key,
-                'addLabel' => is_string($repeater['add_label'] ?? null) ? $repeater['add_label'] : null,
-                'max' => $repeater['max'] ?? null,
-            ];
+                $list->meta = [
+                    'native' => true,
+                    'repeater' => $key,
+                    'addLabel' => is_string($repeater['add_label'] ?? null) ? $repeater['add_label'] : null,
+                    'max' => $repeater['max'] ?? null,
+                ];
+
+                $schemas[] = $list;
+            }
 
             $entry = $this->schema(
                 type: $entryType,
-                name: $this->label($repeater, $key),
+                name: Str::singular($this->label($repeater, $key)),
                 icon: 'icon-cms',
                 fields: $entryFields,
                 class: BagistoSectionBlock::class,
             );
 
-            $entry->meta = ['native' => true, 'entryOf' => $key];
+            $entry->meta = [
+                'native' => true,
+                'entryOf' => $key,
+                'addLabel' => is_string($repeater['add_label'] ?? null) ? $repeater['add_label'] : null,
+                'max' => $repeater['max'] ?? null,
+            ];
 
-            $schemas[] = $list;
             $schemas[] = $entry;
             $schemas = array_merge($schemas, $this->repeaterSchemas($entryType, $entryFields));
         }
 
         return $schemas;
+    }
+
+    /**
+     * Whether the entries of the lists declared among these fields are held by
+     * whatever declared them, rather than by a block standing for the list.
+     *
+     * A block holds one unnamed list of children, so a list needs a block of
+     * its own only when it would otherwise be mistaken for another. Declare one
+     * list and its entries sit directly under the section, which is a level of
+     * the tree the merchant does not have to open.
+     *
+     * @param  array<int, array<string, mixed>>  $fields
+     */
+    protected function flattens(array $fields): bool
+    {
+        return count($this->fieldMapper->repeaters($fields)) === 1;
     }
 
     /**
@@ -156,7 +191,7 @@ class SectionBlockSchemaFactory
             slug: Str::slug(str_replace([self::SEPARATOR, '_'], '-', $type)),
             class: $class,
             name: $name,
-            icon: $icon,
+            icon: $this->icons->svg($icon),
             properties: $this->fieldMapper->properties($fields),
             accepts: $accepts ?: $this->repeaterTypes($type, $fields),
         );
@@ -171,8 +206,10 @@ class SectionBlockSchemaFactory
      */
     protected function repeaterTypes(string $parentType, array $fields): array
     {
+        $suffix = $this->flattens($fields) ? self::SEPARATOR.self::ENTRY : '';
+
         return array_map(
-            fn (string $key) => $parentType.self::SEPARATOR.$key,
+            fn (string $key) => $parentType.self::SEPARATOR.$key.$suffix,
             array_keys($this->fieldMapper->repeaters($fields))
         );
     }

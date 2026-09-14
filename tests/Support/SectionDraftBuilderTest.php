@@ -63,7 +63,7 @@ it('rebuilds a list from the order it holds its entries in, not from their ids',
         ]),
     ]);
 
-    $page['blocks']['section-7.images']['children'] = [
+    $page['blocks']['section-7']['children'] = [
         'section-7.images.2',
         'section-7.images.0',
     ];
@@ -131,7 +131,7 @@ it('empties a list the editor removed every entry from', function () {
         ]),
     ]);
 
-    $page['blocks']['section-7.images']['children'] = [];
+    $page['blocks']['section-7']['children'] = [];
 
     expect(draftsFrom($page, [7 => ['images' => [['link' => '/one']]]])->first()->options['images'])->toBe([]);
 });
@@ -143,7 +143,7 @@ it('ignores a block that is not a section', function () {
         new SectionRecord(7, 'image_carousel', 'Hero', true, 1, []),
     ]);
 
-    $page['regions'][0]['blocks'] = ['section-7', 'section-7.images', 'stray'];
+    $page['regions'][0]['blocks'] = ['section-7', 'section-7.images.0', 'stray'];
 
     expect(draftsFrom($page)->pluck('rowId')->all())->toBe([7]);
 });
@@ -236,4 +236,43 @@ it('keeps the values of an entry the editor carried no properties for', function
 
     expect(draftsFrom($page, [7 => $stored])->first()->options['images'])
         ->toBe([['image' => 'a.webp', 'link' => '/one']]);
+});
+
+it('keeps the entries of a list the editor reported no children for', function () {
+    offerTypes(['image_carousel' => carouselType()]);
+
+    $stored = ['images' => [['link' => '/one']]];
+
+    $page = app(SectionPageBuilder::class)->build([
+        new SectionRecord(7, 'image_carousel', 'Hero', true, 1, $stored),
+    ]);
+
+    unset($page['blocks']['section-7']['children']);
+
+    expect(draftsFrom($page, [7 => $stored])->first()->options['images'])
+        ->toBe([['link' => '/one']]);
+});
+
+it('gives back exactly what an untouched section held', function () {
+    offerTypes(['image_carousel' => carouselType()]);
+
+    $stored = ['title' => 'Summer', 'images' => [['image' => 'a.webp', 'link' => '/one']]];
+
+    $page = app(SectionPageBuilder::class)->build([
+        new SectionRecord(7, 'image_carousel', 'Hero', true, 1, $stored),
+    ]);
+
+    expect(draftsFrom($page, [7 => $stored])->first()->options)->toBe($stored);
+});
+
+it('gives back exactly what an untouched section held when it holds no list', function () {
+    offerTypes(['image_carousel' => carouselType()]);
+
+    $stored = ['title' => 'Summer'];
+
+    $page = app(SectionPageBuilder::class)->build([
+        new SectionRecord(7, 'image_carousel', 'Hero', true, 1, $stored),
+    ]);
+
+    expect(draftsFrom($page, [7 => $stored])->first()->options)->toBe($stored);
 });

@@ -34,13 +34,11 @@ it('reads each entry of a repeating list as a block of its own', function () {
         ]),
     ]);
 
-    expect($page['blocks']['section-7']['children'])->toBe(['section-7.images'])
-        ->and($page['blocks']['section-7.images']['static'])->toBeTrue()
-        ->and($page['blocks']['section-7.images']['semanticId'])->toBe('images')
-        ->and($page['blocks']['section-7.images']['children'])->toBe(['section-7.images.0', 'section-7.images.1'])
+    expect($page['blocks']['section-7']['children'])->toBe(['section-7.images.0', 'section-7.images.1'])
+        ->and($page['blocks'])->not->toHaveKey('section-7.images')
         ->and($page['blocks']['section-7.images.1']['properties'])->toBe(['image' => 'b.webp', 'link' => '/two'])
         ->and($page['blocks']['section-7.images.1']['index'])->toBe(1)
-        ->and($page['blocks']['section-7.images.1']['parentId'])->toBe('section-7.images');
+        ->and($page['blocks']['section-7.images.1']['parentId'])->toBe('section-7');
 });
 
 it('reads a list declared inside an entry', function () {
@@ -54,8 +52,8 @@ it('reads a list declared inside an entry', function () {
         ]),
     ]);
 
-    expect($page['blocks']['section-3.columns.0']['children'])->toBe(['section-3.columns.0.links'])
-        ->and($page['blocks']['section-3.columns.0.links']['children'])
+    expect($page['blocks']['section-3']['children'])->toBe(['section-3.columns.0'])
+        ->and($page['blocks']['section-3.columns.0']['children'])
         ->toBe(['section-3.columns.0.links.0', 'section-3.columns.0.links.1'])
         ->and($page['blocks']['section-3.columns.0.links.1']['properties'])->toBe(['url' => '/terms']);
 });
@@ -102,7 +100,7 @@ it('leaves out a row whose type the theme no longer offers', function () {
         new SectionRecord(9, 'retired_type', 'Old', true, 2, []),
     ]);
 
-    expect(array_keys($page['blocks']))->toBe(['section-7.images', 'section-7'])
+    expect(array_keys($page['blocks']))->toBe(['section-7'])
         ->and($page['regions'][0]['blocks'])->toBe(['section-7']);
 });
 
@@ -115,6 +113,6 @@ it('numbers entries from zero however bagisto keyed them', function () {
         ]),
     ]);
 
-    expect($page['blocks']['section-7.images']['children'])->toBe(['section-7.images.0', 'section-7.images.1'])
+    expect($page['blocks']['section-7']['children'])->toBe(['section-7.images.0', 'section-7.images.1'])
         ->and($page['blocks']['section-7.images.0']['properties'])->toBe(['image' => 'a.webp']);
 });

@@ -40,7 +40,7 @@ it('draws a section with no repeater as a single block', function () {
         ->and($schemas['static_content']->accepts)->toBeEmpty();
 });
 
-it('gives a repeater a block of its own that holds its entries', function () {
+it('holds the entries of a lone repeater on the section itself', function () {
     $schemas = schemasFor(sectionType('image_carousel', [
         [
             'key' => 'images',
@@ -56,15 +56,13 @@ it('gives a repeater a block of its own that holds its entries', function () {
 
     expect(array_keys($schemas))->toBe([
         'image_carousel',
-        'image_carousel.images',
         'image_carousel.images.item',
     ])
-        ->and($schemas['image_carousel']->accepts)->toBe(['image_carousel.images'])
+        ->and($schemas['image_carousel']->accepts)->toBe(['image_carousel.images.item'])
         ->and($schemas['image_carousel']->properties)->toBeEmpty()
-        ->and($schemas['image_carousel.images']->accepts)->toBe(['image_carousel.images.item'])
-        ->and($schemas['image_carousel.images']->properties)->toBeEmpty()
-        ->and($schemas['image_carousel.images']->meta['repeater'])->toBe('images')
-        ->and($schemas['image_carousel.images']->meta['addLabel'])->toBe('Add slide')
+        ->and($schemas['image_carousel.images.item']->name)->toBe('Slider')
+        ->and($schemas['image_carousel.images.item']->meta['entryOf'])->toBe('images')
+        ->and($schemas['image_carousel.images.item']->meta['addLabel'])->toBe('Add slide')
         ->and($schemas['image_carousel.images.item']->properties)->toHaveCount(2)
         ->and($schemas['image_carousel.images.item']->class)->toBe(BagistoSectionBlock::class);
 });
@@ -92,13 +90,12 @@ it('nests a repeater declared inside an entry', function () {
 
     expect(array_keys($schemas))->toBe([
         'footer_links',
-        'footer_links.columns',
         'footer_links.columns.item',
-        'footer_links.columns.item.links',
         'footer_links.columns.item.links.item',
     ])
-        ->and($schemas['footer_links.columns']->meta['max'])->toBe(4)
-        ->and($schemas['footer_links.columns.item']->accepts)->toBe(['footer_links.columns.item.links'])
+        ->and($schemas['footer_links']->accepts)->toBe(['footer_links.columns.item'])
+        ->and($schemas['footer_links.columns.item']->meta['max'])->toBe(4)
+        ->and($schemas['footer_links.columns.item']->accepts)->toBe(['footer_links.columns.item.links.item'])
         ->and($schemas['footer_links.columns.item.links.item']->properties)->toHaveCount(2);
 });
 
@@ -110,7 +107,14 @@ it('holds every repeater a type declares, not just the first', function () {
     ]));
 
     expect($schemas['rich']->accepts)->toBe(['rich.slides', 'rich.services'])
-        ->and($schemas['rich']->properties)->toHaveCount(1);
+        ->and($schemas['rich']->properties)->toHaveCount(1)
+        ->and(array_keys($schemas))->toBe([
+            'rich',
+            'rich.slides',
+            'rich.slides.item',
+            'rich.services',
+            'rich.services.item',
+        ]);
 });
 
 it('carries what the editor arranges a section by', function () {
@@ -130,7 +134,7 @@ it('gives every schema a slug a blade component name tolerates', function () {
     ]));
 
     expect(collect($schemas)->map(fn (BlockSchema $schema) => $schema->slug)->values()->all())
-        ->toBe(['image-carousel', 'image-carousel-images', 'image-carousel-images-item']);
+        ->toBe(['image-carousel', 'image-carousel-images-item']);
 });
 
 it('builds the schemas of every type a theme offers', function () {
@@ -153,9 +157,17 @@ it('builds the schemas of every type a theme offers', function () {
 
     expect($schemas->pluck('type')->all())->toBe([
         'image_carousel',
-        'image_carousel.images',
         'image_carousel.images.item',
         'static_content',
     ])
         ->and($schemas->pluck('type')->duplicates())->toBeEmpty();
+});
+
+it('hands the editor markup for a section\'s icon, not a font class', function () {
+    $schemas = schemasFor(sectionType('image_carousel', [
+        ['key' => 'images', 'type' => 'repeater', 'label' => 'Slider', 'fields' => []],
+    ]));
+
+    expect($schemas['image_carousel']->icon)->toStartWith('<svg')
+        ->and($schemas['image_carousel.images.item']->icon)->toStartWith('<svg');
 });

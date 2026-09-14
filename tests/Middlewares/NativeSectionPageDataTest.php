@@ -74,7 +74,7 @@ it('reads a native theme\'s page from the rows its sections are stored as', func
     ]))->pageData();
 
     expect($page['blocks']['section-7']['properties'])->toBe(['title' => 'Summer'])
-        ->and($page['blocks']['section-7.images']['children'])->toBe(['section-7.images.0'])
+        ->and($page['blocks']['section-7']['children'])->toBe(['section-7.images.0'])
         ->and($page['regions'][0])->toBe([
             'name' => 'content',
             'shared' => false,

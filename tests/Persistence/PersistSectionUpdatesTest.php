@@ -24,10 +24,18 @@ function recordingStore(array $records): SectionStore
             return collect($this->records);
         }
 
-        public function saveDrafts(Collection $drafts, int $channelId, string $themeCode, string $locale): void
-        {
+        public array $previous = [];
+
+        public function saveDrafts(
+            Collection $drafts,
+            int $channelId,
+            string $themeCode,
+            string $locale,
+            array $previousOptions = []
+        ): void {
             $this->saved = $drafts->all();
             $this->savedWith = [$channelId, $themeCode, $locale];
+            $this->previous = $previousOptions;
         }
     };
 }
@@ -67,7 +75,7 @@ it('lays a changed block over the page the rows describe', function () {
                 'type' => 'image_carousel',
                 'name' => 'Hero',
                 'properties' => ['title' => 'Winter'],
-                'children' => ['section-7.images'],
+                'children' => ['section-7.images.0'],
             ],
         ],
         'regions' => contentRegion(['section-7']),
@@ -111,10 +119,9 @@ it('drops an entry the editor removed', function () {
 
     persistUpdates($store, [
         'blocks' => [
-            'section-7.images' => [
-                'id' => 'section-7.images',
-                'type' => 'image_carousel.images',
-                'semanticId' => 'images',
+            'section-7' => [
+                'id' => 'section-7',
+                'type' => 'image_carousel',
                 'properties' => [],
                 'children' => ['section-7.images.0'],
             ],
@@ -184,4 +191,17 @@ it('carries over an option no section type declares', function () {
     ]);
 
     expect($store->saved[0]->options['legacy'])->toBe('kept');
+});
+
+it('hands the store the options each row was holding, so an untouched one is left alone', function () {
+    $store = recordingStore([heroRow(['title' => 'Summer'])]);
+
+    persistUpdates($store, [
+        'blocks' => [],
+        'regions' => contentRegion(['section-7']),
+        'changes' => ['added' => [], 'updated' => [], 'removed' => []],
+    ]);
+
+    expect($store->previous)->toBe([7 => ['title' => 'Summer']])
+        ->and($store->saved[0]->options)->toBe($store->previous[7]);
 });

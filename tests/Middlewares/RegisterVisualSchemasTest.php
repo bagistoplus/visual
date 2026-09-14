@@ -77,7 +77,7 @@ it('registers the section schemas of a native theme while the editor is driving'
 
     $registered = collect(app(BlockSchemaRegistry::class)->all())->keys();
 
-    expect($registered)->toContain('image_carousel', 'image_carousel.images', 'image_carousel.images.item');
+    expect($registered)->toContain('image_carousel', 'image_carousel.images.item');
 });
 
 it('registers no section schema on a storefront request, which renders through bagisto', function () {

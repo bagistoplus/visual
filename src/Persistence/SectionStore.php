@@ -4,6 +4,7 @@ namespace BagistoPlus\Visual\Persistence;
 
 use BagistoPlus\Visual\Data\SectionDraft;
 use BagistoPlus\Visual\Data\SectionRecord;
+use BagistoPlus\Visual\Support\SectionOptions;
 use Illuminate\Support\Collection;
 
 /**
@@ -22,6 +23,8 @@ use Illuminate\Support\Collection;
 class SectionStore
 {
     protected const REPOSITORY = 'Webkul\Theme\Repositories\SectionRepository';
+
+    public function __construct(protected SectionOptions $options) {}
 
     /**
      * Every section of a channel's theme, in the order it holds them, each
@@ -54,10 +57,20 @@ class SectionStore
      * is no draft that remembers a deletion, so discarding will not bring it
      * back.
      *
+     * A section whose options come back as they were is left alone. The editor
+     * reports the whole page on every save, and writing a draft for each would
+     * leave every section on it holding a change the merchant never made.
+     *
      * @param  Collection<int, SectionDraft>  $drafts
+     * @param  array<int, array<string, mixed>>  $previousOptions  Options as read, keyed by row id.
      */
-    public function saveDrafts(Collection $drafts, int $channelId, string $themeCode, string $locale): void
-    {
+    public function saveDrafts(
+        Collection $drafts,
+        int $channelId,
+        string $themeCode,
+        string $locale,
+        array $previousOptions = []
+    ): void {
         $repository = $this->repository();
         $rowIds = [];
 
@@ -66,7 +79,10 @@ class SectionStore
                 ? $this->create($draft, $channelId, $themeCode)
                 : $draft->rowId;
 
-            $repository->saveDraft($rowId, $locale, $draft->options);
+            if ($draft->isNew() || ! $this->options->same($previousOptions[$draft->rowId] ?? [], $draft->options)) {
+                $repository->saveDraft($rowId, $locale, $draft->options);
+            }
+
             $repository->saveStatusDraft($rowId, $draft->status);
 
             $rowIds[] = $rowId;

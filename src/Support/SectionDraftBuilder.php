@@ -10,9 +10,9 @@ use Illuminate\Support\Collection;
  * Reads the page the editor arranged back as what each section row should hold.
  *
  * The mirror of `SectionPageBuilder`. A repeating list is rebuilt from the
- * order its block holds its entries in, never from the ids those entries
- * carry, because an id records where an entry was when the page was read and
- * says nothing about where the merchant has since dragged it.
+ * order its entries are held in, never from the ids those entries carry,
+ * because an id records where an entry was when the page was read and says
+ * nothing about where the merchant has since dragged it.
  *
  * An option a section type does not declare is left as it was found. The editor
  * never drew it, so it is not the editor's to remove.
@@ -134,15 +134,31 @@ class SectionDraftBuilder
                 : ($existing[$property->id] ?? null);
         }
 
+        $repeaters = $this->fieldMapper->repeaters($fields);
         $lists = $this->listsBeneath($block, $blocks);
 
-        foreach ($this->fieldMapper->repeaters($fields) as $key => $repeater) {
+        // Holding the entries of a lone list itself, a block with no children
+        // has either been emptied or has not been reported on. Saying which is
+        // the difference between having no children and not having been asked.
+        if (count($repeaters) === 1 && array_key_exists('children', $block)) {
+            $lists[array_key_first($repeaters)] ??= ['children' => []];
+        }
+
+        foreach ($repeaters as $key => $repeater) {
             $entryFields = is_array($repeater['fields'] ?? null) ? $repeater['fields'] : [];
             $list = $lists[$key] ?? null;
 
-            $options[$key] = $list === null
+            $entries = $list === null
                 ? ($existing[$key] ?? [])
                 : $this->entries($list, $entryFields, $blocks, $existing[$key] ?? []);
+
+            // A list that holds nothing and was never stored stays unwritten, so
+            // that rebuilding a section nobody edited gives back what it held.
+            if ($entries === [] && ! array_key_exists($key, $existing)) {
+                continue;
+            }
+
+            $options[$key] = $entries;
         }
 
         return $options;
@@ -161,14 +177,56 @@ class SectionDraftBuilder
 
         foreach ($block['children'] ?? [] as $childId) {
             $child = $blocks[$childId] ?? null;
-            $key = is_array($child) ? ($child['semanticId'] ?? null) : null;
+
+            if (! is_array($child)) {
+                continue;
+            }
+
+            $key = $child['semanticId'] ?? null;
 
             if (is_string($key)) {
                 $lists[$key] = $child;
+
+                continue;
             }
+
+            $key = $this->repeaterOf($child);
+
+            if ($key === null) {
+                continue;
+            }
+
+            $lists[$key] ??= ['children' => []];
+            $lists[$key]['children'][] = $childId;
         }
 
         return $lists;
+    }
+
+    /**
+     * The list an entry belongs to, read from the type it was registered under.
+     *
+     * A section declaring one list holds its entries itself, so there is no
+     * block standing for the list to ask. The type says it instead: an entry of
+     * "images" is registered as "<section>.images.item".
+     *
+     * @param  array<string, mixed>  $block
+     */
+    protected function repeaterOf(array $block): ?string
+    {
+        $type = $block['type'] ?? null;
+
+        if (! is_string($type)) {
+            return null;
+        }
+
+        $parts = explode(SectionBlockIds::SEPARATOR, $type);
+
+        if (array_pop($parts) !== SectionBlockSchemaFactory::ENTRY) {
+            return null;
+        }
+
+        return array_pop($parts);
     }
 
     /**

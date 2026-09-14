@@ -31,15 +31,16 @@ class PersistSectionUpdates
     ): void {
         $records = $this->store->records($channelId, $themeCode, $locale);
         $page = $this->pageBuilder->build($records, $themeCode);
+        $previous = $this->optionsByRow($records);
 
         $drafts = $this->draftBuilder->build(
             blocks: $this->apply($page['blocks'], $updates),
             regions: $updates->regions ?: $page['regions'],
-            existingOptions: $this->optionsByRow($records),
+            existingOptions: $previous,
             themeCode: $themeCode,
         );
 
-        $this->store->saveDrafts($drafts, $channelId, $themeCode, $locale);
+        $this->store->saveDrafts($drafts, $channelId, $themeCode, $locale, $previous);
     }
 
     /**
