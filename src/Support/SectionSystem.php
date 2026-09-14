@@ -22,6 +22,11 @@ class SectionSystem
     protected const VIEW_NAMESPACE = 'shop::sections.';
 
     /**
+     * @var array<string, Collection<string, NativeSectionType>>
+     */
+    protected array $cache = [];
+
+    /**
      * Whether sections are stored, and their types declared, the way native
      * mode needs. A release that keeps its section types to itself is not
      * editable here, because no theme could add one.
@@ -37,6 +42,9 @@ class SectionSystem
      * The section types a theme offers, keyed by code, in the order the editor
      * lists them.
      *
+     * Held for the rest of the request: the home page asks for the type of
+     * every section it draws.
+     *
      * @return Collection<string, NativeSectionType>
      */
     public function types(?string $themeCode = null): Collection
@@ -45,7 +53,11 @@ class SectionSystem
             return collect();
         }
 
-        return collect($this->schema()->types($themeCode))
+        if (isset($this->cache[(string) $themeCode])) {
+            return $this->cache[(string) $themeCode];
+        }
+
+        return $this->cache[(string) $themeCode] = collect($this->schema()->types($themeCode))
             ->map(fn (mixed $type) => new NativeSectionType(
                 code: $type->getCode(),
                 title: $type->getTitle(),
