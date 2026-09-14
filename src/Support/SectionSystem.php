@@ -19,6 +19,8 @@ class SectionSystem
 
     protected const SECTION_SCHEMA = 'Webkul\Theme\SectionSchema';
 
+    protected const VIEW_NAMESPACE = 'shop::sections.';
+
     /**
      * Whether sections are stored, and their types declared, the way native
      * mode needs. A release that keeps its section types to itself is not
@@ -51,6 +53,7 @@ class SectionSystem
                 singleton: $type->isSingleton(),
                 pinned: $type->isPinned(),
                 rendersInLayout: $type->rendersInLayout(),
+                view: $this->view($type),
                 fieldsResolver: fn () => $type->getFields(),
             ))
             ->keyBy(fn (NativeSectionType $type) => $type->code);
@@ -66,6 +69,21 @@ class SectionSystem
         }
 
         return $this->types($themeCode)->get($code);
+    }
+
+    /**
+     * Where the storefront draws a section of this type.
+     *
+     * A type names its own view once Bagisto lets it. Until then, and for any
+     * type that stays quiet, the view is named after the type.
+     */
+    protected function view(mixed $type): string
+    {
+        if (method_exists($type, 'getView')) {
+            return (string) $type->getView();
+        }
+
+        return self::VIEW_NAMESPACE.$type->getCode();
     }
 
     /**

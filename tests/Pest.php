@@ -59,6 +59,7 @@ if (! function_exists('carouselType')) {
             singleton: false,
             pinned: false,
             rendersInLayout: false,
+            view: 'shop::sections.image_carousel',
             fieldsResolver: fn () => [
                 ['key' => 'title', 'type' => 'text', 'label' => 'Title'],
                 [
@@ -85,6 +86,7 @@ if (! function_exists('footerType')) {
             singleton: true,
             pinned: true,
             rendersInLayout: true,
+            view: 'shop::sections.footer_links',
             fieldsResolver: fn () => [
                 [
                     'key' => 'columns',

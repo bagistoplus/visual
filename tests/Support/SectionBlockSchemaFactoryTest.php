@@ -17,6 +17,7 @@ function sectionType(string $code, array $fields, bool $singleton = false, bool 
         singleton: $singleton,
         pinned: $pinned,
         rendersInLayout: $layout,
+        view: "shop::sections.{$code}",
         fieldsResolver: fn () => $fields,
     );
 }

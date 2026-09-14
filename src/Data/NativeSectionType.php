@@ -13,6 +13,9 @@ use Closure;
  *
  * Fields are resolved on demand: a product carousel builds its filter options
  * from the catalogue, which listing the types a theme offers must not pay for.
+ *
+ * The view is where the storefront draws the section. Bagisto has no say in
+ * this yet, so a type that does not name one is drawn by `shop::sections.{code}`.
  */
 final class NativeSectionType
 {
@@ -31,6 +34,7 @@ final class NativeSectionType
         public readonly bool $singleton,
         public readonly bool $pinned,
         public readonly bool $rendersInLayout,
+        public readonly string $view,
         private readonly Closure $fieldsResolver,
     ) {}
 

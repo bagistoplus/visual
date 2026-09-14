@@ -110,6 +110,7 @@ it('reads the types a theme declares, each describing itself', function () {
         ->and($types->get('hero')->singleton)->toBeTrue()
         ->and($types->get('hero')->pinned)->toBeFalse()
         ->and($types->get('hero')->rendersInLayout)->toBeFalse()
+        ->and($types->get('hero')->view)->toBe('shop::sections.hero')
         ->and($types->get('hero')->fields())->toBe([['key' => 'title', 'type' => 'text', 'label' => 'Title']]);
 });
 
@@ -212,6 +213,67 @@ it('reads bagisto\'s own section types through the real registry', function () {
         ->and($types->get('footer_links')->rendersInLayout)->toBeTrue()
         ->and($types->get('services_content')->rendersInLayout)->toBeTrue()
         ->and($types->get('image_carousel')->rendersInLayout)->toBeFalse();
+})->skip(
+    fn () => ! app(SectionSystem::class)->available(),
+    'bagisto does not declare its section types'
+);
+
+it('lets a type name the view it is drawn by', function () {
+    bindSectionSchema(new class
+    {
+        public function types(?string $themeCode = null): Collection
+        {
+            return collect(['hero' => new class
+            {
+                public function getCode(): string
+                {
+                    return 'hero';
+                }
+
+                public function getTitle(): string
+                {
+                    return 'Hero';
+                }
+
+                public function getIcon(): string
+                {
+                    return 'icon-star';
+                }
+
+                public function isSingleton(): bool
+                {
+                    return false;
+                }
+
+                public function isPinned(): bool
+                {
+                    return false;
+                }
+
+                public function rendersInLayout(): bool
+                {
+                    return false;
+                }
+
+                public function getView(): string
+                {
+                    return 'premium::heroes.split';
+                }
+
+                public function getFields(): array
+                {
+                    return [];
+                }
+            }]);
+        }
+    });
+
+    expect(sectionSystem(available: true)->types()->get('hero')->view)->toBe('premium::heroes.split');
+});
+
+it('names bagisto\'s own sections after the types they are stored as', function () {
+    expect(app(SectionSystem::class)->types()->get('image_carousel')->view)
+        ->toBe('shop::sections.image_carousel');
 })->skip(
     fn () => ! app(SectionSystem::class)->available(),
     'bagisto does not declare its section types'
