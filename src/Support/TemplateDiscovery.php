@@ -251,10 +251,6 @@ class TemplateDiscovery
             return $theme;
         }
 
-        if (! isset(config('themes.shop', [])[$theme])) {
-            return null;
-        }
-
-        return Theme::make(config("themes.shop.{$theme}"));
+        return Theme::forCode($theme);
     }
 }

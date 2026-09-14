@@ -131,6 +131,7 @@ export default defineConfig({
             { text: 'Overview', link: '/theme-editor/overview' },
             { text: 'Interface Guide', link: '/theme-editor/interface-guide' },
             { text: 'Advanced Usage', link: '/theme-editor/advanced-usage' },
+            { text: 'Colors for Bagisto themes', link: '/theme-editor/bagisto-theme-colors' },
           ],
         },
         {

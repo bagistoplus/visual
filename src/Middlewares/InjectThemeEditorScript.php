@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Middlewares;
 
+use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use BagistoPlus\Visual\Persistence\SectionStore;
 use BagistoPlus\Visual\Support\EditorBlockSchemaSerializer;
 use BagistoPlus\Visual\Support\EditorInheritanceMetadata;
@@ -176,9 +177,9 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
     }
 
     /**
-     * How many sections are holding an unpublished change, so that the editor
-     * can say how much publishing or discarding would carry, the way Bagisto's
-     * own appearance editor does.
+     * How much publishing or discarding would carry, so that the editor can say
+     * so the way Bagisto's own appearance editor does: one for each section
+     * holding a change, and one more for the theme settings.
      *
      * A visual theme holds its edits in files rather than rows and has nothing
      * to count, so it is told nothing.
@@ -191,10 +192,21 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
             return null;
         }
 
-        return $this->sectionStore->countDrafts(
+        $sections = $this->sectionStore->countDrafts(
             (int) core()->getRequestedChannel()->id,
             $theme->code,
         );
+
+        return $sections + ($this->hasSettingsEdits($theme->code) ? 1 : 0);
+    }
+
+    /**
+     * Whether the theme settings are holding a change the storefront has not
+     * been given yet, which the editor data store marks as it saves.
+     */
+    protected function hasSettingsEdits(string $themeCode): bool
+    {
+        return file_exists(ThemePathsResolver::getThemeBaseDataPath($themeCode, 'editor/.last-edit'));
     }
 
     protected function getCurrentTheme()

@@ -4,6 +4,7 @@ namespace BagistoPlus\Visual\Theme;
 
 use BagistoPlus\Visual\Enums\ThemeEditorMode;
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
+use BagistoPlus\Visual\Support\BagistoThemeColors;
 use BagistoPlus\Visual\Support\SectionSystem;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use Craftile\Laravel\PropertyBag;
@@ -43,6 +44,24 @@ class Theme extends BagistoTheme
         return $name === 'settings' && $this->settings !== null;
     }
 
+    /**
+     * The theme registered under a code, or null when none is.
+     *
+     * A theme's entry in `config/themes.php` is keyed by its code and need not
+     * repeat it, as the stock theme's does not, so the key is what says which
+     * theme this is.
+     */
+    public static function forCode(string $themeCode): ?self
+    {
+        $attributes = config("themes.shop.{$themeCode}");
+
+        if (! is_array($attributes)) {
+            return null;
+        }
+
+        return self::make(['code' => $themeCode] + $attributes);
+    }
+
     public static function make(array $attributes): self
     {
         return new self(
@@ -59,7 +78,7 @@ class Theme extends BagistoTheme
             documentationUrl: $attributes['documentation_url'] ?? '',
             description: $attributes['description'] ?? null,
             isVisualTheme: $attributes['visual_theme'] ?? false,
-            settingsSchema: $attributes['settings_schema'] ?? [],
+            settingsSchema: self::resolveSettingsSchema($attributes),
             customize: $attributes['customize'] ?? []
         );
     }
@@ -92,6 +111,27 @@ class Theme extends BagistoTheme
         // Assigned after the parent constructor: Bagisto >= 2.4 promotes this property and would reset it,
         // Bagisto 2.3 does not declare it at all.
         $this->viewsNamespace = $viewsNamespace;
+    }
+
+    /**
+     * The schema a theme is edited with.
+     *
+     * A visual theme carries one, loaded from its own settings file. A theme
+     * Bagisto draws the sections of has no such file, so its colours stand in:
+     * the ones it declared under `customize.colors`, or the built-in two.
+     *
+     * @param  array<string, mixed>  $attributes
+     * @return array<int, array<string, mixed>>
+     */
+    protected static function resolveSettingsSchema(array $attributes): array
+    {
+        $schema = $attributes['settings_schema'] ?? [];
+
+        if (! empty($schema) || ($attributes['visual_theme'] ?? false)) {
+            return $schema;
+        }
+
+        return (new BagistoThemeColors)->schema($attributes['customize'] ?? []);
     }
 
     public function isVisualTheme(): bool

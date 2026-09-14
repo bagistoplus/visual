@@ -9,6 +9,7 @@ use BagistoPlus\Visual\Persistence\CreateTemplate;
 use BagistoPlus\Visual\Persistence\Data\EditorUpdateData;
 use BagistoPlus\Visual\Persistence\Data\FullPageEditorData;
 use BagistoPlus\Visual\Persistence\Data\ThemeSettingsUpdateData;
+use BagistoPlus\Visual\Persistence\DiscardTheme;
 use BagistoPlus\Visual\Persistence\PersistEditorUpdates;
 use BagistoPlus\Visual\Persistence\PersistSectionUpdates;
 use BagistoPlus\Visual\Persistence\PersistThemeSettings;
@@ -44,6 +45,7 @@ class ThemeEditorController extends Controller
         protected PersistEditorUpdates $persistEditorUpdates,
         protected PersistThemeSettings $persistThemeSettings,
         protected PublishTheme $publishTheme,
+        protected DiscardTheme $discardTheme,
         protected RenderPreview $renderPreview,
         protected ThemeSettingsLoader $themeSettingsLoader,
         protected TemplateDiscovery $templateDiscovery,
@@ -137,6 +139,14 @@ class ThemeEditorController extends Controller
         $data = ThemeSettingsUpdateData::fromValidated($validated);
         $this->persistThemeSettings->handle($data);
 
+        // A theme whose sections Bagisto draws reaches its colours through a
+        // stylesheet in the head, which a morph of the body would not carry.
+        // Answering nothing is what tells the editor to reload the preview,
+        // which is what every other edit on such a theme does anyway.
+        if ($this->resolveTheme($validated['theme'])->editorMode()->isBagisto()) {
+            return response('');
+        }
+
         return $this->renderPreview->execute($data->templateUrl);
     }
 
@@ -155,6 +165,10 @@ class ThemeEditorController extends Controller
                 $this->channelId($validated['channel'] ?? core()->getDefaultChannelCode()),
                 $validated['theme'],
             );
+
+            // The sections are rows and the theme settings are files, and the
+            // one button publishes both.
+            $this->publishTheme->handle($validated['theme']);
 
             return response()->json([
                 'success' => true,
@@ -196,6 +210,8 @@ class ThemeEditorController extends Controller
             $this->channelId($validated['channel'] ?? core()->getDefaultChannelCode()),
             $validated['theme'],
         );
+
+        $this->discardTheme->handle($validated['theme']);
 
         return response()->json([
             'success' => true,
@@ -282,7 +298,7 @@ class ThemeEditorController extends Controller
             'basedOn' => ['nullable', 'string'],
         ]);
 
-        $theme = Theme::make(config("themes.shop.{$validated['theme']}"));
+        $theme = $this->resolveTheme($validated['theme']);
 
         try {
             $template = ($this->createTemplate)(
@@ -557,21 +573,27 @@ class ThemeEditorController extends Controller
     protected function checkIfHaveEdits(string $themeCode): bool
     {
         if ($this->resolveTheme($themeCode)->editorMode()->isBagisto()) {
-            return $this->sectionStore->hasDrafts(
-                $this->channelId(core()->getRequestedChannelCode()),
-                $themeCode,
-            );
+            return $this->draftCount($themeCode) > 0;
         }
 
-        $lastEditFile = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'editor/.last-edit');
-
-        return file_exists($lastEditFile);
+        return $this->hasFileEdits($themeCode);
     }
 
     /**
-     * How many sections are holding an unpublished change. Null for a theme
-     * whose edits are held in files rather than rows, which has nothing to
-     * count.
+     * Whether the theme is holding a change in files, which for a theme whose
+     * sections Bagisto stores means its settings and nothing else.
+     */
+    protected function hasFileEdits(string $themeCode): bool
+    {
+        return file_exists(ThemePathsResolver::getThemeBaseDataPath($themeCode, 'editor/.last-edit'));
+    }
+
+    /**
+     * How much publishing would carry: a section holding a change counts as
+     * one, and the theme settings as one more, however many of them changed.
+     *
+     * Null for a theme whose edits are held in files alone, which has undo
+     * rather than a discard button and nothing to count.
      */
     protected function draftCount(string $themeCode): ?int
     {
@@ -579,10 +601,12 @@ class ThemeEditorController extends Controller
             return null;
         }
 
-        return $this->sectionStore->countDrafts(
+        $sections = $this->sectionStore->countDrafts(
             $this->channelId(core()->getRequestedChannelCode()),
             $themeCode,
         );
+
+        return $sections + ($this->hasFileEdits($themeCode) ? 1 : 0);
     }
 
     protected function translateSettingsSchema(array $settingsSchema): array
@@ -658,13 +682,13 @@ class ThemeEditorController extends Controller
      */
     protected function resolveTheme(string $themeCode): Theme
     {
-        $attributes = config("themes.shop.{$themeCode}");
+        $theme = Theme::forCode($themeCode);
 
-        if (! $attributes) {
+        if (! $theme) {
             abort(404, "Theme {$themeCode} not found");
         }
 
-        return Theme::make(['code' => $themeCode] + $attributes);
+        return $theme;
     }
 
     /**

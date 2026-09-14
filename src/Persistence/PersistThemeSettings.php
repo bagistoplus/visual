@@ -36,8 +36,8 @@ class PersistThemeSettings
         $diff = $parent ? $this->editorDataStore->diff($clean, $parentData) : $clean;
 
         if ($parent && $this->editorDataStore->localeFromRelative($parent) !== $data->locale) {
-            $themeConfig = config("themes.shop.{$data->theme}");
-            $schema = $themeConfig ? Theme::make($themeConfig)->settingsSchema : [];
+            $theme = Theme::forCode($data->theme);
+            $schema = $theme ? $theme->settingsSchema : [];
             $diff = $this->editorDataStore->merge($diff, $this->localizedProperties->themeSettingsFragment($clean, $schema));
         }
 
@@ -60,14 +60,11 @@ class PersistThemeSettings
 
     protected function loadExistingSettings(string $themeCode, string $channel, string $locale): array
     {
-        // Get theme config
-        $themeConfig = config("themes.shop.{$themeCode}");
+        $theme = Theme::forCode($themeCode);
 
-        if (! $themeConfig) {
+        if (! $theme) {
             return [];
         }
-
-        $theme = Theme::make($themeConfig);
 
         // Try to find existing settings file using fallback hierarchy
         $settingsPath = ThemePathsResolver::resolveThemeSettingsPath(

@@ -1,6 +1,7 @@
 <?php
 
 use BagistoPlus\Visual\Http\Controllers\Admin\ThemeEditorController;
+use BagistoPlus\Visual\Persistence\DiscardTheme;
 use BagistoPlus\Visual\Persistence\SectionStore;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use Craftile\Laravel\PropertyBag;
@@ -92,13 +93,26 @@ it('drops the drafts of a theme whose sections bagisto stores', function () {
         }
     };
 
+    $files = new class extends DiscardTheme
+    {
+        public array $discarded = [];
+
+        public function __construct() {}
+
+        public function handle(string $themeCode): void
+        {
+            $this->discarded[] = $themeCode;
+        }
+    };
+
     $response = callEditorMethod(
         'discardTheme',
         [Request::create('/', 'POST', ['theme' => 'default'])],
-        ['sectionStore' => $store],
+        ['sectionStore' => $store, 'discardTheme' => $files],
     );
 
     expect($store->discarded)->toBe([1, 'default'])
+        ->and($files->discarded)->toBe(['default'])
         ->and($response->getData(true)['success'])->toBeTrue();
 });
 
