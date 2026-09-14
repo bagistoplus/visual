@@ -361,8 +361,30 @@ class SectionStore
             name: (string) $section->name,
             status: (bool) ($section->draft_status ?? $section->status),
             sortOrder: (int) ($section->draft_sort_order ?? $section->sort_order),
-            options: is_array($options) ? $options : [],
+            options: $this->forEditor($section, is_array($options) ? $options : []),
         );
+    }
+
+    /**
+     * Options as the type they belong to is edited with.
+     *
+     * A type may keep its options in a shape of its own: footer links are
+     * stored as a column per key and edited as a list of columns. Bagisto's
+     * repository writes every draft through `prepareForStorage()`, and this is
+     * its other half, without which such a section reads as holding nothing.
+     *
+     * @param  array<string, mixed>  $options
+     * @return array<string, mixed>
+     */
+    protected function forEditor(mixed $section, array $options): array
+    {
+        $type = method_exists($section, 'getTypeInstance') ? $section->getTypeInstance() : null;
+
+        if (! $type || ! method_exists($type, 'prepareForEditor')) {
+            return $options;
+        }
+
+        return $type->prepareForEditor($options);
     }
 
     /**
