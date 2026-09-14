@@ -79,6 +79,49 @@ class SectionFieldMapper
     }
 
     /**
+     * A value as the field it belongs to is stored.
+     *
+     * The editor carries an image as the path it was uploaded to together with
+     * what the merchant said about it, while Bagisto stores the path alone. The
+     * path is what is written, so that a section saved here is a section
+     * Bagisto's own appearance editor and storefront still read.
+     */
+    public function storageValue(string $type, mixed $value): mixed
+    {
+        if ($type !== self::IMAGE) {
+            return $value;
+        }
+
+        if (is_string($value) || is_null($value)) {
+            return $value;
+        }
+
+        $path = data_get($value, 'path');
+
+        return is_string($path) ? $path : null;
+    }
+
+    /**
+     * The kind each field is declared as, keyed by the option it is stored
+     * under.
+     *
+     * @param  array<int, array<string, mixed>>  $fields
+     * @return array<string, string>
+     */
+    public function kinds(array $fields): array
+    {
+        $kinds = [];
+
+        foreach ($fields as $field) {
+            if (is_string($field['key'] ?? null) && is_string($field['type'] ?? null)) {
+                $kinds[$field['key']] = $field['type'];
+            }
+        }
+
+        return $kinds;
+    }
+
+    /**
      * The setting that draws one field, or null for a kind the editor has no
      * setting for, which is left uneditable rather than drawn as the wrong one.
      *

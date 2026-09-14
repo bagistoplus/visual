@@ -276,3 +276,38 @@ it('gives back exactly what an untouched section held when it holds no list', fu
 
     expect(draftsFrom($page, [7 => $stored])->first()->options)->toBe($stored);
 });
+
+it('stores an image as the path bagisto reads, not as the editor carries it', function () {
+    offerTypes(['image_carousel' => carouselType()]);
+
+    $page = app(SectionPageBuilder::class)->build([
+        new SectionRecord(7, 'image_carousel', 'Hero', true, 1, [
+            'images' => [['image' => 'storage/themes/default/sections/7/a.webp', 'link' => '/one']],
+        ]),
+    ]);
+
+    $page['blocks']['section-7.images.0']['properties'] = [
+        'image' => [
+            'path' => 'storage/themes/default/sections/7/b.webp',
+            'alt' => 'A slide',
+            'focalPoint' => ['x' => 50, 'y' => 50],
+        ],
+        'link' => '/one',
+    ];
+
+    expect(draftsFrom($page)->first()->options['images'])
+        ->toBe([['image' => 'storage/themes/default/sections/7/b.webp', 'link' => '/one']]);
+});
+
+it('leaves an image the editor carries as a plain path alone', function () {
+    offerTypes(['image_carousel' => carouselType()]);
+
+    $page = app(SectionPageBuilder::class)->build([
+        new SectionRecord(7, 'image_carousel', 'Hero', true, 1, [
+            'images' => [['image' => 'storage/a.webp', 'link' => '/one']],
+        ]),
+    ]);
+
+    expect(draftsFrom($page)->first()->options['images'])
+        ->toBe([['image' => 'storage/a.webp', 'link' => '/one']]);
+});

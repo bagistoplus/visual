@@ -24,6 +24,11 @@ class SectionStore
 {
     protected const REPOSITORY = 'Webkul\Theme\Repositories\SectionRepository';
 
+    /**
+     * The request attribute Bagisto reads a drafted section through.
+     */
+    protected const PREVIEWING = 'appearance_previewing';
+
     public function __construct(protected SectionOptions $options) {}
 
     /**
@@ -128,6 +133,22 @@ class SectionStore
         foreach ($stored->diff($keep) as $rowId) {
             $repository->delete($rowId);
         }
+    }
+
+    /**
+     * The sections a channel's theme draws, each resolved to the draft it is
+     * holding, as Bagisto's own preview resolves them.
+     *
+     * Marking the request as previewing is what makes the layout draw its
+     * drafted footer and services too, since it asks for those itself.
+     *
+     * @return iterable<mixed>
+     */
+    public function draftedForPreview(int $channelId, string $themeCode, string $locale): iterable
+    {
+        request()->attributes->set(self::PREVIEWING, true);
+
+        return $this->repository()->getDraftedForPreview($channelId, $themeCode, $locale);
     }
 
     /**

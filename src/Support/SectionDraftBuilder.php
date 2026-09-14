@@ -127,11 +127,14 @@ class SectionDraftBuilder
         $options = $this->undeclared($fields, $existing);
 
         $properties = is_array($block['properties'] ?? null) ? $block['properties'] : [];
+        $kinds = $this->fieldMapper->kinds($fields);
 
         foreach ($this->fieldMapper->properties($fields) as $property) {
-            $options[$property->id] = array_key_exists($property->id, $properties)
+            $value = array_key_exists($property->id, $properties)
                 ? $properties[$property->id]
                 : ($existing[$property->id] ?? null);
+
+            $options[$property->id] = $this->fieldMapper->storageValue($kinds[$property->id] ?? '', $value);
         }
 
         $repeaters = $this->fieldMapper->repeaters($fields);

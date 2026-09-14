@@ -6,6 +6,7 @@ use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Theme\Themes;
 use BagistoPlus\Visual\ThemePathsResolver;
 use BagistoPlus\Visual\View\BladeDirectives;
+use BagistoPlus\Visual\View\Composers\DraftedSectionsComposer;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
@@ -45,5 +46,7 @@ class ViewServiceProvider extends ServiceProvider
                 $view->with('customer', auth('customer')->user());
             }
         });
+
+        view()->composer('shop::home.index', DraftedSectionsComposer::class.'@compose');
     }
 }

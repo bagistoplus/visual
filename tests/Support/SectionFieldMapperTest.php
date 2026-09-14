@@ -103,3 +103,21 @@ it('leaves repeaters out of the settings and hands them over separately', functi
         ->and($mapper->repeaters($fields))->toHaveKey('images')
         ->and($mapper->repeaters($fields)['images']['fields'])->toHaveCount(1);
 });
+
+it('stores an image as its path and anything else as it stands', function () {
+    $mapper = new SectionFieldMapper;
+
+    expect($mapper->storageValue('image', ['path' => 'a.webp', 'alt' => 'x']))->toBe('a.webp')
+        ->and($mapper->storageValue('image', 'a.webp'))->toBe('a.webp')
+        ->and($mapper->storageValue('image', null))->toBeNull()
+        ->and($mapper->storageValue('image', ['alt' => 'no path']))->toBeNull()
+        ->and($mapper->storageValue('text', ['not' => 'touched']))->toBe(['not' => 'touched']);
+});
+
+it('reports the kind each field is declared as', function () {
+    expect((new SectionFieldMapper)->kinds([
+        ['key' => 'title', 'type' => 'text'],
+        ['key' => 'banner', 'type' => 'image'],
+        ['type' => 'text'],
+    ]))->toBe(['title' => 'text', 'banner' => 'image']);
+});
