@@ -64,6 +64,17 @@ return [
     'Image uploaded successfully' => 'تم تحميل الصورة بنجاح',
     'Failed to upload image' => 'فشل تحميل الصورة',
 
+    'Add filter' => 'إضافة مرشّح',
+    'Remove filter' => 'إزالة المرشّح',
+    'Every filter is already in use' => 'كل المرشّحات مستخدمة بالفعل',
+
+    'Add media' => 'إضافة وسائط',
+    'Uploading...' => 'جارٍ الرفع...',
+    'Failed to add media' => 'تعذّرت إضافة الوسائط',
+    'Search' => 'بحث',
+    'No match' => 'لا توجد نتائج',
+    'Remove' => 'إزالة',
+    'Select' => 'اختيار',
     'Search a section' => 'البحث عن قسم...',
     'Layout Header Sections' => 'أقسام رأس الصفحة',
     'Template Sections' => 'أقسام الصفحة',

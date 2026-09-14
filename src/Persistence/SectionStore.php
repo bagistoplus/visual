@@ -5,7 +5,10 @@ namespace BagistoPlus\Visual\Persistence;
 use BagistoPlus\Visual\Data\SectionDraft;
 use BagistoPlus\Visual\Data\SectionRecord;
 use BagistoPlus\Visual\Support\SectionOptions;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
  * Reads and writes `theme_sections` through Bagisto's own repository.
@@ -23,6 +26,13 @@ use Illuminate\Support\Collection;
 class SectionStore
 {
     protected const REPOSITORY = 'Webkul\Theme\Repositories\SectionRepository';
+
+    /**
+     * Turns a stored path into the url the storefront reaches it by. Added
+     * after the section system landed, so a release without it says where its
+     * files are in the path itself.
+     */
+    protected const THEME_STORAGE = 'Webkul\Theme\ThemeStorage';
 
     /**
      * The request attribute Bagisto reads a drafted section through.
@@ -171,6 +181,63 @@ class SectionStore
     }
 
     /**
+     * Keep a file among a section's own media, and answer it as the storefront
+     * reaches it.
+     *
+     * Bagisto files a section's uploads under the row it is stored as and
+     * deletes any file its options stop naming, so a file kept here is a file
+     * Bagisto's own editor lists, replaces and cleans up.
+     *
+     * @return array{path: string, type: string, url: ?string}
+     */
+    public function storeMedia(int $rowId, UploadedFile $file): array
+    {
+        $media = $this->repository()->storeMedia($rowId, $file);
+
+        return array_merge($media, [
+            'url' => $this->mediaUrl($media['path'] ?? null),
+        ]);
+    }
+
+    /**
+     * Where a stored file is served from.
+     *
+     * Releases disagree on what they hand back: one answers a path on the disk
+     * and offers a storage object to resolve it, an earlier one answers a path
+     * already rooted in the public directory and offers nothing.
+     */
+    protected function mediaUrl(?string $path): ?string
+    {
+        if (! is_string($path) || $path === '') {
+            return null;
+        }
+
+        if ($storage = $this->themeStorage()) {
+            return $storage->embedUrl($path);
+        }
+
+        if (Str::startsWith($path, ['http://', 'https://', '//'])) {
+            return $path;
+        }
+
+        if (Str::startsWith($path, ['storage/', '/'])) {
+            return url($path);
+        }
+
+        return Storage::url($path);
+    }
+
+    /**
+     * The theme a section belongs to, or null when no such section is stored.
+     */
+    public function themeOf(int $rowId): ?string
+    {
+        $section = $this->repository()->find($rowId);
+
+        return $section?->theme_code;
+    }
+
+    /**
      * Give the storefront every change a channel's theme is holding.
      */
     public function publish(int $channelId, string $themeCode): void
@@ -212,6 +279,15 @@ class SectionStore
             sortOrder: (int) ($section->draft_sort_order ?? $section->sort_order),
             options: is_array($options) ? $options : [],
         );
+    }
+
+    /**
+     * What the installed Bagisto resolves a stored path with, or null on a
+     * release that has no such thing.
+     */
+    protected function themeStorage(): ?object
+    {
+        return class_exists(self::THEME_STORAGE) ? app(self::THEME_STORAGE) : null;
     }
 
     protected function repository(): mixed

@@ -64,6 +64,17 @@ return [
     'Image uploaded successfully' => 'छवि सफलतापूर्वक अपलोड हुई',
     'Failed to upload image' => 'छवि अपलोड करने में विफल',
 
+    'Add filter' => 'फ़िल्टर जोड़ें',
+    'Remove filter' => 'फ़िल्टर हटाएं',
+    'Every filter is already in use' => 'सभी फ़िल्टर पहले से उपयोग में हैं',
+
+    'Add media' => 'मीडिया जोड़ें',
+    'Uploading...' => 'अपलोड हो रहा है...',
+    'Failed to add media' => 'मीडिया नहीं जोड़ा जा सका',
+    'Search' => 'खोजें',
+    'No match' => 'कोई मेल नहीं',
+    'Remove' => 'हटाएं',
+    'Select' => 'चुनें',
     'Search a section' => 'अनुभाग खोजें...',
     'Layout Header Sections' => 'हेडर अनुभाग',
     'Template Sections' => 'पृष्ठ अनुभाग',

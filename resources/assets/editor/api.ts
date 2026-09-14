@@ -80,6 +80,22 @@ export function discardTheme() {
   return request;
 }
 
+export function uploadSectionMedia(section: number, file: File) {
+  const { state } = useState();
+  const { postFormData } = useHttpClient();
+
+  const payload = new FormData();
+
+  payload.append('theme', state.theme!.code);
+  payload.append('section', String(section));
+  payload.append('file', file);
+
+  return postFormData<{ path: string; type: string; url: string }>(
+    window.editorConfig.routes.uploadSectionMedia,
+    payload
+  );
+}
+
 export function createTemplate(payload: { type: string; name: string; basedOn?: string | null }) {
   const { state } = useState();
   const { post } = useHttpClient();

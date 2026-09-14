@@ -64,6 +64,17 @@ return [
     'Image uploaded successfully' => 'Image uploaded successfully',
     'Failed to upload image' => 'Failed to upload image',
 
+    'Add filter' => 'Add filter',
+    'Remove filter' => 'Remove filter',
+    'Every filter is already in use' => 'Every filter is already in use',
+
+    'Add media' => 'Add media',
+    'Uploading...' => 'Uploading...',
+    'Failed to add media' => 'Failed to add media',
+    'Search' => 'Search',
+    'No match' => 'No match',
+    'Remove' => 'Remove',
+    'Select' => 'Select',
     'Search a section' => 'Search a section...',
     'Layout Header Sections' => 'Layout Header Sections',
     'Template Sections' => 'Template Sections',

@@ -64,6 +64,17 @@ return [
     'Image uploaded successfully' => 'Imagen subida con éxito',
     'Failed to upload image' => 'Error al subir la imagen',
 
+    'Add filter' => 'Añadir filtro',
+    'Remove filter' => 'Quitar filtro',
+    'Every filter is already in use' => 'Todos los filtros ya están en uso',
+
+    'Add media' => 'Añadir medio',
+    'Uploading...' => 'Subiendo...',
+    'Failed to add media' => 'No se pudo añadir el medio',
+    'Search' => 'Buscar',
+    'No match' => 'Sin coincidencias',
+    'Remove' => 'Quitar',
+    'Select' => 'Seleccionar',
     'Search a section' => 'Buscar una sección...',
     'Layout Header Sections' => 'Secciones del encabezado',
     'Template Sections' => 'Secciones de la página',

@@ -71,6 +71,7 @@ class ThemeEditorController extends Controller
                     'persistThemeSettings' => route('visual.admin.editor.api.persist_settings'),
                     'publishTheme' => route('visual.admin.editor.api.publish'),
                     'discardTheme' => route('visual.admin.editor.api.discard'),
+                    'uploadSectionMedia' => route('visual.admin.editor.api.section_media'),
                     'createTemplate' => route('visual.admin.editor.api.templates.create'),
                     'uploadImage' => route('visual.admin.editor.api.upload'),
                     'listImages' => route('visual.admin.editor.api.images'),
@@ -198,6 +199,30 @@ class ThemeEditorController extends Controller
             'success' => true,
             'message' => 'Edits discarded successfully',
         ]);
+    }
+
+    /**
+     * Keep a file among a section's own media, so that markup written into a
+     * code field can point at something the storefront serves.
+     *
+     * Bagisto files these under the section row and deletes any it stops
+     * naming, so the file has to be written into the field before the next save
+     * or it is cleaned up again.
+     */
+    public function uploadSectionMedia(Request $request)
+    {
+        $validated = $request->validate([
+            'theme' => ['required', 'string', Rule::in($this->getEditableThemes())],
+            'section' => ['required', 'integer'],
+            'file' => ['required', 'file', 'mimes:bmp,jpeg,jpg,png,webp,mp4,webm,ogg', 'max:51200'],
+        ]);
+
+        abort_unless($this->resolveTheme($validated['theme'])->editorMode()->isBagisto(), 404);
+        abort_unless($this->sectionStore->themeOf($validated['section']) === $validated['theme'], 404);
+
+        return response()->json(
+            $this->sectionStore->storeMedia($validated['section'], $request->file('file'))
+        );
     }
 
     public function createTemplate(Request $request)

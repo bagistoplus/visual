@@ -64,6 +64,17 @@ return [
     'Image uploaded successfully' => 'Image téléchargée avec succès',
     'Failed to upload image' => 'Échec du téléchargement de l\'image',
 
+    'Add filter' => 'Ajouter un filtre',
+    'Remove filter' => 'Supprimer le filtre',
+    'Every filter is already in use' => 'Tous les filtres sont déjà utilisés',
+
+    'Add media' => 'Ajouter un média',
+    'Uploading...' => 'Téléversement...',
+    'Failed to add media' => 'Échec de l\'ajout du média',
+    'Search' => 'Rechercher',
+    'No match' => 'Aucun résultat',
+    'Remove' => 'Retirer',
+    'Select' => 'Sélectionner',
     'Search a section' => 'Rechercher une section...',
     'Layout Header Sections' => 'Sections de l\'en-tête',
     'Template Sections' => 'Sections de la page',

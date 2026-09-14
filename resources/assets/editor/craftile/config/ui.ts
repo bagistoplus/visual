@@ -25,6 +25,8 @@ import GradientPicker from '../../components/GradientPicker.vue';
 import SpacingField from '../../components/SpacingField.vue';
 import RadiusField from '../../components/RadiusField.vue';
 import DescriptionField from '../../components/DescriptionField.vue';
+import CodeField from '../../components/CodeField.vue';
+import FiltersField from '../../components/FiltersField.vue';
 import TypographyPresets from '../../components/TypographyPresets.vue';
 import TypographyPicker from '../../components/TypographyPicker.vue';
 import PublishAction from '../../components/PublishAction.vue';
@@ -226,6 +228,18 @@ function registerPropertyFields(ui: PluginContext['editor']['ui']) {
   ui.registerPropertyField({
     type: 'description',
     render: DescriptionField,
+  });
+
+  // The two kinds a Bagisto section can declare that Visual has no setting of
+  // its own for.
+  ui.registerPropertyField({
+    type: 'code',
+    render: CodeField,
+  });
+
+  ui.registerPropertyField({
+    type: 'filters',
+    render: FiltersField,
   });
 
   ui.registerPropertyField({
