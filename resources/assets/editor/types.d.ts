@@ -31,6 +31,7 @@ export interface Theme {
   name: string;
   code: string;
   version: string;
+  editorMode?: 'visual' | 'native' | 'unsupported';
   settings: Record<string, SettingValue>;
   settingsSchema: {
     name: string;

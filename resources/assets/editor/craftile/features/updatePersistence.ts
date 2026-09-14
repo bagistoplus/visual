@@ -7,6 +7,7 @@ import type { State } from '../../state';
 import { persistUpdates } from '../../api';
 import useI18n from '../../composables/i18n';
 import { recordResolvedTranslationRefs } from '../../utils/resolvedTranslationRefs';
+import { createNativePreviewRefresh, isNativeTheme } from './nativePreviewRefresh';
 
 const { t } = useI18n();
 
@@ -166,6 +167,8 @@ export function setupUpdatePersistence(editor: CraftileEditor, state: State) {
   let failedUpdates: UpdatesEvent[] = [];
   let isPersisting = false;
 
+  const nativeRefresh = isNativeTheme(state) ? createNativePreviewRefresh(editor) : null;
+
   const debouncedPersist = debounce(async () => {
     if (pendingUpdates.length === 0 || isPersisting) {
       return;
@@ -190,6 +193,12 @@ export function setupUpdatePersistence(editor: CraftileEditor, state: State) {
         // Persistence succeeded, but its rendered response is stale. Replay the batch so the
         // next response contains fresh effects for every block touched by either batch.
         pendingUpdates.unshift(...updatesToProcess);
+
+        return;
+      }
+
+      if (nativeRefresh) {
+        nativeRefresh.refresh(mergedUpdates);
 
         return;
       }

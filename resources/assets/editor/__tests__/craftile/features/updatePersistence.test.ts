@@ -109,7 +109,7 @@ function pageResponse(blocks: Record<string, any>): string {
   `;
 }
 
-function createPersistenceHarness(initialBlocks: Record<string, any>) {
+function createPersistenceHarness(initialBlocks: Record<string, any>, state: any = { haveEdits: false }) {
   let page = {
     blocks: structuredClone(initialBlocks),
     regions: [{ id: 'main', name: 'Main', blocks: Object.keys(initialBlocks) }],
@@ -119,6 +119,8 @@ function createPersistenceHarness(initialBlocks: Record<string, any>) {
     page = { ...page, blocks: { ...page.blocks, ...structuredClone(blocks) } };
   });
   const sendMessage = vi.fn();
+  const reload = vi.fn();
+  const pageDataHandlers: Array<() => void> = [];
   const toast = vi.fn();
   const editor = {
     engine: {
@@ -137,20 +139,29 @@ function createPersistenceHarness(initialBlocks: Record<string, any>) {
     },
     preview: {
       sendMessage,
+      reload,
+      onReady: (callback: () => void) => callback(),
+      onMessage: (_message: string, handler: () => void) => pageDataHandlers.push(handler),
     },
     ui: {
       toast,
+      state: { selectedBlockId: null },
+      setSelectedBlock: vi.fn(),
     },
   } as any;
 
-  setupUpdatePersistence(editor, { haveEdits: false } as any);
+  setupUpdatePersistence(editor, state as any);
 
   return {
     emitUpdates(updates: UpdatesEvent) {
       updatesHandler!(updates);
     },
+    loadPreview() {
+      pageDataHandlers.forEach((handler) => handler());
+    },
     patchBlocks,
     sendMessage,
+    reload,
     toast,
   };
 }
@@ -270,6 +281,34 @@ describe('updatePersistence utilities', () => {
       const retriedUpdates = persistUpdatesMock.mock.calls[1][0];
       expect(retriedUpdates.changes.updated).toEqual(['hero', 'footer']);
       expect(Object.keys(retriedUpdates.blocks)).toEqual(['hero', 'footer']);
+    });
+
+    it('reloads the preview of a native theme instead of patching it in place', async () => {
+      vi.useFakeTimers();
+
+      const request = createControlledRequest();
+      persistUpdatesMock.mockReturnValueOnce(request);
+
+      const hero = { id: 'hero', type: 'hero', properties: { text: 'Initial' }, children: [] };
+      const harness = createPersistenceHarness(
+        { hero },
+        { haveEdits: false, theme: { editorMode: 'native' } }
+      );
+
+      harness.emitUpdates(
+        createUpdatesEvent({ updated: ['hero'] }, { hero: { ...hero, properties: { text: 'Updated' } } })
+      );
+      await vi.advanceTimersByTimeAsync(300);
+      request.succeed(pageResponse({ hero }));
+
+      await vi.waitFor(() => expect(harness.reload).toHaveBeenCalledTimes(1));
+
+      expect(harness.patchBlocks).not.toHaveBeenCalled();
+      expect(harness.sendMessage).not.toHaveBeenCalledWith('updates.effects', expect.anything());
+
+      harness.loadPreview();
+
+      expect(harness.sendMessage).toHaveBeenCalledWith('visual.scroll-to-block', { blockId: 'hero' });
     });
   });
 

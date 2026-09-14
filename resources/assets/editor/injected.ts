@@ -240,6 +240,14 @@ function normalizePercentage(value: unknown): number {
 
 previewClient.on('block.property.updated', handlePropertyUpdate);
 
+// A theme whose sections Bagisto renders cannot be patched in place, so the
+// editor reloads the preview and asks for the edited section to be shown again.
+previewClient.on('visual.scroll-to-block' as any, (data: { blockId: string }) => {
+  const element = document.querySelector(`[data-block="${data.blockId}"]`);
+
+  element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+
 const EXTERNAL_LINK_MESSAGE =
   'This link cannot be opened inside the editor. It will be opened in a new window (:url). Click OK to continue.';
 
