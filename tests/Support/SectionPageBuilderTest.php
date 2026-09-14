@@ -1,74 +1,7 @@
 <?php
 
-use BagistoPlus\Visual\Data\NativeSectionType;
 use BagistoPlus\Visual\Data\SectionRecord;
 use BagistoPlus\Visual\Support\SectionPageBuilder;
-use BagistoPlus\Visual\Support\SectionSystem;
-use Illuminate\Support\Collection;
-
-function offerTypes(array $types): void
-{
-    app()->instance(SectionSystem::class, new class($types) extends SectionSystem
-    {
-        public function __construct(protected array $offered) {}
-
-        public function types(?string $themeCode = null): Collection
-        {
-            return collect($this->offered);
-        }
-    });
-}
-
-function carouselType(): NativeSectionType
-{
-    return new NativeSectionType(
-        code: 'image_carousel',
-        title: 'Image Carousel',
-        icon: 'icon-image',
-        singleton: false,
-        pinned: false,
-        rendersInLayout: false,
-        fieldsResolver: fn () => [
-            ['key' => 'title', 'type' => 'text', 'label' => 'Title'],
-            [
-                'key' => 'images',
-                'type' => 'repeater',
-                'label' => 'Slider',
-                'fields' => [
-                    ['key' => 'image', 'type' => 'image', 'label' => 'Image'],
-                    ['key' => 'link', 'type' => 'text', 'label' => 'Link'],
-                ],
-            ],
-        ],
-    );
-}
-
-function footerType(): NativeSectionType
-{
-    return new NativeSectionType(
-        code: 'footer_links',
-        title: 'Footer Links',
-        icon: 'icon-list',
-        singleton: true,
-        pinned: true,
-        rendersInLayout: true,
-        fieldsResolver: fn () => [
-            [
-                'key' => 'columns',
-                'type' => 'repeater',
-                'label' => 'Columns',
-                'fields' => [
-                    [
-                        'key' => 'links',
-                        'type' => 'repeater',
-                        'label' => 'Links',
-                        'fields' => [['key' => 'url', 'type' => 'text', 'label' => 'URL']],
-                    ],
-                ],
-            ],
-        ],
-    );
-}
 
 function buildPage(array $records): array
 {

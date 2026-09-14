@@ -25,7 +25,11 @@ class SectionPageBuilder
 
     public const LAYOUT_REGION = 'layout';
 
-    public function __construct(protected SectionSystem $sectionSystem) {}
+    public function __construct(
+        protected SectionSystem $sectionSystem,
+        protected SectionFieldMapper $fieldMapper,
+        protected SectionBlockIds $ids,
+    ) {}
 
     /**
      * @param  iterable<SectionRecord>  $records
@@ -46,7 +50,7 @@ class SectionPageBuilder
                 continue;
             }
 
-            $id = $this->sectionId($record);
+            $id = $this->ids->section($record->id);
 
             $blocks[$id] = $this->sectionBlock($id, $record, $type, $blocks);
 
@@ -64,14 +68,6 @@ class SectionPageBuilder
                 ['name' => self::LAYOUT_REGION, 'shared' => true, 'blocks' => $layout],
             ],
         ];
-    }
-
-    /**
-     * The block id a section row is held under.
-     */
-    public function sectionId(SectionRecord $record): string
-    {
-        return 'section-'.$record->id;
     }
 
     /**
@@ -119,8 +115,8 @@ class SectionPageBuilder
     ): array {
         $ids = [];
 
-        foreach (app(SectionFieldMapper::class)->repeaters($fields) as $key => $repeater) {
-            $listId = $parentId.SectionBlockSchemaFactory::SEPARATOR.$key;
+        foreach ($this->fieldMapper->repeaters($fields) as $key => $repeater) {
+            $listId = $this->ids->child($parentId, $key);
             $listType = $parentType.SectionBlockSchemaFactory::SEPARATOR.$key;
             $entryType = $listType.SectionBlockSchemaFactory::SEPARATOR.SectionBlockSchemaFactory::ENTRY;
             $entryFields = is_array($repeater['fields'] ?? null) ? $repeater['fields'] : [];
@@ -128,7 +124,7 @@ class SectionPageBuilder
             $entryIds = [];
 
             foreach ($this->entries($values, $key) as $index => $entry) {
-                $entryId = $listId.SectionBlockSchemaFactory::SEPARATOR.$index;
+                $entryId = $this->ids->child($listId, $index);
 
                 $blocks[$entryId] = [
                     'id' => $entryId,
@@ -188,7 +184,7 @@ class SectionPageBuilder
     {
         $properties = [];
 
-        foreach (app(SectionFieldMapper::class)->properties($fields) as $property) {
+        foreach ($this->fieldMapper->properties($fields) as $property) {
             if (array_key_exists($property->id, $values)) {
                 $properties[$property->id] = $values[$property->id];
             }
