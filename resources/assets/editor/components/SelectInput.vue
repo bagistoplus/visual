@@ -15,6 +15,10 @@ interface Props {
   disabled?: boolean;
 }
 
+// The popover root draws no element of its own, so what is passed from outside
+// is put on the box itself, which is what a width or a flex share belongs to.
+defineOptions({ inheritAttrs: false });
+
 const props = withDefaults(defineProps<Props>(), {
   multiple: false,
   placeholder: '',
@@ -65,6 +69,7 @@ function onSelect() {
       :disabled="disabled"
     >
       <div
+        v-bind="$attrs"
         class="flex h-9 w-full min-w-0 cursor-pointer items-center gap-2 rounded border px-2 text-sm data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
       >
         <span

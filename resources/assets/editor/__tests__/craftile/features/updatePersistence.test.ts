@@ -147,6 +147,7 @@ function createPersistenceHarness(initialBlocks: Record<string, any>, state: any
       toast,
       state: { selectedBlockId: null },
       setSelectedBlock: vi.fn(),
+      clearSelectedBlock: vi.fn(),
     },
   } as any;
 

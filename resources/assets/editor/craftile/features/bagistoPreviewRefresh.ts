@@ -105,11 +105,59 @@ export function selectionAfterReload(page: any, pending: PendingRefresh, scrollT
   return pending.selected === pending.blockId ? scrollTo : null;
 }
 
-export function createBagistoPreviewRefresh(editor: CraftileEditor) {
+/**
+ * How long the selection is held before it is let go of anyway, so a reload that
+ * never lands cannot leave the merchant unable to deselect.
+ */
+export const HOLD_TIMEOUT = 15000;
+
+export function createBagistoPreviewRefresh(editor: CraftileEditor, state?: State) {
   let pending: PendingRefresh | null = null;
+
+  /**
+   * The editor drops its selection whenever the preview frame loads, which is
+   * every edit here. On a screen wide enough to keep the settings panel beside
+   * the preview, that panel is drawn only while something is selected, so it
+   * would close and open again on every keystroke, resizing the preview with
+   * it. The selection is held across a reload this feature asked for, and let
+   * go of once the page it asked for has arrived.
+   */
+  let holding = false;
+  let holdTimer: ReturnType<typeof setTimeout> | undefined;
+
+  const clearSelectedBlock = editor.ui.clearSelectedBlock.bind(editor.ui);
+
+  editor.ui.clearSelectedBlock = () => {
+    if (!holding) {
+      clearSelectedBlock();
+    }
+  };
+
+  function hold() {
+    holding = true;
+
+    if (state) {
+      state.quietReload = true;
+    }
+
+    clearTimeout(holdTimer);
+    holdTimer = setTimeout(release, HOLD_TIMEOUT);
+  }
+
+  function release() {
+    holding = false;
+
+    if (state) {
+      state.quietReload = false;
+    }
+
+    clearTimeout(holdTimer);
+  }
 
   editor.preview.onReady(() => {
     editor.preview.onMessage('craftile.preview.page-data' as any, () => {
+      release();
+
       if (!pending) {
         return;
       }
@@ -124,6 +172,10 @@ export function createBagistoPreviewRefresh(editor: CraftileEditor) {
       if (selection) {
         editor.ui.setSelectedBlock(selection);
         editor.preview.sendMessage(SELECT_BLOCK_MESSAGE as any, { blockId: selection });
+      } else if (refresh.selected) {
+        // What was selected is gone from the page that came back, so the panel
+        // beside it has nothing left to draw.
+        editor.ui.clearSelectedBlock();
       }
 
       if (scrollTo) {
@@ -146,6 +198,7 @@ export function createBagistoPreviewRefresh(editor: CraftileEditor) {
           }
         : null;
 
+      hold();
       editor.preview.reload();
     },
   };

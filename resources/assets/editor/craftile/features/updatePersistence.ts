@@ -167,7 +167,7 @@ export function setupUpdatePersistence(editor: CraftileEditor, state: State) {
   let failedUpdates: UpdatesEvent[] = [];
   let isPersisting = false;
 
-  const bagistoRefresh = isBagistoTheme(state) ? createBagistoPreviewRefresh(editor) : null;
+  const bagistoRefresh = isBagistoTheme(state) ? createBagistoPreviewRefresh(editor, state) : null;
 
   const debouncedPersist = debounce(async () => {
     if (pendingUpdates.length === 0 || isPersisting) {

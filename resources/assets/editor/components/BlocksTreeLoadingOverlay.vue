@@ -8,7 +8,11 @@ const props = defineProps<{ editor: CraftileEditor }>();
 const { state } = useState();
 
 const textWidths = [148, 176, 156, 132, 168, 144, 124];
-const isVisible = computed(() => state.previewLoading && props.editor.ui.state.activeSidebarPanel === 'layers');
+// A save on a Bagisto theme reloads the preview to redraw the same page, so the
+// tree beside it is already right and covering it only makes the editor blink.
+const isVisible = computed(
+  () => state.previewLoading && !state.quietReload && props.editor.ui.state.activeSidebarPanel === 'layers'
+);
 
 function updateContainerVisibility(visible: boolean) {
   const container = document.querySelector<HTMLElement>('[data-visual-blocks-tree-loading-overlay="true"]');

@@ -38,6 +38,16 @@ describe('SelectInput', () => {
     expect(trigger(mountSelect({ modelValue: '', placeholder: 'Pick one' })).text()).toBe('Pick one');
   });
 
+  it('puts what is passed from outside on the box, the popover root drawing none', () => {
+    const wrapper = mount(SelectInput, {
+      props: { options: OPTIONS, modelValue: 'name-asc' },
+      attrs: { class: 'flex-1', 'data-role': 'key' },
+    });
+
+    expect(trigger(wrapper).classes()).toContain('flex-1');
+    expect(trigger(wrapper).attributes('data-role')).toBe('key');
+  });
+
   it('falls back to a value the options no longer name', () => {
     expect(trigger(mountSelect({ modelValue: 'gone' })).text()).toBe('gone');
   });

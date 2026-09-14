@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 
 import {
+  HOLD_TIMEOUT,
   SCROLL_TO_BLOCK_MESSAGE,
   SELECT_BLOCK_MESSAGE,
   blockAtPosition,
@@ -17,6 +18,7 @@ function createEditor(page: any, selectedBlockId: string | null = null) {
   const sendMessage = vi.fn();
   const reload = vi.fn();
   const setSelectedBlock = vi.fn();
+  const clearSelectedBlock = vi.fn();
 
   const editor = {
     engine: {
@@ -25,6 +27,7 @@ function createEditor(page: any, selectedBlockId: string | null = null) {
     ui: {
       state: { selectedBlockId },
       setSelectedBlock,
+      clearSelectedBlock,
     },
     preview: {
       onReady: (callback: () => void) => callback(),
@@ -38,6 +41,7 @@ function createEditor(page: any, selectedBlockId: string | null = null) {
     editor,
     sendMessage,
     setSelectedBlock,
+    clearSelectedBlock,
     reload,
     loadPreview(nextPage?: any) {
       if (nextPage) {
@@ -249,6 +253,60 @@ describe('createBagistoPreviewRefresh', () => {
     loadPreview();
 
     expect(sendMessage).toHaveBeenCalledTimes(1);
+  });
+
+  it('holds the selection through the reload it asked for, so the panel beside the preview stays put', () => {
+    const { editor, clearSelectedBlock, loadPreview } = createEditor(page, 'section-7');
+    const refresh = createBagistoPreviewRefresh(editor);
+
+    refresh.refresh(createUpdates({ updated: ['section-7'] }));
+
+    // What the editor does to its own selection when the frame loads.
+    editor.ui.clearSelectedBlock();
+
+    expect(clearSelectedBlock).not.toHaveBeenCalled();
+
+    loadPreview();
+    editor.ui.clearSelectedBlock();
+
+    expect(clearSelectedBlock).toHaveBeenCalledTimes(1);
+  });
+
+  it('lets the selection go when the page it asked for never arrives', () => {
+    vi.useFakeTimers();
+
+    const { editor, clearSelectedBlock } = createEditor(page, 'section-7');
+
+    createBagistoPreviewRefresh(editor).refresh(createUpdates({ updated: ['section-7'] }));
+
+    vi.advanceTimersByTime(HOLD_TIMEOUT);
+    editor.ui.clearSelectedBlock();
+
+    expect(clearSelectedBlock).toHaveBeenCalledTimes(1);
+
+    vi.useRealTimers();
+  });
+
+  it('drops a selection the reloaded page no longer holds', () => {
+    const { editor, clearSelectedBlock, loadPreview } = createEditor(page, 'section-9');
+
+    createBagistoPreviewRefresh(editor).refresh(createUpdates({ updated: ['section-7'] }));
+    loadPreview();
+
+    expect(clearSelectedBlock).toHaveBeenCalledTimes(1);
+  });
+
+  it('leaves the sidebar alone, the page it redraws being the one the tree holds', () => {
+    const { editor, loadPreview } = createEditor(page, 'section-7');
+    const state = { quietReload: false } as any;
+
+    createBagistoPreviewRefresh(editor, state).refresh(createUpdates({ updated: ['section-7'] }));
+
+    expect(state.quietReload).toBe(true);
+
+    loadPreview();
+
+    expect(state.quietReload).toBe(false);
   });
 
   it('reloads without scrolling when nothing names the block that changed', () => {
