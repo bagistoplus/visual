@@ -20,7 +20,10 @@ class DesignModeAwareCacheProfile implements CacheProfile
 
     public function enabled(Request $request): bool
     {
-        if (ThemeEditor::inDesignMode() || ThemeEditor::inPreviewMode() || ThemeEditor::inDraftPreviewMode()) {
+        // Asked of the request rather than of who made it. A page the editor
+        // asked for is never cached, whoever asked: cached once for a visitor
+        // who may not edit, it would be served to the merchant who may.
+        if (ThemeEditor::designModeRequested() || ThemeEditor::inPreviewMode() || ThemeEditor::inDraftPreviewMode()) {
             return false;
         }
 

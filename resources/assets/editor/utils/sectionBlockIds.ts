@@ -15,3 +15,11 @@ export function sectionRowId(blockId: string | null | undefined): number | null 
 
   return match ? Number(match[1]) : null;
 }
+
+/**
+ * The id the section stored as a row is held under, the inverse of
+ * `sectionRowId`. Mirrors `SectionBlockIds::section()`.
+ */
+export function sectionBlockId(rowId: number): string {
+  return `section-${rowId}`;
+}

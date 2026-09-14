@@ -94,6 +94,15 @@ class SectionBlockSchemaFactory
             'rendersInLayout' => $type->rendersInLayout,
         ];
 
+        // Which region a section belongs to is decided by its type, not by where
+        // it was dropped: the page is read back split on the same flag, so a
+        // section added to the other region would move on the next reload.
+        $section->enabledOn = [
+            'regions' => [
+                $type->rendersInLayout ? SectionPageBuilder::LAYOUT_REGION : SectionPageBuilder::CONTENT_REGION,
+            ],
+        ];
+
         return array_merge([$section], $this->repeaterSchemas($type->code, $fields));
     }
 

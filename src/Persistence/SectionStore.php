@@ -150,16 +150,28 @@ class SectionStore
      * The sections a channel's theme draws, each resolved to the draft it is
      * holding, as Bagisto's own preview resolves them.
      *
-     * Marking the request as previewing is what makes the layout draw its
-     * drafted footer and services too, since it asks for those itself.
+     * The layout draws its own drafted footer and services when the request is
+     * marked as previewing, which `PreviewDraftedSections` does for the whole
+     * request.
      *
      * @return iterable<mixed>
      */
     public function draftedForPreview(int $channelId, string $themeCode, string $locale): iterable
     {
-        request()->attributes->set(self::PREVIEWING, true);
-
         return $this->repository()->getDraftedForPreview($channelId, $themeCode, $locale);
+    }
+
+    /**
+     * Read this request's sections as the editor is holding them.
+     *
+     * Bagisto's layout asks for published rows unless the request says it is a
+     * preview, and marks a section for its own editor on the same condition.
+     * Marked once for the whole request, so that the sections its layout draws
+     * on every page are drawn the way the ones on the home page are.
+     */
+    public function previewDrafts(): void
+    {
+        request()->attributes->set(self::PREVIEWING, true);
     }
 
     /**

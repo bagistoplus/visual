@@ -37,6 +37,27 @@ it('disables the response cache for editor requests', function (Request $request
     'draft preview header' => fn () => Request::create('/', 'GET', [], [], [], ['HTTP_X_VISUAL_DRAFT_PREVIEW_THEME' => 'fake-theme']),
 ]);
 
+it('caches no page the editor asked for, whoever asked', function () {
+    // The permission decides what the page may say, not whether it is cached:
+    // a page cached for a visitor who may not edit would be served to the
+    // merchant who may, without the editor in it.
+    app()->instance('Webkul\\User\\Bouncer', new class
+    {
+        public function hasPermission(string $permission): bool
+        {
+            return false;
+        }
+    });
+
+    $inner = Mockery::mock(CacheProfile::class);
+    $inner->shouldNotReceive('enabled');
+
+    $request = Request::create('/?_designMode=default');
+    app()->instance('request', $request);
+
+    expect(designModeAwareProfile($inner)->enabled($request))->toBeFalse();
+});
+
 it('defers to the wrapped profile outside the editor', function (bool $enabled) {
     $request = Request::create('/');
     app()->instance('request', $request);

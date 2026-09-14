@@ -51,16 +51,17 @@
             $inLayout = $type?->rendersInLayout ?? false;
         @endphp
 
-        @continue (! $type)
+        {{-- The layout draws the types it says it draws, on every page. --}}
+        @continue (! $type || $inLayout)
 
         {{--
             The visual editor selects a section by the block it holds it as.
             Bagisto's own appearance editor marks it its own way, and the two
             never appear together: whichever editor is driving marks the page.
         --}}
-        @if ($editing && ! $inLayout)
+        @if ($editing)
             <div data-block="{{ $blockIds->section($section->id) }}">
-        @elseif (($preview ?? false) && ! $inLayout)
+        @elseif ($preview ?? false)
             <div
                 data-section-id="{{ $section->id }}"
                 data-section-name="{{ $section->name }}"
@@ -69,7 +70,7 @@
 
         @includeIf($type->view, ['section' => $section, 'data' => $data])
 
-        @if ((($editing || ($preview ?? false))) && ! $inLayout)
+        @if ($editing || ($preview ?? false))
             </div>
         @endif
     @endforeach

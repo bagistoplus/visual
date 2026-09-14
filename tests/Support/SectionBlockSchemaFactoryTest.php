@@ -128,6 +128,14 @@ it('carries what the editor arranges a section by', function () {
     ]);
 });
 
+it('offers a section only in the region its type is drawn in', function () {
+    $layout = schemasFor(sectionType('footer_links', [], layout: true));
+    $content = schemasFor(sectionType('image_carousel', []));
+
+    expect($layout['footer_links']->enabledOn)->toBe(['regions' => ['layout']])
+        ->and($content['image_carousel']->enabledOn)->toBe(['regions' => ['content']]);
+});
+
 it('gives every schema a slug a blade component name tolerates', function () {
     $schemas = schemasFor(sectionType('image_carousel', [
         ['key' => 'images', 'type' => 'repeater', 'label' => 'Slider', 'fields' => []],

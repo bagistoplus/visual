@@ -2,6 +2,7 @@ import { PreviewClient } from '@craftile/preview-client';
 import RawHtmlRenderer from '@craftile/preview-client-html';
 import { Block } from '@craftile/types';
 import morphdom from 'morphdom';
+import { knownBlockIds, markLayoutSections } from './utils/layoutSectionMarkers';
 
 const previewClient = new PreviewClient();
 
@@ -126,6 +127,10 @@ previewClient.on('page.refresh', (data: { html: string }) => {
     childrenOnly: true,
     ...createMorphdomOptions(),
   });
+
+  // The server never sends the marks Visual puts on the sections Bagisto's
+  // layout draws, so a morph against it takes them off again.
+  markSections();
 });
 
 function handlePropertyUpdate(data: { block: Block; key: string; value: any; oldValue: any }) {
@@ -458,3 +463,13 @@ declare global {
 }
 
 window.Visual = visual;
+
+function markSections(): void {
+  markLayoutSections(document, knownBlockIds(document));
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', markSections);
+} else {
+  markSections();
+}
