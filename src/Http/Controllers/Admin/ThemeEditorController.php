@@ -10,9 +10,11 @@ use BagistoPlus\Visual\Persistence\Data\EditorUpdateData;
 use BagistoPlus\Visual\Persistence\Data\FullPageEditorData;
 use BagistoPlus\Visual\Persistence\Data\ThemeSettingsUpdateData;
 use BagistoPlus\Visual\Persistence\PersistEditorUpdates;
+use BagistoPlus\Visual\Persistence\PersistSectionUpdates;
 use BagistoPlus\Visual\Persistence\PersistThemeSettings;
 use BagistoPlus\Visual\Persistence\PublishTheme;
 use BagistoPlus\Visual\Persistence\RenderPreview;
+use BagistoPlus\Visual\Persistence\SectionStore;
 use BagistoPlus\Visual\Settings\Support\ImageTransformer;
 use BagistoPlus\Visual\Settings\Support\VideoTransformer;
 use BagistoPlus\Visual\Support\ChannelThemeResolver;
@@ -23,6 +25,7 @@ use BagistoPlus\Visual\ThemeEditor;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use BladeUI\Icons\Factory;
 use BladeUI\Icons\IconsManifest;
+use Craftile\Laravel\Data\UpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
@@ -45,7 +48,9 @@ class ThemeEditorController extends Controller
         protected ThemeSettingsLoader $themeSettingsLoader,
         protected TemplateDiscovery $templateDiscovery,
         protected CreateTemplate $createTemplate,
-        protected ChannelThemeResolver $channelThemeResolver
+        protected ChannelThemeResolver $channelThemeResolver,
+        protected PersistSectionUpdates $persistSectionUpdates,
+        protected SectionStore $sectionStore,
     ) {}
 
     public function index(string $themeCode)
@@ -83,7 +88,7 @@ class ThemeEditorController extends Controller
     public function persistUpdates(Request $request)
     {
         $validated = $request->validate([
-            'theme' => ['required', 'string', Rule::in($this->getVisualThemes())],
+            'theme' => ['required', 'string', Rule::in($this->getEditableThemes())],
             'channel' => ['required', 'string', Rule::in($this->getChannelCodes())],
             'locale' => ['required', 'string', Rule::in($this->getLocaleCodes($request->input('channel')))],
             'template' => ['required', 'array'],
@@ -100,6 +105,10 @@ class ThemeEditorController extends Controller
             'updates.regions' => ['present', 'array'],
         ]);
 
+        if ($this->resolveTheme($validated['theme'])->editorMode()->isNative()) {
+            return $this->persistSectionUpdatesAndRender($validated);
+        }
+
         $data = EditorUpdateData::fromValidated($validated);
         $result = $this->persistEditorUpdates->handle($data);
         $loadedBlocks = $result['loadedBlocks'] ?? [];
@@ -112,7 +121,7 @@ class ThemeEditorController extends Controller
     public function persistThemeSettings(Request $request)
     {
         $validated = $request->validate([
-            'theme' => ['required', 'string', Rule::in($this->getVisualThemes())],
+            'theme' => ['required', 'string', Rule::in($this->getEditableThemes())],
             'channel' => ['required', 'string', Rule::in($this->getChannelCodes())],
             'locale' => ['required', 'string', Rule::in($this->getLocaleCodes($request->input('channel')))],
             'template' => ['required', 'array'],
@@ -136,6 +145,18 @@ class ThemeEditorController extends Controller
             'page' => ['nullable', 'array'],
         ]);
 
+        if ($this->resolveTheme($validated['theme'])->editorMode()->isNative()) {
+            $this->sectionStore->publish(
+                $this->channelId($validated['channel'] ?? core()->getDefaultChannelCode()),
+                $validated['theme'],
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Theme published successfully',
+            ]);
+        }
+
         // If page data is provided, persist it first before publishing
         if (isset($validated['page'])) {
             $this->persistEditorUpdates->handleFullPage(FullPageEditorData::fromValidated($validated));
@@ -152,7 +173,7 @@ class ThemeEditorController extends Controller
     public function createTemplate(Request $request)
     {
         $validated = $request->validate([
-            'theme' => ['required', 'string', Rule::in($this->getVisualThemes())],
+            'theme' => ['required', 'string', Rule::in($this->getEditableThemes())],
             'channel' => ['required', 'string', Rule::in($this->getChannelCodes())],
             'locale' => ['required', 'string', Rule::in($this->getLocaleCodes($request->input('channel')))],
             'type' => ['required', 'string', Rule::in(TemplateDiscovery::ASSIGNABLE_TYPES)],
@@ -367,19 +388,14 @@ class ThemeEditorController extends Controller
 
     protected function loadTheme($themeCode)
     {
-        $themeConfig = config("themes.shop.{$themeCode}");
-
-        if (! $themeConfig) {
-            abort(404, "Theme {$themeCode} not found");
-        }
-
-        $theme = Theme::make($themeConfig);
+        $theme = $this->resolveTheme($themeCode);
         $settingsBag = $this->themeSettingsLoader->loadThemeSettings($theme);
 
         return [
             'name' => $theme->name,
             'code' => $theme->code,
             'version' => $theme->version ?? '1.0.0',
+            'editorMode' => $theme->editorMode()->value,
             'settings' => $settingsBag->toArray(),
             'settingsSchema' => $this->translateSettingsSchema($theme->settingsSchema),
         ];
@@ -439,6 +455,13 @@ class ThemeEditorController extends Controller
 
     protected function checkIfHaveEdits(string $themeCode): bool
     {
+        if ($this->resolveTheme($themeCode)->editorMode()->isNative()) {
+            return $this->sectionStore->hasDrafts(
+                $this->channelId(core()->getRequestedChannelCode()),
+                $themeCode,
+            );
+        }
+
         $lastEditFile = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'editor/.last-edit');
 
         return file_exists($lastEditFile);
@@ -477,12 +500,61 @@ class ThemeEditorController extends Controller
         return $channel['locales']->map(fn ($locale) => $locale['code'])->toArray();
     }
 
-    protected function getVisualThemes(): array
+    /**
+     * Hold what the editor changed about a theme's sections, and answer with
+     * the preview as it now stands.
+     *
+     * @param  array<string, mixed>  $validated
+     */
+    protected function persistSectionUpdatesAndRender(array $validated)
+    {
+        $this->persistSectionUpdates->handle(
+            UpdateRequest::make($validated['updates']),
+            $this->channelId($validated['channel']),
+            $validated['theme'],
+            $validated['locale'],
+        );
+
+        return $this->renderPreview->execute($validated['template']['url']);
+    }
+
+    /**
+     * The themes the visual editor can be opened on, which is every theme it
+     * has a way of reading: a visual theme from its templates, and any other
+     * from the sections it is stored as.
+     *
+     * @return array<int, string>
+     */
+    protected function getEditableThemes(): array
     {
         return collect(config('themes.shop', []))
-            ->filter(fn ($config) => $config['visual_theme'] ?? false)
-            ->map(fn ($config) => $config['code'])
+            ->map(fn (array $attributes, $code) => Theme::make(['code' => $code] + $attributes))
+            ->filter(fn (Theme $theme) => $theme->editorMode()->isEditable())
+            ->map(fn (Theme $theme) => $theme->code)
+            ->values()
             ->toArray();
+    }
+
+    /**
+     * The theme a request names, however its config spells itself.
+     */
+    protected function resolveTheme(string $themeCode): Theme
+    {
+        $attributes = config("themes.shop.{$themeCode}");
+
+        if (! $attributes) {
+            abort(404, "Theme {$themeCode} not found");
+        }
+
+        return Theme::make(['code' => $themeCode] + $attributes);
+    }
+
+    /**
+     * The row id of the channel a code names.
+     */
+    protected function channelId(string $code): int
+    {
+        return (int) core()->getAllChannels()->firstWhere('code', $code)?->id;
     }
 
     /**

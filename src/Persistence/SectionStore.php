@@ -115,6 +115,15 @@ class SectionStore
     }
 
     /**
+     * Whether a channel's theme is holding a change the storefront has not
+     * been given yet.
+     */
+    public function hasDrafts(int $channelId, string $themeCode): bool
+    {
+        return count($this->repository()->draftedSections($channelId, $themeCode)) > 0;
+    }
+
+    /**
      * Give the storefront every change a channel's theme is holding.
      */
     public function publish(int $channelId, string $themeCode): void
