@@ -109,6 +109,13 @@ class SectionDraftBuilder
      * the entries of every repeating list beneath it, and whatever the type
      * does not declare, left as it was.
      *
+     * A field the block carries no value for keeps what was stored. The editor
+     * reports the properties it drew, and a field it has no way of drawing is
+     * not one the merchant cleared: emptying it would throw away an option
+     * nothing on screen could have set, and for markup holding an upload it
+     * would take the upload with it, since Bagisto deletes what the stored
+     * options no longer mention.
+     *
      * @param  array<string, mixed>  $block
      * @param  array<int, array<string, mixed>>  $fields
      * @param  array<string, array<string, mixed>>  $blocks
@@ -119,8 +126,12 @@ class SectionDraftBuilder
     {
         $options = $this->undeclared($fields, $existing);
 
+        $properties = is_array($block['properties'] ?? null) ? $block['properties'] : [];
+
         foreach ($this->fieldMapper->properties($fields) as $property) {
-            $options[$property->id] = $block['properties'][$property->id] ?? null;
+            $options[$property->id] = array_key_exists($property->id, $properties)
+                ? $properties[$property->id]
+                : ($existing[$property->id] ?? null);
         }
 
         $lists = $this->listsBeneath($block, $blocks);

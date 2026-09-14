@@ -198,3 +198,42 @@ it('stops describing a section the page no longer holds', function () {
 
     expect(draftsFrom($page)->pluck('rowId')->all())->toBe([8]);
 });
+
+it('keeps a stored value the editor carried no property for', function () {
+    offerTypes(['image_carousel' => carouselType()]);
+
+    $page = app(SectionPageBuilder::class)->build([
+        new SectionRecord(7, 'image_carousel', 'Hero', true, 1, ['title' => 'Summer']),
+    ]);
+
+    $page['blocks']['section-7']['properties'] = [];
+
+    expect(draftsFrom($page, [7 => ['title' => 'Summer']])->first()->options['title'])->toBe('Summer');
+});
+
+it('clears a value the editor reports as empty', function () {
+    offerTypes(['image_carousel' => carouselType()]);
+
+    $page = app(SectionPageBuilder::class)->build([
+        new SectionRecord(7, 'image_carousel', 'Hero', true, 1, ['title' => 'Summer']),
+    ]);
+
+    $page['blocks']['section-7']['properties'] = ['title' => ''];
+
+    expect(draftsFrom($page, [7 => ['title' => 'Summer']])->first()->options['title'])->toBe('');
+});
+
+it('keeps the values of an entry the editor carried no properties for', function () {
+    offerTypes(['image_carousel' => carouselType()]);
+
+    $stored = ['images' => [['image' => 'a.webp', 'link' => '/one']]];
+
+    $page = app(SectionPageBuilder::class)->build([
+        new SectionRecord(7, 'image_carousel', 'Hero', true, 1, $stored),
+    ]);
+
+    $page['blocks']['section-7.images.0']['properties'] = [];
+
+    expect(draftsFrom($page, [7 => $stored])->first()->options['images'])
+        ->toBe([['image' => 'a.webp', 'link' => '/one']]);
+});
