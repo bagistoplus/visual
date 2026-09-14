@@ -2,9 +2,12 @@
 
 namespace BagistoPlus\Visual\Middlewares;
 
+use BagistoPlus\Visual\Persistence\SectionStore;
 use BagistoPlus\Visual\Support\EditorBlockSchemaSerializer;
 use BagistoPlus\Visual\Support\EditorInheritanceMetadata;
 use BagistoPlus\Visual\Support\EditorTranslationReferenceCollector;
+use BagistoPlus\Visual\Support\SectionPageBuilder;
+use BagistoPlus\Visual\Theme\Theme as VisualTheme;
 use BagistoPlus\Visual\ThemeEditor;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use Closure;
@@ -27,6 +30,8 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
         protected ProductRepository $productRepository,
         protected PreviewDataCollector $previewCollector,
         protected EditorInheritanceMetadata $editorInheritanceMetadata,
+        protected SectionStore $sectionStore,
+        protected SectionPageBuilder $sectionPageBuilder,
     ) {}
 
     public function handle(Request $request, Closure $next): Response
@@ -65,6 +70,38 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
         );
 
         $response->setContent($content);
+    }
+
+    /**
+     * The page the editor arranges.
+     *
+     * A visual theme renders its blocks, and the collector reports what was
+     * rendered. A native theme renders sections Craftile knows nothing about,
+     * so its page is read from the rows they are stored as instead.
+     */
+    protected function getCurrentPageData(): array
+    {
+        $theme = themes()->current();
+
+        if ($theme instanceof VisualTheme && $theme->editorMode()->isNative()) {
+            return $this->sectionPageData($theme);
+        }
+
+        return parent::getCurrentPageData();
+    }
+
+    /**
+     * @return array{blocks: array<string, array<string, mixed>>, regions: array<int, array<string, mixed>>}
+     */
+    protected function sectionPageData(VisualTheme $theme): array
+    {
+        $records = $this->sectionStore->records(
+            (int) core()->getRequestedChannel()->id,
+            $theme->code,
+            core()->getRequestedLocaleCode(),
+        );
+
+        return $this->sectionPageBuilder->build($records, $theme->code);
     }
 
     /**

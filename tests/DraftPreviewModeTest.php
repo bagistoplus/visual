@@ -2,7 +2,9 @@
 
 use BagistoPlus\Visual\Facades\ThemeEditor as ThemeEditorFacade;
 use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
+use BagistoPlus\Visual\Persistence\SectionStore;
 use BagistoPlus\Visual\Support\EditorInheritanceMetadata;
+use BagistoPlus\Visual\Support\SectionPageBuilder;
 use BagistoPlus\Visual\ThemeEditor;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use BagistoPlus\Visual\View\DraftAwareJsonViewParser;
@@ -70,6 +72,8 @@ it('leaves craftile preview off so no editor script or attribute is emitted', fu
         Mockery::mock(ProductRepository::class),
         Mockery::mock(PreviewDataCollector::class),
         app(EditorInheritanceMetadata::class),
+        app(SectionStore::class),
+        app(SectionPageBuilder::class),
     );
 
     $handled = $middleware->handle(request(), fn () => $response);

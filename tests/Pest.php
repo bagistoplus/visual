@@ -183,6 +183,11 @@ if (! function_exists('core')) {
                     return $this->currentChannel ??= $this->channel('default');
                 }
 
+                public function getRequestedChannel(): Channel
+                {
+                    return $this->channel($this->requestedChannelCode);
+                }
+
                 public function setCurrentChannel(Channel $channel): void
                 {
                     $this->currentChannel = $channel;
