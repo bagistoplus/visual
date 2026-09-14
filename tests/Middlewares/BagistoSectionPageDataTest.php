@@ -62,7 +62,7 @@ function middlewareReading(SectionStore $store): PageDataReadingMiddleware
     );
 }
 
-it('reads a native theme\'s page from the rows its sections are stored as', function () {
+it('reads a bagisto theme\'s page from the rows its sections are stored as', function () {
     offerTypes(['image_carousel' => carouselType()]);
     currentThemeIs(Theme::make(['code' => 'default', 'name' => 'Default']));
 
@@ -101,4 +101,57 @@ it('leaves a visual theme to report the blocks it rendered', function () {
     );
 
     expect($middleware->pageData())->toBe(['blocks' => [], 'regions' => []]);
+});
+
+class DraftCountReadingMiddleware extends InjectThemeEditorScript
+{
+    public function count(): ?int
+    {
+        return $this->draftCount();
+    }
+}
+
+function middlewareCounting(SectionStore $store): DraftCountReadingMiddleware
+{
+    return new DraftCountReadingMiddleware(
+        Mockery::mock(ThemeEditor::class),
+        Mockery::mock(ThemeSettingsLoader::class),
+        Mockery::mock(CategoryRepository::class),
+        Mockery::mock(ProductRepository::class),
+        Mockery::mock(PreviewDataCollector::class),
+        app(EditorInheritanceMetadata::class),
+        $store,
+        app(SectionPageBuilder::class),
+    );
+}
+
+function storeCounting(int $drafts): SectionStore
+{
+    return new class($drafts) extends SectionStore
+    {
+        public function __construct(protected int $drafts) {}
+
+        public function countDrafts(int $channelId, string $themeCode): int
+        {
+            return $this->drafts;
+        }
+    };
+}
+
+it('tells the editor how many sections are holding a change', function () {
+    fakeSectionSystem(available: true);
+    currentThemeIs(Theme::make(['code' => 'default', 'name' => 'Default']));
+
+    expect(middlewareCounting(storeCounting(3))->count())->toBe(3);
+});
+
+it('counts nothing for a theme holding its edits in files', function () {
+    fakeSectionSystem(available: true);
+    currentThemeIs(Theme::make([
+        'code' => 'visual-demo',
+        'name' => 'Visual Demo',
+        'visual_theme' => true,
+    ]));
+
+    expect(middlewareCounting(storeCounting(3))->count())->toBeNull();
 });

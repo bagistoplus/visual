@@ -32,7 +32,7 @@ it('should prepend default views path to shop namespace when active theme is vis
         ->toContain(realpath($defaultViewsPath));
 })->skip('Requires full Bagisto bootstrap with request context');
 
-it('draws a native theme\'s sections through the views their types name', function () {
+it('draws a bagisto theme\'s sections through the views their types name', function () {
     fakeSectionSystem(available: true);
 
     config()->set('app.admin_url', 'admin');
@@ -44,7 +44,7 @@ it('draws a native theme\'s sections through the views their types name', functi
 
     $hints = app('view')->getFinder()->getHints()['shop'] ?? [];
 
-    expect(collect($hints)->contains(fn (string $hint) => str_ends_with($hint, 'resources/views/native')))
+    expect(collect($hints)->contains(fn (string $hint) => str_ends_with($hint, 'resources/views/bagisto')))
         ->toBeTrue();
 });
 
@@ -61,6 +61,6 @@ it('leaves a theme alone when bagisto does not declare its section types', funct
     $themes->set('default');
 
     expect(app('view')->getFinder()->getHints()['shop'] ?? [])->toBe($before)
-        ->and(collect($before)->contains(fn (string $hint) => str_ends_with($hint, 'resources/views/native')))
+        ->and(collect($before)->contains(fn (string $hint) => str_ends_with($hint, 'resources/views/bagisto')))
         ->toBeFalse();
 });

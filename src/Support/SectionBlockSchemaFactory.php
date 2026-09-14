@@ -4,12 +4,12 @@ namespace BagistoPlus\Visual\Support;
 
 use BagistoPlus\Visual\Blocks\BagistoSection;
 use BagistoPlus\Visual\Blocks\BagistoSectionBlock;
+use BagistoPlus\Visual\Data\BagistoSectionType;
 use BagistoPlus\Visual\Data\BlockSchema;
-use BagistoPlus\Visual\Data\NativeSectionType;
 use Illuminate\Support\Str;
 
 /**
- * Builds the block schemas the editor draws a native section with.
+ * Builds the block schemas the editor draws a Bagisto section with.
  *
  * A section type describes itself as a flat list of fields, where a repeater
  * holds a list of entries under one option key. Craftile blocks hold a single
@@ -65,7 +65,7 @@ class SectionBlockSchemaFactory
     public function forTheme(?string $themeCode = null): array
     {
         return $this->sectionSystem->types($themeCode)
-            ->flatMap(fn (NativeSectionType $type) => $this->forType($type))
+            ->flatMap(fn (BagistoSectionType $type) => $this->forType($type))
             ->all();
     }
 
@@ -75,7 +75,7 @@ class SectionBlockSchemaFactory
      *
      * @return array<int, BlockSchema>
      */
-    public function forType(NativeSectionType $type): array
+    public function forType(BagistoSectionType $type): array
     {
         $fields = $type->fields();
 
@@ -88,7 +88,7 @@ class SectionBlockSchemaFactory
         );
 
         $section->meta = [
-            'native' => true,
+            'bagisto' => true,
             'singleton' => $type->singleton,
             'pinned' => $type->pinned,
             'rendersInLayout' => $type->rendersInLayout,
@@ -127,7 +127,7 @@ class SectionBlockSchemaFactory
                 );
 
                 $list->meta = [
-                    'native' => true,
+                    'bagisto' => true,
                     'repeater' => $key,
                     'addLabel' => is_string($repeater['add_label'] ?? null) ? $repeater['add_label'] : null,
                     'max' => $repeater['max'] ?? null,
@@ -145,7 +145,7 @@ class SectionBlockSchemaFactory
             );
 
             $entry->meta = [
-                'native' => true,
+                'bagisto' => true,
                 'entryOf' => $key,
                 'addLabel' => is_string($repeater['add_label'] ?? null) ? $repeater['add_label'] : null,
                 'max' => $repeater['max'] ?? null,

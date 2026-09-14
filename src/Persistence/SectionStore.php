@@ -18,7 +18,7 @@ use Illuminate\Support\Collection;
  * appearance editor.
  *
  * The repository is resolved by name because it only exists on the releases
- * native mode runs on.
+ * Bagisto mode runs on.
  */
 class SectionStore
 {
@@ -157,7 +157,17 @@ class SectionStore
      */
     public function hasDrafts(int $channelId, string $themeCode): bool
     {
-        return count($this->repository()->draftedSections($channelId, $themeCode)) > 0;
+        return $this->countDrafts($channelId, $themeCode) > 0;
+    }
+
+    /**
+     * How many of a channel's sections are holding a change the storefront has
+     * not been given yet, which is what the editor counts as one edit: Bagisto
+     * drafts a whole section, not a field of one.
+     */
+    public function countDrafts(int $channelId, string $themeCode): int
+    {
+        return count($this->repository()->draftedSections($channelId, $themeCode));
     }
 
     /**

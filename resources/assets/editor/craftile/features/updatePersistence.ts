@@ -7,7 +7,7 @@ import type { State } from '../../state';
 import { persistUpdates } from '../../api';
 import useI18n from '../../composables/i18n';
 import { recordResolvedTranslationRefs } from '../../utils/resolvedTranslationRefs';
-import { createNativePreviewRefresh, isNativeTheme } from './nativePreviewRefresh';
+import { createBagistoPreviewRefresh, isBagistoTheme } from './bagistoPreviewRefresh';
 
 const { t } = useI18n();
 
@@ -167,7 +167,7 @@ export function setupUpdatePersistence(editor: CraftileEditor, state: State) {
   let failedUpdates: UpdatesEvent[] = [];
   let isPersisting = false;
 
-  const nativeRefresh = isNativeTheme(state) ? createNativePreviewRefresh(editor) : null;
+  const bagistoRefresh = isBagistoTheme(state) ? createBagistoPreviewRefresh(editor) : null;
 
   const debouncedPersist = debounce(async () => {
     if (pendingUpdates.length === 0 || isPersisting) {
@@ -197,8 +197,8 @@ export function setupUpdatePersistence(editor: CraftileEditor, state: State) {
         return;
       }
 
-      if (nativeRefresh) {
-        nativeRefresh.refresh(mergedUpdates);
+      if (bagistoRefresh) {
+        bagistoRefresh.refresh(mergedUpdates);
 
         return;
       }

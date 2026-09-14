@@ -1,6 +1,6 @@
 <?php
 
-use BagistoPlus\Visual\Data\NativeSectionType;
+use BagistoPlus\Visual\Data\BagistoSectionType;
 use BagistoPlus\Visual\Support\SectionSystem;
 use BagistoPlus\Visual\Tests\TestCase;
 use Illuminate\Support\Collection;
@@ -50,9 +50,9 @@ if (! function_exists('offerTypes')) {
 }
 
 if (! function_exists('carouselType')) {
-    function carouselType(): NativeSectionType
+    function carouselType(): BagistoSectionType
     {
-        return new NativeSectionType(
+        return new BagistoSectionType(
             code: 'image_carousel',
             title: 'Image Carousel',
             icon: 'icon-image',
@@ -77,9 +77,9 @@ if (! function_exists('carouselType')) {
 }
 
 if (! function_exists('footerType')) {
-    function footerType(): NativeSectionType
+    function footerType(): BagistoSectionType
     {
-        return new NativeSectionType(
+        return new BagistoSectionType(
             code: 'footer_links',
             title: 'Footer Links',
             icon: 'icon-list',
@@ -156,6 +156,7 @@ if (! function_exists('core')) {
                 {
                     return $this->channels ?? collect([
                         (object) [
+                            'id' => 1,
                             'code' => 'default',
                             'name' => 'Default',
                             'locales' => collect([

@@ -64,6 +64,22 @@ export function publishTheme(pageData?: any) {
   return request;
 }
 
+export function discardTheme() {
+  const { state } = useState();
+  const { post } = useHttpClient();
+
+  const request = post(window.editorConfig.routes.discardTheme, {
+    theme: state.theme!.code,
+    channel: state.channel || window.editorConfig.defaultChannel,
+  });
+
+  request.onError((error) => {
+    console.error('Failed to discard edits:', error);
+  });
+
+  return request;
+}
+
 export function createTemplate(payload: { type: string; name: string; basedOn?: string | null }) {
   const { state } = useState();
   const { post } = useHttpClient();

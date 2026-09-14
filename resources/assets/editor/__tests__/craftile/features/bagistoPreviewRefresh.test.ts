@@ -4,13 +4,13 @@ import {
   SCROLL_TO_BLOCK_MESSAGE,
   SELECT_BLOCK_MESSAGE,
   blockAtPosition,
-  createNativePreviewRefresh,
+  createBagistoPreviewRefresh,
   editedBlockId,
-  isNativeTheme,
+  isBagistoTheme,
   locateBlock,
   rootBlockOf,
   selectionAfterReload,
-} from '../../../craftile/features/nativePreviewRefresh';
+} from '../../../craftile/features/bagistoPreviewRefresh';
 
 function createEditor(page: any, selectedBlockId: string | null = null) {
   const pageDataHandlers: Array<() => void> = [];
@@ -64,11 +64,11 @@ function createUpdates(changes: { added?: string[]; updated?: string[]; moved?: 
   } as any;
 }
 
-describe('isNativeTheme', () => {
+describe('isBagistoTheme', () => {
   it('is true only for a theme bagisto stores the sections of', () => {
-    expect(isNativeTheme({ theme: { editorMode: 'native' } } as any)).toBe(true);
-    expect(isNativeTheme({ theme: { editorMode: 'visual' } } as any)).toBe(false);
-    expect(isNativeTheme({ theme: null } as any)).toBe(false);
+    expect(isBagistoTheme({ theme: { editorMode: 'bagisto' } } as any)).toBe(true);
+    expect(isBagistoTheme({ theme: { editorMode: 'visual' } } as any)).toBe(false);
+    expect(isBagistoTheme({ theme: null } as any)).toBe(false);
   });
 });
 
@@ -143,7 +143,7 @@ describe('selectionAfterReload', () => {
   });
 });
 
-describe('createNativePreviewRefresh', () => {
+describe('createBagistoPreviewRefresh', () => {
   const page = {
     blocks: {
       'section-7': { id: 'section-7' },
@@ -155,7 +155,7 @@ describe('createNativePreviewRefresh', () => {
   it('reloads the preview and scrolls to the section of the edited entry', () => {
     const { editor, sendMessage, reload, loadPreview } = createEditor(page);
 
-    createNativePreviewRefresh(editor).refresh(createUpdates({ updated: ['section-7.images.1'] }));
+    createBagistoPreviewRefresh(editor).refresh(createUpdates({ updated: ['section-7.images.1'] }));
 
     expect(reload).toHaveBeenCalledTimes(1);
     expect(sendMessage).not.toHaveBeenCalled();
@@ -171,7 +171,7 @@ describe('createNativePreviewRefresh', () => {
       regions: [{ name: 'content', blocks: ['section-7', 'fresh'] }],
     });
 
-    createNativePreviewRefresh(editor).refresh(createUpdates({ added: ['fresh'] }));
+    createBagistoPreviewRefresh(editor).refresh(createUpdates({ added: ['fresh'] }));
 
     loadPreview({
       blocks: { 'section-12': { id: 'section-12' } },
@@ -184,7 +184,7 @@ describe('createNativePreviewRefresh', () => {
   it('puts the selection back once the page has reloaded', () => {
     const { editor, sendMessage, setSelectedBlock, loadPreview } = createEditor(page, 'section-7');
 
-    createNativePreviewRefresh(editor).refresh(createUpdates({ updated: ['section-7'] }));
+    createBagistoPreviewRefresh(editor).refresh(createUpdates({ updated: ['section-7'] }));
     loadPreview();
 
     expect(setSelectedBlock).toHaveBeenCalledWith('section-7');
@@ -194,7 +194,7 @@ describe('createNativePreviewRefresh', () => {
   it('keeps an entry selected rather than selecting the section it scrolls to', () => {
     const { editor, sendMessage, setSelectedBlock, loadPreview } = createEditor(page, 'section-7.images.1');
 
-    createNativePreviewRefresh(editor).refresh(createUpdates({ updated: ['section-7.images.1'] }));
+    createBagistoPreviewRefresh(editor).refresh(createUpdates({ updated: ['section-7.images.1'] }));
     loadPreview();
 
     expect(setSelectedBlock).toHaveBeenCalledWith('section-7.images.1');
@@ -204,7 +204,7 @@ describe('createNativePreviewRefresh', () => {
   it('selects nothing when the merchant had selected nothing', () => {
     const { editor, sendMessage, setSelectedBlock, loadPreview } = createEditor(page);
 
-    createNativePreviewRefresh(editor).refresh(createUpdates({ updated: ['section-7'] }));
+    createBagistoPreviewRefresh(editor).refresh(createUpdates({ updated: ['section-7'] }));
     loadPreview();
 
     expect(setSelectedBlock).not.toHaveBeenCalled();
@@ -221,7 +221,7 @@ describe('createNativePreviewRefresh', () => {
       'fresh'
     );
 
-    createNativePreviewRefresh(editor).refresh(createUpdates({ added: ['fresh'] }));
+    createBagistoPreviewRefresh(editor).refresh(createUpdates({ added: ['fresh'] }));
 
     loadPreview({
       blocks: { 'section-12': { id: 'section-12' } },
@@ -234,7 +234,7 @@ describe('createNativePreviewRefresh', () => {
   it('leaves selection alone when the selected block is gone and is not the one that changed', () => {
     const { editor, setSelectedBlock, loadPreview } = createEditor(page, 'section-9');
 
-    createNativePreviewRefresh(editor).refresh(createUpdates({ updated: ['section-7'] }));
+    createBagistoPreviewRefresh(editor).refresh(createUpdates({ updated: ['section-7'] }));
     loadPreview();
 
     expect(setSelectedBlock).not.toHaveBeenCalled();
@@ -243,7 +243,7 @@ describe('createNativePreviewRefresh', () => {
   it('scrolls once, not on every later reload', () => {
     const { editor, sendMessage, loadPreview } = createEditor(page);
 
-    createNativePreviewRefresh(editor).refresh(createUpdates({ updated: ['section-7'] }));
+    createBagistoPreviewRefresh(editor).refresh(createUpdates({ updated: ['section-7'] }));
 
     loadPreview();
     loadPreview();
@@ -254,7 +254,7 @@ describe('createNativePreviewRefresh', () => {
   it('reloads without scrolling when nothing names the block that changed', () => {
     const { editor, sendMessage, reload, loadPreview } = createEditor(page);
 
-    createNativePreviewRefresh(editor).refresh(createUpdates({}));
+    createBagistoPreviewRefresh(editor).refresh(createUpdates({}));
     loadPreview();
 
     expect(reload).toHaveBeenCalledTimes(1);

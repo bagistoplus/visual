@@ -110,7 +110,7 @@ class Theme extends BagistoTheme
         }
 
         if (app(SectionSystem::class)->available()) {
-            return ThemeEditorMode::Native;
+            return ThemeEditorMode::Bagisto;
         }
 
         return ThemeEditorMode::Unsupported;

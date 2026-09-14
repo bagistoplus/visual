@@ -283,7 +283,7 @@ describe('updatePersistence utilities', () => {
       expect(Object.keys(retriedUpdates.blocks)).toEqual(['hero', 'footer']);
     });
 
-    it('reloads the preview of a native theme instead of patching it in place', async () => {
+    it('reloads the preview of a bagisto theme instead of patching it in place', async () => {
       vi.useFakeTimers();
 
       const request = createControlledRequest();
@@ -292,7 +292,7 @@ describe('updatePersistence utilities', () => {
       const hero = { id: 'hero', type: 'hero', properties: { text: 'Initial' }, children: [] };
       const harness = createPersistenceHarness(
         { hero },
-        { haveEdits: false, theme: { editorMode: 'native' } }
+        { haveEdits: false, theme: { editorMode: 'bagisto' } }
       );
 
       harness.emitUpdates(

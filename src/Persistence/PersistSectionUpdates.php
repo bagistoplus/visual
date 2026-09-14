@@ -8,7 +8,7 @@ use BagistoPlus\Visual\Support\SectionPageBuilder;
 use Craftile\Laravel\Data\UpdateRequest;
 
 /**
- * Holds what the editor changed about a native theme's sections.
+ * Holds what the editor changed about a Bagisto theme's sections.
  *
  * The editor reports only the blocks it changed, so the page it was working on
  * is read back from the rows first and the change laid over it. What comes out

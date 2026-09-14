@@ -13,13 +13,13 @@ it('edits a visual theme in visual mode whatever bagisto offers', function () {
         ->and($theme->editorMode()->isEditable())->toBeTrue();
 });
 
-it('edits a plain theme in native mode when bagisto stores sections', function () {
+it('edits a plain theme in bagisto mode when bagisto stores sections', function () {
     fakeSectionSystem(available: true);
 
     $theme = Theme::make(['code' => 'default', 'name' => 'Default']);
 
-    expect($theme->editorMode())->toBe(ThemeEditorMode::Native)
-        ->and($theme->editorMode()->isNative())->toBeTrue();
+    expect($theme->editorMode())->toBe(ThemeEditorMode::Bagisto)
+        ->and($theme->editorMode()->isBagisto())->toBeTrue();
 });
 
 it('leaves a plain theme unedited when bagisto has no section system', function () {
@@ -60,7 +60,7 @@ it('honours the editor a theme names for itself', function () {
         'code' => 'visual-debut',
         'name' => 'Debut',
         'visual_theme' => true,
-        'customize' => ['editor' => 'native'],
+        'customize' => ['editor' => 'bagisto'],
     ]);
 
     expect($plain->usesVisualEditor())->toBeTrue()

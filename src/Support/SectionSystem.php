@@ -2,15 +2,15 @@
 
 namespace BagistoPlus\Visual\Support;
 
-use BagistoPlus\Visual\Data\NativeSectionType;
+use BagistoPlus\Visual\Data\BagistoSectionType;
 use Illuminate\Support\Collection;
 
 /**
- * Whether the installed Bagisto stores sections the way native mode reads and
+ * Whether the installed Bagisto stores sections the way Bagisto mode reads and
  * writes them, and the section types a theme offers.
  *
  * Bagisto renamed ThemeCustomization to Section and moved drafts onto the row
- * in 2.5, then made section types extensible shortly after. Native mode needs
+ * in 2.5, then made section types extensible shortly after. Bagisto mode needs
  * both, so both are checked here and nothing else has to sniff versions.
  */
 class SectionSystem
@@ -22,12 +22,12 @@ class SectionSystem
     protected const VIEW_NAMESPACE = 'shop::sections.';
 
     /**
-     * @var array<string, Collection<string, NativeSectionType>>
+     * @var array<string, Collection<string, BagistoSectionType>>
      */
     protected array $cache = [];
 
     /**
-     * Whether sections are stored, and their types declared, the way native
+     * Whether sections are stored, and their types declared, the way Bagisto
      * mode needs. A release that keeps its section types to itself is not
      * editable here, because no theme could add one.
      */
@@ -45,7 +45,7 @@ class SectionSystem
      * Held for the rest of the request: the home page asks for the type of
      * every section it draws.
      *
-     * @return Collection<string, NativeSectionType>
+     * @return Collection<string, BagistoSectionType>
      */
     public function types(?string $themeCode = null): Collection
     {
@@ -58,7 +58,7 @@ class SectionSystem
         }
 
         return $this->cache[(string) $themeCode] = collect($this->schema()->types($themeCode))
-            ->map(fn (mixed $type) => new NativeSectionType(
+            ->map(fn (mixed $type) => new BagistoSectionType(
                 code: $type->getCode(),
                 title: $type->getTitle(),
                 icon: $type->getIcon(),
@@ -68,13 +68,13 @@ class SectionSystem
                 view: $this->view($type),
                 fieldsResolver: fn () => $type->getFields(),
             ))
-            ->keyBy(fn (NativeSectionType $type) => $type->code);
+            ->keyBy(fn (BagistoSectionType $type) => $type->code);
     }
 
     /**
      * The single type a code names, or null when the theme does not offer it.
      */
-    public function type(?string $themeCode, ?string $code): ?NativeSectionType
+    public function type(?string $themeCode, ?string $code): ?BagistoSectionType
     {
         if (blank($code)) {
             return null;

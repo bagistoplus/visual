@@ -28,8 +28,10 @@ import DescriptionField from '../../components/DescriptionField.vue';
 import TypographyPresets from '../../components/TypographyPresets.vue';
 import TypographyPicker from '../../components/TypographyPicker.vue';
 import PublishAction from '../../components/PublishAction.vue';
+import DiscardAction from '../../components/DiscardAction.vue';
 import PreviewAction from '../../components/PreviewAction.vue';
 import ConfirmPublish from '../../components/ConfirmPublish.vue';
+import ConfirmDiscard from '../../components/ConfirmDiscard.vue';
 import CreateTemplateModal from '../../components/CreateTemplateModal.vue';
 import UnsupportedPageModal from '../../components/UnsupportedPageModal.vue';
 import BackButton from '../../components/BackButton.vue';
@@ -38,7 +40,7 @@ import { UNSUPPORTED_PAGE_MODAL } from '../features/unsupportedPage';
 
 const { t } = useI18n();
 
-function configureHeader(ui: PluginContext['editor']['ui']) {
+function configureHeader(ui: PluginContext['editor']['ui'], bagistoTheme: boolean) {
   ui.removeHeaderAction('back-button');
   ui.removeHeaderAction('title');
 
@@ -66,6 +68,21 @@ function configureHeader(ui: PluginContext['editor']['ui']) {
     render: PreviewAction,
   });
 
+  if (bagistoTheme) {
+    // Undo steps are recorded against block ids the rows assign, and those
+    // renumber as sections and entries are added and removed, so a step could
+    // be replayed against a block other than the one it was recorded for.
+    // Bagisto's own appearance editor offers the same way out: drop the lot.
+    ui.removeHeaderAction('undo');
+    ui.removeHeaderAction('redo');
+
+    ui.registerHeaderAction({
+      id: 'discard',
+      slot: 'right',
+      render: DiscardAction,
+    });
+  }
+
   ui.registerHeaderAction({
     id: 'publish',
     slot: 'right',
@@ -91,6 +108,13 @@ function configureHeader(ui: PluginContext['editor']['ui']) {
     title: t('Publish edits ?'),
     size: 'lg',
     render: ConfirmPublish,
+  });
+
+  ui.registerModal({
+    id: 'confirm-discard',
+    title: t('Discard edits ?'),
+    size: 'lg',
+    render: ConfirmDiscard,
   });
 
   ui.registerModal({
@@ -215,7 +239,7 @@ function registerPropertyFields(ui: PluginContext['editor']['ui']) {
   });
 }
 
-export function configureUI(ui: PluginContext['editor']['ui']) {
-  configureHeader(ui);
+export function configureUI(ui: PluginContext['editor']['ui'], bagistoTheme = false) {
+  configureHeader(ui, bagistoTheme);
   registerPropertyFields(ui);
 }

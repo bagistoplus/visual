@@ -76,14 +76,14 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
      * The page the editor arranges.
      *
      * A visual theme renders its blocks, and the collector reports what was
-     * rendered. A native theme renders sections Craftile knows nothing about,
+     * rendered. A Bagisto theme renders sections Craftile knows nothing about,
      * so its page is read from the rows they are stored as instead.
      */
     protected function getCurrentPageData(): array
     {
         $theme = themes()->current();
 
-        if ($theme instanceof VisualTheme && $theme->editorMode()->isNative()) {
+        if ($theme instanceof VisualTheme && $theme->editorMode()->isBagisto()) {
             return $this->sectionPageData($theme);
         }
 
@@ -163,12 +163,38 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
             'preloadedModels' => $this->themeEditor->preloadedModels(),
         ];
 
+        if (($count = $this->draftCount()) !== null) {
+            $payload['draftCount'] = $count;
+        }
+
         if ($includePageLoadMetadata) {
             $payload['blockSchemas'] = app(EditorBlockSchemaSerializer::class)->all();
             $payload['settings'] = $settingsBag?->toArray() ?? [];
         }
 
         return $payload;
+    }
+
+    /**
+     * How many sections are holding an unpublished change, so that the editor
+     * can say how much publishing or discarding would carry, the way Bagisto's
+     * own appearance editor does.
+     *
+     * A visual theme holds its edits in files rather than rows and has nothing
+     * to count, so it is told nothing.
+     */
+    protected function draftCount(): ?int
+    {
+        $theme = themes()->current();
+
+        if (! $theme instanceof VisualTheme || ! $theme->editorMode()->isBagisto()) {
+            return null;
+        }
+
+        return $this->sectionStore->countDrafts(
+            (int) core()->getRequestedChannel()->id,
+            $theme->code,
+        );
     }
 
     protected function getCurrentTheme()

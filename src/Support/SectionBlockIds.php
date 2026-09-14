@@ -3,7 +3,7 @@
 namespace BagistoPlus\Visual\Support;
 
 /**
- * The ids the editor holds a native section's blocks under.
+ * The ids the editor holds a Bagisto section's blocks under.
  *
  * A section is addressed by the row it is stored as, and everything beneath it
  * by the path from that row: the option key of a repeating list, then the

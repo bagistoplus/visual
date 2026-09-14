@@ -27,7 +27,7 @@ class RegisterVisualSchemas
             Craftile::registerDiscoveredSchemas();
         }
 
-        if ($mode->isNative() && ThemeEditor::inDesignMode()) {
+        if ($mode->isBagisto() && ThemeEditor::inDesignMode()) {
             $this->registerSectionSchemas($theme);
         }
 

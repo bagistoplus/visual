@@ -21,6 +21,7 @@ return [
             'visual.admin.editor.api.persist',
             'visual.admin.editor.api.persist_settings',
             'visual.admin.editor.api.publish',
+            'visual.admin.editor.api.discard',
             'visual.admin.editor.api.templates.create',
             'visual.admin.editor.api.upload',
             'visual.admin.editor.api.images',

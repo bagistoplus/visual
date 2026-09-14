@@ -27,7 +27,7 @@ class DraftedSectionsComposer
 
         $theme = themes()->current();
 
-        if (! $theme instanceof Theme || ! $theme->editorMode()->isNative()) {
+        if (! $theme instanceof Theme || ! $theme->editorMode()->isBagisto()) {
             return;
         }
 

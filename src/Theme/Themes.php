@@ -72,8 +72,8 @@ class Themes extends BagistoThemes
 
         // A theme whose sections Bagisto stores draws its home page through the
         // view each section type names, rather than a hardcoded list of types.
-        if ($this->activeTheme->editorMode()->isNative()) {
-            app('view')->prependNamespace('shop', __DIR__.'/../../resources/views/native');
+        if ($this->activeTheme->editorMode()->isBagisto()) {
+            app('view')->prependNamespace('shop', __DIR__.'/../../resources/views/bagisto');
         }
 
         return $theme;

@@ -70,6 +70,7 @@ class ThemeEditorController extends Controller
                     'persistUpdates' => route('visual.admin.editor.api.persist'),
                     'persistThemeSettings' => route('visual.admin.editor.api.persist_settings'),
                     'publishTheme' => route('visual.admin.editor.api.publish'),
+                    'discardTheme' => route('visual.admin.editor.api.discard'),
                     'createTemplate' => route('visual.admin.editor.api.templates.create'),
                     'uploadImage' => route('visual.admin.editor.api.upload'),
                     'listImages' => route('visual.admin.editor.api.images'),
@@ -81,6 +82,7 @@ class ThemeEditorController extends Controller
                 'messages' => Lang::get('visual::theme-editor'),
                 'editorLocale' => app()->getLocale(),
                 'haveEdits' => $this->checkIfHaveEdits($themeCode),
+                'draftCount' => $this->draftCount($themeCode),
             ],
         ]);
     }
@@ -105,7 +107,7 @@ class ThemeEditorController extends Controller
             'updates.regions' => ['present', 'array'],
         ]);
 
-        if ($this->resolveTheme($validated['theme'])->editorMode()->isNative()) {
+        if ($this->resolveTheme($validated['theme'])->editorMode()->isBagisto()) {
             return $this->persistSectionUpdatesAndRender($validated);
         }
 
@@ -145,7 +147,7 @@ class ThemeEditorController extends Controller
             'page' => ['nullable', 'array'],
         ]);
 
-        if ($this->resolveTheme($validated['theme'])->editorMode()->isNative()) {
+        if ($this->resolveTheme($validated['theme'])->editorMode()->isBagisto()) {
             $this->sectionStore->publish(
                 $this->channelId($validated['channel'] ?? core()->getDefaultChannelCode()),
                 $validated['theme'],
@@ -167,6 +169,34 @@ class ThemeEditorController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Theme published successfully',
+        ]);
+    }
+
+    /**
+     * Drop every unpublished change a theme's sections are holding.
+     *
+     * Offered instead of undo on a theme whose sections Bagisto stores: its
+     * block ids are assigned by the row they are stored as and renumber as
+     * entries are added and removed, so an undone step could land on a block
+     * other than the one it was recorded against.
+     */
+    public function discardTheme(Request $request)
+    {
+        $validated = $request->validate([
+            'theme' => ['required', 'string', Rule::in($this->getEditableThemes())],
+            'channel' => ['nullable', 'string', Rule::in($this->getChannelCodes())],
+        ]);
+
+        abort_unless($this->resolveTheme($validated['theme'])->editorMode()->isBagisto(), 404);
+
+        $this->sectionStore->discard(
+            $this->channelId($validated['channel'] ?? core()->getDefaultChannelCode()),
+            $validated['theme'],
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Edits discarded successfully',
         ]);
     }
 
@@ -455,7 +485,7 @@ class ThemeEditorController extends Controller
 
     protected function checkIfHaveEdits(string $themeCode): bool
     {
-        if ($this->resolveTheme($themeCode)->editorMode()->isNative()) {
+        if ($this->resolveTheme($themeCode)->editorMode()->isBagisto()) {
             return $this->sectionStore->hasDrafts(
                 $this->channelId(core()->getRequestedChannelCode()),
                 $themeCode,
@@ -465,6 +495,23 @@ class ThemeEditorController extends Controller
         $lastEditFile = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'editor/.last-edit');
 
         return file_exists($lastEditFile);
+    }
+
+    /**
+     * How many sections are holding an unpublished change. Null for a theme
+     * whose edits are held in files rather than rows, which has nothing to
+     * count.
+     */
+    protected function draftCount(string $themeCode): ?int
+    {
+        if (! $this->resolveTheme($themeCode)->editorMode()->isBagisto()) {
+            return null;
+        }
+
+        return $this->sectionStore->countDrafts(
+            $this->channelId(core()->getRequestedChannelCode()),
+            $themeCode,
+        );
     }
 
     protected function translateSettingsSchema(array $settingsSchema): array

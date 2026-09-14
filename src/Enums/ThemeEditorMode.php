@@ -16,7 +16,7 @@ enum ThemeEditorMode: string
     /**
      * Structure comes from Bagisto's theme_sections rows.
      */
-    case Native = 'native';
+    case Bagisto = 'bagisto';
 
     /**
      * The theme cannot be edited, because it ships no visual templates and the
@@ -29,9 +29,9 @@ enum ThemeEditorMode: string
         return $this === self::Visual;
     }
 
-    public function isNative(): bool
+    public function isBagisto(): bool
     {
-        return $this === self::Native;
+        return $this === self::Bagisto;
     }
 
     public function isEditable(): bool

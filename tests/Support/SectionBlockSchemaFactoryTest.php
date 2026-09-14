@@ -2,15 +2,15 @@
 
 use BagistoPlus\Visual\Blocks\BagistoSection;
 use BagistoPlus\Visual\Blocks\BagistoSectionBlock;
+use BagistoPlus\Visual\Data\BagistoSectionType;
 use BagistoPlus\Visual\Data\BlockSchema;
-use BagistoPlus\Visual\Data\NativeSectionType;
 use BagistoPlus\Visual\Support\SectionBlockSchemaFactory;
 use BagistoPlus\Visual\Support\SectionSystem;
 use Illuminate\Support\Collection;
 
-function sectionType(string $code, array $fields, bool $singleton = false, bool $pinned = false, bool $layout = false): NativeSectionType
+function sectionType(string $code, array $fields, bool $singleton = false, bool $pinned = false, bool $layout = false): BagistoSectionType
 {
-    return new NativeSectionType(
+    return new BagistoSectionType(
         code: $code,
         title: Str::headline($code),
         icon: 'icon-image',
@@ -22,7 +22,7 @@ function sectionType(string $code, array $fields, bool $singleton = false, bool 
     );
 }
 
-function schemasFor(NativeSectionType $type): array
+function schemasFor(BagistoSectionType $type): array
 {
     return collect(app(SectionBlockSchemaFactory::class)->forType($type))
         ->keyBy(fn (BlockSchema $schema) => $schema->type)
@@ -121,7 +121,7 @@ it('carries what the editor arranges a section by', function () {
     $schemas = schemasFor(sectionType('footer_links', [], singleton: true, pinned: true, layout: true));
 
     expect($schemas['footer_links']->meta)->toBe([
-        'native' => true,
+        'bagisto' => true,
         'singleton' => true,
         'pinned' => true,
         'rendersInLayout' => true,

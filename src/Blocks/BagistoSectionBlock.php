@@ -3,7 +3,7 @@
 namespace BagistoPlus\Visual\Blocks;
 
 /**
- * A block nested inside a native section: either a repeating list a section
+ * A block nested inside a Bagisto section: either a repeating list a section
  * type declares, or one entry of such a list.
  *
  * Like `BagistoSection`, this carries no schema of its own. It stands in as the

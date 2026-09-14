@@ -2,7 +2,7 @@
 
 namespace BagistoPlus\Visual\Support;
 
-use BagistoPlus\Visual\Data\NativeSectionType;
+use BagistoPlus\Visual\Data\BagistoSectionType;
 use BagistoPlus\Visual\Data\SectionDraft;
 use Illuminate\Support\Collection;
 
@@ -81,7 +81,7 @@ class SectionDraftBuilder
      *
      * @param  array<string, mixed>  $block
      */
-    protected function name(array $block, NativeSectionType $type): string
+    protected function name(array $block, BagistoSectionType $type): string
     {
         $name = $block['name'] ?? null;
 

@@ -55,6 +55,11 @@ export function setupPageDataHandler(editor: CraftileEditor, state: State) {
       editor.engine.setPage(pageData.content);
       state.previewLoading = false;
 
+      if (pageData.draftCount !== undefined) {
+        state.draftCount = pageData.draftCount;
+        state.haveEdits = pageData.draftCount > 0;
+      }
+
       state.pageData = {
         url: pageData.template.url,
         template: pageData.template.name,

@@ -76,7 +76,7 @@ it('redirects a plain theme that names the visual editor as its customizer', fun
 });
 
 it('lets bagisto handle a visual theme that names the appearance editor as its customizer', function () {
-    config()->set('themes.shop.visual-demo.customize.editor', 'native');
+    config()->set('themes.shop.visual-demo.customize.editor', 'bagisto');
 
     $response = handleCustomizationRequest('/admin/appearance/themes/visual-demo/sections');
 

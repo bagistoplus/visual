@@ -1,6 +1,6 @@
 <?php
 
-use BagistoPlus\Visual\Data\NativeSectionType;
+use BagistoPlus\Visual\Data\BagistoSectionType;
 use BagistoPlus\Visual\Support\SectionSystem;
 use Illuminate\Support\Collection;
 
@@ -104,7 +104,7 @@ it('reads the types a theme declares, each describing itself', function () {
     $types = sectionSystem(available: true)->types('fashion');
 
     expect($types->keys()->all())->toBe(['hero'])
-        ->and($types->get('hero'))->toBeInstanceOf(NativeSectionType::class)
+        ->and($types->get('hero'))->toBeInstanceOf(BagistoSectionType::class)
         ->and($types->get('hero')->title)->toBe('Hero')
         ->and($types->get('hero')->icon)->toBe('icon-star')
         ->and($types->get('hero')->singleton)->toBeTrue()
@@ -192,7 +192,7 @@ it('finds a single type by code and nothing for an unknown one', function () {
 
     $system = sectionSystem(available: true);
 
-    expect($system->type(null, 'static_content'))->toBeInstanceOf(NativeSectionType::class)
+    expect($system->type(null, 'static_content'))->toBeInstanceOf(BagistoSectionType::class)
         ->and($system->type(null, 'nope'))->toBeNull()
         ->and($system->type(null, null))->toBeNull();
 });

@@ -18,13 +18,13 @@ export interface PendingRefresh {
 }
 
 /**
- * A native theme draws its sections through Bagisto, whose markup carries none
- * of the attributes a live update needs. The saved page is therefore the only
+ * A theme whose sections Bagisto draws carries none of the attributes a live
+ * update needs, in markup Visual has no say over. The saved page is the only
  * accurate one, so every edit reloads the preview, brings the section that was
  * edited back into view, and puts back whatever the merchant had selected.
  */
-export function isNativeTheme(state: State): boolean {
-  return state.theme?.editorMode === 'native';
+export function isBagistoTheme(state: State): boolean {
+  return state.theme?.editorMode === 'bagisto';
 }
 
 /**
@@ -105,7 +105,7 @@ export function selectionAfterReload(page: any, pending: PendingRefresh, scrollT
   return pending.selected === pending.blockId ? scrollTo : null;
 }
 
-export function createNativePreviewRefresh(editor: CraftileEditor) {
+export function createBagistoPreviewRefresh(editor: CraftileEditor) {
   let pending: PendingRefresh | null = null;
 
   editor.preview.onReady(() => {

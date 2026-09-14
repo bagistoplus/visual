@@ -2,7 +2,7 @@
     The home page of a theme whose sections Bagisto stores, with the hardcoded
     list of section types replaced by the view each type names for itself.
 
-    Prepended to the shop namespace only for a theme edited in native mode, and
+    Prepended to the shop namespace only for a theme edited in Bagisto mode, and
     deleted once Bagisto dispatches sections itself.
 --}}
 @php

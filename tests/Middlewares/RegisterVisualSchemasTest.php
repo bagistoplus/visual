@@ -50,7 +50,7 @@ it('does not register deferred schemas when the current theme is not visual', fu
     Craftile::shouldNotHaveReceived('registerDiscoveredSchemas');
 });
 
-it('does not register deferred schemas for a theme edited in native mode', function () {
+it('does not register deferred schemas for a theme edited in bagisto mode', function () {
     fakeSectionSystem(available: true);
 
     bindThemeForVisualSchemaRegistration(Theme::make([
@@ -65,7 +65,7 @@ it('does not register deferred schemas for a theme edited in native mode', funct
     Craftile::shouldNotHaveReceived('registerDiscoveredSchemas');
 });
 
-it('registers the section schemas of a native theme while the editor is driving', function () {
+it('registers the section schemas of a bagisto theme while the editor is driving', function () {
     offerTypes(['image_carousel' => carouselType()]);
 
     bindThemeForVisualSchemaRegistration(Theme::make(['code' => 'default', 'name' => 'Default']));

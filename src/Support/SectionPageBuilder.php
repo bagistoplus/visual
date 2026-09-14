@@ -2,7 +2,7 @@
 
 namespace BagistoPlus\Visual\Support;
 
-use BagistoPlus\Visual\Data\NativeSectionType;
+use BagistoPlus\Visual\Data\BagistoSectionType;
 use BagistoPlus\Visual\Data\SectionRecord;
 use Illuminate\Support\Collection;
 
@@ -85,7 +85,7 @@ class SectionPageBuilder
      * @param  array<string, array<string, mixed>>  $blocks
      * @return array<string, mixed>
      */
-    protected function sectionBlock(string $id, SectionRecord $record, NativeSectionType $type, array &$blocks): array
+    protected function sectionBlock(string $id, SectionRecord $record, BagistoSectionType $type, array &$blocks): array
     {
         $fields = $type->fields();
 

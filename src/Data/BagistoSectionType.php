@@ -5,7 +5,7 @@ namespace BagistoPlus\Visual\Data;
 use Closure;
 
 /**
- * A section type as native mode needs it, whichever Bagisto described it.
+ * A section type as Bagisto mode needs it, whichever Bagisto described it.
  *
  * Bagisto 2.5 grew a `SectionType` class per type, which 2.5.0-beta2 does not
  * have. Both are read into this shape so nothing downstream has to know which
@@ -17,7 +17,7 @@ use Closure;
  * The view is where the storefront draws the section. Bagisto has no say in
  * this yet, so a type that does not name one is drawn by `shop::sections.{code}`.
  */
-final class NativeSectionType
+final class BagistoSectionType
 {
     /**
      * @var array<int, array<string, mixed>>|null
