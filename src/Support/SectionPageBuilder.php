@@ -35,9 +35,12 @@ class SectionPageBuilder
 
     /**
      * @param  iterable<SectionRecord>  $records
+     * @param  bool  $withContent  Whether the page being read draws the content
+     *                             sections. Only the home page does; every
+     *                             other page draws the layout ones alone.
      * @return array{blocks: array<string, array<string, mixed>>, regions: array<int, array<string, mixed>>}
      */
-    public function build(iterable $records, ?string $themeCode = null): array
+    public function build(iterable $records, ?string $themeCode = null, bool $withContent = true): array
     {
         $types = $this->sectionSystem->types($themeCode);
 
@@ -54,6 +57,10 @@ class SectionPageBuilder
 
             $id = $this->ids->section($record->id);
 
+            if (! $type->rendersInLayout && ! $withContent) {
+                continue;
+            }
+
             $blocks[$id] = $this->sectionBlock($id, $record, $type, $blocks);
 
             if ($type->rendersInLayout) {
@@ -63,12 +70,20 @@ class SectionPageBuilder
             }
         }
 
+        $regions = [];
+
+        // A page that does not draw the content sections is given no content
+        // region at all, rather than an empty one: an empty region reads as a
+        // page whose sections were all removed.
+        if ($withContent) {
+            $regions[] = ['name' => self::CONTENT_REGION, 'shared' => false, 'blocks' => $content];
+        }
+
+        $regions[] = ['name' => self::LAYOUT_REGION, 'shared' => true, 'blocks' => $layout];
+
         return [
             'blocks' => $blocks,
-            'regions' => [
-                ['name' => self::CONTENT_REGION, 'shared' => false, 'blocks' => $content],
-                ['name' => self::LAYOUT_REGION, 'shared' => true, 'blocks' => $layout],
-            ],
+            'regions' => $regions,
         ];
     }
 

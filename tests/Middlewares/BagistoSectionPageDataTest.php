@@ -10,6 +10,7 @@ use BagistoPlus\Visual\ThemeEditor;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use Craftile\Laravel\PreviewDataCollector;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Route;
 use Webkul\Category\Repositories\CategoryRepository;
 use Webkul\Product\Repositories\ProductRepository;
 use Webkul\Theme\Facades\Themes as ThemesFacade;
@@ -80,6 +81,25 @@ it('reads a bagisto theme\'s page from the rows its sections are stored as', fun
             'shared' => false,
             'blocks' => ['section-7'],
         ]);
+});
+
+it('reads a page that is not the home page as the layout sections alone', function () {
+    offerTypes(['image_carousel' => carouselType(), 'footer_links' => footerType()]);
+    currentThemeIs(Theme::make(['code' => 'default', 'name' => 'Default']));
+
+    Route::get('/categories', fn () => '')->name('shop.categories.index');
+    Route::getRoutes()->refreshNameLookups();
+
+    $this->get('/categories');
+
+    $page = middlewareReading(storeHolding([
+        new SectionRecord(7, 'image_carousel', 'Hero', true, 1, []),
+        new SectionRecord(9, 'footer_links', 'Footer', true, 2, []),
+    ]))->pageData();
+
+    expect(array_column($page['regions'], 'name'))->toBe(['layout'])
+        ->and($page['regions'][0]['blocks'])->toBe(['section-9'])
+        ->and($page['blocks'])->not->toHaveKey('section-7');
 });
 
 it('leaves a visual theme to report the blocks it rendered', function () {

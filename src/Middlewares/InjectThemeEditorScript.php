@@ -24,6 +24,11 @@ use Webkul\Product\Repositories\ProductRepository;
 
 class InjectThemeEditorScript extends PreviewScriptMiddleware
 {
+    /**
+     * The one page a theme's content sections are drawn on.
+     */
+    protected const HOME_ROUTE = 'shop.home.index';
+
     public function __construct(
         protected ThemeEditor $themeEditor,
         protected ThemeSettingsLoader $themeSettingsLoader,
@@ -92,6 +97,24 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
     }
 
     /**
+     * Whether the page being previewed draws the content sections.
+     *
+     * Bagisto's home page draws them and no other page does, so browsing the
+     * storefront in the preview shows the layout sections alone, which is what
+     * is actually on screen.
+     *
+     * A request that matched no named route is read as the home page rather
+     * than as another one: hiding sections that are on screen is the worse of
+     * the two mistakes.
+     */
+    protected function drawsContentSections(): bool
+    {
+        $route = Route::currentRouteName();
+
+        return $route === null || $route === self::HOME_ROUTE;
+    }
+
+    /**
      * @return array{blocks: array<string, array<string, mixed>>, regions: array<int, array<string, mixed>>}
      */
     protected function sectionPageData(VisualTheme $theme): array
@@ -102,7 +125,7 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
             core()->getRequestedLocaleCode(),
         );
 
-        return $this->sectionPageBuilder->build($records, $theme->code);
+        return $this->sectionPageBuilder->build($records, $theme->code, $this->drawsContentSections());
     }
 
     /**

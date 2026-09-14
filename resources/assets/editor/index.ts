@@ -9,6 +9,7 @@ import './css/nprogress.css';
 import * as Vue from 'vue';
 import { createState } from './state';
 import { matchesCondition } from './utils/patternMatcher';
+import { holdsBlockOfType } from './utils/singletonSections';
 import { useBunnyFonts } from './composables/useBunnyFonts';
 import { initialChannelFromUrl, initialLocaleFromUrl } from './craftile/features/urlState';
 import { isBagistoTheme } from './craftile/features/bagistoPreviewRefresh';
@@ -83,6 +84,12 @@ const editorInstance = createCraftileEditor({
     }
 
     if (!context.parentId) {
+      // A section type Bagisto allows only one of is offered until the page
+      // holds one, after which its own editor would read a second as invalid.
+      if (schema.meta?.singleton && holdsBlockOfType(editorInstance?.engine.getPage()?.blocks, schema.type)) {
+        return false;
+      }
+
       // we are adding a root block to a region, so we only allow section
       return schema.meta?.isSection;
     }

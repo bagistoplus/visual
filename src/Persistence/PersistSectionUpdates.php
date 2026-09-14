@@ -35,12 +35,42 @@ class PersistSectionUpdates
 
         $drafts = $this->draftBuilder->build(
             blocks: $this->apply($page['blocks'], $updates),
-            regions: $updates->regions ?: $page['regions'],
+            regions: $this->regions($page['regions'], $updates->regions),
             existingOptions: $previous,
             themeCode: $themeCode,
         );
 
         $this->store->saveDrafts($drafts, $channelId, $themeCode, $locale, $previous);
+    }
+
+    /**
+     * The regions as the editor left them, laid over the ones that were stored.
+     *
+     * A page that is not the home page carries the layout sections alone, so
+     * what it reports has to be read as a change to those and not as a page
+     * whose content sections are all gone.
+     *
+     * @param  array<int, array<string, mixed>>  $stored
+     * @param  array<int, array<string, mixed>>  $reported
+     * @return array<int, array<string, mixed>>
+     */
+    protected function regions(array $stored, array $reported): array
+    {
+        if ($reported === []) {
+            return $stored;
+        }
+
+        $byName = [];
+
+        foreach ($stored as $region) {
+            $byName[$region['name']] = $region;
+        }
+
+        foreach ($reported as $region) {
+            $byName[$region['name']] = $region;
+        }
+
+        return array_values($byName);
     }
 
     /**

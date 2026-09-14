@@ -205,3 +205,21 @@ it('hands the store the options each row was holding, so an untouched one is lef
     expect($store->previous)->toBe([7 => ['title' => 'Summer']])
         ->and($store->saved[0]->options)->toBe($store->previous[7]);
 });
+
+it('keeps the sections a page did not carry, so browsing cannot drop them', function () {
+    offerTypes(['image_carousel' => carouselType(), 'footer_links' => footerType()]);
+
+    $store = recordingStore([
+        heroRow(['title' => 'Summer']),
+        new SectionRecord(9, 'footer_links', 'Footer', true, 2, []),
+    ]);
+
+    // What a page that is not the home page reports: the layout sections alone.
+    persistUpdates($store, [
+        'blocks' => [],
+        'regions' => [['name' => 'layout', 'shared' => true, 'blocks' => ['section-9']]],
+    ]);
+
+    expect(collect($store->saved)->map(fn (SectionDraft $draft) => $draft->rowId)->all())
+        ->toBe([7, 9]);
+});
