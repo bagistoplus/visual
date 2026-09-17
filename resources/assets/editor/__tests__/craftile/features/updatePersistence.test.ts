@@ -109,7 +109,10 @@ function pageResponse(blocks: Record<string, any>): string {
   `;
 }
 
-function createPersistenceHarness(initialBlocks: Record<string, any>) {
+function createPersistenceHarness(
+  initialBlocks: Record<string, any>,
+  { frameUrl, pageUrl }: { frameUrl?: string; pageUrl?: string } = {}
+) {
   let page = {
     blocks: structuredClone(initialBlocks),
     regions: [{ id: 'main', name: 'Main', blocks: Object.keys(initialBlocks) }],
@@ -137,13 +140,19 @@ function createPersistenceHarness(initialBlocks: Record<string, any>) {
     },
     preview: {
       sendMessage,
+      getFrame: vi.fn(() =>
+        frameUrl ? { contentWindow: { location: { href: frameUrl } } } : null
+      ),
     },
     ui: {
       toast,
     },
   } as any;
 
-  setupUpdatePersistence(editor, { haveEdits: false } as any);
+  setupUpdatePersistence(editor, {
+    haveEdits: false,
+    pageData: pageUrl ? { url: pageUrl } : null,
+  } as any);
 
   return {
     emitUpdates(updates: UpdatesEvent) {
@@ -157,6 +166,49 @@ function createPersistenceHarness(initialBlocks: Record<string, any>) {
 
 describe('updatePersistence utilities', () => {
   describe('setupUpdatePersistence', () => {
+    it('renders the address the preview is showing, not the one it was loaded with', async () => {
+      vi.useFakeTimers();
+
+      persistUpdatesMock.mockReturnValueOnce(createControlledRequest());
+
+      const initialBlock = { id: 'hero', type: 'hero', properties: { text: 'Initial' }, children: [] };
+      const harness = createPersistenceHarness(
+        { hero: initialBlock },
+        {
+          pageUrl: 'http://localhost:8000/men?_designMode=debut',
+          frameUrl: 'http://localhost:8000/men?_designMode=debut&limit=6&sort=name-asc',
+        }
+      );
+
+      harness.emitUpdates(
+        createUpdatesEvent({ updated: ['hero'] }, { hero: { ...initialBlock, properties: { text: 'Shu' } } })
+      );
+      await vi.advanceTimersByTimeAsync(300);
+
+      expect(persistUpdatesMock.mock.calls[0][1]).toBe(
+        'http://localhost:8000/men?_designMode=debut&limit=6&sort=name-asc'
+      );
+    });
+
+    it('falls back to the loaded address when the frame cannot be read', async () => {
+      vi.useFakeTimers();
+
+      persistUpdatesMock.mockReturnValueOnce(createControlledRequest());
+
+      const initialBlock = { id: 'hero', type: 'hero', properties: { text: 'Initial' }, children: [] };
+      const harness = createPersistenceHarness(
+        { hero: initialBlock },
+        { pageUrl: 'http://localhost:8000/men?_designMode=debut' }
+      );
+
+      harness.emitUpdates(
+        createUpdatesEvent({ updated: ['hero'] }, { hero: { ...initialBlock, properties: { text: 'Shu' } } })
+      );
+      await vi.advanceTimersByTimeAsync(300);
+
+      expect(persistUpdatesMock.mock.calls[0][1]).toBe('http://localhost:8000/men?_designMode=debut');
+    });
+
     it('discards stale same-block responses and persists only the latest merged snapshot', async () => {
       vi.useFakeTimers();
 

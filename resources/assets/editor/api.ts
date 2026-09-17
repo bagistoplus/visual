@@ -3,7 +3,7 @@ import { useHttpClient } from './composables/http';
 import { useState } from './state';
 import { canonicalizePage, canonicalizeUpdates } from './utils/resolvedTranslationRefs';
 
-export function persistUpdates(updates: UpdatesEvent) {
+export function persistUpdates(updates: UpdatesEvent, previewUrl?: string) {
   const { state } = useState();
   const { post } = useHttpClient();
 
@@ -12,7 +12,7 @@ export function persistUpdates(updates: UpdatesEvent) {
     channel: state.channel || window.editorConfig.defaultChannel,
     locale: state.locale || window.editorConfig.editorLocale,
     template: {
-      url: state.pageData?.url || '',
+      url: previewUrl || state.pageData?.url || '',
       name: state.pageData?.template || 'index',
       sources: state.pageData?.sources,
     },
@@ -22,7 +22,7 @@ export function persistUpdates(updates: UpdatesEvent) {
   return request;
 }
 
-export function persistThemeSettings(updates: Record<string, any>) {
+export function persistThemeSettings(updates: Record<string, any>, previewUrl?: string) {
   const { state } = useState();
   const { post } = useHttpClient();
 
@@ -31,7 +31,7 @@ export function persistThemeSettings(updates: Record<string, any>) {
     channel: state.channel || window.editorConfig.defaultChannel,
     locale: state.locale || window.editorConfig.editorLocale,
     template: {
-      url: state.pageData?.url || '',
+      url: previewUrl || state.pageData?.url || '',
       name: state.pageData?.template || 'index',
       sources: state.pageData?.sources,
     },

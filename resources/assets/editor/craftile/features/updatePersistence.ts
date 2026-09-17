@@ -6,6 +6,7 @@ import { debounce } from 'perfect-debounce';
 import type { State } from '../../state';
 import { persistUpdates } from '../../api';
 import useI18n from '../../composables/i18n';
+import { livePreviewUrl } from '../../utils/previewUrl';
 import { recordResolvedTranslationRefs } from '../../utils/resolvedTranslationRefs';
 
 const { t } = useI18n();
@@ -183,7 +184,10 @@ export function setupUpdatePersistence(editor: CraftileEditor, state: State) {
 
     const mergedUpdates = mergeUpdates(updatesToProcess);
 
-    const request = persistUpdates(mergedUpdates);
+    const request = persistUpdates(
+      mergedUpdates,
+      livePreviewUrl(editor.preview.getFrame(), state.pageData?.url || '')
+    );
 
     request.onSuccess((htmlResponse) => {
       if (pendingUpdates.length > 0) {

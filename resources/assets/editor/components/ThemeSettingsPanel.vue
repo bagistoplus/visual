@@ -6,6 +6,7 @@ import useI18n from '../composables/i18n';
 import { useState } from '../state';
 import { persistThemeSettings as persistThemeSettingsApi } from '../api';
 import { CRAFTILE_EDITOR } from '../craftile/plugin';
+import { livePreviewUrl } from '../utils/previewUrl';
 import DescriptionField from './DescriptionField.vue';
 
 const { t } = useI18n();
@@ -22,7 +23,10 @@ const persistThemeSettings = debounce(async () => {
   const updates = { ...pendingUpdates.value };
   pendingUpdates.value = {};
 
-  const request = persistThemeSettingsApi(updates);
+  const request = persistThemeSettingsApi(
+    updates,
+    livePreviewUrl(editor.preview.getFrame(), state.pageData?.url || '')
+  );
 
   request.onSuccess((html) => {
     if (html) {
