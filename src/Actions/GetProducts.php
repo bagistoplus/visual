@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Actions;
 
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Arr;
 use Webkul\Marketing\Jobs\UpdateCreateSearchTerm as UpdateCreateSearchTermJob;
 use Webkul\Product\Enums\SearchContextEnum;
 use Webkul\Product\Repositories\ProductRepository;
@@ -14,45 +15,56 @@ final readonly class GetProducts
     /**
      * Get products
      *
+     * The params are the whole query, so a caller that wants the shopper's URL
+     * to filter passes it in. The request's own query is replaced for the
+     * duration of the call, and restored afterwards.
+     *
      * @return LengthAwarePaginator
      */
     public function execute(array $params, bool $trackSearch = true)
     {
-        request()->query->add($params);
+        $request = request();
+        $savedQuery = $request->query->all();
 
-        // Mirrors the non-response-building parts of Bagisto's shop API ProductController::index().
-        // Keep this in sync when Bagisto changes storefront search/listing behavior.
-        $this->applySearchContext();
+        try {
+            $request->query->replace($params);
 
-        $searchData = $this->resolveSearchQueryData();
+            // Mirrors the non-response-building parts of Bagisto's shop API ProductController::index().
+            // Keep this in sync when Bagisto changes storefront search/listing behavior.
+            $this->applySearchContext();
 
-        $query = $searchData['effective_query'] ?? $searchData['original_query'];
+            $searchData = $this->resolveSearchQueryData($params);
 
-        $products = $this->productRepository->getAll(
-            array_merge(request()->query(), [
-                'query' => $query,
-                'channel_id' => core()->getCurrentChannel()->id,
-                'status' => 1,
-                'visible_individually' => 1,
-            ])
-        );
+            $query = $searchData['effective_query'] ?? $searchData['original_query'];
 
-        if ($trackSearch && $this->shouldTrackSearchTerm($query)) {
-            UpdateCreateSearchTermJob::dispatch([
-                'term' => $query,
-                'results' => $products->total(),
-                'channel_id' => core()->getCurrentChannel()->id,
-                'locale' => app()->getLocale(),
-            ]);
+            $products = $this->productRepository->getAll(
+                array_merge($params, [
+                    'query' => $query,
+                    'channel_id' => core()->getCurrentChannel()->id,
+                    'status' => 1,
+                    'visible_individually' => 1,
+                ])
+            );
+
+            if ($trackSearch && $this->shouldTrackSearchTerm($query, $params)) {
+                UpdateCreateSearchTermJob::dispatch([
+                    'term' => $query,
+                    'results' => $products->total(),
+                    'channel_id' => core()->getCurrentChannel()->id,
+                    'locale' => app()->getLocale(),
+                ]);
+            }
+
+            return $products;
+        } finally {
+            $request->query->replace($savedQuery);
         }
-
-        return $products;
     }
 
-    protected function shouldTrackSearchTerm(string $query): bool
+    protected function shouldTrackSearchTerm(string $query, array $params): bool
     {
         return ! empty($query)
-            && array_keys(request()->except(['mode', 'sort', 'limit'])) === ['query'];
+            && array_keys(Arr::except($params, ['mode', 'sort', 'limit'])) === ['query'];
     }
 
     /**
@@ -78,18 +90,11 @@ final readonly class GetProducts
         return 'database';
     }
 
-    protected function resolveSearchQueryData(): array
+    protected function resolveSearchQueryData(array $params): array
     {
-        if (request()->query('suggest', '') === '0') {
-            return [
-                'original_query' => request()->query('query', ''),
-                'effective_query' => null,
-            ];
-        }
+        $originalQuery = (string) ($params['query'] ?? '');
 
-        $originalQuery = request()->query('query', '');
-
-        if (empty($originalQuery)) {
+        if (($params['suggest'] ?? '') === '0' || empty($originalQuery)) {
             return [
                 'original_query' => $originalQuery,
                 'effective_query' => null,

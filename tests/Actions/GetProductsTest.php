@@ -223,3 +223,72 @@ it('uses the original query without suggestions when suggestions are disabled', 
 
     Queue::assertNotPushed(UpdateCreateSearchTerm::class);
 });
+
+it('keeps the surrounding request query out of the search', function () {
+    app()->instance('request', Request::create('/products?color=3&utm_source=newsletter', 'GET'));
+
+    expectStorefrontSearchContext($this->repository);
+
+    $this->repository
+        ->shouldReceive('getAll')
+        ->once()
+        ->with(Mockery::on(fn ($params) => ! array_key_exists('color', $params)
+            && ! array_key_exists('utm_source', $params)
+            && $params['category_id'] === 3))
+        ->andReturn(new LengthAwarePaginator([], 0, 12));
+
+    app(GetProducts::class)->execute(['category_id' => 3]);
+});
+
+it('leaves the request query as it found it', function () {
+    app()->instance('request', Request::create('/products?color=3', 'GET'));
+
+    expectStorefrontSearchContext($this->repository);
+
+    $this->repository
+        ->shouldReceive('getAll')
+        ->once()
+        ->andReturn(new LengthAwarePaginator([], 0, 12));
+
+    app(GetProducts::class)->execute(['category_id' => 3]);
+
+    expect(request()->query->all())->toBe(['color' => '3']);
+});
+
+it('leaves the request query as it found it when the search throws', function () {
+    app()->instance('request', Request::create('/products?color=3', 'GET'));
+
+    expectStorefrontSearchContext($this->repository);
+
+    $this->repository
+        ->shouldReceive('getAll')
+        ->once()
+        ->andThrow(new RuntimeException('search engine is down'));
+
+    expect(fn () => app(GetProducts::class)->execute(['category_id' => 3]))
+        ->toThrow(RuntimeException::class);
+
+    expect(request()->query->all())->toBe(['color' => '3']);
+});
+
+it('resolves suggestions when only the surrounding request asks for none', function () {
+    app()->instance('request', Request::create('/products?suggest=0', 'GET'));
+
+    expectStorefrontSearchContext($this->repository);
+
+    if (method_exists(ProductRepository::class, 'getSuggestions')) {
+        $this->repository
+            ->shouldReceive('getSuggestions')
+            ->once()
+            ->with('shirt')
+            ->andReturn('shirts');
+    }
+
+    $this->repository
+        ->shouldReceive('getAll')
+        ->once()
+        ->with(Mockery::on(fn ($params) => $params['query'] === (method_exists(ProductRepository::class, 'getSuggestions') ? 'shirts' : 'shirt')))
+        ->andReturn(new LengthAwarePaginator([], 0, 12));
+
+    app(GetProducts::class)->execute(['query' => 'shirt'], false);
+});
