@@ -11,16 +11,19 @@ use Illuminate\Support\ServiceProvider;
 
 class ViewServiceProvider extends ServiceProvider
 {
-    public function boot()
+    public function register()
     {
-        $this->registerBladeDirectives();
-        $this->bootViewComposers();
-
         $this->app->bind(\Webkul\Theme\Themes::class, Themes::class);
 
         $this->app->singleton(ThemePathsResolver::class, function () {
             return new ThemePathsResolver;
         });
+    }
+
+    public function boot()
+    {
+        $this->registerBladeDirectives();
+        $this->bootViewComposers();
     }
 
     protected function registerBladeDirectives()
