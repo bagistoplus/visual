@@ -18,6 +18,7 @@ use BagistoPlus\Visual\Support\ChannelThemeResolver;
 use BagistoPlus\Visual\Support\DesignModeAwareCacheProfile;
 use BagistoPlus\Visual\Support\EditorTranslationReferenceCollector;
 use BagistoPlus\Visual\Support\IconMapFilesystemAdapter;
+use BagistoPlus\Visual\Support\ResolvedModelCache;
 use BagistoPlus\Visual\Support\TemplateAssignment;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
 use BagistoPlus\Visual\Support\TemplateNormalizer;
@@ -420,6 +421,7 @@ class CoreServiceProvider extends ServiceProvider
         $this->app->singleton(TemplateAssignment::class);
         $this->app->singleton(VisualDiscoveryFilter::class);
         $this->app->singleton(EditorTranslationReferenceCollector::class);
+        $this->app->scoped(ResolvedModelCache::class);
 
         $this->app->extend(JsonViewParser::class, function (JsonViewParser $parser) {
             return $parser instanceof DraftAwareJsonViewParser ? $parser : new DraftAwareJsonViewParser;
