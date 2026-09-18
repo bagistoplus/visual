@@ -124,12 +124,12 @@ class ThemeEditor
 
     public function preloadModel(string $type, $model): void
     {
-        $this->preloadedModels[$type][] = $model;
+        $this->preloadedModels[$type][$model->id] = $model;
     }
 
     public function preloadedModels(): array
     {
-        return $this->preloadedModels;
+        return array_map('array_values', $this->preloadedModels);
     }
 
     /**
