@@ -14,6 +14,7 @@ use Craftile\Laravel\BlockSchemaRegistry;
 use Craftile\Laravel\Facades\Craftile;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Webkul\Core\Helpers\Locales;
 
 class CoreServiceProviderTranslationReferenceBlock extends SimpleBlock
 {
@@ -106,4 +107,16 @@ it('maps the theme morph key to the theme section model that exists', function (
 
     expect(Relation::getMorphedModel('theme'))->toBe($expected)
         ->and(class_exists(Relation::getMorphedModel('theme')))->toBeTrue();
+});
+
+// Bagisto's `TranslatableModel::getLocalesHelper()` resolves this helper on
+// every translated attribute access and binds it nowhere, so the container
+// rebuilds it, and its `load()` re-reads every locale, each time.
+// `getTranslation()` asks for it twice, which put one `alt_text` read at 3.7ms
+// against 0.03ms shared.
+//
+// Asserted as a registration rather than by resolving it, because building the
+// helper reads the locale tables.
+it('shares Bagisto\'s locales helper instead of rebuilding it per translated attribute', function () {
+    expect(app()->isShared(Locales::class))->toBeTrue();
 });

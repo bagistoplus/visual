@@ -52,6 +52,7 @@ use Spatie\ResponseCache\CacheProfiles\CacheProfile;
 use Webkul\Attribute\Models\Attribute;
 use Webkul\Category\Models\Category;
 use Webkul\CMS\Models\Page;
+use Webkul\Core\Helpers\Locales;
 use Webkul\Core\Models\Channel;
 use Webkul\Product\Models\Product;
 use Webkul\Shop\Http\Middleware\Theme;
@@ -423,9 +424,20 @@ class CoreServiceProvider extends ServiceProvider
         $this->app->singleton(EditorTranslationReferenceCollector::class);
         $this->app->scoped(ResolvedModelCache::class);
 
+        $this->registerTranslatableLocalesHelper();
+
         $this->app->extend(JsonViewParser::class, function (JsonViewParser $parser) {
             return $parser instanceof DraftAwareJsonViewParser ? $parser : new DraftAwareJsonViewParser;
         });
+    }
+
+    protected function registerTranslatableLocalesHelper(): void
+    {
+        if (! class_exists(Locales::class) || $this->app->bound(Locales::class)) {
+            return;
+        }
+
+        $this->app->singleton(Locales::class);
     }
 
     protected function registerCustomUrlGenerator(): void
