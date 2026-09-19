@@ -16,6 +16,7 @@ use BagistoPlus\Visual\Persistence\EditorDataStore;
 use BagistoPlus\Visual\Settings\Support as SettingTransformers;
 use BagistoPlus\Visual\Support\BagistoConfig;
 use BagistoPlus\Visual\Support\BlockRenderFilter;
+use BagistoPlus\Visual\Support\BookingProductType;
 use BagistoPlus\Visual\Support\ChannelThemeResolver;
 use BagistoPlus\Visual\Support\DesignModeAwareCacheProfile;
 use BagistoPlus\Visual\Support\EditorTranslationReferenceCollector;
@@ -59,6 +60,7 @@ use Webkul\CMS\Models\Page;
 use Webkul\Core\Helpers\Locales;
 use Webkul\Core\Models\Channel;
 use Webkul\Product\Models\Product;
+use Webkul\Product\Type\Booking;
 use Webkul\Shop\Http\Middleware\Theme;
 
 class CoreServiceProvider extends ServiceProvider
@@ -85,6 +87,7 @@ class CoreServiceProvider extends ServiceProvider
         $this->bootConsoleSchemaRegistration();
         $this->bootBladeIcons();
         $this->bootMorphMap();
+        $this->bootBookingProductType();
 
         $this->app->booted(function (Application $app) {
             if (! $app->runningInConsole()) {
@@ -458,6 +461,24 @@ class CoreServiceProvider extends ServiceProvider
         $this->app->extend(JsonViewParser::class, function (JsonViewParser $parser) {
             return $parser instanceof DraftAwareJsonViewParser ? $parser : new DraftAwareJsonViewParser;
         });
+    }
+
+    /**
+     * Bagisto resolves a product's type instance from this config key, so a
+     * subclass reaches every caller. Left alone when the store already points
+     * it somewhere else.
+     */
+    protected function bootBookingProductType(): void
+    {
+        if (! class_exists(Booking::class)) {
+            return;
+        }
+
+        if (config('product_types.booking.class') !== Booking::class) {
+            return;
+        }
+
+        config(['product_types.booking.class' => BookingProductType::class]);
     }
 
     protected function registerTranslatableLocalesHelper(): void
