@@ -36,6 +36,39 @@ class BladeDirectives
         PHP;
     }
 
+    /**
+     * Mark a part of the page that the full page cache has to rebuild per
+     * visitor. Register the matching resolver with Visual::registerFpcRegion().
+     */
+    public static function fpcRegion($expression): string
+    {
+        return "<?php app(\BagistoPlus\Visual\Support\FpcRegion::class)->begin($expression); ?>";
+    }
+
+    public static function endFpcRegion(): string
+    {
+        return '<?php echo app(\BagistoPlus\Visual\Support\FpcRegion::class)->end(); ?>';
+    }
+
+    /**
+     * The same, for a region a page needs once however many blocks ask for it.
+     *
+     * The condition is compiled in front of the body rather than around its
+     * result, so a later caller does not run the body at all. Blade's own
+     * `@once` cannot stand in: the view factory forgets what it has rendered
+     * once each time the render stack empties, and a block is its own top level
+     * render.
+     */
+    public static function fpcRegionOnce($expression): string
+    {
+        return "<?php if (app(\BagistoPlus\Visual\Support\FpcRegion::class)->beginOnce($expression)): ?>";
+    }
+
+    public static function endFpcRegionOnce(): string
+    {
+        return '<?php echo app(\BagistoPlus\Visual\Support\FpcRegion::class)->end(); endif; ?>';
+    }
+
     public static function visualColorVars($expression)
     {
         return "<?php echo \BagistoPlus\Visual\View\BladeDirectives::generateColorPalette($expression); ?>";

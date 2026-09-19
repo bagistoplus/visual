@@ -7,6 +7,8 @@ use BagistoPlus\Visual\LivewireFeatures\BlockDataSynth;
 use BagistoPlus\Visual\LivewireFeatures\SupportsBlockData;
 use BagistoPlus\Visual\Middlewares\RegisterVisualSchemas;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
+use BagistoPlus\Visual\Support\FpcRegion;
+use Closure;
 use Craftile\Laravel\Facades\Craftile;
 use Illuminate\Support\Collection;
 use Livewire\Livewire;
@@ -18,6 +20,24 @@ class VisualManager
     protected array $livewireContextFilters = [];
 
     public function __construct(protected ThemeSettingsLoader $themeSettingsLoader) {}
+
+    /**
+     * Rebuild one personalised part of a page after the full page cache has
+     * served it to somebody else.
+     *
+     * The resolver runs for the visitor being served, which on a cache hit is a
+     * request that renders no page at all, so it must reach for what it needs
+     * rather than receive it.
+     *
+     * @param  Closure(): string  $resolver
+     */
+    public function registerFpcRegion(string $key, Closure $resolver): void
+    {
+        app()->resolving(
+            FpcRegion::class,
+            fn (FpcRegion $regions) => $regions->resolve($key, $resolver)
+        );
+    }
 
     public function themeSettingsLoader(): ThemeSettingsLoader
     {

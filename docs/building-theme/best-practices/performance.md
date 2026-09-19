@@ -99,6 +99,62 @@ And fix:
 - Image pop-ins
 - Unused code
 
+## 7. Keep Personal Markup Out of the Cached Page
+
+Bagisto's full page cache stores a rendered page and replays it. It keys the page
+on channel, locale, currency and the customer id, so **every guest shares one
+entry**, and a signed in customer keeps their own copy for the whole cache
+lifetime. The session cart is not part of the key at all.
+
+So anything you render that differs between two visitors is either handed to the
+wrong guest, or frozen for the right one. A cart badge, a wishlist heart, a
+"Welcome, Sarah", a flash message, a signed in flag inside an `x-data`.
+
+Wrap it in a FPC region. Visual empties the region on the copy the cache stores, and
+rebuilds it for whoever that copy is later served to.
+
+```blade
+@fpcRegion('cart-count')
+  <span class="badge">{{ $count }}</span>
+@endFpcRegion
+```
+
+Register the matching resolver in your theme's service provider. It runs for the
+visitor being served, which on a cache hit is a request that renders no page at
+all, so reach for what you need rather than expecting it to be passed in:
+
+```php
+use BagistoPlus\Visual\Facades\Visual;
+
+Visual::registerFpcRegion('cart-count', fn () => view('shop::partials.cart-badge', [
+    'count' => cart()->getCart()?->items_count ?? 0,
+])->render());
+```
+
+Three things to know:
+
+- **A FPC region is delimited by HTML comments**, so it can wrap nothing at all,
+  which is what a count of zero renders. It cannot reach inside an attribute
+  value, so keep personal values out of `x-data` and read them back from the DOM.
+- **Forget the resolver and the region comes back empty.** The name in the view
+  and the name in the resolver are the whole contract.
+- **For a region a page needs once** however many blocks ask for it, use
+  `@fpcRegionOnce`. A later caller does not run the body at all, so an expensive
+  payload is built once rather than once per block:
+
+  ```blade
+  @fpcRegionOnce('shopper-state')
+    <script type="application/json">{!! $json !!}</script>
+  @endFpcRegionOnce
+  ```
+
+  Blade's own `@once` will not do it, because the view factory forgets what it
+  has rendered once each time the render stack empties, and a block is its own
+  top level render.
+
+This only helps where PHP runs. Behind Varnish, a CDN or an nginx microcache the
+request never reaches Laravel and the personal parts are wrong again.
+
 ## Summary
 
 - Write efficient markup and only render what's necessary
@@ -106,5 +162,6 @@ And fix:
 - Keep JS scoped and defer it when possible
 - Avoid expensive logic in Blade — prep data in PHP
 - Prioritize mobile users and test your work with real tools
+- Wrap anything visitor-specific in a cache region
 
 Fast themes feel better, rank better, and convert better.

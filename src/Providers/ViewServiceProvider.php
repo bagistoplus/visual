@@ -38,6 +38,12 @@ class ViewServiceProvider extends ServiceProvider
             return ThemeEditor::inDesignMode();
         });
 
+        Blade::directive('fpcRegion', [BladeDirectives::class, 'fpcRegion']);
+        Blade::directive('endFpcRegion', [BladeDirectives::class, 'endFpcRegion']);
+
+        Blade::directive('fpcRegionOnce', [BladeDirectives::class, 'fpcRegionOnce']);
+        Blade::directive('endFpcRegionOnce', [BladeDirectives::class, 'endFpcRegionOnce']);
+
         Blade::directive('visual_color_vars', [BladeDirectives::class, 'visualColorVars']);
     }
 

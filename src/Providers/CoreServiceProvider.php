@@ -7,6 +7,7 @@ use BagistoPlus\Visual\Data\BlockData;
 use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
+use BagistoPlus\Visual\Http\Replacers\FpcRegionReplacer;
 use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
 use BagistoPlus\Visual\Middlewares\RegisterVisualSchemas;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
@@ -17,6 +18,7 @@ use BagistoPlus\Visual\Support\BlockRenderFilter;
 use BagistoPlus\Visual\Support\ChannelThemeResolver;
 use BagistoPlus\Visual\Support\DesignModeAwareCacheProfile;
 use BagistoPlus\Visual\Support\EditorTranslationReferenceCollector;
+use BagistoPlus\Visual\Support\FpcRegion;
 use BagistoPlus\Visual\Support\IconMapFilesystemAdapter;
 use BagistoPlus\Visual\Support\ResolvedModelCache;
 use BagistoPlus\Visual\Support\TemplateAssignment;
@@ -49,6 +51,7 @@ use League\Flysystem\Filesystem;
 use Livewire\Component;
 use ReflectionProperty;
 use Spatie\ResponseCache\CacheProfiles\CacheProfile;
+use Spatie\ResponseCache\Replacers\Replacer;
 use Webkul\Attribute\Models\Attribute;
 use Webkul\Category\Models\Category;
 use Webkul\CMS\Models\Page;
@@ -235,6 +238,29 @@ class CoreServiceProvider extends ServiceProvider
             CacheProfile::class,
             fn (CacheProfile $profile) => new DesignModeAwareCacheProfile($profile)
         );
+
+        $this->registerFpcRegionReplacer();
+    }
+
+    /**
+     * Appended rather than assigned, so a store that configured its own
+     * replacers keeps them, and idempotent because boot can run twice.
+     */
+    protected function registerFpcRegionReplacer(): void
+    {
+        if (! interface_exists(Replacer::class)) {
+            return;
+        }
+
+        $replacers = (array) config('responsecache.replacers');
+
+        if (in_array(FpcRegionReplacer::class, $replacers, true)) {
+            return;
+        }
+
+        $replacers[] = FpcRegionReplacer::class;
+
+        config(['responsecache.replacers' => $replacers]);
     }
 
     protected function bootVisualSections(): void
@@ -423,6 +449,7 @@ class CoreServiceProvider extends ServiceProvider
         $this->app->singleton(VisualDiscoveryFilter::class);
         $this->app->singleton(EditorTranslationReferenceCollector::class);
         $this->app->scoped(ResolvedModelCache::class);
+        $this->app->scoped(FpcRegion::class);
 
         $this->registerTranslatableLocalesHelper();
 

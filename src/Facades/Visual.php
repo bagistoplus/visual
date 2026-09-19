@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static void filterLivewireContextUsing(callable $filter)
  * @method static array getLivewireContextFilters()
  * @method static void supportLivewire()
+ * @method static void registerFpcRegion(string $key, \Closure $resolver)
  *
  * @see VisualManager
  */
