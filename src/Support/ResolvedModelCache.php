@@ -26,18 +26,43 @@ class ResolvedModelCache
         return $this->items[$key];
     }
 
+    public function get(string $key): mixed
+    {
+        return $this->items[$key] ?? null;
+    }
+
     public function rememberCategory(int $id, Closure $resolve): mixed
     {
-        return $this->remember("categories:{$id}", $resolve);
+        return $this->remember($this->key('categories', $id), $resolve);
+    }
+
+    public function getCategory(int $id): mixed
+    {
+        return $this->get($this->key('categories', $id));
     }
 
     public function rememberProduct(int $id, Closure $resolve): mixed
     {
-        return $this->remember("products:{$id}", $resolve);
+        return $this->remember($this->key('products', $id), $resolve);
+    }
+
+    public function getProduct(int $id): mixed
+    {
+        return $this->get($this->key('products', $id));
     }
 
     public function rememberCmsPage(int $id, Closure $resolve): mixed
     {
-        return $this->remember("cms_pages:{$id}", $resolve);
+        return $this->remember($this->key('cms_pages', $id), $resolve);
+    }
+
+    public function getCmsPage(int $id): mixed
+    {
+        return $this->get($this->key('cms_pages', $id));
+    }
+
+    protected function key(string $type, int $id): string
+    {
+        return "{$type}:{$id}";
     }
 }

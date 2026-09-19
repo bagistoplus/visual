@@ -58,3 +58,15 @@ it('keys categories, products and cms pages separately', function () {
 it('is resolved as a scoped instance from the container', function () {
     expect(app(ResolvedModelCache::class))->toBe(app(ResolvedModelCache::class));
 });
+
+it('reads back what it remembered, and null for an unknown key', function () {
+    $cache = new ResolvedModelCache;
+    $product = (object) ['id' => 1];
+
+    $cache->rememberProduct(1, fn () => $product);
+
+    expect($cache->getProduct(1))->toBe($product)
+        ->and($cache->getProduct(2))->toBeNull()
+        ->and($cache->getCategory(1))->toBeNull()
+        ->and($cache->getCmsPage(1))->toBeNull();
+});

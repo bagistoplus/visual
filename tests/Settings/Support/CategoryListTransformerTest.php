@@ -3,6 +3,7 @@
 use BagistoPlus\Visual\Contracts\SettingTransformerInterface;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Settings\Support\CategoryListTransformer;
+use BagistoPlus\Visual\Support\ResolvedModelCache;
 use Illuminate\Support\Collection;
 use Webkul\Category\Repositories\CategoryRepository;
 
@@ -11,28 +12,16 @@ beforeEach(function () {
     app()->instance(CategoryRepository::class, $this->repository);
 
     $this->expectCategoryQuery = function (array $ids, Collection $categories) {
-        $query = Mockery::mock();
-
         $this->repository
-            ->shouldReceive('getModel')
-            ->once()
-            ->andReturn($query);
-
-        $query
-            ->shouldReceive('whereIn')
-            ->once()
-            ->with('id', $ids)
-            ->andReturnSelf();
-
-        $query
             ->shouldReceive('withCount')
             ->once()
             ->with('products')
             ->andReturnSelf();
 
-        $query
-            ->shouldReceive('get')
+        $this->repository
+            ->shouldReceive('findWhereIn')
             ->once()
+            ->with('id', $ids)
             ->andReturn($categories);
     };
 });
@@ -108,6 +97,43 @@ it('skips missing IDs', function () {
     $result = $transformer->transform([10, 999]);
 
     expect($result->pluck('id')->all())->toBe([10]);
+});
+
+it('seeds the model cache for a later singular lookup', function () {
+    $a = (object) ['id' => 10, 'name' => 'A', 'products_count' => 3];
+
+    ($this->expectCategoryQuery)([10], collect([$a]));
+    ThemeEditor::shouldReceive('inDesignMode')->andReturn(false);
+
+    (new CategoryListTransformer)->transform([10]);
+
+    expect(app(ResolvedModelCache::class)->rememberCategory(10, fn () => 'not reached'))
+        ->toBe($a);
+});
+
+it('resolves a repeated id once across two lists', function () {
+    $a = (object) ['id' => 10, 'name' => 'A', 'products_count' => 3];
+
+    ($this->expectCategoryQuery)([10], collect([$a]));
+    ThemeEditor::shouldReceive('inDesignMode')->andReturn(false);
+
+    $first = (new CategoryListTransformer)->transform([10]);
+    $second = (new CategoryListTransformer)->transform([10]);
+
+    expect($second->first())->toBe($first->first());
+});
+
+it('queries only the ids it has not already resolved', function () {
+    $a = (object) ['id' => 10, 'name' => 'A', 'products_count' => 3];
+    $b = (object) ['id' => 20, 'name' => 'B', 'products_count' => 5];
+
+    ($this->expectCategoryQuery)([10], collect([$a]));
+    ($this->expectCategoryQuery)([20], collect([$b]));
+    ThemeEditor::shouldReceive('inDesignMode')->andReturn(false);
+
+    (new CategoryListTransformer)->transform([10]);
+
+    expect((new CategoryListTransformer)->transform([10, 20])->pluck('id')->all())->toBe([10, 20]);
 });
 
 it('preloads resolved models in design mode', function () {

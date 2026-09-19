@@ -16,7 +16,7 @@ class CategoryTransformer
 
         $category = app(ResolvedModelCache::class)->rememberCategory(
             $id,
-            fn () => app(CategoryRepository::class)->find($id)
+            fn () => app(CategoryRepository::class)->withCount('products')->find($id)
         );
 
         if (ThemeEditor::inDesignMode() && $category) {

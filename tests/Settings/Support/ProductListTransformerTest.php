@@ -3,6 +3,8 @@
 use BagistoPlus\Visual\Contracts\SettingTransformerInterface;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Settings\Support\ProductListTransformer;
+use BagistoPlus\Visual\Settings\Support\ProductTransformer;
+use BagistoPlus\Visual\Support\ResolvedModelCache;
 use Illuminate\Support\Collection;
 use Webkul\Product\Repositories\ProductRepository;
 
@@ -122,6 +124,46 @@ it('skips missing IDs', function () {
     expect($result->pluck('id')->all())->toBe([1]);
 });
 
+it('seeds the model cache for a later singular lookup', function () {
+    $a = (object) ['id' => 1, 'name' => 'A'];
+
+    ($this->expectProductQuery)([1], collect([$a]));
+    ThemeEditor::shouldReceive('inDesignMode')->andReturn(false);
+
+    (new ProductListTransformer)->transform([1]);
+
+    expect(app(ResolvedModelCache::class)->rememberProduct(1, fn () => 'not reached'))
+        ->toBe($a);
+});
+
+it('resolves a repeated id once across two lists', function () {
+    $a = (object) ['id' => 1, 'name' => 'A'];
+
+    ($this->expectProductQuery)([1], collect([$a]));
+    ThemeEditor::shouldReceive('inDesignMode')->andReturn(false);
+
+    $first = (new ProductListTransformer)->transform([1]);
+    $second = (new ProductListTransformer)->transform([1]);
+
+    expect($second->first())->toBe($first->first());
+});
+
+// A relation costs a query per batch, not per model, so an id resolved earlier
+// must drop out of the batch rather than be fetched beside it.
+it('queries only the ids it has not already resolved', function () {
+    $a = (object) ['id' => 1, 'name' => 'A'];
+    $b = (object) ['id' => 2, 'name' => 'B'];
+
+    $this->repository->shouldReceive('with')->twice()->andReturnSelf();
+    $this->repository->shouldReceive('findWhereIn')->once()->with('id', [1])->andReturn(collect([$a]));
+    $this->repository->shouldReceive('findWhereIn')->once()->with('id', [2])->andReturn(collect([$b]));
+    ThemeEditor::shouldReceive('inDesignMode')->andReturn(false);
+
+    (new ProductListTransformer)->transform([1]);
+
+    expect((new ProductListTransformer)->transform([1, 2])->pluck('id')->all())->toBe([1, 2]);
+});
+
 it('preloads resolved models in design mode', function () {
     $a = (object) ['id' => 1, 'name' => 'A'];
 
@@ -146,4 +188,31 @@ it('does not preload models outside design mode', function () {
 
     $transformer = new ProductListTransformer;
     $transformer->transform([1]);
+});
+
+// Both transformers load a product the same way, which is what lets either one
+// answer from what the other remembered.
+it('shares one product with the singular transformer, list first', function () {
+    $a = (object) ['id' => 1, 'name' => 'A'];
+
+    ($this->expectProductQuery)([1], collect([$a]));
+    $this->repository->shouldNotReceive('find');
+    ThemeEditor::shouldReceive('inDesignMode')->andReturn(false);
+
+    $fromList = (new ProductListTransformer)->transform([1])->first();
+
+    expect((new ProductTransformer)(1))->toBe($fromList);
+});
+
+it('shares one product with the singular transformer, singular first', function () {
+    $a = (object) ['id' => 1, 'name' => 'A'];
+
+    $this->repository->shouldReceive('with')->once()->andReturnSelf();
+    $this->repository->shouldReceive('find')->once()->with(1)->andReturn($a);
+    $this->repository->shouldNotReceive('findWhereIn');
+    ThemeEditor::shouldReceive('inDesignMode')->andReturn(false);
+
+    $single = (new ProductTransformer)(1);
+
+    expect((new ProductListTransformer)->transform([1])->first())->toBe($single);
 });

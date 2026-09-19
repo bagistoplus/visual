@@ -3,6 +3,7 @@
 use BagistoPlus\Visual\Contracts\SettingTransformerInterface;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Settings\Support\CmsPageListTransformer;
+use BagistoPlus\Visual\Support\ResolvedModelCache;
 use Illuminate\Support\Collection;
 use Webkul\CMS\Repositories\PageRepository;
 
@@ -91,6 +92,47 @@ it('skips missing IDs', function () {
     $result = $transformer->transform([5, 999]);
 
     expect($result->pluck('id')->all())->toBe([5]);
+});
+
+it('seeds the model cache for a later singular lookup', function () {
+    $a = (object) ['id' => 5, 'page_title' => 'A'];
+
+    $this->repository
+        ->shouldReceive('findWhereIn')
+        ->once()
+        ->andReturn(collect([$a]));
+
+    ThemeEditor::shouldReceive('inDesignMode')->andReturn(false);
+
+    (new CmsPageListTransformer)->transform([5]);
+
+    expect(app(ResolvedModelCache::class)->rememberCmsPage(5, fn () => 'not reached'))
+        ->toBe($a);
+});
+
+it('resolves a repeated id once across two lists', function () {
+    $a = (object) ['id' => 5, 'page_title' => 'A'];
+
+    $this->repository->shouldReceive('findWhereIn')->once()->andReturn(collect([$a]));
+    ThemeEditor::shouldReceive('inDesignMode')->andReturn(false);
+
+    $first = (new CmsPageListTransformer)->transform([5]);
+    $second = (new CmsPageListTransformer)->transform([5]);
+
+    expect($second->first())->toBe($first->first());
+});
+
+it('queries only the ids it has not already resolved', function () {
+    $a = (object) ['id' => 5, 'page_title' => 'A'];
+    $b = (object) ['id' => 6, 'page_title' => 'B'];
+
+    $this->repository->shouldReceive('findWhereIn')->once()->with('id', [5])->andReturn(collect([$a]));
+    $this->repository->shouldReceive('findWhereIn')->once()->with('id', [6])->andReturn(collect([$b]));
+    ThemeEditor::shouldReceive('inDesignMode')->andReturn(false);
+
+    (new CmsPageListTransformer)->transform([5]);
+
+    expect((new CmsPageListTransformer)->transform([5, 6])->pluck('id')->all())->toBe([5, 6]);
 });
 
 it('preloads resolved models under cms_pages key in design mode', function () {

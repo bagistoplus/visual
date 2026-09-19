@@ -4,42 +4,53 @@ namespace BagistoPlus\Visual\Settings\Support;
 
 use BagistoPlus\Visual\Contracts\SettingTransformerInterface;
 use BagistoPlus\Visual\Facades\ThemeEditor;
+use BagistoPlus\Visual\Support\ResolvedModelCache;
 use Illuminate\Support\Collection;
 use Webkul\Product\Repositories\ProductRepository;
 
 class ProductListTransformer implements SettingTransformerInterface
 {
-    /**
-     * `$product->name` alone is an EAV lookup, so without these a card grid
-     * issues several queries per product.
-     *
-     * @var list<string>
-     */
-    private const RELATIONS = [
-        'attribute_family',
-        'images',
-        'attribute_values',
-        'price_indices',
-        'inventory_indices',
-        'reviews',
-    ];
-
     public function transform(mixed $value, array $schema = []): mixed
     {
         if (! is_array($value) || empty($value)) {
             return collect();
         }
 
-        $products = app(ProductRepository::class)
-            ->with(self::RELATIONS)
-            ->findWhereIn('id', $value)
-            ->keyBy('id');
+        $cache = app(ResolvedModelCache::class);
+
+        $resolved = [];
+        $missing = [];
+
+        foreach (array_unique(array_map('intval', $value)) as $id) {
+            $cached = $cache->getProduct($id);
+
+            if ($cached) {
+                $resolved[$id] = $cached;
+            } else {
+                $missing[] = $id;
+            }
+        }
+
+        // One batch, because a relation is a query per batch rather than per
+        // model. Fetching an id separately would pay for all of them again.
+        if ($missing !== []) {
+            $products = app(ProductRepository::class)
+                ->with(ProductTransformer::RELATIONS)
+                ->findWhereIn('id', $missing);
+
+            foreach ($products as $product) {
+                $id = (int) $product->id;
+
+                $resolved[$id] = $product;
+                $cache->rememberProduct($id, fn () => $product);
+            }
+        }
 
         $inDesignMode = ThemeEditor::inDesignMode();
 
         return Collection::make($value)
-            ->map(function ($id) use ($products, $inDesignMode) {
-                $product = $products->get($id);
+            ->map(function ($id) use ($resolved, $inDesignMode) {
+                $product = $resolved[(int) $id] ?? null;
 
                 if (! $product) {
                     return null;
