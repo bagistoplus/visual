@@ -14,6 +14,7 @@ use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
 use BagistoPlus\Visual\Models\VisualTemplateAssignment;
 use BagistoPlus\Visual\Persistence\EditorDataStore;
 use BagistoPlus\Visual\Settings\Support as SettingTransformers;
+use BagistoPlus\Visual\Support\BagistoConfig;
 use BagistoPlus\Visual\Support\BlockRenderFilter;
 use BagistoPlus\Visual\Support\ChannelThemeResolver;
 use BagistoPlus\Visual\Support\DesignModeAwareCacheProfile;
@@ -449,6 +450,7 @@ class CoreServiceProvider extends ServiceProvider
         $this->app->singleton(VisualDiscoveryFilter::class);
         $this->app->singleton(EditorTranslationReferenceCollector::class);
         $this->app->scoped(ResolvedModelCache::class);
+        $this->app->scoped(BagistoConfig::class);
         $this->app->scoped(FpcRegion::class);
 
         $this->registerTranslatableLocalesHelper();

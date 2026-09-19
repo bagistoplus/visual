@@ -8,6 +8,8 @@ use Webkul\Marketing\Jobs\UpdateCreateSearchTerm as UpdateCreateSearchTermJob;
 use Webkul\Product\Enums\SearchContextEnum;
 use Webkul\Product\Repositories\ProductRepository;
 
+use function BagistoPlus\Visual\bagisto_config;
+
 final readonly class GetProducts
 {
     public function __construct(protected ProductRepository $productRepository) {}
@@ -83,8 +85,8 @@ final readonly class GetProducts
 
     protected function resolveSearchEngine(): string
     {
-        if (core()->getConfigData('catalog.products.search.engine') == 'elastic') {
-            return core()->getConfigData('catalog.products.search.storefront_mode');
+        if (bagisto_config('catalog.products.search.engine') == 'elastic') {
+            return bagisto_config('catalog.products.search.storefront_mode');
         }
 
         return 'database';

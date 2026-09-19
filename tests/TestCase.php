@@ -12,6 +12,7 @@ use Livewire\LivewireServiceProvider;
 use MallardDuck\LucideIcons\BladeLucideIconsServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Spatie\ResponseCache\ResponseCacheServiceProvider;
+use Webkul\Core\Facades\Core;
 
 class TestCase extends Orchestra
 {
@@ -24,6 +25,8 @@ class TestCase extends Orchestra
         Factory::guessFactoryNamesUsing(
             fn (string $modelName) => 'BagistoPlus\\Visual\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
+
+        Core::swap(core());
     }
 
     protected function getPackageProviders($app)

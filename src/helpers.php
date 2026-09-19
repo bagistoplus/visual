@@ -78,6 +78,22 @@ namespace {
 }
 
 namespace BagistoPlus\Visual {
+    use BagistoPlus\Visual\Support\BagistoConfig;
+
+    if (! function_exists(__NAMESPACE__.'\\bagisto_config')) {
+        /**
+         * Read a store setting, at most one query per key for the request.
+         *
+         * These keys are rows in `core_config`, not Laravel config, so a plain
+         * config() call reads the package default rather than what the merchant
+         * set in the admin.
+         */
+        function bagisto_config(string $key, ?string $channel = null, ?string $locale = null): mixed
+        {
+            return app(BagistoConfig::class)->get($key, $channel, $locale);
+        }
+    }
+
     if (! function_exists(__NAMESPACE__.'\\t')) {
         function t(string $key): string
         {
