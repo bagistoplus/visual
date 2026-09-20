@@ -8,6 +8,7 @@ use BagistoPlus\Visual\Persistence\Data\EditorUpdateData;
 use BagistoPlus\Visual\Persistence\Data\FullPageEditorData;
 use BagistoPlus\Visual\Persistence\EditorDataStore;
 use BagistoPlus\Visual\Persistence\PersistEditorUpdates;
+use BagistoPlus\Visual\Persistence\StoredBlockPruner;
 use BagistoPlus\Visual\Persistence\TemplateDataDiffer;
 use BagistoPlus\Visual\Settings\Text;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
@@ -34,6 +35,19 @@ class PersistEditorUpdatesLocalizedBlock extends SimpleBlock
     }
 }
 
+class PersistEditorUpdatesDefaultsBlock extends SimpleBlock
+{
+    protected static string $type = 'persist-editor-defaults-block';
+
+    public static function settings(): array
+    {
+        return [
+            Text::make('align', 'Align')->localized(false)->default('center'),
+            Text::make('title', 'Title')->default('Hello'),
+        ];
+    }
+}
+
 function persistEditorUpdatesWith(HandleUpdates $handleUpdates): PersistEditorUpdates
 {
     app()->instance(HandleUpdates::class, $handleUpdates);
@@ -48,6 +62,7 @@ function partialPersistEditorUpdates(): PersistEditorUpdates
         app(EditorDataStore::class),
         app(TemplateDataDiffer::class),
         app(TemplateDiscovery::class),
+        app(StoredBlockPruner::class),
     ])
         ->makePartial()
         ->shouldAllowMockingProtectedMethods();
@@ -1355,5 +1370,167 @@ describe('handle', function () {
 
         expect($result)->toHaveKey('loadedBlocks')
             ->and($result['loadedBlocks'])->toBeEmpty();
+    });
+});
+
+describe('stored block pruning', function () {
+    test('drops schema defaults and default metadata from the saved root template', function () {
+        $dataPath = sys_get_temp_dir().'/visual-pruned-persist-'.uniqid();
+        config()->set('bagisto_visual.data_path', $dataPath);
+
+        app(BlockSchemaRegistry::class)->register(BlockSchema::fromClass(PersistEditorUpdatesDefaultsBlock::class));
+
+        $files = new Filesystem;
+        $template = "{$dataPath}/themes/test-theme/editor/default/en/templates/index.json";
+        $files->ensureDirectoryExists(dirname($template));
+        $files->put($template, json_encode(['blocks' => [], 'regions' => []]));
+
+        $parser = Mockery::mock(JsonViewParser::class);
+        $parser->shouldReceive('clearCache');
+        $parser->shouldNotReceive('parse');
+        app()->instance(JsonViewParser::class, $parser);
+
+        $handleUpdates = Mockery::mock(HandleUpdates::class);
+        $handleUpdates->shouldReceive('execute')
+            ->once()
+            ->andReturn([
+                'updated' => true,
+                'data' => [
+                    'blocks' => [
+                        'hero' => [
+                            'id' => 'hero',
+                            'type' => 'persist-editor-defaults-block',
+                            'properties' => ['align' => 'center', 'title' => 'Hello'],
+                            'parentId' => null,
+                            'children' => [],
+                            'disabled' => false,
+                            'static' => true,
+                            'semanticId' => null,
+                            'index' => 0,
+                            'iteration' => 1,
+                        ],
+                    ],
+                    'regions' => [['id' => 'main-content', 'name' => 'Main', 'shared' => false, 'blocks' => ['hero']]],
+                ],
+            ]);
+
+        persistEditorUpdatesWith($handleUpdates)->handle(editorUpdateData([
+            'theme' => 'test-theme',
+            'channel' => 'default',
+            'locale' => 'en',
+            'template' => [
+                'name' => 'index',
+                'sources' => encrypt([]),
+            ],
+            'updates' => [
+                'blocks' => ['hero' => ['id' => 'hero', 'type' => 'persist-editor-defaults-block']],
+                'regions' => [
+                    ['id' => 'main-content', 'name' => 'Main', 'shared' => false, 'blocks' => ['hero']],
+                ],
+                'changes' => [
+                    'added' => [],
+                    'updated' => ['hero'],
+                    'removed' => [],
+                ],
+            ],
+        ]));
+
+        $saved = json_decode($files->get($template), true);
+
+        expect($saved['blocks']['hero'])->toBe([
+            'id' => 'hero',
+            'type' => 'persist-editor-defaults-block',
+            'properties' => ['title' => 'Hello'],
+            'parentId' => null,
+            'children' => [],
+            'static' => true,
+        ]);
+
+        $files->deleteDirectory($dataPath);
+    });
+
+    test('keeps a child locale value that resets an overridden parent value to the default', function () {
+        $dataPath = sys_get_temp_dir().'/visual-pruned-child-persist-'.uniqid();
+        config()->set('bagisto_visual.data_path', $dataPath);
+
+        app()->instance(ThemePathsResolverConcrete::class, new class extends ThemePathsResolverConcrete
+        {
+            public function resolveFallbackPaths(string $themeCode, string $mode, string $channel, string $locale): array
+            {
+                return [
+                    $this->buildThemePath($themeCode, $mode, $channel, $locale),
+                    $this->buildThemePath($themeCode, $mode, 'default', 'en'),
+                ];
+            }
+        });
+
+        app(BlockSchemaRegistry::class)->register(BlockSchema::fromClass(PersistEditorUpdatesDefaultsBlock::class));
+
+        $files = new Filesystem;
+        $baseTemplate = "{$dataPath}/themes/test-theme/editor/default/en/templates/index.json";
+        $childTemplate = "{$dataPath}/themes/test-theme/editor/default/ar/templates/index.json";
+        $regions = [['id' => 'main-content', 'name' => 'Main', 'shared' => false, 'blocks' => ['hero']]];
+
+        $files->ensureDirectoryExists(dirname($baseTemplate));
+        $files->put($baseTemplate, json_encode([
+            'blocks' => [
+                'hero' => [
+                    'id' => 'hero',
+                    'type' => 'persist-editor-defaults-block',
+                    'properties' => ['align' => 'left', 'title' => 'Hello'],
+                ],
+            ],
+            'regions' => $regions,
+        ]));
+
+        $parser = Mockery::mock(JsonViewParser::class);
+        $parser->shouldReceive('clearCache');
+        $parser->shouldNotReceive('parse');
+        app()->instance(JsonViewParser::class, $parser);
+
+        $handleUpdates = Mockery::mock(HandleUpdates::class);
+        $handleUpdates->shouldReceive('execute')
+            ->once()
+            ->andReturn([
+                'updated' => true,
+                'data' => [
+                    'blocks' => [
+                        'hero' => [
+                            'id' => 'hero',
+                            'type' => 'persist-editor-defaults-block',
+                            'properties' => ['align' => 'center', 'title' => 'Hello'],
+                            'disabled' => false,
+                            'index' => 0,
+                        ],
+                    ],
+                    'regions' => $regions,
+                ],
+            ]);
+
+        persistEditorUpdatesWith($handleUpdates)->handle(editorUpdateData([
+            'theme' => 'test-theme',
+            'channel' => 'default',
+            'locale' => 'ar',
+            'template' => [
+                'name' => 'index',
+                'sources' => encrypt([]),
+            ],
+            'updates' => [
+                'blocks' => ['hero' => ['id' => 'hero', 'type' => 'persist-editor-defaults-block']],
+                'regions' => $regions,
+                'changes' => [
+                    'added' => [],
+                    'updated' => ['hero'],
+                    'removed' => [],
+                ],
+            ],
+        ]));
+
+        $saved = json_decode($files->get($childTemplate), true);
+
+        expect($saved['parent'])->toBe('default/en/templates/index.json')
+            ->and($saved['blocks']['hero'])->toBe(['properties' => ['align' => 'center', 'title' => 'Hello']]);
+
+        $files->deleteDirectory($dataPath);
     });
 });

@@ -24,6 +24,7 @@ class PersistEditorUpdates
         protected EditorDataStore $editorDataStore,
         protected TemplateDataDiffer $templateDataDiffer,
         protected TemplateDiscovery $templateDiscovery,
+        protected StoredBlockPruner $storedBlockPruner,
     ) {}
 
     public function handle(EditorUpdateData $data): array
@@ -259,6 +260,7 @@ class PersistEditorUpdates
             currentLocale: $this->editorDataStore->localeFromRelative($relativePath),
             parentLocale: $parent ? $this->editorDataStore->localeFromRelative($parent) : null,
         );
+        $diff = $this->storedBlockPruner->prune($diff, $parentData);
 
         $this->editorDataStore->save($theme, $relativePath, $diff, $parent);
     }
