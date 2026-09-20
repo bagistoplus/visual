@@ -82,8 +82,16 @@ class ThemePathsResolver
         /** @var Channel */
         $defaultChannel = core()->getDefaultChannel();
 
-        /** @var Channel|null */
-        $channelModel = once(fn () => Channel::query()->with(['default_locale'])->where('code', $channel)->first());
+        /**
+         * The requested channel is usually the default one, which Core has
+         * already resolved, so asking the database for the same row again is
+         * waste.
+         *
+         * @var Channel|null
+         */
+        $channelModel = $channel === $defaultChannel->code
+            ? $defaultChannel
+            : once(fn () => Channel::query()->with(['default_locale'])->where('code', $channel)->first());
         $paths = [];
 
         $paths[] = $this->buildThemePath($themeCode, $mode, $channel, $locale);
