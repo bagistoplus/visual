@@ -54,6 +54,8 @@ class PublishTheme
 
         $this->files->copyDirectory($newVersionPath, $livePath);
 
+        $this->pruneVersions($themeCode);
+
         // Remove last edit marker - all edits are now published
         $lastEditFile = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'editor/.last-edit');
         if ($this->files->exists($lastEditFile)) {
@@ -62,6 +64,21 @@ class PublishTheme
 
         // Clear response cache if available
         $this->clearResponseCache();
+    }
+
+    protected function pruneVersions(string $themeCode): void
+    {
+        $keep = max(0, (int) config('bagisto_visual.versions_to_keep', 5));
+        $versionsPath = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'versions');
+
+        $versions = collect($this->files->directories($versionsPath))
+            ->filter(fn (string $path) => preg_match('/^V\d+$/', basename($path)) === 1)
+            ->sortByDesc(fn (string $path) => (int) substr(basename($path), 1))
+            ->values();
+
+        foreach ($versions->slice($keep) as $path) {
+            $this->files->deleteDirectory($path);
+        }
     }
 
     /**

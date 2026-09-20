@@ -13,6 +13,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Versions To Keep
+    |--------------------------------------------------------------------------
+    |
+    | Each publish snapshots the theme data under versions/. Only the newest
+    | versions are kept; set to 0 to keep none.
+    |
+    */
+    'versions_to_keep' => env('BAGISTO_VISUAL_VERSIONS_TO_KEEP', 5),
+
+    /*
+    |--------------------------------------------------------------------------
     | Images
     |--------------------------------------------------------------------------
     |
