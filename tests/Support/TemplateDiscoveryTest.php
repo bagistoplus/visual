@@ -125,10 +125,12 @@ it('creates empty editor templates with only an empty main region', function () 
         basedOn: '__empty__',
     );
 
-    $json = json_decode(File::get($result['path']), true);
+    $contents = File::get($result['path']);
+    $json = json_decode($contents, true);
 
     expect($result['key'])->toBe('product.gift-box')
         ->and($result['path'])->toEndWith('/templates/product/gift-box.json')
+        ->and($contents)->not->toContain("\n")
         ->and($json['regions'])->toBe([
             ['name' => 'main', 'shared' => false, 'blocks' => []],
         ])

@@ -176,6 +176,16 @@ it('creates the edit marker directory when saving an empty root file', function 
         ->and(file_exists($this->resolver->getThemeBaseDataPath('demo', 'editor/.last-edit')))->toBeTrue();
 });
 
+it('writes compact json without escaping slashes or unicode', function () {
+    $this->store->save('demo', 'default/en/theme.json', [
+        'headline' => 'Café',
+        'blocks' => ['hero' => ['url' => '/shop/é']],
+    ], null);
+
+    expect(file_get_contents($this->store->path('demo', 'default/en/theme.json')))
+        ->toBe('{"headline":"Café","blocks":{"hero":{"url":"/shop/é"}}}');
+});
+
 it('ignores source parents outside the editor data root', function () {
     file_put_contents_for_store('demo', 'default/en/theme.json', ['headline' => 'Base']);
     $outsidePath = "{$this->dataPath}/outside/default/en/theme.json";

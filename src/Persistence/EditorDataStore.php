@@ -174,7 +174,7 @@ final class EditorDataStore
         $path = $this->path($theme, $relativePath);
 
         $this->files->ensureDirectoryExists(dirname($path));
-        $this->files->put($path, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        $this->files->put($path, json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
         $this->touchLastEdit($theme);
     }
 

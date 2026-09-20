@@ -39,7 +39,7 @@ class PublishTheme
             if ($file->getExtension() === 'json') {
                 $data = $this->editorDataStore->loadResolved($themeCode, $relativePath);
                 unset($data['parent']);
-                $this->files->put($targetPath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+                $this->files->put($targetPath, json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
             } else {
                 $this->files->copy($sourcePath, $targetPath);
             }
