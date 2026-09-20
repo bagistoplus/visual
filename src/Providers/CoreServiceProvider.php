@@ -40,7 +40,6 @@ use Craftile\Laravel\Facades\Craftile;
 use Craftile\Laravel\View\BlockCompilerRegistry;
 use Craftile\Laravel\View\JsonViewParser;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Blade;
@@ -368,11 +367,6 @@ class CoreServiceProvider extends ServiceProvider
             $model::resolveRelationUsing(
                 'visualTemplateAssignments',
                 fn ($model) => $model->morphMany(VisualTemplateAssignment::class, 'assignable')
-            );
-
-            $model::addGlobalScope(
-                'visual_template_assignments',
-                fn (Builder $builder) => $builder->with('visualTemplateAssignments')
             );
         }
     }
