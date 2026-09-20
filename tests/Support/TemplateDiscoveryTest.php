@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 beforeEach(function () {
+    config()->set('bagisto_visual.template_assignments', true);
     config()->set('craftile.php_template_extensions', ['visual.php']);
     Craftile::normalizeTemplateUsing(new TemplateNormalizer);
     app(JsonViewParser::class)->clearCache();
@@ -371,5 +372,58 @@ it('duplicates only non-shared regions and their blocks from an existing templat
     ])
         ->and(array_keys($json['blocks']))->toBe(['main-block', 'aside-block', 'child-block']);
 
+    File::deleteDirectory($dataPath);
+});
+
+it('rejects creating a template when template assignments are disabled', function () {
+    config()->set('bagisto_visual.template_assignments', false);
+
+    $theme = Theme::make([
+        'code' => 'fake-theme',
+        'name' => 'Fake Theme',
+        'visual_theme' => true,
+    ]);
+
+    expect(fn () => app(CreateTemplate::class)(
+        theme: $theme,
+        channel: 'default',
+        locale: 'en',
+        type: 'product',
+        name: 'Gift Box',
+        basedOn: '__empty__',
+    ))->toThrow(InvalidArgumentException::class, __('visual::theme-editor.create_template_errors.assignments_disabled'));
+});
+
+it('excludes custom template variants when template assignments are disabled', function () {
+    $directory = sys_get_temp_dir().'/visual-template-discovery-'.uniqid();
+    File::ensureDirectoryExists($directory.'/resources/views/templates/product');
+    File::put($directory.'/resources/views/templates/product.json', '{}');
+    File::put($directory.'/resources/views/templates/product/gift-box.json', '{}');
+
+    $dataPath = sys_get_temp_dir().'/visual-template-discovery-storage-'.uniqid();
+    config()->set('bagisto_visual.data_path', $dataPath);
+    $storagePath = "{$dataPath}/themes/fake-theme/live/default/en/templates/product/sale.json";
+    File::ensureDirectoryExists(dirname($storagePath));
+    File::put($storagePath, '{}');
+
+    $theme = Theme::make([
+        'code' => 'fake-theme',
+        'name' => 'Fake Theme',
+        'visual_theme' => true,
+        'base_path' => $directory,
+    ]);
+
+    $enabledKeys = (new TemplateDiscovery)->forType($theme, 'product', 'default', 'en')->pluck('key')->all();
+
+    config()->set('bagisto_visual.template_assignments', false);
+
+    $disabledKeys = (new TemplateDiscovery)->forType($theme, 'product', 'default', 'en')->pluck('key')->all();
+
+    expect($enabledKeys)->toContain('product', 'product.gift-box', 'product.sale')
+        ->and($disabledKeys)->toContain('product')
+        ->not->toContain('product.gift-box')
+        ->not->toContain('product.sale');
+
+    File::deleteDirectory($directory);
     File::deleteDirectory($dataPath);
 });

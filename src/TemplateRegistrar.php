@@ -4,6 +4,7 @@ namespace BagistoPlus\Visual;
 
 use BagistoPlus\Visual\Data\Template;
 use BagistoPlus\Visual\Facades\ThemeEditor;
+use BagistoPlus\Visual\Facades\Visual;
 use Webkul\Category\Repositories\CategoryRepository;
 use Webkul\CMS\Repositories\PageRepository;
 use Webkul\Product\Repositories\ProductRepository;
@@ -45,7 +46,7 @@ class TemplateRegistrar
                 icon: 'lucide-tags',
                 previewUrl: fn () => $category->url,
                 type: 'category',
-                supportsVariants: true,
+                supportsVariants: Visual::templateAssignmentsEnabled(),
             );
         }
 
@@ -60,7 +61,7 @@ class TemplateRegistrar
                 icon: 'lucide-tag',
                 previewUrl: fn () => url($product->url_key),
                 type: 'product',
-                supportsVariants: true,
+                supportsVariants: Visual::templateAssignmentsEnabled(),
             );
         }
 
@@ -111,7 +112,7 @@ class TemplateRegistrar
                 icon: 'lucide-file',
                 previewUrl: fn () => route('shop.cms.page', [$page->url_key]),
                 type: 'page',
-                supportsVariants: true,
+                supportsVariants: Visual::templateAssignmentsEnabled(),
             );
         }
 

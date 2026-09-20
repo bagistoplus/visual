@@ -4,6 +4,7 @@ namespace BagistoPlus\Visual\Support;
 
 use BagistoPlus\Visual\Data\TemplateFile;
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
+use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Theme\Theme;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
@@ -79,6 +80,12 @@ class TemplateDiscovery
                     $templates->put($template->key, $template);
                 }
             }
+        }
+
+        if (! Visual::templateAssignmentsEnabled()) {
+            $templates = $templates->reject(
+                fn ($template) => in_array($template->type, self::ASSIGNABLE_TYPES, true) && $template->key !== $template->type
+            );
         }
 
         return $this->cache[$cacheKey] = $templates->values();

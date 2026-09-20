@@ -42,6 +42,7 @@ return [
         'invalid_name_or_type' => 'Invalid template name or type.',
         'already_exists' => 'A template with this name already exists.',
         'base_not_found' => 'Base template could not be found.',
+        'assignments_disabled' => 'Custom templates require template assignments to be enabled.',
     ],
 
     'Select image' => 'Select image',

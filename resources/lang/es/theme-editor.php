@@ -42,6 +42,7 @@ return [
         'invalid_name_or_type' => 'El nombre o tipo de plantilla no es válido.',
         'already_exists' => 'Ya existe una plantilla con este nombre.',
         'base_not_found' => 'No se pudo encontrar la plantilla base.',
+        'assignments_disabled' => 'Las plantillas personalizadas requieren que las asignaciones de plantilla estén habilitadas.',
     ],
 
     'Select image' => 'Seleccionar imagen',

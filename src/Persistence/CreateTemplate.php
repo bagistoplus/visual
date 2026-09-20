@@ -4,6 +4,7 @@ namespace BagistoPlus\Visual\Persistence;
 
 use BagistoPlus\Visual\Data\TemplateFile;
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
+use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
 use BagistoPlus\Visual\Theme\Theme;
 use Craftile\Laravel\View\JsonViewParser;
@@ -23,6 +24,10 @@ class CreateTemplate
         string $name,
         ?string $basedOn
     ): array {
+        if (! Visual::templateAssignmentsEnabled()) {
+            throw new \InvalidArgumentException(__('visual::theme-editor.create_template_errors.assignments_disabled'));
+        }
+
         $slug = Str::slug(Str::limit($name, 25, ''));
         $key = sprintf('%s.%s', $type, $slug);
 

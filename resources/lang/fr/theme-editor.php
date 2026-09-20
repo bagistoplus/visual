@@ -42,6 +42,7 @@ return [
         'invalid_name_or_type' => 'Nom ou type de modèle invalide.',
         'already_exists' => 'Un modèle avec ce nom existe déjà.',
         'base_not_found' => 'Le modèle de base est introuvable.',
+        'assignments_disabled' => 'Les modèles personnalisés nécessitent que les affectations de modèles soient activées.',
     ],
 
     'Select image' => 'Sélectionner une image',

@@ -42,6 +42,7 @@ return [
         'invalid_name_or_type' => 'اسم القالب أو نوعه غير صالح.',
         'already_exists' => 'يوجد قالب بهذا الاسم بالفعل.',
         'base_not_found' => 'تعذر العثور على القالب الأساسي.',
+        'assignments_disabled' => 'تتطلب القوالب المخصصة تفعيل تعيينات القالب.',
     ],
 
     'Select image' => 'اختر صورة',
