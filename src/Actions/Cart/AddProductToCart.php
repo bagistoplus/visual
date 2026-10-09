@@ -26,7 +26,7 @@ class AddProductToCart
 
             return [
                 'success' => true,
-                'message' => $responseData['message'],
+                'message' => $responseData['message'] ?? null,
                 'redirect_url' => $responseData['redirect'] ?? null,
             ];
         } elseif ($response instanceof JsonResponse) {
@@ -35,8 +35,8 @@ class AddProductToCart
 
             return [
                 'success' => false,
-                'message' => $responseData['message'],
-                'redirect_url' => $responseData['redirect_uri'],
+                'message' => $responseData['message'] ?? null,
+                'redirect_url' => $responseData['redirect_uri'] ?? null,
             ];
         }
 
