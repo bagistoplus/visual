@@ -21,7 +21,7 @@ class StoreCartAddressesRequest extends CartAddressRequest
                 "$addressType.country" => trans('shop::app.checkout.onepage.address.country'),
                 "$addressType.state" => trans('shop::app.checkout.onepage.address.state'),
                 "$addressType.postcode" => trans('shop::app.checkout.onepage.address.postcode'),
-                "$addressType.phone" => trans('shop::app.checkout.onepage.address.telephone'),
+                "$addressType.phone" => trans('visual::shop.checkout.phone'),
             ]);
         }
 
