@@ -10,6 +10,7 @@ use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Http\Replacers\FpcRegionReplacer;
 use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
 use BagistoPlus\Visual\Middlewares\RegisterVisualSchemas;
+use BagistoPlus\Visual\Middlewares\RepairPreviewQueryString;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
 use BagistoPlus\Visual\Models\VisualTemplateAssignment;
 use BagistoPlus\Visual\Persistence\EditorDataStore;
@@ -40,6 +41,7 @@ use Craftile\Laravel\Facades\Craftile;
 use Craftile\Laravel\View\BlockCompilerRegistry;
 use Craftile\Laravel\View\JsonViewParser;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Blade;
@@ -214,6 +216,9 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function bootMiddlewares(): void
     {
+        // Global rather than on the shop group: payment gateway return routes only use "web"
+        $this->app->make(Kernel::class)->prependMiddleware(RepairPreviewQueryString::class);
+
         $this->app->bind(Theme::class, UseShopThemeFromRequest::class);
 
         $this->app->booted(function (Application $app) {
