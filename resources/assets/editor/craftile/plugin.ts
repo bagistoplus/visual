@@ -3,6 +3,7 @@ import type { CraftileEditorPlugin } from '@craftile/editor';
 import type { ThemeEditorConfig } from '../types';
 import { useState } from '../state';
 import { configureUI } from './config/ui';
+import { isBagistoTheme } from './features/bagistoPreviewRefresh';
 import { setupPreviewLoading } from './features/previewLoading';
 import { setupUnsupportedPage } from './features/unsupportedPage';
 import { setupUpdatePersistence } from './features/updatePersistence';
@@ -17,7 +18,7 @@ export default function (editorConfig: ThemeEditorConfig): CraftileEditorPlugin 
 
     const { state } = useState();
 
-    configureUI(editor.ui);
+    configureUI(editor.ui, isBagistoTheme(state));
     setupPreviewLoading(editor, state);
     setupPageDataHandler(editor, state);
     setupUnsupportedPage(editor, state);

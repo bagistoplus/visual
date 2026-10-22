@@ -9,8 +9,10 @@ import './css/nprogress.css';
 import * as Vue from 'vue';
 import { createState } from './state';
 import { matchesCondition } from './utils/patternMatcher';
+import { holdsBlockOfType } from './utils/singletonSections';
 import { useBunnyFonts } from './composables/useBunnyFonts';
 import { initialChannelFromUrl, initialLocaleFromUrl } from './craftile/features/urlState';
+import { isBagistoTheme } from './craftile/features/bagistoPreviewRefresh';
 import NProgress from 'nprogress';
 
 const initialChannel = initialChannelFromUrl(window.editorConfig.channels, window.editorConfig.defaultChannel);
@@ -22,6 +24,7 @@ const state = createState({
   theme: window.editorConfig.theme,
   templates: window.editorConfig.templates || [],
   haveEdits: window.editorConfig.haveEdits,
+  draftCount: window.editorConfig.draftCount,
 });
 
 const { fetchFonts } = useBunnyFonts();
@@ -45,6 +48,9 @@ const editorInstance = createCraftileEditor({
       { id: 'tablet', label: 'Tablet', width: 767, icon: 'tablet' },
       { id: 'desktop', label: 'Desktop', width: 1280, icon: 'desktop' },
     ],
+    // Bagisto's own appearance editor opens on desktop, and the sections it
+    // ships are laid out for that width first.
+    default: isBagistoTheme(state) ? 'desktop' : undefined,
   },
   i18n: window.editorConfig.messages.craftile,
   plugins: [CommonPropertiesPlugin, VisualPlugin(window.editorConfig)],
@@ -78,6 +84,12 @@ const editorInstance = createCraftileEditor({
     }
 
     if (!context.parentId) {
+      // A section type Bagisto allows only one of is offered until the page
+      // holds one, after which its own editor would read a second as invalid.
+      if (schema.meta?.singleton && holdsBlockOfType(editorInstance?.engine.getPage()?.blocks, schema.type)) {
+        return false;
+      }
+
       // we are adding a root block to a region, so we only allow section
       return schema.meta?.isSection;
     }

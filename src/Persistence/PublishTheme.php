@@ -11,6 +11,7 @@ class PublishTheme
     public function __construct(
         protected Filesystem $files,
         protected EditorDataStore $editorDataStore,
+        protected ThemeSettingsCache $settingsCache,
     ) {}
 
     /**
@@ -21,8 +22,19 @@ class PublishTheme
     public function handle(string $themeCode): void
     {
         $editorPath = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'editor');
+
+        // A theme whose sections Bagisto stores holds nothing here until its
+        // settings are first edited, and there is nothing to publish until then.
+        if (! $this->files->exists($editorPath)) {
+            return;
+        }
+
         $newVersionPath = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'versions/V'.time());
         $livePath = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'live');
+
+        // An editor holding nothing to copy still publishes, as a version that
+        // overrides nothing.
+        $this->files->ensureDirectoryExists($newVersionPath);
 
         // Get all files except .last-edit
         $files = collect($this->files->allFiles($editorPath))
@@ -61,6 +73,10 @@ class PublishTheme
         if ($this->files->exists($lastEditFile)) {
             $this->files->delete($lastEditFile);
         }
+
+        // The storefront reads settings through a cache of its own, which is
+        // now holding what was published before this.
+        $this->settingsCache->forgetAll($themeCode);
 
         // Clear response cache if available
         $this->clearResponseCache();

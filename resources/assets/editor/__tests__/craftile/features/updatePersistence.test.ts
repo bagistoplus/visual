@@ -111,7 +111,7 @@ function pageResponse(blocks: Record<string, any>): string {
 
 function createPersistenceHarness(
   initialBlocks: Record<string, any>,
-  { frameUrl, pageUrl }: { frameUrl?: string; pageUrl?: string } = {}
+  { frameUrl, pageUrl, state = {} }: { frameUrl?: string; pageUrl?: string; state?: Record<string, any> } = {}
 ) {
   let page = {
     blocks: structuredClone(initialBlocks),
@@ -122,6 +122,8 @@ function createPersistenceHarness(
     page = { ...page, blocks: { ...page.blocks, ...structuredClone(blocks) } };
   });
   const sendMessage = vi.fn();
+  const reload = vi.fn();
+  const pageDataHandlers: Array<() => void> = [];
   const toast = vi.fn();
   const editor = {
     engine: {
@@ -143,23 +145,34 @@ function createPersistenceHarness(
       getFrame: vi.fn(() =>
         frameUrl ? { contentWindow: { location: { href: frameUrl } } } : null
       ),
+      reload,
+      onReady: (callback: () => void) => callback(),
+      onMessage: (_message: string, handler: () => void) => pageDataHandlers.push(handler),
     },
     ui: {
       toast,
+      state: { selectedBlockId: null },
+      setSelectedBlock: vi.fn(),
+      clearSelectedBlock: vi.fn(),
     },
   } as any;
 
   setupUpdatePersistence(editor, {
     haveEdits: false,
     pageData: pageUrl ? { url: pageUrl } : null,
+    ...state,
   } as any);
 
   return {
     emitUpdates(updates: UpdatesEvent) {
       updatesHandler!(updates);
     },
+    loadPreview() {
+      pageDataHandlers.forEach((handler) => handler());
+    },
     patchBlocks,
     sendMessage,
+    reload,
     toast,
   };
 }
@@ -322,6 +335,34 @@ describe('updatePersistence utilities', () => {
       const retriedUpdates = persistUpdatesMock.mock.calls[1][0];
       expect(retriedUpdates.changes.updated).toEqual(['hero', 'footer']);
       expect(Object.keys(retriedUpdates.blocks)).toEqual(['hero', 'footer']);
+    });
+
+    it('reloads the preview of a bagisto theme instead of patching it in place', async () => {
+      vi.useFakeTimers();
+
+      const request = createControlledRequest();
+      persistUpdatesMock.mockReturnValueOnce(request);
+
+      const hero = { id: 'hero', type: 'hero', properties: { text: 'Initial' }, children: [] };
+      const harness = createPersistenceHarness(
+        { hero },
+        { state: { theme: { editorMode: 'bagisto' } } }
+      );
+
+      harness.emitUpdates(
+        createUpdatesEvent({ updated: ['hero'] }, { hero: { ...hero, properties: { text: 'Updated' } } })
+      );
+      await vi.advanceTimersByTimeAsync(300);
+      request.succeed(pageResponse({ hero }));
+
+      await vi.waitFor(() => expect(harness.reload).toHaveBeenCalledTimes(1));
+
+      expect(harness.patchBlocks).not.toHaveBeenCalled();
+      expect(harness.sendMessage).not.toHaveBeenCalledWith('updates.effects', expect.anything());
+
+      harness.loadPreview();
+
+      expect(harness.sendMessage).toHaveBeenCalledWith('visual.scroll-to-block', { blockId: 'hero' });
     });
   });
 

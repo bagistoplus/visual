@@ -14,6 +14,18 @@ Route::prefix('/visual/editor')->group(function () {
     Route::post('api/publish-theme', [ThemeEditorController::class, 'publishTheme'])
         ->name('visual.admin.editor.api.publish');
 
+    Route::post('api/discard-theme', [ThemeEditorController::class, 'discardTheme'])
+        ->name('visual.admin.editor.api.discard');
+
+    Route::post('api/section-media', [ThemeEditorController::class, 'uploadSectionMedia'])
+        ->name('visual.admin.editor.api.section_media');
+
+    Route::get('api/section-media', [ThemeEditorController::class, 'listSectionMedia'])
+        ->name('visual.admin.editor.api.section_media.list');
+
+    Route::post('api/section-media/copy', [ThemeEditorController::class, 'copySectionMedia'])
+        ->name('visual.admin.editor.api.section_media.copy');
+
     Route::post('api/templates', [ThemeEditorController::class, 'createTemplate'])
         ->name('visual.admin.editor.api.templates.create');
 

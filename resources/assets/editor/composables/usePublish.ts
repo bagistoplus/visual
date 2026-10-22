@@ -26,6 +26,10 @@ export function usePublish() {
       editor.ui.closeModal('confirm-publish');
 
       state.haveEdits = false;
+
+      if (state.draftCount !== null) {
+        state.draftCount = 0;
+      }
     });
 
     request.onError(() => {

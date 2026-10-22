@@ -34,7 +34,11 @@ export interface State {
   products: Map<number, Product>;
   cmsPages: Map<number, CmsPage>;
   haveEdits: boolean;
+  /** Sections holding an unpublished change; null when the theme holds its edits in files. */
+  draftCount: number | null;
   previewLoading: boolean;
+  /** A reload the editor asked for itself, which redraws a page the sidebar already holds. */
+  quietReload: boolean;
   unsupportedPage: UnsupportedPageReason | null;
   templateForm: TemplateForm;
 }
@@ -68,7 +72,9 @@ export function createState(defaults: Partial<State> = {}): State {
     products: defaults.products || new Map(),
     cmsPages: defaults.cmsPages || new Map(),
     haveEdits: defaults.haveEdits || false,
+    draftCount: defaults.draftCount ?? null,
     previewLoading: defaults.previewLoading || false,
+    quietReload: defaults.quietReload || false,
     unsupportedPage: defaults.unsupportedPage || null,
     templateForm: {
       ...defaultTemplateForm(),

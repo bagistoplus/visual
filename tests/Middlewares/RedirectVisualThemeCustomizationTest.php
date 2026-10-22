@@ -64,3 +64,21 @@ it('ignores requests outside the admin prefix', function () {
 
     expect($response->getContent())->toBe('next');
 });
+
+it('redirects a plain theme that names the visual editor as its customizer', function () {
+    config()->set('themes.shop.classic.customize.editor', 'visual');
+
+    $response = handleCustomizationRequest('/admin/appearance/themes/classic/sections');
+
+    expect($response->getStatusCode())->toBe(302)
+        ->and($response->headers->get('location'))
+        ->toBe(route('visual.admin.editor', ['theme' => 'classic']));
+});
+
+it('lets bagisto handle a visual theme that names the appearance editor as its customizer', function () {
+    config()->set('themes.shop.visual-demo.customize.editor', 'bagisto');
+
+    $response = handleCustomizationRequest('/admin/appearance/themes/visual-demo/sections');
+
+    expect($response->getContent())->toBe('next');
+});

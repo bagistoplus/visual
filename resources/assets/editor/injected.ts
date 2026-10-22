@@ -2,6 +2,7 @@ import { PreviewClient } from '@craftile/preview-client';
 import RawHtmlRenderer from '@craftile/preview-client-html';
 import { Block } from '@craftile/types';
 import morphdom from 'morphdom';
+import { knownBlockIds, markLayoutSections } from './utils/layoutSectionMarkers';
 
 const previewClient = new PreviewClient();
 
@@ -126,6 +127,10 @@ previewClient.on('page.refresh', (data: { html: string }) => {
     childrenOnly: true,
     ...createMorphdomOptions(),
   });
+
+  // The server never sends the marks Visual puts on the sections Bagisto's
+  // layout draws, so a morph against it takes them off again.
+  markSections();
 });
 
 function handlePropertyUpdate(data: { block: Block; key: string; value: any; oldValue: any }) {
@@ -239,6 +244,14 @@ function normalizePercentage(value: unknown): number {
 }
 
 previewClient.on('block.property.updated', handlePropertyUpdate);
+
+// A theme whose sections Bagisto renders cannot be patched in place, so the
+// editor reloads the preview and asks for the edited section to be shown again.
+previewClient.on('visual.scroll-to-block' as any, (data: { blockId: string }) => {
+  const element = document.querySelector(`[data-block="${data.blockId}"]`);
+
+  element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
 
 const EXTERNAL_LINK_MESSAGE =
   'This link cannot be opened inside the editor. It will be opened in a new window (:url). Click OK to continue.';
@@ -450,3 +463,13 @@ declare global {
 }
 
 window.Visual = visual;
+
+function markSections(): void {
+  markLayoutSections(document, knownBlockIds(document));
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', markSections);
+} else {
+  markSections();
+}

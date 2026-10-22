@@ -19,17 +19,22 @@ import ColorSchemeGroup from '../../components/ColorSchemeGroup.vue';
 import ColorTokenPicker from '../../components/ColorTokenPicker.vue';
 import IconPicker from '../../components/IconPicker.vue';
 import ImagePicker from '../../components/ImagePicker.vue';
+import SectionImagePicker from '../../components/SectionImagePicker.vue';
 import VideoField from '../../components/VideoField.vue';
 import RichtextEditor from '../../components/RichtextEditor.vue';
 import GradientPicker from '../../components/GradientPicker.vue';
 import SpacingField from '../../components/SpacingField.vue';
 import RadiusField from '../../components/RadiusField.vue';
 import DescriptionField from '../../components/DescriptionField.vue';
+import CodeField from '../../components/CodeField.vue';
+import FiltersField from '../../components/FiltersField.vue';
 import TypographyPresets from '../../components/TypographyPresets.vue';
 import TypographyPicker from '../../components/TypographyPicker.vue';
 import PublishAction from '../../components/PublishAction.vue';
+import DiscardAction from '../../components/DiscardAction.vue';
 import PreviewAction from '../../components/PreviewAction.vue';
 import ConfirmPublish from '../../components/ConfirmPublish.vue';
+import ConfirmDiscard from '../../components/ConfirmDiscard.vue';
 import CreateTemplateModal from '../../components/CreateTemplateModal.vue';
 import UnsupportedPageModal from '../../components/UnsupportedPageModal.vue';
 import BackButton from '../../components/BackButton.vue';
@@ -38,7 +43,7 @@ import { UNSUPPORTED_PAGE_MODAL } from '../features/unsupportedPage';
 
 const { t } = useI18n();
 
-function configureHeader(ui: PluginContext['editor']['ui']) {
+function configureHeader(ui: PluginContext['editor']['ui'], bagistoTheme: boolean) {
   ui.removeHeaderAction('back-button');
   ui.removeHeaderAction('title');
 
@@ -65,6 +70,21 @@ function configureHeader(ui: PluginContext['editor']['ui']) {
     slot: 'right',
     render: PreviewAction,
   });
+
+  if (bagistoTheme) {
+    // Undo steps are recorded against block ids the rows assign, and those
+    // renumber as sections and entries are added and removed, so a step could
+    // be replayed against a block other than the one it was recorded for.
+    // Bagisto's own appearance editor offers the same way out: drop the lot.
+    ui.removeHeaderAction('undo');
+    ui.removeHeaderAction('redo');
+
+    ui.registerHeaderAction({
+      id: 'discard',
+      slot: 'right',
+      render: DiscardAction,
+    });
+  }
 
   ui.registerHeaderAction({
     id: 'publish',
@@ -94,6 +114,13 @@ function configureHeader(ui: PluginContext['editor']['ui']) {
   });
 
   ui.registerModal({
+    id: 'confirm-discard',
+    title: t('Discard edits ?'),
+    size: 'lg',
+    render: ConfirmDiscard,
+  });
+
+  ui.registerModal({
     id: 'create-template',
     title: t('Create a template'),
     size: 'xl',
@@ -108,7 +135,7 @@ function configureHeader(ui: PluginContext['editor']['ui']) {
   });
 }
 
-function registerPropertyFields(ui: PluginContext['editor']['ui']) {
+function registerPropertyFields(ui: PluginContext['editor']['ui'], bagistoTheme: boolean) {
   ui.registerPropertyField({
     type: 'category',
     render: CategoryPicker,
@@ -169,9 +196,11 @@ function registerPropertyFields(ui: PluginContext['editor']['ui']) {
     render: IconPicker,
   });
 
+  // A Bagisto section's image lives among that section's own media, which is
+  // where its own editor keeps it and where its storefront reads it from.
   ui.registerPropertyField({
     type: 'image',
-    render: ImagePicker,
+    render: bagistoTheme ? SectionImagePicker : ImagePicker,
   });
 
   ui.registerPropertyField({
@@ -204,6 +233,18 @@ function registerPropertyFields(ui: PluginContext['editor']['ui']) {
     render: DescriptionField,
   });
 
+  // The two kinds a Bagisto section can declare that Visual has no setting of
+  // its own for.
+  ui.registerPropertyField({
+    type: 'code',
+    render: CodeField,
+  });
+
+  ui.registerPropertyField({
+    type: 'filters',
+    render: FiltersField,
+  });
+
   ui.registerPropertyField({
     type: 'typography_presets',
     render: TypographyPresets,
@@ -215,7 +256,7 @@ function registerPropertyFields(ui: PluginContext['editor']['ui']) {
   });
 }
 
-export function configureUI(ui: PluginContext['editor']['ui']) {
-  configureHeader(ui);
-  registerPropertyFields(ui);
+export function configureUI(ui: PluginContext['editor']['ui'], bagistoTheme = false) {
+  configureHeader(ui, bagistoTheme);
+  registerPropertyFields(ui, bagistoTheme);
 }

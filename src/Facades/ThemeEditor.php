@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Facade;
  * @method static void serving(\Closure $callback)
  * @method static bool active()
  * @method static bool inDesignMode()
+ * @method static bool designModeRequested()
+ * @method static bool requested()
  * @method static string activeTheme()
  * @method static bool inPreviewMode()
  * @method static bool inDraftPreviewMode()

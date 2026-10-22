@@ -64,8 +64,10 @@ it('registers discovered schemas after the app boots in console', function () {
         ->once();
 });
 
-it('registers editor templates during active visual requests', function () {
-    ThemeEditor::shouldReceive('active')->andReturnTrue();
+it('registers editor templates for a request the editor made', function () {
+    // Asked of the request: this runs while the application boots, before a
+    // session says who is asking.
+    ThemeEditor::shouldReceive('requested')->andReturnTrue();
 
     $registrar = Mockery::mock(TemplateRegistrar::class);
     $registrar->shouldReceive('registerTemplates')->once();

@@ -31,6 +31,7 @@ export interface Theme {
   name: string;
   code: string;
   version: string;
+  editorMode?: 'visual' | 'bagisto' | 'unsupported';
   settings: Record<string, SettingValue>;
   settingsSchema: {
     name: string;
@@ -52,6 +53,10 @@ export interface ThemeEditorConfig {
     persistUpdates: string;
     persistThemeSettings: string;
     publishTheme: string;
+    discardTheme: string;
+    uploadSectionMedia: string;
+    listSectionMedia: string;
+    copySectionMedia: string;
     createTemplate: string;
     themesIndex: string;
     uploadImage: string;
@@ -64,6 +69,7 @@ export interface ThemeEditorConfig {
   messages: Record<string, any>;
   editorLocale: string;
   haveEdits: boolean;
+  draftCount: number | null;
 }
 
 export interface ContextInheritance {
@@ -90,6 +96,7 @@ export interface PreviewPageData {
   locale: string;
   localeInheritance: Record<string, ContextInheritance>;
   blockSchemas: BlockSchema[];
+  draftCount?: number;
   settings: Record<string, SettingValue>;
   preloadedModels: {
     categories?: Category[];

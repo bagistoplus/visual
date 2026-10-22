@@ -4,10 +4,12 @@ use BagistoPlus\Visual\Blocks\SimpleBlock;
 use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
 use BagistoPlus\Visual\Persistence\EditorDataStore;
+use BagistoPlus\Visual\Persistence\SectionStore;
 use BagistoPlus\Visual\Settings\Text;
 use BagistoPlus\Visual\Support\EditorBlockSchemaSerializer;
 use BagistoPlus\Visual\Support\EditorInheritanceMetadata;
 use BagistoPlus\Visual\Support\EditorTranslationReferenceCollector;
+use BagistoPlus\Visual\Support\SectionPageBuilder;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
 use BagistoPlus\Visual\Theme\Theme;
 use BagistoPlus\Visual\ThemeEditor;
@@ -96,6 +98,8 @@ function testableInjectThemeEditorScript(
         Mockery::mock(ProductRepository::class),
         Mockery::mock(PreviewDataCollector::class),
         $editorInheritanceMetadata ?? app(EditorInheritanceMetadata::class),
+        app(SectionStore::class),
+        app(SectionPageBuilder::class),
     );
 }
 

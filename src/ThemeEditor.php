@@ -10,6 +10,16 @@ use Illuminate\Support\Str;
 
 class ThemeEditor
 {
+    /**
+     * What Bagisto answers with about who may do what.
+     */
+    protected const BOUNCER = 'Webkul\User\Bouncer';
+
+    /**
+     * The permission the editor's own routes are gated on.
+     */
+    protected const EDITOR_PERMISSION = 'bagisto_visual.editor';
+
     protected array $templates = [];
 
     protected array $scripts = [];
@@ -32,14 +42,76 @@ class ThemeEditor
         Event::listen(ServingThemeEditor::class, $callback);
     }
 
+    /**
+     * Whether the editor is driving, for someone who may drive it.
+     */
     public function active(): bool
     {
         return $this->inDesignMode() || request()->is('*/visual/editor/*');
     }
 
+    /**
+     * Whether the request is the editor's, whoever is making it.
+     *
+     * Asked where the answer is needed before a session exists, and where it
+     * discloses nothing on its own: which templates are registered, whether the
+     * page may be framed, whether it may be cached. What the page is allowed to
+     * say is decided by `active()` and `inDesignMode()`, later, where the viewer
+     * is known.
+     */
+    public function requested(): bool
+    {
+        return $this->designModeRequested() || request()->is('*/visual/editor/*');
+    }
+
+    /**
+     * Whether the editor is driving this request.
+     *
+     * Design mode shows the merchant's unpublished work, so it is offered to
+     * whoever may edit it and to nobody else. The permission is the one Bagisto
+     * already gates the editor's own routes on, so the editor and the storefront
+     * it draws agree on who may drive them.
+     */
     public function inDesignMode(): bool
     {
+        return $this->designModeRequested() && $this->allowedToEdit();
+    }
+
+    /**
+     * Whether the request asks for design mode, whoever is asking.
+     *
+     * Public because a decision that discloses nothing, such as whether the
+     * page may be framed, is answered before a session exists and so cannot ask
+     * who is asking.
+     */
+    public function designModeRequested(): bool
+    {
         return request()->query->has('_designMode') || request()->headers->has('x-visual-editor-theme');
+    }
+
+    /**
+     * Whether the viewer may edit a theme.
+     *
+     * Bagisto's own guard answers no for a visitor who is not signed in as an
+     * administrator, so there is nothing else to check. It is resolved by name
+     * because it belongs to Bagisto rather than to this package.
+     */
+    protected function allowedToEdit(): bool
+    {
+        if (! class_exists(self::BOUNCER)) {
+            return false;
+        }
+
+        return (bool) $this->bouncer()->hasPermission(self::EDITOR_PERMISSION);
+    }
+
+    /**
+     * Bagisto's guard, resolved by name because it belongs to a package whose
+     * releases describe it differently.
+     */
+    protected function bouncer(): mixed
+    {
+        return app(self::BOUNCER);
     }
 
     public function activeTheme(): string

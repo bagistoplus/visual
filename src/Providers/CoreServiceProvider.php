@@ -9,6 +9,7 @@ use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Http\Replacers\FpcRegionReplacer;
 use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
+use BagistoPlus\Visual\Middlewares\PreviewDraftedSections;
 use BagistoPlus\Visual\Middlewares\RegisterVisualSchemas;
 use BagistoPlus\Visual\Middlewares\RepairPreviewQueryString;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
@@ -225,6 +226,7 @@ class CoreServiceProvider extends ServiceProvider
             $app->get('router')
                 ->removeMiddlewareFromGroup('shop', Theme::class)
                 ->pushMiddlewareToGroup('shop', UseShopThemeFromRequest::class)
+                ->pushMiddlewareToGroup('shop', PreviewDraftedSections::class)
                 ->pushMiddlewareToGroup('shop', RegisterVisualSchemas::class)
                 ->pushMiddlewareToGroup('shop', InjectThemeEditorScript::class);
         });
@@ -394,7 +396,9 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function bootTemplates(): void
     {
-        if (ThemeEditor::active()) {
+        // Asked of the request: this runs while the application boots, before a
+        // session exists, and registering a template says nothing to anyone.
+        if (ThemeEditor::requested()) {
             Event::listen(JsonViewLoaded::class, function (JsonViewLoaded $event) {
                 ThemeEditor::addJsonView($event->path);
             });

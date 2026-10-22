@@ -2,9 +2,13 @@
 
 namespace BagistoPlus\Visual\Middlewares;
 
+use BagistoPlus\Visual\Facades\ThemePathsResolver;
+use BagistoPlus\Visual\Persistence\SectionStore;
 use BagistoPlus\Visual\Support\EditorBlockSchemaSerializer;
 use BagistoPlus\Visual\Support\EditorInheritanceMetadata;
 use BagistoPlus\Visual\Support\EditorTranslationReferenceCollector;
+use BagistoPlus\Visual\Support\SectionPageBuilder;
+use BagistoPlus\Visual\Theme\Theme as VisualTheme;
 use BagistoPlus\Visual\ThemeEditor;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use Closure;
@@ -20,6 +24,11 @@ use Webkul\Product\Repositories\ProductRepository;
 
 class InjectThemeEditorScript extends PreviewScriptMiddleware
 {
+    /**
+     * The one page a theme's content sections are drawn on.
+     */
+    protected const HOME_ROUTE = 'shop.home.index';
+
     public function __construct(
         protected ThemeEditor $themeEditor,
         protected ThemeSettingsLoader $themeSettingsLoader,
@@ -27,6 +36,8 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
         protected ProductRepository $productRepository,
         protected PreviewDataCollector $previewCollector,
         protected EditorInheritanceMetadata $editorInheritanceMetadata,
+        protected SectionStore $sectionStore,
+        protected SectionPageBuilder $sectionPageBuilder,
     ) {}
 
     public function handle(Request $request, Closure $next): Response
@@ -65,6 +76,56 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
         );
 
         $response->setContent($content);
+    }
+
+    /**
+     * The page the editor arranges.
+     *
+     * A visual theme renders its blocks, and the collector reports what was
+     * rendered. A Bagisto theme renders sections Craftile knows nothing about,
+     * so its page is read from the rows they are stored as instead.
+     */
+    protected function getCurrentPageData(): array
+    {
+        $theme = themes()->current();
+
+        if ($theme instanceof VisualTheme && $theme->editorMode()->isBagisto()) {
+            return $this->sectionPageData($theme);
+        }
+
+        return parent::getCurrentPageData();
+    }
+
+    /**
+     * Whether the page being previewed draws the content sections.
+     *
+     * Bagisto's home page draws them and no other page does, so browsing the
+     * storefront in the preview shows the layout sections alone, which is what
+     * is actually on screen.
+     *
+     * A request that matched no named route is read as the home page rather
+     * than as another one: hiding sections that are on screen is the worse of
+     * the two mistakes.
+     */
+    protected function drawsContentSections(): bool
+    {
+        $route = Route::currentRouteName();
+
+        return $route === null || $route === self::HOME_ROUTE;
+    }
+
+    /**
+     * @return array{blocks: array<string, array<string, mixed>>, regions: array<int, array<string, mixed>>}
+     */
+    protected function sectionPageData(VisualTheme $theme): array
+    {
+        $records = $this->sectionStore->records(
+            (int) core()->getRequestedChannel()->id,
+            $theme->code,
+            core()->getRequestedLocaleCode(),
+        );
+
+        return $this->sectionPageBuilder->build($records, $theme->code, $this->drawsContentSections());
     }
 
     /**
@@ -126,12 +187,49 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
             'preloadedModels' => $this->themeEditor->preloadedModels(),
         ];
 
+        if (($count = $this->draftCount()) !== null) {
+            $payload['draftCount'] = $count;
+        }
+
         if ($includePageLoadMetadata) {
             $payload['blockSchemas'] = app(EditorBlockSchemaSerializer::class)->all();
             $payload['settings'] = $settingsBag?->toArray() ?? [];
         }
 
         return $payload;
+    }
+
+    /**
+     * How much publishing or discarding would carry, so that the editor can say
+     * so the way Bagisto's own appearance editor does: one for each section
+     * holding a change, and one more for the theme settings.
+     *
+     * A visual theme holds its edits in files rather than rows and has nothing
+     * to count, so it is told nothing.
+     */
+    protected function draftCount(): ?int
+    {
+        $theme = themes()->current();
+
+        if (! $theme instanceof VisualTheme || ! $theme->editorMode()->isBagisto()) {
+            return null;
+        }
+
+        $sections = $this->sectionStore->countDrafts(
+            (int) core()->getRequestedChannel()->id,
+            $theme->code,
+        );
+
+        return $sections + ($this->hasSettingsEdits($theme->code) ? 1 : 0);
+    }
+
+    /**
+     * Whether the theme settings are holding a change the storefront has not
+     * been given yet, which the editor data store marks as it saves.
+     */
+    protected function hasSettingsEdits(string $themeCode): bool
+    {
+        return file_exists(ThemePathsResolver::getThemeBaseDataPath($themeCode, 'editor/.last-edit'));
     }
 
     protected function getCurrentTheme()

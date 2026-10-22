@@ -2,6 +2,7 @@
 
 use BagistoPlus\Visual\Middlewares\RegisterVisualSchemas;
 use BagistoPlus\Visual\Theme\Theme;
+use Craftile\Laravel\BlockSchemaRegistry;
 use Craftile\Laravel\Facades\Craftile;
 use Illuminate\Http\Request;
 use Webkul\Theme\Facades\Themes as ThemesFacade;
@@ -47,4 +48,48 @@ it('does not register deferred schemas when the current theme is not visual', fu
 
     expect($response)->toBe('next');
     Craftile::shouldNotHaveReceived('registerDiscoveredSchemas');
+});
+
+it('does not register deferred schemas for a theme edited in bagisto mode', function () {
+    fakeSectionSystem(available: true);
+
+    bindThemeForVisualSchemaRegistration(Theme::make([
+        'code' => 'default',
+        'name' => 'Default',
+    ]));
+
+    Craftile::spy();
+
+    (new RegisterVisualSchemas)->handle(Request::create('/'), fn () => 'next');
+
+    Craftile::shouldNotHaveReceived('registerDiscoveredSchemas');
+});
+
+it('registers the section schemas of a bagisto theme while the editor is driving', function () {
+    offerTypes(['image_carousel' => carouselType()]);
+
+    bindThemeForVisualSchemaRegistration(Theme::make(['code' => 'default', 'name' => 'Default']));
+
+    $request = Request::create('/?_designMode=default');
+    app()->instance('request', $request);
+
+    (new RegisterVisualSchemas)->handle($request, fn () => 'next');
+
+    $registered = collect(app(BlockSchemaRegistry::class)->all())->keys();
+
+    expect($registered)->toContain('image_carousel', 'image_carousel.images.item');
+});
+
+it('registers no section schema on a storefront request, which renders through bagisto', function () {
+    offerTypes(['image_carousel' => carouselType()]);
+
+    bindThemeForVisualSchemaRegistration(Theme::make(['code' => 'default', 'name' => 'Default']));
+
+    $request = Request::create('/');
+    app()->instance('request', $request);
+
+    (new RegisterVisualSchemas)->handle($request, fn () => 'next');
+
+    expect(collect(app(BlockSchemaRegistry::class)->all())->keys())
+        ->not->toContain('image_carousel');
 });

@@ -1,5 +1,7 @@
 <?php
 
+use BagistoPlus\Visual\Data\BagistoSectionType;
+use BagistoPlus\Visual\Support\SectionSystem;
 use BagistoPlus\Visual\Tests\TestCase;
 use Illuminate\Support\Collection;
 use Konekt\Concord\Contracts\Concord;
@@ -13,6 +15,96 @@ use Webkul\Core\Models\LocaleProxy;
 use Webkul\Theme\Facades\Themes as ThemesFacade;
 
 uses(TestCase::class)->in(__DIR__);
+
+if (! function_exists('fakeSectionSystem')) {
+    function fakeSectionSystem(bool $available): void
+    {
+        app()->instance(
+            SectionSystem::class,
+            new class($available) extends SectionSystem
+            {
+                public function __construct(protected bool $isAvailable) {}
+
+                public function available(): bool
+                {
+                    return $this->isAvailable;
+                }
+            }
+        );
+    }
+}
+
+if (! function_exists('offerTypes')) {
+    function offerTypes(array $types): void
+    {
+        app()->instance(SectionSystem::class, new class($types) extends SectionSystem
+        {
+            public function __construct(protected array $offered) {}
+
+            public function types(?string $themeCode = null): Collection
+            {
+                return collect($this->offered);
+            }
+        });
+    }
+}
+
+if (! function_exists('carouselType')) {
+    function carouselType(): BagistoSectionType
+    {
+        return new BagistoSectionType(
+            code: 'image_carousel',
+            title: 'Image Carousel',
+            icon: 'icon-image',
+            singleton: false,
+            pinned: false,
+            rendersInLayout: false,
+            view: 'shop::sections.image_carousel',
+            fieldsResolver: fn () => [
+                ['key' => 'title', 'type' => 'text', 'label' => 'Title'],
+                [
+                    'key' => 'images',
+                    'type' => 'repeater',
+                    'label' => 'Slider',
+                    'fields' => [
+                        ['key' => 'image', 'type' => 'image', 'label' => 'Image'],
+                        ['key' => 'link', 'type' => 'text', 'label' => 'Link'],
+                    ],
+                ],
+            ],
+        );
+    }
+}
+
+if (! function_exists('footerType')) {
+    function footerType(): BagistoSectionType
+    {
+        return new BagistoSectionType(
+            code: 'footer_links',
+            title: 'Footer Links',
+            icon: 'icon-list',
+            singleton: true,
+            pinned: true,
+            rendersInLayout: true,
+            view: 'shop::sections.footer_links',
+            fieldsResolver: fn () => [
+                [
+                    'key' => 'columns',
+                    'type' => 'repeater',
+                    'label' => 'Columns',
+                    'fields' => [
+                        [
+                            'key' => 'links',
+                            'type' => 'repeater',
+                            'label' => 'Links',
+                            'fields' => [['key' => 'url', 'type' => 'text', 'label' => 'URL']],
+                        ],
+                    ],
+                ],
+            ],
+        );
+    }
+}
 
 if (! function_exists('themes')) {
     function themes()
@@ -64,6 +156,7 @@ if (! function_exists('core')) {
                 {
                     return $this->channels ?? collect([
                         (object) [
+                            'id' => 1,
                             'code' => 'default',
                             'name' => 'Default',
                             'locales' => collect([
@@ -91,6 +184,11 @@ if (! function_exists('core')) {
                 public function getCurrentChannel(): Channel
                 {
                     return $this->currentChannel ??= $this->channel('default');
+                }
+
+                public function getRequestedChannel(): Channel
+                {
+                    return $this->channel($this->requestedChannelCode);
                 }
 
                 public function setCurrentChannel(Channel $channel): void

@@ -9,10 +9,13 @@ use BagistoPlus\Visual\Persistence\CreateTemplate;
 use BagistoPlus\Visual\Persistence\Data\EditorUpdateData;
 use BagistoPlus\Visual\Persistence\Data\FullPageEditorData;
 use BagistoPlus\Visual\Persistence\Data\ThemeSettingsUpdateData;
+use BagistoPlus\Visual\Persistence\DiscardTheme;
 use BagistoPlus\Visual\Persistence\PersistEditorUpdates;
+use BagistoPlus\Visual\Persistence\PersistSectionUpdates;
 use BagistoPlus\Visual\Persistence\PersistThemeSettings;
 use BagistoPlus\Visual\Persistence\PublishTheme;
 use BagistoPlus\Visual\Persistence\RenderPreview;
+use BagistoPlus\Visual\Persistence\SectionStore;
 use BagistoPlus\Visual\Settings\Support\ImageTransformer;
 use BagistoPlus\Visual\Settings\Support\VideoTransformer;
 use BagistoPlus\Visual\Support\ChannelThemeResolver;
@@ -23,6 +26,7 @@ use BagistoPlus\Visual\ThemeEditor;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use BladeUI\Icons\Factory;
 use BladeUI\Icons\IconsManifest;
+use Craftile\Laravel\Data\UpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
@@ -41,11 +45,14 @@ class ThemeEditorController extends Controller
         protected PersistEditorUpdates $persistEditorUpdates,
         protected PersistThemeSettings $persistThemeSettings,
         protected PublishTheme $publishTheme,
+        protected DiscardTheme $discardTheme,
         protected RenderPreview $renderPreview,
         protected ThemeSettingsLoader $themeSettingsLoader,
         protected TemplateDiscovery $templateDiscovery,
         protected CreateTemplate $createTemplate,
-        protected ChannelThemeResolver $channelThemeResolver
+        protected ChannelThemeResolver $channelThemeResolver,
+        protected PersistSectionUpdates $persistSectionUpdates,
+        protected SectionStore $sectionStore,
     ) {}
 
     public function index(string $themeCode)
@@ -65,6 +72,10 @@ class ThemeEditorController extends Controller
                     'persistUpdates' => route('visual.admin.editor.api.persist'),
                     'persistThemeSettings' => route('visual.admin.editor.api.persist_settings'),
                     'publishTheme' => route('visual.admin.editor.api.publish'),
+                    'discardTheme' => route('visual.admin.editor.api.discard'),
+                    'uploadSectionMedia' => route('visual.admin.editor.api.section_media'),
+                    'listSectionMedia' => route('visual.admin.editor.api.section_media.list'),
+                    'copySectionMedia' => route('visual.admin.editor.api.section_media.copy'),
                     'createTemplate' => route('visual.admin.editor.api.templates.create'),
                     'uploadImage' => route('visual.admin.editor.api.upload'),
                     'listImages' => route('visual.admin.editor.api.images'),
@@ -76,6 +87,7 @@ class ThemeEditorController extends Controller
                 'messages' => Lang::get('visual::theme-editor'),
                 'editorLocale' => app()->getLocale(),
                 'haveEdits' => $this->checkIfHaveEdits($themeCode),
+                'draftCount' => $this->draftCount($themeCode),
             ],
         ]);
     }
@@ -83,7 +95,7 @@ class ThemeEditorController extends Controller
     public function persistUpdates(Request $request)
     {
         $validated = $request->validate([
-            'theme' => ['required', 'string', Rule::in($this->getVisualThemes())],
+            'theme' => ['required', 'string', Rule::in($this->getEditableThemes())],
             'channel' => ['required', 'string', Rule::in($this->getChannelCodes())],
             'locale' => ['required', 'string', Rule::in($this->getLocaleCodes($request->input('channel')))],
             'template' => ['required', 'array'],
@@ -100,6 +112,10 @@ class ThemeEditorController extends Controller
             'updates.regions' => ['present', 'array'],
         ]);
 
+        if ($this->resolveTheme($validated['theme'])->editorMode()->isBagisto()) {
+            return $this->persistSectionUpdatesAndRender($validated);
+        }
+
         $data = EditorUpdateData::fromValidated($validated);
         $result = $this->persistEditorUpdates->handle($data);
         $loadedBlocks = $result['loadedBlocks'] ?? [];
@@ -112,7 +128,7 @@ class ThemeEditorController extends Controller
     public function persistThemeSettings(Request $request)
     {
         $validated = $request->validate([
-            'theme' => ['required', 'string', Rule::in($this->getVisualThemes())],
+            'theme' => ['required', 'string', Rule::in($this->getEditableThemes())],
             'channel' => ['required', 'string', Rule::in($this->getChannelCodes())],
             'locale' => ['required', 'string', Rule::in($this->getLocaleCodes($request->input('channel')))],
             'template' => ['required', 'array'],
@@ -122,6 +138,14 @@ class ThemeEditorController extends Controller
 
         $data = ThemeSettingsUpdateData::fromValidated($validated);
         $this->persistThemeSettings->handle($data);
+
+        // A theme whose sections Bagisto draws reaches its colours through a
+        // stylesheet in the head, which a morph of the body would not carry.
+        // Answering nothing is what tells the editor to reload the preview,
+        // which is what every other edit on such a theme does anyway.
+        if ($this->resolveTheme($validated['theme'])->editorMode()->isBagisto()) {
+            return response('');
+        }
 
         return $this->renderPreview->execute($data->templateUrl);
     }
@@ -136,6 +160,22 @@ class ThemeEditorController extends Controller
             'page' => ['nullable', 'array'],
         ]);
 
+        if ($this->resolveTheme($validated['theme'])->editorMode()->isBagisto()) {
+            $this->sectionStore->publish(
+                $this->channelId($validated['channel'] ?? core()->getDefaultChannelCode()),
+                $validated['theme'],
+            );
+
+            // The sections are rows and the theme settings are files, and the
+            // one button publishes both.
+            $this->publishTheme->handle($validated['theme']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Theme published successfully',
+            ]);
+        }
+
         // If page data is provided, persist it first before publishing
         if (isset($validated['page'])) {
             $this->persistEditorUpdates->handleFullPage(FullPageEditorData::fromValidated($validated));
@@ -149,10 +189,108 @@ class ThemeEditorController extends Controller
         ]);
     }
 
+    /**
+     * Drop every unpublished change a theme's sections are holding.
+     *
+     * Offered instead of undo on a theme whose sections Bagisto stores: its
+     * block ids are assigned by the row they are stored as and renumber as
+     * entries are added and removed, so an undone step could land on a block
+     * other than the one it was recorded against.
+     */
+    public function discardTheme(Request $request)
+    {
+        $validated = $request->validate([
+            'theme' => ['required', 'string', Rule::in($this->getEditableThemes())],
+            'channel' => ['nullable', 'string', Rule::in($this->getChannelCodes())],
+        ]);
+
+        abort_unless($this->resolveTheme($validated['theme'])->editorMode()->isBagisto(), 404);
+
+        $this->sectionStore->discard(
+            $this->channelId($validated['channel'] ?? core()->getDefaultChannelCode()),
+            $validated['theme'],
+        );
+
+        $this->discardTheme->handle($validated['theme']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Edits discarded successfully',
+        ]);
+    }
+
+    /**
+     * Keep a file among a section's own media, so that markup written into a
+     * code field can point at something the storefront serves.
+     *
+     * Bagisto files these under the section row and deletes any it stops
+     * naming, so the file has to be written into the field before the next save
+     * or it is cleaned up again.
+     */
+    public function uploadSectionMedia(Request $request)
+    {
+        $validated = $request->validate([
+            'theme' => ['required', 'string', Rule::in($this->getEditableThemes())],
+            'section' => ['required', 'integer'],
+            'file' => ['required', 'file', 'mimes:bmp,jpeg,jpg,png,webp,mp4,webm,ogg', 'max:51200'],
+        ]);
+
+        abort_unless($this->resolveTheme($validated['theme'])->editorMode()->isBagisto(), 404);
+        abort_unless($this->sectionStore->themeOf($validated['section']) === $validated['theme'], 404);
+
+        return response()->json(
+            $this->sectionStore->storeMedia($validated['section'], $request->file('file'))
+        );
+    }
+
+    /**
+     * Every file the theme's sections hold, so that a section can be pointed at
+     * one another section already uses.
+     */
+    public function listSectionMedia(Request $request)
+    {
+        $validated = $request->validate([
+            'theme' => ['required', 'string', Rule::in($this->getEditableThemes())],
+        ]);
+
+        abort_unless($this->resolveTheme($validated['theme'])->editorMode()->isBagisto(), 404);
+
+        return response()->json($this->sectionStore->media($validated['theme']));
+    }
+
+    /**
+     * Keep a copy of another section's file among this one's own media.
+     *
+     * The file has to be copied rather than referenced: Bagisto deletes every
+     * file a section's own options stop naming, so the section that owns it
+     * would take it away on its next save.
+     */
+    public function copySectionMedia(Request $request)
+    {
+        $validated = $request->validate([
+            'theme' => ['required', 'string', Rule::in($this->getEditableThemes())],
+            'section' => ['required', 'integer'],
+            'path' => ['required', 'string'],
+        ]);
+
+        abort_unless($this->resolveTheme($validated['theme'])->editorMode()->isBagisto(), 404);
+        abort_unless($this->sectionStore->themeOf($validated['section']) === $validated['theme'], 404);
+
+        $media = $this->sectionStore->copyMedia(
+            $validated['section'],
+            $validated['path'],
+            $validated['theme']
+        );
+
+        abort_if(is_null($media), 404);
+
+        return response()->json($media);
+    }
+
     public function createTemplate(Request $request)
     {
         $validated = $request->validate([
-            'theme' => ['required', 'string', Rule::in($this->getVisualThemes())],
+            'theme' => ['required', 'string', Rule::in($this->getEditableThemes())],
             'channel' => ['required', 'string', Rule::in($this->getChannelCodes())],
             'locale' => ['required', 'string', Rule::in($this->getLocaleCodes($request->input('channel')))],
             'type' => ['required', 'string', Rule::in(TemplateDiscovery::ASSIGNABLE_TYPES)],
@@ -160,7 +298,7 @@ class ThemeEditorController extends Controller
             'basedOn' => ['nullable', 'string'],
         ]);
 
-        $theme = Theme::make(config("themes.shop.{$validated['theme']}"));
+        $theme = $this->resolveTheme($validated['theme']);
 
         try {
             $template = ($this->createTemplate)(
@@ -367,19 +505,14 @@ class ThemeEditorController extends Controller
 
     protected function loadTheme($themeCode)
     {
-        $themeConfig = config("themes.shop.{$themeCode}");
-
-        if (! $themeConfig) {
-            abort(404, "Theme {$themeCode} not found");
-        }
-
-        $theme = Theme::make($themeConfig);
+        $theme = $this->resolveTheme($themeCode);
         $settingsBag = $this->themeSettingsLoader->loadThemeSettings($theme);
 
         return [
             'name' => $theme->name,
             'code' => $theme->code,
             'version' => $theme->version ?? '1.0.0',
+            'editorMode' => $theme->editorMode()->value,
             'settings' => $settingsBag->toArray(),
             'settingsSchema' => $this->translateSettingsSchema($theme->settingsSchema),
         ];
@@ -439,9 +572,41 @@ class ThemeEditorController extends Controller
 
     protected function checkIfHaveEdits(string $themeCode): bool
     {
-        $lastEditFile = ThemePathsResolver::getThemeBaseDataPath($themeCode, 'editor/.last-edit');
+        if ($this->resolveTheme($themeCode)->editorMode()->isBagisto()) {
+            return $this->draftCount($themeCode) > 0;
+        }
 
-        return file_exists($lastEditFile);
+        return $this->hasFileEdits($themeCode);
+    }
+
+    /**
+     * Whether the theme is holding a change in files, which for a theme whose
+     * sections Bagisto stores means its settings and nothing else.
+     */
+    protected function hasFileEdits(string $themeCode): bool
+    {
+        return file_exists(ThemePathsResolver::getThemeBaseDataPath($themeCode, 'editor/.last-edit'));
+    }
+
+    /**
+     * How much publishing would carry: a section holding a change counts as
+     * one, and the theme settings as one more, however many of them changed.
+     *
+     * Null for a theme whose edits are held in files alone, which has undo
+     * rather than a discard button and nothing to count.
+     */
+    protected function draftCount(string $themeCode): ?int
+    {
+        if (! $this->resolveTheme($themeCode)->editorMode()->isBagisto()) {
+            return null;
+        }
+
+        $sections = $this->sectionStore->countDrafts(
+            $this->channelId(core()->getRequestedChannelCode()),
+            $themeCode,
+        );
+
+        return $sections + ($this->hasFileEdits($themeCode) ? 1 : 0);
     }
 
     protected function translateSettingsSchema(array $settingsSchema): array
@@ -477,12 +642,61 @@ class ThemeEditorController extends Controller
         return $channel['locales']->map(fn ($locale) => $locale['code'])->toArray();
     }
 
-    protected function getVisualThemes(): array
+    /**
+     * Hold what the editor changed about a theme's sections, and answer with
+     * the preview as it now stands.
+     *
+     * @param  array<string, mixed>  $validated
+     */
+    protected function persistSectionUpdatesAndRender(array $validated)
+    {
+        $this->persistSectionUpdates->handle(
+            UpdateRequest::make($validated['updates']),
+            $this->channelId($validated['channel']),
+            $validated['theme'],
+            $validated['locale'],
+        );
+
+        return $this->renderPreview->execute($validated['template']['url']);
+    }
+
+    /**
+     * The themes the visual editor can be opened on, which is every theme it
+     * has a way of reading: a visual theme from its templates, and any other
+     * from the sections it is stored as.
+     *
+     * @return array<int, string>
+     */
+    protected function getEditableThemes(): array
     {
         return collect(config('themes.shop', []))
-            ->filter(fn ($config) => $config['visual_theme'] ?? false)
-            ->map(fn ($config) => $config['code'])
+            ->map(fn (array $attributes, $code) => Theme::make(['code' => $code] + $attributes))
+            ->filter(fn (Theme $theme) => $theme->editorMode()->isEditable())
+            ->map(fn (Theme $theme) => $theme->code)
+            ->values()
             ->toArray();
+    }
+
+    /**
+     * The theme a request names, however its config spells itself.
+     */
+    protected function resolveTheme(string $themeCode): Theme
+    {
+        $theme = Theme::forCode($themeCode);
+
+        if (! $theme) {
+            abort(404, "Theme {$themeCode} not found");
+        }
+
+        return $theme;
+    }
+
+    /**
+     * The row id of the channel a code names.
+     */
+    protected function channelId(string $code): int
+    {
+        return (int) core()->getAllChannels()->firstWhere('code', $code)?->id;
     }
 
     /**

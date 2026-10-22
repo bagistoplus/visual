@@ -27,6 +27,26 @@ class TestCase extends Orchestra
         );
 
         Core::swap(core());
+
+        $this->allowEditing();
+    }
+
+    /**
+     * Answer yes to every permission question.
+     *
+     * The editor is offered to whoever may edit a theme, which Bagisto answers
+     * through its own guard against an administrator session this suite has
+     * none of. A test that cares about the answer binds its own.
+     */
+    protected function allowEditing(): void
+    {
+        $this->app->instance('Webkul\\User\\Bouncer', new class
+        {
+            public function hasPermission(string $permission): bool
+            {
+                return true;
+            }
+        });
     }
 
     protected function getPackageProviders($app)

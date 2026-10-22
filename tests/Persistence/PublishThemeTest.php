@@ -64,6 +64,20 @@ it('keeps no versions when configured to zero but still publishes to live', func
         ->and($this->files->exists($this->themePath.'/live/default/en/templates/index.json'))->toBeTrue();
 });
 
+it('publishes an editor holding nothing but its last edit marker', function () {
+    $this->files->delete($this->themePath.'/editor/default/en/templates/index.json');
+
+    app(PublishTheme::class)->handle('demo');
+
+    $versions = ($this->versionDirs)();
+
+    expect($versions)->toHaveCount(1)
+        ->and($versions[0])->toMatch('/^V\d+$/')
+        ->and($this->files->isDirectory($this->themePath.'/live'))->toBeTrue()
+        ->and($this->files->allFiles($this->themePath.'/live'))->toBe([])
+        ->and($this->files->exists($this->themePath.'/editor/.last-edit'))->toBeFalse();
+});
+
 it('leaves directories that are not versions untouched', function () {
     config()->set('bagisto_visual.versions_to_keep', 0);
 
