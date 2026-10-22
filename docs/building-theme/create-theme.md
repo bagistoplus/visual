@@ -73,6 +73,8 @@ AwesomeTheme/
 ✅
 The `theme-preview.png` file will be used to visually represent your theme in the Theme Editor.
 
+To generate it, run `php artisan visual:generate-preview awesome-theme` on a store where the theme is installed. It captures the home page on a desktop and on a phone and lays the phone over the desktop view in a 1280x720 image. Add `--plain` for a single desktop screenshot instead.
+
 ### Understanding Important Files
 
 #### `config/theme.php`
