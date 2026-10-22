@@ -2,6 +2,83 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.32](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.31...v2.0.0-alpha.32) (2026-10-22)
+
+
+### Bug Fixes
+
+* **cart:** tolerate a failed add without a redirect uri ([5cbc0f8](https://github.com/bagistoplus/visual/commit/5cbc0f8b80f0397813f281a08fab0976eee27c57))
+* check bagisto section types without building the schema ([6945d10](https://github.com/bagistoplus/visual/commit/6945d104cbca14aaa9547791115d8bb4054101bd))
+* **checkout:** label the phone field in address validation errors on Bagisto 2.5 ([d9b0af3](https://github.com/bagistoplus/visual/commit/d9b0af3d79dc2d36e9960e7abdbd8e8cb0aeecea))
+* draft only the sections and order the editor changed ([d3d2f96](https://github.com/bagistoplus/visual/commit/d3d2f961eba684eb936ca90a17b2c01e59ef58f9))
+* draw static content on releases whose storage cannot resolve markup ([fbeda8c](https://github.com/bagistoplus/visual/commit/fbeda8cddd50875390dcd6a619cd882139584193))
+* **editor:** preload each model once ([465384a](https://github.com/bagistoplus/visual/commit/465384a024e243a8a268534cc128751db79fe7d0))
+* keep a stored option the editor carried no value for ([8e48457](https://github.com/bagistoplus/visual/commit/8e484579f6990a67e31f9ccffbfc39e2d2b0009a))
+* keep the editor still while a bagisto theme reloads its preview ([88a74a1](https://github.com/bagistoplus/visual/commit/88a74a1220406d265bcf7a54ca42e11178d51d5e))
+* key morphdom passes by data-block, wire:key or id ([7afd9ed](https://github.com/bagistoplus/visual/commit/7afd9ed2523e1d283400dbf1f66718774a325faa))
+* **preview:** repair preview query strings that gateways append to with "?" ([fc84de5](https://github.com/bagistoplus/visual/commit/fc84de56cbb89a185ff39f9d4538c8bdd5d030c8))
+* **providers:** bind ThemePathsResolver and Themes during register ([3dfefe1](https://github.com/bagistoplus/visual/commit/3dfefe13ed5383ec0069a7d7a75e879af78b39bb))
+* query products with the given params and leave the request as it was ([ee99ab2](https://github.com/bagistoplus/visual/commit/ee99ab24af6941bc58c71404f683cb19206b4018))
+* re-render the preview at the address it is showing, not the one it loaded with ([aeaeeed](https://github.com/bagistoplus/visual/commit/aeaeeedad22147ec88f995e7331e8550e12751d3))
+* read a section's options in the shape its type is edited in ([7560d78](https://github.com/bagistoplus/visual/commit/7560d7828518a02822a803e8b2c97d61dfeba021))
+* recognise windows absolute theme paths in template discovery ([8332060](https://github.com/bagistoplus/visual/commit/8332060e39250162f21edd7a876be418ae528930))
+* refuse to open the editor on a theme it cannot edit ([72e1771](https://github.com/bagistoplus/visual/commit/72e1771364879868734ab568e92e986dac70d0a8))
+* resolve bagisto media references in static content ([a0edd1c](https://github.com/bagistoplus/visual/commit/a0edd1c96c49ee60cf4162ee6da02868070f7e36))
+* sanitize image carousel options before drawing them ([243045a](https://github.com/bagistoplus/visual/commit/243045ab2b4fd9183e64b3cb12e9a3928eb73840))
+* stop an edit drafting and purging the sections it did not change ([7e2189f](https://github.com/bagistoplus/visual/commit/7e2189f4432077be36948cf45442a664ac5e1170))
+* store a section's image as the path bagisto reads ([c8cc76a](https://github.com/bagistoplus/visual/commit/c8cc76a4a1a77fc568e185a476c3878f0c8ce0de))
+* store section media paths in the form 2.4 uses ([55231a4](https://github.com/bagistoplus/visual/commit/55231a43c249887c72e4da815cf96c62fc913a60))
+
+
+### Features
+
+* add account overview, downloadable products and EU withdrawal views ([f3bf71e](https://github.com/bagistoplus/visual/commit/f3bf71ebfdfe626717aa04a151944596ecb75adf))
+* add customer gdpr account view ([e171ea1](https://github.com/bagistoplus/visual/commit/e171ea130e64077211c46aad8abf605b97b8d4b9))
+* add customer rma create and view stubs ([7875749](https://github.com/bagistoplus/visual/commit/787574951cbe04f39387f7de172cfa78be3a1411))
+* build the block schemas a native section is drawn with ([1570acb](https://github.com/bagistoplus/visual/commit/1570acb4df95e516302d106ef684178f7326ad92))
+* **cache:** rebuild personalised markup for whoever a cached page is served to ([5fc9cb3](https://github.com/bagistoplus/visual/commit/5fc9cb3358b439c75efc62c0d2eee0b5d71ccaa8))
+* draw a native theme's home page through the view each section type names ([4960881](https://github.com/bagistoplus/visual/commit/49608818b659c647110dc4ab779e1f71d2b2dd00))
+* draw a section type's fields as visual editor settings ([901221a](https://github.com/bagistoplus/visual/commit/901221a45496198f856e27778d2568bcee9d1693))
+* edit a bagisto section's code and filters fields in the visual editor ([d9b49a1](https://github.com/bagistoplus/visual/commit/d9b49a1a085f5edc4011f1c9c70abf3713d56771))
+* edit a bagisto theme's native sections in the visual editor ([a3b2621](https://github.com/bagistoplus/visual/commit/a3b262178ecb3a0907e9825f8bcb9ef7138786b0))
+* fix a pinned section where its type puts it ([4c0071f](https://github.com/bagistoplus/visual/commit/4c0071f23419173489df8e03384c8864205153d0))
+* generate theme previews as a desktop and phone composite ([2239e36](https://github.com/bagistoplus/visual/commit/2239e36b2bb8b4857e619536163455c21b5ace10))
+* give bagisto sections a media library of their own ([2c34ed7](https://github.com/bagistoplus/visual/commit/2c34ed7662fd45ba2267ea30240e998f8579c611))
+* handle a bagisto theme's layout sections like its home page ones ([d0615e0](https://github.com/bagistoplus/visual/commit/d0615e0a033cf109650727e6ef6080131b6dcb7d))
+* honour the editor a theme declares and list every editable theme ([9ef4076](https://github.com/bagistoplus/visual/commit/9ef4076d0176be0c4a4d4d989e81ce4cba90496e))
+* let a bagisto theme be edited while browsing the storefront ([0d0e2e5](https://github.com/bagistoplus/visual/commit/0d0e2e56c2490bb75286106b4ecc7582b3484e88))
+* let a bagisto theme declare its colors and edit them in visual ([4b807f6](https://github.com/bagistoplus/visual/commit/4b807f6569507a73d80a5bc6e765efcb8ee914f1))
+* open, save and publish a native theme from the editor controller ([57bab3b](https://github.com/bagistoplus/visual/commit/57bab3bd5018412b5f0eb0888522b9875af410f9))
+* persist editor changes to a native theme's section rows ([e054a45](https://github.com/bagistoplus/visual/commit/e054a45f144493b14cdf19ace8a5026d9aae2664))
+* **persistence:** keep a bounded number of published theme versions ([acf8b8d](https://github.com/bagistoplus/visual/commit/acf8b8d0aff44afcfc2f0e2079ed51837958c5e5))
+* read a native theme's editor page from its section rows ([92a82ff](https://github.com/bagistoplus/visual/commit/92a82ff67f7d522591108053709e76112108623d))
+* read and write theme sections through bagisto's repository ([47fa6c7](https://github.com/bagistoplus/visual/commit/47fa6c78cc01443716a1c4ad7761710ff92ce889))
+* read section rows as the page the editor arranges ([a10ca2d](https://github.com/bagistoplus/visual/commit/a10ca2d194a146fb46cd6df51639468391edfbee))
+* read the edited page back as what each section row should hold ([27eeac8](https://github.com/bagistoplus/visual/commit/27eeac8428a7460932a201aad173afa39e32f6e4))
+* read the section types a theme declares into one shape ([349230c](https://github.com/bagistoplus/visual/commit/349230cce41c17fcc3e42b9cced5eb0a4f33ceab))
+* register a native theme's section schemas while the editor is driving ([a5e7b9b](https://github.com/bagistoplus/visual/commit/a5e7b9be4a0a54c7115c62628922823a2efae0df))
+* reload a native theme's preview on edit and bring the edited section back into view ([406c09f](https://github.com/bagistoplus/visual/commit/406c09fe096bcb2345884a2902098b135041ada3))
+* resolve a theme's editor mode from its config and bagisto's section system ([40013c3](https://github.com/bagistoplus/visual/commit/40013c310bd15d1b06fcf4ac1042f04da0c85429))
+* resolve the view a section type is drawn by ([1bd8613](https://github.com/bagistoplus/visual/commit/1bd8613a9d61af183ce7785d5a80b87221d539b8))
+* show themes as a card grid like bagisto's gallery ([c716d73](https://github.com/bagistoplus/visual/commit/c716d7326f8446add0c18a4b65652a81899f7b1e))
+* store sections the editor adds and delete the ones it drops ([667c74a](https://github.com/bagistoplus/visual/commit/667c74a52c2b035ead31fe6b31032cf9d7c5e5af))
+* swap undo for a discard button and a change count on a bagisto theme ([27d4dd4](https://github.com/bagistoplus/visual/commit/27d4dd449a268144692ed39b1cb3cf8b235a243c))
+* **templates:** gate custom template variants behind template assignments ([4418a0c](https://github.com/bagistoplus/visual/commit/4418a0c01f64cbd611f53db0e054f69a6a2fc22b))
+
+
+### Performance Improvements
+
+* **booking:** look a booking product up once per request instead of per read ([8c81118](https://github.com/bagistoplus/visual/commit/8c81118c2248149e0224a8cc6281dd3dc1251ad5))
+* **config:** remember a store setting for the request instead of querying every read ([57c71fa](https://github.com/bagistoplus/visual/commit/57c71fa9b825e765dd95e2f236fa42c54ea6577a))
+* **persistence:** stop storing schema-default block properties ([9a95990](https://github.com/bagistoplus/visual/commit/9a9599033f8d8ede70908cbb3287ecb2d059e02c))
+* **persistence:** write editor and live template json compactly ([a071b99](https://github.com/bagistoplus/visual/commit/a071b9916228c17d2f68f0b9cc74b55c6dd01dd2))
+* **providers:** share Bagisto's locales helper instead of rebuilding it per translated attribute ([61147b5](https://github.com/bagistoplus/visual/commit/61147b57302172670a95deabe4a4fd28758ea7fa))
+* **settings:** eager load product relations in the product list transformer ([f74cf0c](https://github.com/bagistoplus/visual/commit/f74cf0c63ffbf19af4a58c3005b201fe18fa386c))
+* **settings:** resolve a model once across list and singular settings ([21b076a](https://github.com/bagistoplus/visual/commit/21b076aafa8d7ba30334b661a29a48ff91912266))
+* **settings:** resolve each category, product and cms page once per request ([29440b2](https://github.com/bagistoplus/visual/commit/29440b2d354b5d93f6a488635820fd1483635f10))
+* **theme:** drop unconditional eager-load of template assignments ([0f4add6](https://github.com/bagistoplus/visual/commit/0f4add6e726cea327257e8f8683e508d4dc304f5))
+* **theme:** reuse the resolved default channel instead of querying it again ([0d99701](https://github.com/bagistoplus/visual/commit/0d99701a86df60ce6ac2fc6ab5dc18a8eb608448))
+
 # [2.0.0-alpha.31](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.30...v2.0.0-alpha.31) (2026-09-10)
 
 
