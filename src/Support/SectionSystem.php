@@ -35,7 +35,7 @@ class SectionSystem
     {
         return class_exists(self::SECTION_MODEL)
             && class_exists(self::SECTION_SCHEMA)
-            && method_exists($this->schema(), 'types');
+            && method_exists(self::SECTION_SCHEMA, 'types');
     }
 
     /**

@@ -47,6 +47,11 @@ parameters:
             message: '#Call to an undefined method Webkul\\Product\\Repositories\\ProductRepository::setSearchContext\(\)#'
             path: src/Actions/GetProducts.php
             reportUnmatched: false
+        # Bagisto's section schema declares types() from 2.4.11; only one release is installed
+        -
+            identifier: function.alreadyNarrowedType
+            path: src/Support/SectionSystem.php
+            reportUnmatched: false
         # The cache profile lifetime accessor was renamed in spatie/laravel-responsecache 8; only one exists in the installed version
         -
             message: '#Call to an undefined method Spatie\\ResponseCache\\CacheProfiles\\CacheProfile::cacheRequestUntil\(\)#'
