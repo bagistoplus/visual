@@ -34,6 +34,10 @@ parameters:
         -
             message: '#Parameter \#1 \$column of method #'
             path: src/Http/Controllers/Admin/ThemeEditorController.php
+        # Larastan 3.13 checks view names against known views and cannot resolve namespaced ones such as visual:: or shop::
+        -
+            message: '#expects view-string, string given#'
+            reportUnmatched: false
         # ProductRepository search API differs between Bagisto < 2.5 and >= 2.5; only one exists in the installed version
         -
             message: '#Call to an undefined method Webkul\\Product\\Repositories\\ProductRepository::setSearchEngine\(\)#'
