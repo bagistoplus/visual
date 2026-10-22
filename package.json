@@ -44,7 +44,7 @@
     "@types/node": "^25.9.3",
     "@types/nprogress": "^0.2.3",
     "@vitejs/plugin-vue": "^6.0.7",
-    "@vitest/ui": "^4.1.9",
+    "@vitest/ui": "^4.1.12",
     "@vue/test-utils": "^2.4.11",
     "@vueuse/core": "^14.3.0",
     "@zag-js/file-upload": "^1.41.2",
@@ -64,15 +64,18 @@
     "unplugin-auto-import": "^21.0.0",
     "unplugin-icons": "^23.0.1",
     "unplugin-vue-components": "^32.1.0",
-    "vite": "^8.2.1",
+    "vite": "^8.3.4",
     "vitepress": "^2.0.0-alpha.17",
     "vitepress-plugin-llms": "^1.13.4",
-    "vitest": "^4.1.9",
-    "vue": "^3.5.38",
+    "vitest": "^4.1.12",
+    "vue": "^3.5.44",
     "vue-macros": "^3.1.4",
     "vue3-tabs-component": "^1.4.0"
   },
   "overrides": {
-    "markdown-it": "^14.2.0"
+    "markdown-it": "^14.3.3",
+    "@tailwindcss/typography": {
+      "postcss-selector-parser": "^7.1.6"
+    }
   }
 }
