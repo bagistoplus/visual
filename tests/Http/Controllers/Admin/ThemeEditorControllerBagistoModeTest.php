@@ -45,6 +45,12 @@ it('opens on visual themes alone when bagisto declares no section types', functi
     expect(callEditorMethod('getEditableThemes'))->toBe(['visual-demo']);
 });
 
+it('refuses to open the editor on a theme it has no way of editing', function () {
+    fakeSectionSystem(available: false);
+
+    callEditorMethod('index', ['default']);
+})->throws(NotFoundHttpException::class);
+
 it('resolves a theme whose config does not spell out its own code', function () {
     fakeSectionSystem(available: true);
 

@@ -57,6 +57,10 @@ class ThemeEditorController extends Controller
 
     public function index(string $themeCode)
     {
+        if (! in_array($themeCode, $this->getEditableThemes())) {
+            abort(404, "Theme {$themeCode} cannot be edited");
+        }
+
         return view()->make('visual::admin.editor.index', [
             'config' => [
                 'baseUrl' => parse_url(route('visual.admin.editor', ['theme' => $themeCode]), PHP_URL_PATH),
