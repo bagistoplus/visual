@@ -15,11 +15,11 @@
         class="relative mb-6 overflow-hidden rounded border border-gray-200 bg-white sm:min-h-[16rem] sm:px-8 sm:pb-8 sm:pt-8 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
       >
         <div class="absolute inset-y-0 end-0 h-full w-[360px] bg-cover bg-no-repeat max-sm:hidden"
-          style="background-image: url({{ $theme->previewImage ? asset($theme->previewImage) : bagisto_asset('images/default_theme_preview.png', 'visual_admin') }})"
+          style="background-image: url({{ $theme->previewImage ? asset($theme->previewImage) : bagisto_asset('images/default_theme_preview.svg', 'visual_admin') }})"
         >
         </div>
         <div class="sm:hidden">
-          <img src="{{ $theme->previewImage ? asset($theme->previewImage) : bagisto_asset('images/default_theme_preview.png', 'visual_admin') }}">
+          <img src="{{ $theme->previewImage ? asset($theme->previewImage) : bagisto_asset('images/default_theme_preview.svg', 'visual_admin') }}">
         </div>
 
         <div class="relative me-auto w-full max-w-xs max-sm:p-4">

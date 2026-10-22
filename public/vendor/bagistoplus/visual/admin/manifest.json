@@ -8,9 +8,9 @@
     "src": "resources/assets/admin/css/admin.css",
     "isEntry": true
   },
-  "resources/assets/admin/images/default_theme_preview.png": {
-    "file": "assets/default_theme_preview-BkZ1bWrW.png",
-    "src": "resources/assets/admin/images/default_theme_preview.png"
+  "resources/assets/admin/images/default_theme_preview.svg": {
+    "file": "assets/default_theme_preview-DJmngKPH.svg",
+    "src": "resources/assets/admin/images/default_theme_preview.svg"
   },
   "resources/assets/admin/images/logo.svg": {
     "file": "assets/logo-B5JQEkd6.svg",
