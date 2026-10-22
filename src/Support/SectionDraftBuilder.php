@@ -46,7 +46,7 @@ class SectionDraftBuilder
         $drafts = collect();
         $order = 0;
 
-        foreach ($this->rootIds($regions) as $blockId) {
+        foreach ($this->rootIds($regions) as $blockId => $inLayout) {
             $block = $blocks[$blockId] ?? null;
 
             if (! is_array($block)) {
@@ -69,6 +69,7 @@ class SectionDraftBuilder
                 options: $this->options($block, $type->fields(), $blocks, $existingOptions[$rowId] ?? []),
                 status: ! ($block['disabled'] ?? false),
                 sortOrder: ++$order,
+                inLayout: $inLayout,
             ));
         }
 
@@ -89,18 +90,19 @@ class SectionDraftBuilder
     }
 
     /**
-     * The sections a page holds, the ones drawn on every page last.
+     * The sections a page holds, the ones drawn on every page last, each
+     * telling whether it is one of those.
      *
      * @param  array<int, array<string, mixed>>  $regions
-     * @return array<int, string>
+     * @return array<string, bool>
      */
     protected function rootIds(array $regions): array
     {
         $byName = collect($regions)->keyBy(fn (array $region) => $region['name'] ?? '');
 
         return array_merge(
-            $byName->get(SectionPageBuilder::CONTENT_REGION)['blocks'] ?? [],
-            $byName->get(SectionPageBuilder::LAYOUT_REGION)['blocks'] ?? [],
+            array_fill_keys($byName->get(SectionPageBuilder::CONTENT_REGION)['blocks'] ?? [], false),
+            array_fill_keys($byName->get(SectionPageBuilder::LAYOUT_REGION)['blocks'] ?? [], true),
         );
     }
 

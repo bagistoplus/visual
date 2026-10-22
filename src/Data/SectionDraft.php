@@ -9,7 +9,8 @@ namespace BagistoPlus\Visual\Data;
  * A section the merchant has just added has no row yet, so `rowId` is null and
  * the type and name are what a row would be created from. Options are for the
  * locale being edited and belong in `draft_options`; the status and order
- * belong in `draft_status` and `draft_sort_order`.
+ * belong in `draft_status` and `draft_sort_order`. `inLayout` says which of
+ * the two lists the editor arranges it in: the page's, or every page's.
  */
 final class SectionDraft
 {
@@ -24,6 +25,7 @@ final class SectionDraft
         public readonly array $options,
         public readonly bool $status,
         public readonly int $sortOrder,
+        public readonly bool $inLayout = false,
     ) {}
 
     /**

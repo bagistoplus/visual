@@ -5,6 +5,7 @@ namespace BagistoPlus\Visual\Persistence;
 use BagistoPlus\Visual\Data\SectionDraft;
 use BagistoPlus\Visual\Data\SectionRecord;
 use BagistoPlus\Visual\Support\SectionOptions;
+use BagistoPlus\Visual\Support\SectionOrder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -76,10 +77,11 @@ class SectionStore
      *
      * A section whose options come back as they were is left alone. The editor
      * reports the whole page on every save, and writing a draft for each would
-     * leave every section on it holding a change the merchant never made.
+     * leave every section on it holding a change the merchant never made. The
+     * order is held the same way, list by list, see `SectionOrder`.
      *
      * @param  Collection<int, SectionDraft>  $drafts
-     * @param  array<int, array<string, mixed>>  $previousOptions  Options as read, keyed by row id.
+     * @param  array<int, array<string, mixed>>  $previousOptions  Options each row rebuilds to unchanged, keyed by row id.
      */
     public function saveDrafts(
         Collection $drafts,
@@ -89,11 +91,14 @@ class SectionStore
         array $previousOptions = []
     ): void {
         $repository = $this->repository();
+        $stored = $this->storedOrder($channelId, $themeCode);
         $rowIds = [];
+        $lists = [[], []];
+        $last = count($stored);
 
         foreach ($drafts as $draft) {
             $rowId = $draft->isNew()
-                ? $this->create($draft, $channelId, $themeCode)
+                ? $this->create($draft, $channelId, $themeCode, ++$last)
                 : $draft->rowId;
 
             if ($draft->isNew() || ! $this->options->same($previousOptions[$draft->rowId] ?? [], $draft->options)) {
@@ -103,24 +108,47 @@ class SectionStore
             $repository->saveStatusDraft($rowId, $draft->status);
 
             $rowIds[] = $rowId;
+            $lists[(int) $draft->inLayout][] = $rowId;
         }
 
         $this->deleteMissing($channelId, $themeCode, $rowIds);
 
-        $repository->saveOrderDraft($rowIds);
+        $repository->saveOrderDraft(SectionOrder::merge($stored, $lists));
+    }
+
+    /**
+     * The row ids of a channel's theme in the order the storefront is given
+     * them, as Bagisto numbers them before it compares an order with it.
+     *
+     * @return array<int, int>
+     */
+    protected function storedOrder(int $channelId, string $themeCode): array
+    {
+        return collect($this->repository()->findWhere([
+            'channel_id' => $channelId,
+            'theme_code' => $themeCode,
+        ]))
+            ->sortBy([['sort_order', 'asc'], ['id', 'asc']])
+            ->map(fn (mixed $section) => (int) $section->id)
+            ->values()
+            ->all();
     }
 
     /**
      * Store a section the merchant added, and answer the row it was given.
+     *
+     * Stored after every other, as Bagisto's own editor stores one, so that
+     * storing it moves none of them. Where the merchant put it is its order
+     * draft.
      */
-    protected function create(SectionDraft $draft, int $channelId, string $themeCode): int
+    protected function create(SectionDraft $draft, int $channelId, string $themeCode, int $sortOrder): int
     {
         $section = $this->repository()->create([
             'name' => $draft->name,
             'type' => $draft->type,
             'channel_id' => $channelId,
             'theme_code' => $themeCode,
-            'sort_order' => $draft->sortOrder,
+            'sort_order' => $sortOrder,
             'status' => 0,
             'draft_status' => true,
         ]);

@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Persistence;
 
+use BagistoPlus\Visual\Data\SectionDraft;
 use BagistoPlus\Visual\Data\SectionRecord;
 use BagistoPlus\Visual\Support\SectionDraftBuilder;
 use BagistoPlus\Visual\Support\SectionPageBuilder;
@@ -40,7 +41,29 @@ class PersistSectionUpdates
             themeCode: $themeCode,
         );
 
-        $this->store->saveDrafts($drafts, $channelId, $themeCode, $locale, $previous);
+        $this->store->saveDrafts($drafts, $channelId, $themeCode, $locale, $this->rebuilt($page, $previous, $themeCode));
+    }
+
+    /**
+     * The options each row rebuilds to with nothing changed, keyed by row id.
+     *
+     * What a save is compared with. A row is stored in whatever shape Bagisto or
+     * an earlier save left it, never filled in, cleared to nothing when it was
+     * never published, and rebuilding it fills in what its type declares. Set
+     * against what was stored, a row nobody touched would read as changed.
+     *
+     * @param  array{blocks: array<string, array<string, mixed>>, regions: array<int, array<string, mixed>>}  $page
+     * @param  array<int, array<string, mixed>>  $previous
+     * @return array<int, array<string, mixed>>
+     */
+    protected function rebuilt(array $page, array $previous, string $themeCode): array
+    {
+        return $this->draftBuilder->build(
+            blocks: $page['blocks'],
+            regions: $page['regions'],
+            existingOptions: $previous,
+            themeCode: $themeCode,
+        )->mapWithKeys(fn (SectionDraft $draft) => [$draft->rowId => $draft->options])->all();
     }
 
     /**

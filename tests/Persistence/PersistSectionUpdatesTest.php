@@ -193,7 +193,7 @@ it('carries over an option no section type declares', function () {
     expect($store->saved[0]->options['legacy'])->toBe('kept');
 });
 
-it('hands the store the options each row was holding, so an untouched one is left alone', function () {
+it('hands the store what each row rebuilds to, so an untouched one is left alone', function () {
     $store = recordingStore([heroRow(['title' => 'Summer'])]);
 
     persistUpdates($store, [
@@ -202,8 +202,41 @@ it('hands the store the options each row was holding, so an untouched one is lef
         'changes' => ['added' => [], 'updated' => [], 'removed' => []],
     ]);
 
-    expect($store->previous)->toBe([7 => ['title' => 'Summer']])
+    expect($store->previous[7]['title'])->toBe('Summer')
         ->and($store->saved[0]->options)->toBe($store->previous[7]);
+});
+
+it('leaves alone a row whose options were never stored, though they rebuild to its defaults', function () {
+    $store = recordingStore([heroRow()]);
+
+    persistUpdates($store, [
+        'blocks' => [],
+        'regions' => contentRegion(['section-7']),
+        'changes' => ['added' => [], 'updated' => [], 'removed' => []],
+    ]);
+
+    expect($store->saved[0]->options)->not->toBe([])
+        ->and($store->saved[0]->options)->toBe($store->previous[7]);
+});
+
+it('hands the store a changed row as it was before the change', function () {
+    $store = recordingStore([heroRow(['title' => 'Summer'])]);
+
+    persistUpdates($store, [
+        'blocks' => [
+            'section-7' => [
+                'id' => 'section-7',
+                'type' => 'image_carousel',
+                'properties' => ['title' => 'Winter'],
+                'children' => [],
+            ],
+        ],
+        'regions' => contentRegion(['section-7']),
+        'changes' => ['added' => [], 'updated' => ['section-7'], 'removed' => []],
+    ]);
+
+    expect($store->previous[7]['title'])->toBe('Summer')
+        ->and($store->saved[0]->options['title'])->toBe('Winter');
 });
 
 it('keeps the sections a page did not carry, so browsing cannot drop them', function () {
