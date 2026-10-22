@@ -16,7 +16,7 @@ return [
         'title' => 'Themes',
         'customize' => 'Customize',
         'preview' => 'Preview',
-        'made-by' => 'Made by:',
+        'by' => 'by',
         'view-documentation' => 'View Documentation',
         'no-themes' => 'No themes found',
     ],

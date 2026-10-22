@@ -16,7 +16,7 @@ return [
         'title' => 'Temas',
         'customize' => 'Personalizar',
         'preview' => 'Vista previa',
-        'made-by' => 'Creado por:',
+        'by' => 'por',
         'view-documentation' => 'Ver documentación',
         'no-themes' => 'No se encontraron temas',
     ],
