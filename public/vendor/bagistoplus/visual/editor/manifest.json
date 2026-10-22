@@ -4,7 +4,7 @@
     "name": "sectionBlockIds"
   },
   "resources/assets/editor/index.ts": {
-    "file": "assets/index-D_a3PC1-.js",
+    "file": "assets/index-B7ZooR_Z.js",
     "name": "index",
     "src": "resources/assets/editor/index.ts",
     "isEntry": true,
@@ -16,7 +16,7 @@
     ]
   },
   "resources/assets/editor/injected.ts": {
-    "file": "assets/injected-B95EAV3W.js",
+    "file": "assets/injected-DiwTs5K5.js",
     "name": "injected",
     "src": "resources/assets/editor/injected.ts",
     "isEntry": true,
