@@ -9,6 +9,7 @@ use BagistoPlus\Visual\Theme\Theme;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Symfony\Component\Filesystem\Path;
 
 class TemplateDiscovery
 {
@@ -161,7 +162,7 @@ class TemplateDiscovery
             }
 
             $basePath = $currentTheme->basePath;
-            $path = Str::startsWith($basePath, DIRECTORY_SEPARATOR) ? $basePath : base_path($basePath);
+            $path = Path::isAbsolute($basePath) ? $basePath : base_path($basePath);
             $paths[] = rtrim($path, '/').'/resources/views/templates';
         } while ($currentTheme = $currentTheme->getParent());
 
