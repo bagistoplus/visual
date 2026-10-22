@@ -21,6 +21,8 @@ The Visual Editor is where you build and customize your storefront in real time 
 
 ![The Visual Editor page swicther screenshot](/editor-page-switcher.png)
 
+The editor works on Bagisto's own themes as well. See [Editing Bagisto themes](../bagisto-themes/editing.md).
+
 ## Why Use the Visual Editor?
 
 - **No code required** — edit everything visually

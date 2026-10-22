@@ -131,7 +131,14 @@ export default defineConfig({
             { text: 'Overview', link: '/theme-editor/overview' },
             { text: 'Interface Guide', link: '/theme-editor/interface-guide' },
             { text: 'Advanced Usage', link: '/theme-editor/advanced-usage' },
-            { text: 'Colors for Bagisto themes', link: '/theme-editor/bagisto-theme-colors' },
+          ],
+        },
+        {
+          text: 'Bagisto Themes',
+          items: [
+            { text: 'Editing Bagisto themes', link: '/bagisto-themes/editing' },
+            { text: 'Colors', link: '/bagisto-themes/colors' },
+            { text: 'Custom section types', link: '/bagisto-themes/custom-section-types' },
           ],
         },
         {

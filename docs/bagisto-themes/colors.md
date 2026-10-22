@@ -1,8 +1,8 @@
 # Colors for Bagisto themes
 
-Visual can edit a theme whose sections Bagisto stores, not only a visual theme.
-Such a theme has no settings file of its own, so its colors are declared in its
-entry in `config/themes.php`.
+Visual can [edit a theme whose sections Bagisto stores](/bagisto-themes/editing),
+not only a visual theme. Such a theme has no settings file of its own, so its
+colors are declared in its entry in `config/themes.php`.
 
 ## Declaring colors
 

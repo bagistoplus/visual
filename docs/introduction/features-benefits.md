@@ -13,6 +13,7 @@ A powerful drag-and-drop interface where merchants customize their storefront wi
 - **Real-Time Preview** – See exactly what you're building as you build it
 - **Drag-and-Drop Interface** – Add, remove, and reorder content visually
 - **No Code Required** – Designed for non-technical users
+- **Works with Bagisto themes too**: Customize Bagisto's Default theme or a theme built for Bagisto, including its own section types ([Editing Bagisto themes](../bagisto-themes/editing.md))
 
 **What merchants can do:** Customize layouts, rearrange content, change colors and typography, manage sections, and build unique storefronts — all visually in the editor.
 

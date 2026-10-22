@@ -101,6 +101,10 @@ Changes in the editor are not visible to customers until you click **Publish**. 
 
 > ℹ️ For a full breakdown of the interface, see [Theme Editor: Interface Guide](../theme-editor/interface-guide.md)
 
+::: tip Already using a Bagisto theme?
+The visual editor can also customize Bagisto's own themes, such as the Default theme, on Bagisto 2.4.11 and later. See [Editing Bagisto themes](../bagisto-themes/editing.md).
+:::
+
 ## Step 4: Add and Edit Content
 
 ### Adding Sections
