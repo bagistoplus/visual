@@ -30,7 +30,10 @@ it('draws the media a section embeds at the url the storefront reaches it by', f
         ->not->toContain('__media__')
         ->and($styles)->toContain(Storage::url('themes/default/sections/8/bg.webp'))
         ->not->toContain('__media__');
-});
+})->skip(
+    fn () => ! method_exists('Webkul\Theme\ThemeStorage', 'resolveMarkup'),
+    'bagisto does not resolve media references in section markup'
+);
 
 it('draws the markup as written on a release whose storage cannot resolve it', function () {
     // 2.5.0-beta3 to beta5 ship the storage object, but store urls in the

@@ -86,7 +86,10 @@ it('takes what a theme config leaves out from bagisto theme catalog', function (
         'version' => '2.5',
         'description' => 'The default theme.',
     ]);
-});
+})->skip(
+    fn () => ! class_exists('Webkul\Theme\ThemeCatalog'),
+    'bagisto has no theme catalog'
+);
 
 it('shows the screenshot bagisto theme catalog has for a theme declaring none', function () {
     fakeSectionSystem(available: true);
@@ -96,7 +99,10 @@ it('shows the screenshot bagisto theme catalog has for a theme declaring none', 
 
     expect(listedTheme('default')['screenshot'])
         ->toBe('http://shop.test/themes/admin/default/build/assets/default.png');
-});
+})->skip(
+    fn () => ! class_exists('Webkul\Theme\ThemeCatalog'),
+    'bagisto has no theme catalog'
+);
 
 it('prefers the preview a theme config declares over the catalog screenshot', function () {
     fakeSectionSystem(available: true);

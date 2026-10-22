@@ -41,6 +41,11 @@ if (! function_exists('offerTypes')) {
         {
             public function __construct(protected array $offered) {}
 
+            public function available(): bool
+            {
+                return true;
+            }
+
             public function types(?string $themeCode = null): Collection
             {
                 return collect($this->offered);

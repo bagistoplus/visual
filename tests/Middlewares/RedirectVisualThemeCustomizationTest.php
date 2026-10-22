@@ -66,6 +66,7 @@ it('ignores requests outside the admin prefix', function () {
 });
 
 it('redirects a plain theme that names the visual editor as its customizer', function () {
+    fakeSectionSystem(available: true);
     config()->set('themes.shop.classic.customize.editor', 'visual');
 
     $response = handleCustomizationRequest('/admin/appearance/themes/classic/sections');

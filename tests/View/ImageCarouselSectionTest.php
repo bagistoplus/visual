@@ -31,4 +31,7 @@ it('blanks a slide link that would run script, as bagisto does when it draws one
 
     expect($options['images'][0]['link'])->toBe('')
         ->and($options['images'][1]['link'])->toBe('formal-wear-female');
-});
+})->skip(
+    fn () => ! class_exists(ImageCarousel::class),
+    'bagisto does not ship the image carousel section'
+);
