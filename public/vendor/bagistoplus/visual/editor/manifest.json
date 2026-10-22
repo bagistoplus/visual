@@ -1,17 +1,27 @@
 {
+  "_sectionBlockIds-CIAxXZrM.js": {
+    "file": "assets/sectionBlockIds-CIAxXZrM.js",
+    "name": "sectionBlockIds"
+  },
   "resources/assets/editor/index.ts": {
-    "file": "assets/index-Dg9OO6K2.js",
+    "file": "assets/index-D_a3PC1-.js",
     "name": "index",
     "src": "resources/assets/editor/index.ts",
     "isEntry": true,
+    "imports": [
+      "_sectionBlockIds-CIAxXZrM.js"
+    ],
     "css": [
-      "assets/index-BBxsS4_5.css"
+      "assets/index-IuRAV-yf.css"
     ]
   },
   "resources/assets/editor/injected.ts": {
-    "file": "assets/injected-BIbCCstQ.js",
+    "file": "assets/injected-B95EAV3W.js",
     "name": "injected",
     "src": "resources/assets/editor/injected.ts",
-    "isEntry": true
+    "isEntry": true,
+    "imports": [
+      "_sectionBlockIds-CIAxXZrM.js"
+    ]
   }
 }

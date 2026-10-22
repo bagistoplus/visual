@@ -1,0 +1,1 @@
+var e=/^section-(\d+)$/;function t(t){let n=e.exec(String(t??``).split(`.`)[0]);return n?Number(n[1]):null}function n(e){return`section-${e}`}export{t as n,n as t};
