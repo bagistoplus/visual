@@ -235,7 +235,7 @@ class SectionStore
         foreach (Storage::directories($this->themeMediaDirectory($themeCode)) as $directory) {
             foreach (Storage::files($directory) as $path) {
                 $files[] = [
-                    'path' => $path,
+                    'path' => $this->storedPath($path),
                     'url' => $this->mediaUrl($path),
                     'section' => (int) basename($directory),
                     'modified' => Storage::lastModified($path),
@@ -271,9 +271,21 @@ class SectionStore
         Storage::copy($source, $copy);
 
         return [
-            'path' => $copy,
+            'path' => $this->storedPath($copy),
             'url' => $this->mediaUrl($copy),
         ];
+    }
+
+    /**
+     * A path on the disk in the form the installed release stores it.
+     *
+     * A release that resolves its own paths stores them as the disk holds them.
+     * An earlier one stores them rooted in the public directory, and its own
+     * editor draws a path without that prefix as a broken image.
+     */
+    protected function storedPath(string $diskPath): string
+    {
+        return $this->themeStorage() ? $diskPath : 'storage/'.$diskPath;
     }
 
     /**
