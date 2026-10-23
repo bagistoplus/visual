@@ -2,6 +2,28 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.33](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.32...v2.0.0-alpha.33) (2026-10-23)
+
+
+* feat!: stop generating colour shades ([2802cd7](https://github.com/bagistoplus/visual/commit/2802cd7710a3874d7d93a0f0854817c11360ec1c))
+* feat(images)!: serve uploaded images as responsive WebP copies ([78840ae](https://github.com/bagistoplus/visual/commit/78840ae3bdedd61159de216e051299b0c5deb641))
+
+
+### Bug Fixes
+
+* **images:** resize with Intervention 4 directly so Laravel 13 releases without the Image component get copies ([1ebcdc1](https://github.com/bagistoplus/visual/commit/1ebcdc17d47c0df149e86919be53c1b4319f81d8))
+
+
+### Performance Improvements
+
+* **fonts:** load bunny fonts in one non-blocking request with swap display ([e2af497](https://github.com/bagistoplus/visual/commit/e2af4975062a29d9b65c7f1a70805f43c61b84d7))
+
+
+### BREAKING CHANGES
+
+* the small, medium and large methods of the image value are removed, and srcset() returns the WebP copies or null
+* colour schemes no longer output shade variables, and TailwindPaletteGenerator and the visual_color_vars directive are removed
+
 # [2.0.0-alpha.32](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.31...v2.0.0-alpha.32) (2026-10-22)
 
 
