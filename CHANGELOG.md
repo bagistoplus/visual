@@ -2,6 +2,13 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.34](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.33...v2.0.0-alpha.34) (2026-10-23)
+
+
+### Features
+
+* **typography:** let themes include extra font weights in the font links ([6319369](https://github.com/bagistoplus/visual/commit/6319369482d1f112db60915e0f7fa40be287c32e))
+
 # [2.0.0-alpha.33](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.32...v2.0.0-alpha.33) (2026-10-23)
 
 
