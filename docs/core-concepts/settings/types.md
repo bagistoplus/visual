@@ -1418,6 +1418,16 @@ This generates HTML to load the configured font families from Bunny Fonts. All f
 
 The page renders without waiting for the stylesheet, and `display=swap` shows text in the fallback font until the fonts arrive. See the [Font](#font) setting above for the Content Security Policy caveat.
 
+**Including More Weights:**
+
+The presets only name the weights they use, but templates often set others with weight classes such as `font-medium` or `font-semibold`. Without those weights loaded, the browser draws that text with the nearest loaded weight or a synthetic bold. Pass the weights your templates use, and every preset font is loaded with them too:
+
+```blade
+{{ $theme->settings->typography_presets->fontLinks(includeWeights: ['500', '600', '700']) }}
+```
+
+Listing a weight costs a few hundred bytes in the stylesheet. The browser only downloads a weight's font file when text on the page uses it, and fonts that lack a weight simply skip it.
+
 **With Custom Selectors:**
 
 You can also apply typography directly to HTML elements by passing a custom selector:

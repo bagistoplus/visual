@@ -127,6 +127,26 @@ it('generates font links for configured typography font variants', function () {
         ->and(substr_count($html, 'fonts.bunny.net/css?'))->toBe(2);
 });
 
+it('includes extra weights for every font the presets use', function () {
+    $presets = (new TypographyPresetsTransformer)->transform([
+        'heading' => ['fontFamily' => 'Outfit', 'fontWeight' => '600', 'fontStyle' => 'normal'],
+        'heading-italic' => ['fontFamily' => 'Outfit', 'fontWeight' => '600', 'fontStyle' => 'italic'],
+        'body' => ['fontFamily' => 'Inter', 'fontWeight' => '400', 'fontStyle' => 'normal'],
+    ]);
+
+    expect($presets->fontLinks(includeWeights: ['500', 600, '400'])->toHtml())
+        ->toContain('family=outfit:600,600i,500,500i,400,400i|inter:400,500,600&amp;display=swap');
+});
+
+it('loads only the preset weights when no extra weights are included', function () {
+    $presets = (new TypographyPresetsTransformer)->transform([
+        'body' => ['fontFamily' => 'Inter', 'fontWeight' => '400', 'fontStyle' => 'normal'],
+    ]);
+
+    expect($presets->fontLinks()->toHtml())
+        ->toContain('family=inter:400&amp;display=swap');
+});
+
 it('returns empty font links when no typography preset uses a font family', function () {
     $transformer = new TypographyPresetsTransformer;
 
