@@ -2,16 +2,14 @@
 
 namespace BagistoPlus\Visual\Support\Images;
 
-use Illuminate\Image\ImageManager as LaravelImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\Encoders\WebpEncoder;
 use Intervention\Image\ImageManager as InterventionImageManager;
 
 /**
  * Scales an image down to WebP copies with whatever the installed Bagisto
- * provides: Laravel's own Image component from Laravel 13 (Bagisto 2.5 and
- * later), Intervention Image 3 or 2 before that. Without any of them, or
- * without WebP support, nothing is resized.
+ * provides: Intervention Image 4 (Bagisto 2.5 and later), 3 or 2 before
+ * that. Without any of them, or without WebP support, nothing is resized.
  */
 class ImageResizer
 {
@@ -32,8 +30,8 @@ class ImageResizer
         rsort($widths);
 
         return match ($this->strategy()) {
-            'laravel' => $this->resizeWithLaravel($contents, $widths, $quality),
-            'intervention-3' => $this->resizeWithIntervention3($contents, $widths, $quality),
+            'intervention-4' => $this->resizeWithIntervention('decode', $contents, $widths, $quality),
+            'intervention-3' => $this->resizeWithIntervention('read', $contents, $widths, $quality),
             'intervention-2' => $this->resizeWithIntervention2($contents, $widths, $quality),
             default => throw new \RuntimeException('No image library that can write WebP is installed.'),
         };
@@ -45,9 +43,8 @@ class ImageResizer
             return null;
         }
 
-        // Laravel's GD and Imagick drivers run on Intervention 4.
-        if (class_exists(LaravelImageManager::class) && $this->interventionHas('decode')) {
-            return 'laravel';
+        if ($this->interventionHas('decode')) {
+            return 'intervention-4';
         }
 
         if ($this->interventionHas('read')) {
@@ -70,43 +67,17 @@ class ImageResizer
     }
 
     /**
-     * @param  list<int>  $widths
-     * @return array{width: int, height: int, variants: array<int, string>}
-     */
-    protected function resizeWithLaravel(string $contents, array $widths, int $quality): array
-    {
-        /** @var LaravelImageManager $images */
-        $images = app('image');
-
-        // Each copy starts from the original, so it is encoded once.
-        [$width, $height] = $images->fromBytes($contents)->usingGd()->orient()->dimensions();
-
-        $variants = [];
-        $widths = $this->below($widths, $width);
-
-        foreach ($widths as $variantWidth) {
-            $variants[$variantWidth] = $images->fromBytes($contents)
-                ->usingGd()
-                ->orient()
-                ->scale($variantWidth)
-                ->toWebp()
-                ->quality($quality)
-                ->toBytes();
-        }
-
-        return ['width' => $width, 'height' => $height, 'variants' => $variants];
-    }
-
-    /**
-     * Intervention 3 orients on read and scales the same image down from the
-     * largest width, which keeps each step a downscale.
+     * Intervention 3 and 4 orient on decode and scale the same image down from
+     * the largest width, which keeps each step a downscale. Only the decode
+     * method's name differs between them.
      *
+     * @param  'decode'|'read'  $decode
      * @param  list<int>  $widths
      * @return array{width: int, height: int, variants: array<int, string>}
      */
-    protected function resizeWithIntervention3(string $contents, array $widths, int $quality): array
+    protected function resizeWithIntervention(string $decode, string $contents, array $widths, int $quality): array
     {
-        $image = $this->interventionManager(Driver::class)->read($contents);
+        $image = $this->interventionManager(Driver::class)->{$decode}($contents);
         $width = $image->width();
         $height = $image->height();
 
