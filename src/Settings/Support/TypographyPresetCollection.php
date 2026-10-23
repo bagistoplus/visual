@@ -10,7 +10,6 @@ class TypographyPresetCollection extends Collection
     public function fontLinks(): HtmlString
     {
         $fonts = [];
-        $preconnect = '<link rel="preconnect" href="https://fonts.bunny.net" crossorigin>';
 
         foreach ($this->items as $preset) {
             if (! $preset instanceof TypographyValue || ! $preset->fontFamily) {
@@ -24,23 +23,15 @@ class TypographyPresetCollection extends Collection
             $fonts[$font->slug]['styles'][$preset->fontStyle] = true;
         }
 
-        if ($fonts === []) {
-            return new HtmlString('');
-        }
-
-        $html = [];
-
-        foreach ($fonts as $slug => $font) {
-            $fontHtml = (new FontValue(
+        return FontValue::linksFor(array_map(
+            fn (array $font, string $slug) => new FontValue(
                 slug: $slug,
                 name: $font['name'],
                 weights: array_keys($font['weights']),
                 styles: array_keys($font['styles']),
-            ))->toHtml();
-
-            $html[] = str_replace($preconnect."\n  ", '', (string) $fontHtml);
-        }
-
-        return new HtmlString($preconnect."\n".implode("\n", $html));
+            ),
+            $fonts,
+            array_keys($fonts),
+        ));
     }
 }

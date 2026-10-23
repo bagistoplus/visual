@@ -121,12 +121,10 @@ it('generates font links for configured typography font variants', function () {
 
     expect($html)
         ->toContain('<link rel="preconnect" href="https://fonts.bunny.net" crossorigin>')
-        ->toContain('https://fonts.bunny.net/css?family=inter:700,700i,400,400i')
-        ->toContain('https://fonts.bunny.net/css?family=roboto:500')
-        ->toContain('rel="preload" as="style"')
-        ->toContain('rel="stylesheet"');
+        ->toContain('href="https://fonts.bunny.net/css?family=inter:700,700i,400,400i|roboto:500&amp;display=swap" rel="preload" as="style"');
 
-    expect(substr_count($html, 'rel="preconnect"'))->toBe(1);
+    expect(substr_count($html, 'rel="preconnect"'))->toBe(1)
+        ->and(substr_count($html, 'fonts.bunny.net/css?'))->toBe(2);
 });
 
 it('returns empty font links when no typography preset uses a font family', function () {

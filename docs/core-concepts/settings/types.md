@@ -962,9 +962,12 @@ Additionally, you may use the following snippet to render any resources necessar
 Will render:
 
 ```html
-<link rel="preconnect" href="https://fonts.bunny.net" />
-<link href="https://fonts.bunny.net/css?family=roboto:" rel="stylesheet" />
+<link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
+<link href="https://fonts.bunny.net/css?family=roboto&amp;display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+<noscript><link href="https://fonts.bunny.net/css?family=roboto&amp;display=swap" rel="stylesheet" /></noscript>
 ```
+
+The stylesheet loads without blocking rendering, and `display=swap` shows text in the fallback font until the font arrives. The `onload` handler is inline, so a Content Security Policy that forbids inline scripts keeps the font from applying.
 
 ---
 
@@ -1388,13 +1391,15 @@ Render the font links for all typography presets once in your layout:
 {{ $theme->settings->typography_presets->fontLinks() }}
 ```
 
-This generates HTML to load the configured font families from Bunny Fonts. When the same font is used across multiple presets, all configured weights and styles are grouped into one request:
+This generates HTML to load the configured font families from Bunny Fonts. All families load in one stylesheet request, and when the same font is used across multiple presets, its weights and styles are grouped together:
 
 ```html
-<link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
-<link href="https://fonts.bunny.net/css?family=inter:700,400" rel="preload" as="style" />
-<link href="https://fonts.bunny.net/css?family=inter:700,400" rel="stylesheet" />
+<link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
+<link href="https://fonts.bunny.net/css?family=inter:700,400|outfit:600&amp;display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+<noscript><link href="https://fonts.bunny.net/css?family=inter:700,400|outfit:600&amp;display=swap" rel="stylesheet" /></noscript>
 ```
+
+The page renders without waiting for the stylesheet, and `display=swap` shows text in the fallback font until the fonts arrive. See the [Font](#font) setting above for the Content Security Policy caveat.
 
 **With Custom Selectors:**
 

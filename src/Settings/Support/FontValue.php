@@ -35,7 +35,15 @@ class FontValue
 
     public function toHtml()
     {
-        $base = '<link rel="preconnect" href="https://fonts.bunny.net" crossorigin>';
+        return self::linksFor([$this]);
+    }
+
+    /**
+     * This font in Bunny Fonts' family syntax: the slug, then each weight with an "i"
+     * suffix for italic, as in "inter:400,700i".
+     */
+    public function familyQuery(): string
+    {
         $query = [];
 
         foreach ($this->weights as $weight) {
@@ -44,15 +52,31 @@ class FontValue
             }
         }
 
-        $href = 'https://fonts.bunny.net/css?family='.$this->slug;
+        return $query === [] ? $this->slug : $this->slug.':'.implode(',', $query);
+    }
 
-        if ($query !== []) {
-            $href .= ':'.implode(',', $query);
+    /**
+     * The links that load the given fonts from Bunny Fonts in a single stylesheet request.
+     *
+     * The stylesheet is fetched as a preload and applied once it arrives, so the page renders
+     * without waiting on a connection to another host; display=swap shows text in the fallback
+     * font until the fonts load. Without JavaScript the noscript link loads it the usual way.
+     *
+     * @param  array<int, self>  $fonts
+     */
+    public static function linksFor(array $fonts): HtmlString
+    {
+        if ($fonts === []) {
+            return new HtmlString('');
         }
 
-        $base .= "\n".'  <link href="'.$href.'" rel="preload" as="style" />';
-        $base .= "\n".'  <link href="'.$href.'" rel="stylesheet" />';
+        $families = implode('|', array_map(fn (self $font) => $font->familyQuery(), $fonts));
+        $href = e('https://fonts.bunny.net/css?family='.$families.'&display=swap');
 
-        return new HtmlString($base);
+        return new HtmlString(
+            '<link rel="preconnect" href="https://fonts.bunny.net" crossorigin>'
+            ."\n".'  <link href="'.$href.'" rel="preload" as="style" onload="this.onload=null;this.rel=\'stylesheet\'" />'
+            ."\n".'  <noscript><link href="'.$href.'" rel="stylesheet" /></noscript>'
+        );
     }
 }

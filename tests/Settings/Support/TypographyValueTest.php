@@ -450,3 +450,17 @@ it('includes null name in toArray when not provided', function () {
         ->toHaveKey('name')
         ->and($array['name'])->toBeNull();
 });
+
+it('loads a font from Bunny Fonts without blocking rendering', function () {
+    $html = (new FontValue('inter', 'Inter', ['400'], ['normal']))->toHtml()->toHtml();
+    $href = 'href="https://fonts.bunny.net/css?family=inter:400&amp;display=swap"';
+
+    expect($html)
+        ->toContain('<link rel="preconnect" href="https://fonts.bunny.net" crossorigin>')
+        ->toContain($href.' rel="preload" as="style" onload="this.onload=null;this.rel=\'stylesheet\'"')
+        ->toContain('<noscript><link '.$href.' rel="stylesheet" /></noscript>');
+});
+
+it('loads a font without weights by its slug alone', function () {
+    expect((new FontValue('roboto', 'Roboto', [], []))->familyQuery())->toBe('roboto');
+});
