@@ -4,12 +4,18 @@ namespace BagistoPlus\Visual\Settings\Support;
 
 class ImageValue
 {
+    /**
+     * @param  array<int, string>  $variants  URLs of the WebP copies, keyed by width
+     */
     public function __construct(
         public string $name,
         public string $path,
         public string $url,
         public string $alt = '',
         public array $focalPoint = ['x' => 50, 'y' => 50],
+        public ?int $width = null,
+        public ?int $height = null,
+        public array $variants = [],
     ) {}
 
     public function __toString()
@@ -17,30 +23,25 @@ class ImageValue
         return $this->url;
     }
 
-    public function srcset(): string
+    /**
+     * Each copy at its width, then the original at its own, or null when the
+     * image has no copies (not an upload, or not resized yet).
+     */
+    public function srcset(): ?string
     {
-        return sprintf(
-            '%s 1920w, %s 1280w, %s 1024w, %s 525w',
-            $this->url,
-            $this->large(),
-            $this->medium(),
-            $this->small()
-        );
-    }
+        if ($this->variants === []) {
+            return null;
+        }
 
-    public function small(): string
-    {
-        return $this->getSizedUrl('small');
-    }
+        $candidates = collect($this->variants)
+            ->sortKeys()
+            ->map(fn (string $url, int $width) => "{$url} {$width}w");
 
-    public function medium(): string
-    {
-        return $this->getSizedUrl('medium');
-    }
+        if ($this->width !== null) {
+            $candidates->push("{$this->url} {$this->width}w");
+        }
 
-    public function large(): string
-    {
-        return $this->getSizedUrl('large');
+        return $candidates->implode(', ');
     }
 
     public function objectPosition(): string
@@ -49,15 +50,6 @@ class ImageValue
         $y = $this->normalizeFocalPointValue($this->focalPoint['y'] ?? 50);
 
         return "{$x}% {$y}%";
-    }
-
-    private function getSizedUrl(string $size): string
-    {
-        if (filter_var($this->path, FILTER_VALIDATE_URL)) {
-            return $this->url;
-        }
-
-        return url("cache/{$size}/".$this->path);
     }
 
     private function normalizeFocalPointValue(mixed $value): int|float

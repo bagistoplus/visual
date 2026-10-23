@@ -19,6 +19,7 @@ use BagistoPlus\Visual\Persistence\SectionStore;
 use BagistoPlus\Visual\Settings\Support\ImageTransformer;
 use BagistoPlus\Visual\Settings\Support\VideoTransformer;
 use BagistoPlus\Visual\Support\ChannelThemeResolver;
+use BagistoPlus\Visual\Support\Images\ImageVariants;
 use BagistoPlus\Visual\Support\SchemaTextTranslator;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
 use BagistoPlus\Visual\Theme\Theme;
@@ -356,6 +357,9 @@ class ThemeEditorController extends Controller
                 Visual::imagesDisk(),
             );
 
+            // A failed resize leaves the original in place; the image renders without copies.
+            rescue(fn () => app(ImageVariants::class)->generate(Visual::imagesDisk(), $path));
+
             return [
                 'path' => $path,
                 'name' => $originalName,
@@ -371,7 +375,7 @@ class ThemeEditorController extends Controller
             ->files(Visual::imagesDirectory());
 
         return collect($files)->map(function ($file) {
-            $image = (new ImageTransformer)($file);
+            $image = (new ImageTransformer)($file, describe: false);
 
             return [
                 'name' => $image->name,

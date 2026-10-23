@@ -612,6 +612,30 @@ Image settings are stored as image paths in older themes and as structured value
 
 For new sections, prefer the image metadata `alt` value over creating a separate alt text setting. Existing sections that already use a separate alt setting can keep doing so and migrate gradually.
 
+#### Responsive images
+
+Every image uploaded through the editor gets WebP copies at the widths below its own, so the browser can download the size a screen needs. Render it with the `visual::image` component, which adds the copies, the dimensions and lazy loading:
+
+```blade
+<x-visual::image
+    :image="$section->settings->banner_image"
+    class="h-full w-full object-cover"
+    style="object-position: {{ $section->settings->banner_image?->objectPosition() }}"
+/>
+```
+
+- Images load lazily, and the browser picks the copy that fits the image's layout width.
+- Add `priority` for the image that is likely the largest one in view, such as a hero. It then loads first, with `fetchpriority="high"`. An eagerly loaded image needs `sizes` to describe how wide it displays, for example `sizes="(min-width: 1024px) 50vw, 100vw"`.
+- `width` and `height` are set from the original, so the browser reserves its space before it loads.
+- An image set by URL, or one without copies, renders as a plain `<img>`.
+
+The same information is available on the value itself: `$image->srcset()`, `$image->width` and `$image->height`. `srcset()` is `null` when the image has no copies.
+
+Copies are made when an image is uploaded. The widths and quality are set in `config/bagisto-visual.php` under `images.variants`. Two commands manage them:
+
+- `php artisan visual:images:variants` makes the copies of images uploaded before copies existed, or after the widths change. Add `--force` to remake them all.
+- `php artisan visual:images:cache` caches the size and copies of every image, so pages do not read them from the disk on their first render. Run it after a deploy, alongside the other cache commands.
+
 <SettingPreview image="/setting-image.png" title="Image setting type preview"/>
 
 ---

@@ -4,6 +4,7 @@ namespace BagistoPlus\Visual\Settings\Support;
 
 use BagistoPlus\Visual\Contracts\SettingTransformerInterface;
 use BagistoPlus\Visual\Facades\Visual;
+use BagistoPlus\Visual\Support\Images\ImageVariants;
 use Illuminate\Support\Facades\Storage;
 
 class ImageTransformer implements SettingTransformerInterface
@@ -13,7 +14,10 @@ class ImageTransformer implements SettingTransformerInterface
         return $this($value);
     }
 
-    public function __invoke(mixed $value = null): ?ImageValue
+    /**
+     * @param  bool  $describe  Whether to look up an upload's size and copies; listing files does not need them.
+     */
+    public function __invoke(mixed $value = null, bool $describe = true): ?ImageValue
     {
         $metadata = $this->metadata($value);
         $path = $this->path($value);
@@ -38,13 +42,21 @@ class ImageTransformer implements SettingTransformerInterface
         // @see https://stackoverflow.com/questions/41194159/how-to-catch-hex2bin-warning
         if (ctype_xdigit($encodedName) && strlen($encodedName) % 2 == 0) {
             $originalName = hex2bin($encodedName);
+            $disk = Visual::imagesDisk();
+            $storage = Storage::disk($disk);
+            $description = $describe ? app(ImageVariants::class)->describe($disk, $path) : null;
 
             return new ImageValue(
                 name: $originalName,
                 path: $path,
-                url: Storage::disk(Visual::imagesDisk())->url($path),
+                url: $storage->url($path),
                 alt: $metadata['alt'],
                 focalPoint: $metadata['focalPoint'],
+                width: $description['width'] ?? null,
+                height: $description['height'] ?? null,
+                variants: collect($description['widths'] ?? [])
+                    ->mapWithKeys(fn (int $width) => [$width => $storage->url(ImageVariants::variantPath($path, $width))])
+                    ->all(),
             );
         }
 

@@ -24,6 +24,7 @@ use BagistoPlus\Visual\Support\DesignModeAwareCacheProfile;
 use BagistoPlus\Visual\Support\EditorTranslationReferenceCollector;
 use BagistoPlus\Visual\Support\FpcRegion;
 use BagistoPlus\Visual\Support\IconMapFilesystemAdapter;
+use BagistoPlus\Visual\Support\Images\ImageVariants;
 use BagistoPlus\Visual\Support\ResolvedModelCache;
 use BagistoPlus\Visual\Support\TemplateAssignment;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
@@ -73,6 +74,8 @@ class CoreServiceProvider extends ServiceProvider
         Commands\MakeBlockCommand::class,
         Commands\GeneratePreviewCommand::class,
         Commands\ClearStorageCommand::class,
+        Commands\GenerateImageVariantsCommand::class,
+        Commands\CacheImagesCommand::class,
     ];
 
     /**
@@ -458,6 +461,7 @@ class CoreServiceProvider extends ServiceProvider
         $this->app->scoped(ResolvedModelCache::class);
         $this->app->scoped(BagistoConfig::class);
         $this->app->scoped(FpcRegion::class);
+        $this->app->scoped(ImageVariants::class);
 
         $this->registerTranslatableLocalesHelper();
 

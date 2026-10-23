@@ -33,6 +33,15 @@ return [
     'images' => [
         'storage' => 'public',
         'directory' => 'bagisto-visual/images',
+
+        /*
+         * WebP copies made of each uploaded image, at the widths below the
+         * original's, so a template can serve the size a screen needs.
+         */
+        'variants' => [
+            'widths' => [320, 480, 640, 768, 1024, 1280, 1600, 1920],
+            'quality' => 80,
+        ],
     ],
 
     /*
