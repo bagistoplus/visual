@@ -1147,34 +1147,28 @@ Each scheme should be scoped using a `data-color-scheme` attribute:
 </style>
 ```
 
-#### 💡 Suggestion: Include Brand Color Shades
+#### 💡 Suggestion: Derive Lighter and Darker Variants
 
-For primary or accent colors, it’s recommended to output shades (like Tailwind’s colors).
+Visual outputs one variable per color and no shade scale. Derive lighter or darker variants from the scheme's own colors instead, so they follow every scheme, dark ones included.
 
-```blade
-<style>
-[data-color-scheme="light"] {
-    --color-background: #ffffff;
-    --color-on-background: #111827;
-    --color-primary: #4f46e5;
-    --color-primary-50: ...;
-    --color-primary-100: ...;
-    ...
-    --color-primary-950: ...;
-}
-</style>
-```
-
-These can be used in components via var(--color-primary-500) for consistent, scalable design.
-
-If you are using tailwindcss, you could just use utility classes:
+If you are using tailwindcss, use opacity modifiers on the scheme's colors:
 
 ```blade
 <section class="bg-background text-on-background">
-  <button class="px-3 py-2 bg-primary text-on-primary hover:bg-primary-600 active:bg-promary-700">
+  <button class="px-3 py-2 bg-primary text-on-primary hover:bg-primary/90">
     Primary button
   </button>
+
+  <p class="border border-warning bg-warning/10 p-4">Only a few left in stock</p>
 </section>
+```
+
+`bg-warning/10` is translucent. For a surface that floats over other content, such as a toast or a popover, mix the color into the background so it stays opaque:
+
+```css
+.toast-warning {
+  background-color: color-mix(in oklab, var(--color-warning) 10%, var(--color-background));
+}
 ```
 
 ---
@@ -1194,7 +1188,6 @@ Bagisto Visual provides a helper method to generate the full CSS output automati
 
 - This will loop over every scheme
 - Output all defined colors as `--color-*` tokens
-- Automatically generate shades for brand color roles
 
 #### Notes
 

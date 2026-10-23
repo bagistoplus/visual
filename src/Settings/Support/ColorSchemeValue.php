@@ -2,7 +2,6 @@
 
 namespace BagistoPlus\Visual\Settings\Support;
 
-use BagistoPlus\Visual\View\TailwindPaletteGenerator;
 use Illuminate\Support\HtmlString;
 use matthieumastadenis\couleur\ColorFactory;
 use matthieumastadenis\couleur\ColorSpace;
@@ -21,6 +20,11 @@ class ColorSchemeValue
         return new HtmlString("data-color-scheme=\"{$this->id}\"");
     }
 
+    /**
+     * One CSS variable per scheme token, as `--color-{token}`. Lighter or darker
+     * variants are left to the theme: an opacity modifier (bg-primary/10) or
+     * color-mix() over these tokens follows every scheme, dark ones included.
+     */
     public function outputCssVars()
     {
         $output = '';
@@ -28,26 +32,8 @@ class ColorSchemeValue
         foreach ($this->tokens as $key => $value) {
             $oklchColor = ColorFactory::new($value, ColorSpace::OkLch);
             $output .= "  --color-$key: {$oklchColor->stringify()};\n";
-
-            if (! str_starts_with($key, 'on-')) {
-                $shades = $this->generateOklchShades($key, $value);
-                foreach ($shades as $shade) {
-                    $output .= $shade."\n";
-                }
-            }
         }
 
         return $output;
-    }
-
-    private function generateOklchShades(string $name, string $color)
-    {
-        return collect(TailwindPaletteGenerator::generate(ColorFactory::newRgb($color)))
-            ->map(function ($color) {
-                return ColorFactory::newOkLch($color->__toString(), ColorSpace::Rgb)
-                    ->stringify();
-            })->map(function ($color, $shade) use ($name) {
-                return "    --color-{$name}-{$shade}: {$color};";
-            });
     }
 }

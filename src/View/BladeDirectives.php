@@ -68,22 +68,4 @@ class BladeDirectives
     {
         return '<?php echo app(\BagistoPlus\Visual\Support\FpcRegion::class)->end(); endif; ?>';
     }
-
-    public static function visualColorVars($expression)
-    {
-        return "<?php echo \BagistoPlus\Visual\View\BladeDirectives::generateColorPalette($expression); ?>";
-    }
-
-    public static function generateColorPalette($name, $color)
-    {
-        $shades = TailwindPaletteGenerator::generate($color->toRgb());
-
-        $palette = '';
-
-        foreach ($shades as $key => $c) {
-            $palette .= "--color-{$name}-{$key}: {$c->red} {$c->green} {$c->blue};\n";
-        }
-
-        return $palette;
-    }
 }

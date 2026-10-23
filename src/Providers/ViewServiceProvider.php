@@ -82,8 +82,6 @@ class ViewServiceProvider extends ServiceProvider
 
         Blade::directive('fpcRegionOnce', [BladeDirectives::class, 'fpcRegionOnce']);
         Blade::directive('endFpcRegionOnce', [BladeDirectives::class, 'endFpcRegionOnce']);
-
-        Blade::directive('visual_color_vars', [BladeDirectives::class, 'visualColorVars']);
     }
 
     protected function bootViewComposers()
