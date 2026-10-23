@@ -61,3 +61,8 @@ parameters:
             message: '#Call to an undefined method Spatie\\ResponseCache\\CacheProfiles\\CacheProfile::cacheLifetimeInSeconds\(\)#'
             path: src/Support/DesignModeAwareCacheProfile.php
             reportUnmatched: false
+        # Illuminate\Image ships with Laravel 13; the resizer only uses it when the class exists
+        -
+            message: '#Illuminate\\Image\\ImageManager#'
+            path: src/Support/Images/ImageResizer.php
+            reportUnmatched: false
