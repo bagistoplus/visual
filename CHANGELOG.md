@@ -2,6 +2,14 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.35](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.34...v2.0.0-alpha.35) (2026-10-24)
+
+
+### Bug Fixes
+
+* **admin:** let Bagisto 2.5's admin utilities win over Visual's, so the active menu text stays white ([d24d3f6](https://github.com/bagistoplus/visual/commit/d24d3f6791cfef021923cb5e898ad25c109047ba))
+* **views:** give the home page and account pages their page titles ([daf71a2](https://github.com/bagistoplus/visual/commit/daf71a281fc347a41049633a0abbb3a92e0a5197))
+
 # [2.0.0-alpha.34](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.33...v2.0.0-alpha.34) (2026-10-23)
 
 
