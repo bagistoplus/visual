@@ -1,5 +1,11 @@
 @import 'tailwindcss/theme.css' layer(theme) source('../../../views/admin');
-@import 'tailwindcss/utilities.css' layer(utilities) source('../../../views/admin');
+/*
+ * A sub-layer of the admin's own utilities. Bagisto 2.5 builds its admin with Tailwind 4,
+ * whose utilities share the `utilities` layer, and a later stylesheet would win every
+ * conflict there (its text-white on the active menu lost to our text-gray-600). Rules
+ * directly in a layer beat its sub-layers, so Bagisto's utilities keep precedence.
+ */
+@import 'tailwindcss/utilities.css' layer(utilities.visual) source('../../../views/admin');
 
 @custom-variant dark (&:where(.dark, .dark *));
 
