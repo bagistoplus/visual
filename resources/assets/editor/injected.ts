@@ -39,7 +39,34 @@ function morphKey(node: Node): string | undefined {
     return undefined;
   }
 
-  return (node.getAttribute('data-block') ?? node.getAttribute('wire:key') ?? node.id) || undefined;
+  const block = node.getAttribute('data-block');
+
+  if (block) {
+    return block + repeatSuffix(node, block);
+  }
+
+  return (node.getAttribute('wire:key') ?? node.id) || undefined;
+}
+
+/**
+ * A repeated block (one per product in a list, say) renders every copy with the same
+ * data-block. Morphing keys must be unique among siblings, or the copies a shorter list
+ * no longer has are never matched and stay on the page. Each copy after the first is
+ * keyed by its position among the siblings that share its id.
+ */
+function repeatSuffix(node: Element, block: string): string {
+  let index = 0;
+  let sibling = node.previousElementSibling;
+
+  while (sibling) {
+    if (sibling.getAttribute('data-block') === block) {
+      index++;
+    }
+
+    sibling = sibling.previousElementSibling;
+  }
+
+  return index === 0 ? '' : `#${index}`;
 }
 
 function morphWithAlpine(fromEl: HTMLElement, toEl: HTMLElement, livewireRoot?: HTMLElement): void {

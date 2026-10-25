@@ -127,6 +127,26 @@ describe('morphdom handler', () => {
 
       expect(Array.from(container.children)).toEqual([second, first]);
     });
+
+    it('keys each copy of a repeated block apart', () => {
+      const container = document.createElement('div');
+      container.innerHTML = '<div data-block="card">A</div><div data-block="card">B</div><div data-block="card">C</div>';
+      const [a, b, c] = Array.from(container.children);
+
+      expect([a, b, c].map((el) => morphdomOptions.getNodeKey(el))).toEqual(['card', 'card#1', 'card#2']);
+    });
+
+    it('removes the copies a shorter repeated block no longer renders', () => {
+      const container = document.createElement('div');
+      container.innerHTML = Array.from({ length: 6 }, (_, i) => `<div data-block="card">Product ${i + 1}</div>`).join('');
+
+      const newContainer = document.createElement('div');
+      newContainer.innerHTML = '<div data-block="card">Product 1</div><div data-block="card">Product 2</div>';
+
+      morphdom(container, newContainer, morphdomOptions);
+
+      expect(Array.from(container.children).map((el) => el.textContent)).toEqual(['Product 1', 'Product 2']);
+    });
   });
 
   describe('integration with morphdom', () => {
