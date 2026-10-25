@@ -2,6 +2,13 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.36](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.35...v2.0.0-alpha.36) (2026-10-25)
+
+
+### Bug Fixes
+
+* **editor:** key each copy of a repeated block apart so a shorter list drops its extra copies ([4ecd3a9](https://github.com/bagistoplus/visual/commit/4ecd3a913ebc2d8ab23c1bfb08b1c71f65f4ee69))
+
 # [2.0.0-alpha.35](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.34...v2.0.0-alpha.35) (2026-10-24)
 
 
