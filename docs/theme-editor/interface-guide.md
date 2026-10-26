@@ -1,97 +1,117 @@
 # Interface Guide
 
-The Visual Editor gives you full control over how your storefront looks — without writing any code. This page explains how to use the interface to add and arrange content visually.
+This page is a tour of the editor. Keep it open the first time you use the editor, and come back to it whenever you wonder what a button does.
 
-## The Editor Layout
+![The four parts of the theme editor, numbered 1 to 4](/editor-guide/interface-areas.jpg)
 
-When you open the editor, you'll see three main areas:
+The editor has four parts, numbered in the screenshot:
 
-### 1. Sidebar (left)
+1. The **top bar**, with the page and language pickers, preview tools and the Publish button.
+2. The **left panel**, which lists everything on the page and gives access to theme settings.
+3. The **preview** in the middle, which shows your store as customers see it.
+4. The **settings panel**, where you change the selected section or block. On wide screens it sits on the right; on smaller screens it opens over the left panel. See [On smaller screens](#on-smaller-screens).
 
-- Shows all the content on the page, broken into **sections**
-- Sections are grouped as:
-  - **Header & Footer**: Always visible on all pages
-  - **Main Content**: Specific to the current page
-- Click any section to open its settings
+## Top bar
 
-![The Visual Editor sidebar](/editor-sidebar.png)
+<img src="/editor-guide/top-bar-left.png" alt="The left side of the top bar: back arrow, page selector and language selector" width="784">
 
----
+<img src="/editor-guide/top-bar-right.png" alt="The right side of the top bar: device preview, select mode, undo, redo, preview and Publish" width="754">
 
-### 2. Preview Area (center)
+From left to right (the numbers match the screenshots):
 
-- Shows exactly how your storefront looks
-- Updates instantly as you make changes
-- Click items in the preview to edit their settings in the sidebar
+| # | Control | What it does |
+| --- | --- | --- |
+| 1 | Back arrow | Leaves the editor and returns to the Bagisto admin. Your draft is already saved. |
+| 2 | Page selector | Chooses the page you are editing, such as Home page, Product Page or Cart Page. See [Pages & Templates](./pages-templates.md). |
+| | Channel selector | Chooses the sales channel. It only appears when your store has more than one channel. |
+| 3 | Language selector | Chooses the language you are editing. It only appears when the channel has more than one language. See [Languages & Channels](./languages-channels.md). |
+| 4 | Device preview | Shows the preview at mobile, tablet, desktop or a custom width. |
+| 5 | Select mode (cursor icon) | When it is on, clicking in the preview selects a block. Turn it off to use the preview like a normal store: open menus, follow links, try the cart. |
+| 6 | Undo and redo | Steps backward or forward through your recent changes. |
+| 7 | Preview (eye icon) | Opens your store in a new browser tab, with your unpublished changes. |
+| 8 | Publish | Makes your draft live for customers. See [Preview & Publish](./publishing.md). |
 
-![The Visual Editor section configuration panel](/editor-edit-section.png)
+## Left panel
 
----
+The narrow rail on the far left switches what the left panel shows:
 
-### 3. Toolbar (top)
+- **Page content** (stack icon) lists the sections and blocks of the current page.
+- **Theme settings** (gear icon) holds the settings for your whole store: logo, colors, fonts and more. See [Theme Settings](./theme-settings.md).
 
-- Shows which **page** you're editing (e.g. homepage, contact)
-- Lets you **switch language** or **preview screen sizes**
-- And a button to publish your edits
+### The page content tree
 
-![The Visual Editor section configuration panel](/editor-toolbar.png)
+<img src="/editor-guide/layers.png" alt="The page content tree" width="321">
 
-## Switching Templates
+The tree mirrors the page from top to bottom. Click a name to select it: the preview scrolls to it and the settings panel opens. The numbers match the screenshot:
 
-Use the template selector in the toolbar to move between storefront templates. The selector keeps the same order as the theme defines, including separators between groups of templates.
+1. **Area names**: the tree is grouped into the **Header**, **Main** and **Footer** areas.
+2. **Arrow**: click the small arrow to the left of a name to show the blocks inside it.
+3. **Content hint**: the grey text after a name (for example *Free ...*) is the start of its content, so you can tell similar blocks apart.
+4. **Add section** adds a new section to that area.
+5. **Add block** adds a block inside the section or block just above it.
+6. **Collapse**: the icon next to each area name collapses everything in that area, which helps on long pages.
 
-Product, category, and CMS page templates open a second panel. That panel lists the default template, any custom templates for that type, and a **Create template** action.
+Hover a row to show its eye icon (hide or show) and its trash icon (remove).
 
-![Custom template selector](/editor-custom-template-selector.png)
+## Preview
 
-## Creating Custom Templates
+The preview is your real storefront, rendered with your draft changes.
 
-From a product, category, or page template panel, click **Create template**.
+- Move the mouse over the page and an outline with a label shows which block is under the cursor.
+- Click to select that block. Its settings open in the settings panel and its row is highlighted in the tree.
+- A selected block shows a small toolbar:
 
-![Custom template create modal](/editor-custom-template-create-modal.png)
+<img src="/editor-guide/block-toolbar.png" alt="The block toolbar" width="133">
 
-The editor creates custom templates from a name and a base template:
+| Icon | Action |
+| --- | --- |
+| Up arrow | Move the block up (or left in a row). |
+| Down arrow | Move the block down (or right in a row). |
+| Copy | Duplicate the block with all its settings. |
+| Crossed eye | Hide the block from the storefront. |
+| Trash | Remove the block. |
 
-- **Empty template** starts with an empty main content area.
-- Existing templates can be duplicated as a starting point.
-- Shared header and footer regions stay shared and are not copied into the custom template file.
+::: tip Clicking through your store
+To follow a link or open a menu inside the preview, turn off **Select mode** in the top bar first. When you reach a page the editor cannot customize, such as the login page, a message offers to take you back. See [Pages you cannot edit](./pages-templates.md#pages-you-cannot-edit).
+:::
 
-After publishing, custom templates can be assigned to resources in the Bagisto admin.
+## Settings panel
 
-## Assigning Custom Templates
+When nothing is selected, the panel says **Select a block to edit its settings**. Once you select something, it shows:
 
-Template assignment is optional. Enable it with `BAGISTO_VISUAL_TEMPLATE_ASSIGNMENTS=true` and run `php artisan migrate` before assigning custom templates in the Bagisto admin.
+- The name of the selection at the top, with an arrow to close the panel.
+- A **⋮** menu with **Duplicate**, **Move to Previous**, **Move to Next**, **Disable** and **Remove**.
+- The settings, grouped into sections such as **Default**, **Layout**, **Size**, **Appearance** and **Spacing**. Click a group name to open or close it.
 
-Custom templates are assigned from each resource edit form in Bagisto:
+<img src="/editor-guide/block-menu.png" alt="The block options menu" width="268">
 
-- **Product:** General panel. Product assignments are channel and locale specific.
-- **Category:** Theme template accordion. Category assignments are locale specific.
-- **CMS Page:** Theme template accordion. CMS page assignments are locale specific.
+Every change you make here appears in the preview right away. See [Editing Settings](./settings.md) for a description of each kind of field.
 
-![Custom template assignment field](/editor-custom-template-admin.png)
+### On smaller screens
 
-CMS pages with an assigned custom page template also show Visual Editor shortcuts in the CMS page list and edit page.
+The editor adapts its layout to the width of your browser window:
 
-## What You Can Do
+| Browser window | Where the settings appear |
+| --- | --- |
+| Very wide (1920 pixels and more) | In their own column on the right, always visible. |
+| Wide (1536 to 1919 pixels) | In a column on the right, while a section or block is selected. |
+| Smaller, including most laptops | Over the left panel, in place of the page content tree. |
 
-- **Add Sections**
-  Click “Add Section” to choose from available content blocks (e.g., banner, products, newsletter).
+![On a smaller screen, the settings open over the left panel](/editor-guide/narrow-layout.jpg)
 
-- **Reorder Sections**
-  Drag and drop sections in the sidebar to change their order on the page.
+On a smaller screen, the editor works the same way; only the place changes:
 
-- **Edit Section Settings**
-  Click a section to change text, images, colors, layout options, and more.
+1. Select a section or block in the preview or in the tree. Its settings replace the tree in the left panel.
+2. Edit the settings. The preview stays visible next to them.
+3. Click the **back arrow** (1 in the screenshot) at the top of the settings to return to the page content tree.
 
-- **Remove Sections**
-  Click the ••• menu on a section and choose “Remove” to delete it.
+::: tip Get the side by side layout on a laptop
+Zoom out the browser (Ctrl and minus, or Cmd and minus on a Mac) to make room. At 80 or 90 percent zoom, many laptop screens are wide enough to show the tree and the settings side by side. Press Ctrl + 0 (Cmd + 0 on a Mac) to go back to normal size.
+:::
 
-- **Edit Blocks Inside a Section**
-  Some sections include blocks — small repeatable items like feature cards, product tiles, or categories.
+## Keyboard shortcuts
 
-## Tips for Merchants
-
-- Changes you make are **saved automatically**
-- You can preview how your store looks on **desktop, tablet, and mobile**
-- Not all sections are removable — headers and footers are fixed in most themes
-- Each page (home, product, contact) may have different available content
+| Action | Windows and Linux | Mac |
+| --- | --- | --- |
+| Undo | Ctrl + Z | Cmd + Z |
+| Redo | Ctrl + Y or Ctrl + Shift + Z | Cmd + Shift + Z |
