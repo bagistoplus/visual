@@ -34,6 +34,18 @@ function preserveLivewireEnvelope(fromEl: HTMLElement, toEl: HTMLElement): void 
   }
 }
 
+/**
+ * Alpine's morph initializes the incoming elements before they are in the page, and
+ * $wire finds its component by walking up to a root that carries it.
+ */
+function carryLivewireComponent(fromEl: HTMLElement, toEl: HTMLElement): void {
+  // @ts-ignore
+  if (fromEl.__livewire) {
+    // @ts-ignore
+    toEl.__livewire = fromEl.__livewire;
+  }
+}
+
 function morphKey(node: Node): string | undefined {
   if (!(node instanceof Element)) {
     return undefined;
@@ -83,6 +95,7 @@ function morphWithAlpine(fromEl: HTMLElement, toEl: HTMLElement, livewireRoot?: 
       }
 
       if (oldEl !== livewireRoot && oldEl.hasAttribute('wire:id')) {
+        carryLivewireComponent(oldEl, newEl);
         childrenOnly();
       }
     },
@@ -115,6 +128,7 @@ function createMorphdomOptions() {
         }
 
         preserveLivewireEnvelope(fromEl, toEl);
+        carryLivewireComponent(fromEl, toEl);
         morphWithAlpine(fromEl, toEl, fromEl);
 
         return false;

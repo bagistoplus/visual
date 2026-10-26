@@ -292,6 +292,38 @@ describe('morphdom handler', () => {
       expect(nestedChildrenOnly).toHaveBeenCalledOnce();
     });
 
+    it('hands the incoming Livewire roots their component before Alpine initializes them', () => {
+      const component = { id: 'existing-component' };
+      const nestedComponent = { id: 'nested-existing' };
+      let componentDuringMorph: unknown;
+
+      const alpineMorph = vi.fn((_fromEl: HTMLElement, toEl: HTMLElement) => {
+        componentDuringMorph = (toEl as any).__livewire;
+      });
+      (window as any).Alpine = { morph: alpineMorph };
+
+      const fromEl = document.createElement('section');
+      fromEl.setAttribute('wire:id', 'existing-component');
+      (fromEl as any).__livewire = component;
+      const toEl = document.createElement('section');
+      toEl.setAttribute('wire:id', 'fresh-component');
+
+      morphdomHandler(fromEl, toEl);
+
+      expect(componentDuringMorph).toBe(component);
+
+      const options = alpineMorph.mock.calls[0][2];
+      const nestedFrom = document.createElement('div');
+      nestedFrom.setAttribute('wire:id', 'nested-existing');
+      (nestedFrom as any).__livewire = nestedComponent;
+      const nestedTo = document.createElement('div');
+      nestedTo.setAttribute('wire:id', 'nested-fresh');
+
+      options.updating(nestedFrom, nestedTo, vi.fn(), vi.fn());
+
+      expect((nestedTo as any).__livewire).toBe(nestedComponent);
+    });
+
     it('skips ignored descendants inside the Alpine morph', () => {
       const alpineMorph = vi.fn();
       (window as any).Alpine = { morph: alpineMorph };
