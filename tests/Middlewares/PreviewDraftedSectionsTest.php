@@ -56,3 +56,13 @@ it('leaves a visual theme alone, whose drafts are held elsewhere', function () {
 it('leaves a theme it knows nothing about alone', function () {
     expect(previewingAfter(null, '/?_designMode=default'))->toBeFalse();
 });
+
+it('reads the drafted sections in a draft preview', function () {
+    expect(previewingAfter(bagistoTheme(), '/?_draftPreview=default'))->toBeTrue();
+});
+
+it('leaves a draft preview link to the published sections for a visitor', function () {
+    auth()->guard('admin')->forgetUser();
+
+    expect(previewingAfter(bagistoTheme(), '/?_draftPreview=default'))->toBeFalse();
+});

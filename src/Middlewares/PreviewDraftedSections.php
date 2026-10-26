@@ -15,10 +15,10 @@ use Illuminate\Http\Request;
  * every page, and they ask their repository for published rows unless the
  * request is marked as previewing. Bagisto marks it in the one controller behind
  * its own preview page, which is all its editor ever shows. Visual drives the
- * whole storefront, so the mark belongs on any storefront request the editor is
- * driving: without it, browsing away from the home page shows the published
- * footer rather than the edited one, and Bagisto marks nothing for the editor to
- * select.
+ * whole storefront, so the mark belongs on any storefront request the editor or
+ * a draft preview is drawing: without it, browsing away from the home page
+ * shows the published footer rather than the edited one, and Bagisto marks
+ * nothing for the editor to select.
  */
 class PreviewDraftedSections
 {
@@ -31,7 +31,7 @@ class PreviewDraftedSections
         if (
             $theme instanceof VisualTheme
             && $theme->editorMode()->isBagisto()
-            && ThemeEditor::inDesignMode()
+            && ThemeEditor::usesEditorData()
         ) {
             $this->sections->previewDrafts();
         }

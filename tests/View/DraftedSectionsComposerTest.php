@@ -80,3 +80,33 @@ it('leaves a visual theme to render its own blocks', function () {
 
     expect($store->askedFor)->toBeEmpty();
 });
+
+it('draws the sections the editor is holding in a draft preview', function () {
+    fakeSectionSystem(available: true);
+    composerThemeIs(Theme::make(['code' => 'default', 'name' => 'Default']));
+    app()->instance('request', Request::create('/?_draftPreview=default'));
+
+    $store = draftingStore();
+    $view = Mockery::mock(View::class);
+    $view->shouldReceive('with')->once()->with('sections', ['drafted']);
+
+    (new DraftedSectionsComposer($store))->compose($view);
+
+    expect($store->askedFor)->toBe([1, 'default', 'en']);
+});
+
+it('leaves a draft preview link to the published sections for a visitor', function () {
+    fakeSectionSystem(available: true);
+    auth()->guard('admin')->forgetUser();
+    composerThemeIs(Theme::make(['code' => 'default', 'name' => 'Default']));
+    app()->instance('request', Request::create('/?_draftPreview=default'));
+
+    $view = Mockery::mock(View::class);
+    $view->shouldNotReceive('with');
+
+    $store = draftingStore();
+
+    (new DraftedSectionsComposer($store))->compose($view);
+
+    expect($store->askedFor)->toBeEmpty();
+});

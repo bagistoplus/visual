@@ -8,7 +8,8 @@ use BagistoPlus\Visual\Theme\Theme;
 use Illuminate\Contracts\View\View;
 
 /**
- * Draws the home page from the sections as the editor is holding them.
+ * Draws the home page from the sections as the editor is holding them, in the
+ * editor and in a draft preview.
  *
  * The storefront is given what has been published, which is not what the
  * merchant is editing. Bagisto's own appearance preview has a route of its own
@@ -21,7 +22,7 @@ class DraftedSectionsComposer
 
     public function compose(View $view): void
     {
-        if (! ThemeEditor::inDesignMode()) {
+        if (! ThemeEditor::usesEditorData()) {
             return;
         }
 
