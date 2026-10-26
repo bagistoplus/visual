@@ -2,10 +2,13 @@
 
 namespace BagistoPlus\Visual\Tests;
 
+use BagistoPlus\Visual\Facades\ThemeEditor;
+use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Providers\VisualServiceProvider;
 use BagistoPlus\Visual\Tests\Fixtures\FakeTheme\FakeThemeServiceProvider;
 use BladeUI\Icons\BladeIconsServiceProvider;
 use Craftile\Laravel\CraftileServiceProvider;
+use Illuminate\Auth\GenericUser;
 use Illuminate\Config\Repository;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Livewire\LivewireServiceProvider;
@@ -32,7 +35,7 @@ class TestCase extends Orchestra
     }
 
     /**
-     * Answer yes to every permission question.
+     * Sign in an active administrator and answer yes to every permission question.
      *
      * The editor is offered to whoever may edit a theme, which Bagisto answers
      * through its own guard against an administrator session this suite has
@@ -40,6 +43,8 @@ class TestCase extends Orchestra
      */
     protected function allowEditing(): void
     {
+        $this->signInAdmin();
+
         $this->app->instance('Webkul\\User\\Bouncer', new class
         {
             public function hasPermission(string $permission): bool
@@ -47,6 +52,16 @@ class TestCase extends Orchestra
                 return true;
             }
         });
+    }
+
+    protected function signInAdmin(array $attributes = []): void
+    {
+        auth()->guard('admin')->setUser(new GenericUser([
+            'id' => 1,
+            'status' => 1,
+            'two_factor_enabled' => false,
+            ...$attributes,
+        ]));
     }
 
     protected function getPackageProviders($app)
@@ -62,6 +77,17 @@ class TestCase extends Orchestra
         ];
     }
 
+    /**
+     * The aliases package discovery registers in an application.
+     */
+    protected function getPackageAliases($app)
+    {
+        return [
+            'Visual' => Visual::class,
+            'ThemeEditor' => ThemeEditor::class,
+        ];
+    }
+
     public function getEnvironmentSetUp($app)
     {
         tap($app['config'], function (Repository $config) {
@@ -73,6 +99,7 @@ class TestCase extends Orchestra
                 'prefix' => '',
             ]);
             $config->set('cache.default', 'array');
+            $config->set('auth.guards.admin', ['driver' => 'session', 'provider' => 'users']);
             $config->set('blade-icons.components.disabled', true);
         });
     }

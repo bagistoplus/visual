@@ -16,7 +16,7 @@ class AllowSameOriginIframeInEditor
 {
     public function handle($request, Closure $next)
     {
-        if (ThemeEditor::designModeRequested() || ThemeEditor::inPreviewMode()) {
+        if (ThemeEditor::designModeRequested() || ThemeEditor::previewModeRequested()) {
             $response = $next($request);
 
             $response->headers->set('X-Frame-Options', 'SAMEORIGIN');

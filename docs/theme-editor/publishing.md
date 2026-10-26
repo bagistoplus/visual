@@ -33,6 +33,16 @@ Use the device menu in the top bar to check the page at different sizes:
 
 Click the **eye icon** in the top bar. Your store opens in a new browser tab with your draft, without the editor around it. Click through it as a customer would: open products, change language, add to cart.
 
+The draft only shows to admins who are signed in and allowed to edit or preview themes. Anyone else who opens the same link sees the live store.
+
+### Letting a colleague review
+
+To let someone review a draft without editing it:
+
+1. In **Settings** > **Roles**, create a role with **Themes** and **Preview drafts and themes**, both under **Bagisto Visual**.
+2. Give that role to their admin account.
+3. They sign in to the admin, open **Bagisto Visual** > **Themes**, click **Preview** on the theme and choose **Draft**. **Published version** shows the theme as customers would see it if it were active.
+
 ## Publishing
 
 When the draft is ready, click **Publish** in the top bar.

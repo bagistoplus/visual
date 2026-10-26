@@ -12,10 +12,11 @@
       {{ __('visual::admin.themes.no-themes') }}
     </div>
   @else
-    <div class="mt-8 grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6">
+    {{-- Room below the last row, so the Preview menu is not cut off by the admin's scroll area. --}}
+    <div class="mt-8 grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6 pb-24">
       @foreach ($themes as $theme)
-        <div class="box-shadow flex flex-col overflow-hidden rounded bg-white dark:bg-gray-900">
-          <div class="flex aspect-video items-start justify-center overflow-hidden bg-gray-100 dark:bg-gray-950">
+        <div class="box-shadow flex flex-col rounded bg-white dark:bg-gray-900">
+          <div class="flex aspect-video items-start justify-center overflow-hidden rounded-t bg-gray-100 dark:bg-gray-950">
             <img
               class="h-full w-full object-cover object-top"
               src="{{ $theme['screenshot'] ?? bagisto_asset('images/default_theme_preview.svg', 'visual_admin') }}"
@@ -61,20 +62,45 @@
             @endif
 
             <div class="mt-auto flex w-full flex-wrap items-center gap-2 pt-3">
-              <a
-                href="{{ route('visual.admin.editor', ['theme' => $theme['code']]) }}"
-                class="primary-button"
-              >
-                @lang('visual::admin.themes.customize')
-              </a>
+              @if (ThemeEditor::allowedToEdit())
+                <a href="{{ route('visual.admin.editor', ['theme' => $theme['code']]) }}" class="primary-button">
+                  @lang('visual::admin.themes.customize')
+                </a>
+              @endif
 
-              <a
-                href="{{ route('shop.home.index', ['_previewMode' => $theme['code']]) }}"
-                target="_blank"
-                class="secondary-button"
-              >
-                @lang('visual::admin.themes.preview')
-              </a>
+              @if (ThemeEditor::allowedToPreview())
+                <x-admin::dropdown class="[&_.absolute]:!shadow-md">
+                  <x-slot:toggle>
+                    <button type="button" class="secondary-button">
+                      @lang('visual::admin.themes.preview')
+
+                      <span class="icon-sort-down text-xl"></span>
+                    </button>
+                  </x-slot>
+
+                  <x-slot:menu>
+                    <x-admin::dropdown.menu.item class="!p-0">
+                      <a
+                        href="{{ route('shop.home.index', ['_previewMode' => $theme['code']]) }}"
+                        target="_blank"
+                        class="block px-5 py-2"
+                      >
+                        @lang('visual::admin.themes.preview-published')
+                      </a>
+                    </x-admin::dropdown.menu.item>
+
+                    <x-admin::dropdown.menu.item class="!p-0">
+                      <a
+                        href="{{ route('shop.home.index', ['_draftPreview' => $theme['code']]) }}"
+                        target="_blank"
+                        class="block px-5 py-2"
+                      >
+                        @lang('visual::admin.themes.preview-draft')
+                      </a>
+                    </x-admin::dropdown.menu.item>
+                  </x-slot>
+                </x-admin::dropdown>
+              @endif
             </div>
           </div>
         </div>

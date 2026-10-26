@@ -10,12 +10,15 @@ return [
         'visual' => 'Bagisto Visual',
         'themes' => 'थीम',
         'editor' => 'थीम संपादक',
+        'preview' => 'ड्राफ़्ट और थीम का पूर्वावलोकन',
     ],
 
     'themes' => [
         'title' => 'थीम',
         'customize' => 'अनुकूलित करें',
         'preview' => 'पूर्वावलोकन',
+        'preview-published' => 'प्रकाशित संस्करण',
+        'preview-draft' => 'ड्राफ़्ट',
         'by' => 'द्वारा',
         'view-documentation' => 'दस्तावेज़ देखें',
         'no-themes' => 'कोई थीम नहीं मिली',

@@ -5,6 +5,7 @@ namespace BagistoPlus\Visual\Commands;
 use BagistoPlus\Visual\Support\ThemePreviewComposer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 
 use function Laravel\Prompts\error;
@@ -35,7 +36,7 @@ class GeneratePreviewCommand extends Command
             return;
         }
 
-        $url = url('/?').http_build_query(['_previewMode' => $theme]);
+        $url = $this->previewUrl($theme);
 
         $themePath = config("themes.shop.{$theme}.base_path");
         $previewPath = "$themePath/".'/resources/assets/images';
@@ -59,6 +60,16 @@ class GeneratePreviewCommand extends Command
         } catch (\Exception $e) {
             error('❌ Failed to capture screenshot: '.$e->getMessage());
         }
+    }
+
+    /**
+     * The home page in theme preview, signed for a few minutes: the headless
+     * browser has no administrator session, and an unsigned preview link only
+     * works for someone who may preview.
+     */
+    public function previewUrl(string $theme): string
+    {
+        return URL::temporarySignedRoute('shop.home.index', now()->addMinutes(10), ['_previewMode' => $theme]);
     }
 
     /**

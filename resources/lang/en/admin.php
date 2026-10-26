@@ -10,12 +10,15 @@ return [
         'visual' => 'Bagisto Visual',
         'themes' => 'Themes',
         'editor' => 'Theme Editor',
+        'preview' => 'Preview drafts and themes',
     ],
 
     'themes' => [
         'title' => 'Themes',
         'customize' => 'Customize',
         'preview' => 'Preview',
+        'preview-published' => 'Published version',
+        'preview-draft' => 'Draft',
         'by' => 'by',
         'view-documentation' => 'View Documentation',
         'no-themes' => 'No themes found',

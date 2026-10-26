@@ -35,4 +35,10 @@ return [
         ],
         'sort' => 2,
     ],
+    [
+        'key' => 'bagisto_visual.preview',
+        'name' => 'visual::admin.acl.preview',
+        'route' => [],
+        'sort' => 3,
+    ],
 ];

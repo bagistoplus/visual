@@ -10,12 +10,15 @@ return [
         'visual' => 'Bagisto Visual',
         'themes' => 'Temas',
         'editor' => 'Editor de temas',
+        'preview' => 'Previsualizar borradores y temas',
     ],
 
     'themes' => [
         'title' => 'Temas',
         'customize' => 'Personalizar',
         'preview' => 'Vista previa',
+        'preview-published' => 'Versión publicada',
+        'preview-draft' => 'Borrador',
         'by' => 'por',
         'view-documentation' => 'Ver documentación',
         'no-themes' => 'No se encontraron temas',

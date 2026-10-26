@@ -37,7 +37,7 @@ it('disables the response cache for editor requests', function (Request $request
     'draft preview header' => fn () => Request::create('/', 'GET', [], [], [], ['HTTP_X_VISUAL_DRAFT_PREVIEW_THEME' => 'fake-theme']),
 ]);
 
-it('caches no page the editor asked for, whoever asked', function () {
+it('caches no page the editor asked for, whoever asked', function (string $url) {
     // The permission decides what the page may say, not whether it is cached:
     // a page cached for a visitor who may not edit would be served to the
     // merchant who may, without the editor in it.
@@ -52,11 +52,15 @@ it('caches no page the editor asked for, whoever asked', function () {
     $inner = Mockery::mock(CacheProfile::class);
     $inner->shouldNotReceive('enabled');
 
-    $request = Request::create('/?_designMode=default');
+    $request = Request::create($url);
     app()->instance('request', $request);
 
     expect(designModeAwareProfile($inner)->enabled($request))->toBeFalse();
-});
+})->with([
+    'design mode' => ['/?_designMode=default'],
+    'draft preview' => ['/?_draftPreview=default'],
+    'theme preview' => ['/?_previewMode=default'],
+]);
 
 it('defers to the wrapped profile outside the editor', function (bool $enabled) {
     $request = Request::create('/');

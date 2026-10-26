@@ -16,9 +16,21 @@ class ThemeEditor
     protected const BOUNCER = 'Webkul\User\Bouncer';
 
     /**
+     * Bagisto's route guard, asked whether a signed-in administrator still has
+     * two factor to complete. Resolved by name for the same reason as the bouncer.
+     */
+    protected const ROUTE_GUARD = 'Webkul\User\Http\Middleware\Bouncer';
+
+    /**
      * The permission the editor's own routes are gated on.
      */
     protected const EDITOR_PERMISSION = 'bagisto_visual.editor';
+
+    /**
+     * The permission to see drafts and other themes on the storefront without
+     * editing them, for a reviewer. Whoever may edit may preview too.
+     */
+    protected const PREVIEW_PERMISSION = 'bagisto_visual.preview';
 
     protected array $templates = [];
 
@@ -90,19 +102,125 @@ class ThemeEditor
     }
 
     /**
+     * Whether the request asks for a draft preview, whoever is asking.
+     */
+    public function draftPreviewRequested(): bool
+    {
+        return request()->query->has('_draftPreview') || request()->headers->has('x-visual-draft-preview-theme');
+    }
+
+    /**
+     * Whether the request asks to preview a theme, whoever is asking.
+     */
+    public function previewModeRequested(): bool
+    {
+        return request()->query->has('_previewMode') || request()->headers->has('x-visual-preview-theme');
+    }
+
+    /**
      * Whether the viewer may edit a theme.
      *
      * Bagisto's own guard answers no for a visitor who is not signed in as an
-     * administrator, so there is nothing else to check. It is resolved by name
-     * because it belongs to Bagisto rather than to this package.
+     * administrator. It is resolved by name because it belongs to Bagisto rather
+     * than to this package.
      */
-    protected function allowedToEdit(): bool
+    public function allowedToEdit(): bool
+    {
+        return $this->remember('edit', fn () => $this->adminIsActive()
+            && $this->bouncer()->hasPermission(self::EDITOR_PERMISSION));
+    }
+
+    /**
+     * Whether the viewer may see drafts and other themes on the storefront.
+     */
+    public function allowedToPreview(): bool
+    {
+        return $this->remember('preview', fn () => $this->adminIsActive()
+            && ($this->bouncer()->hasPermission(self::PREVIEW_PERMISSION)
+                || $this->bouncer()->hasPermission(self::EDITOR_PERMISSION)));
+    }
+
+    /**
+     * Whether an administrator is signed in and may act right now.
+     *
+     * Bagisto checks the account status and two factor on its admin routes, not
+     * in the bouncer, so the storefront asks again: a disabled account or one
+     * still owing its second factor sees what any visitor sees.
+     */
+    protected function adminIsActive(): bool
     {
         if (! class_exists(self::BOUNCER)) {
             return false;
         }
 
-        return (bool) $this->bouncer()->hasPermission(self::EDITOR_PERMISSION);
+        $admin = $this->admin();
+
+        if (! $admin || ! $admin->status) {
+            return false;
+        }
+
+        if (! class_exists(self::ROUTE_GUARD)) {
+            return true;
+        }
+
+        $routeGuard = $this->routeGuard();
+
+        // Older Bagisto releases have no two factor to complete.
+        if (! method_exists($routeGuard, 'isTwoFactorRequired')) {
+            return true;
+        }
+
+        return ! $routeGuard->isTwoFactorRequired('admin');
+    }
+
+    /**
+     * Bagisto's admin route guard, resolved by name like the bouncer.
+     */
+    protected function routeGuard(): mixed
+    {
+        return app(self::ROUTE_GUARD);
+    }
+
+    /**
+     * The administrator signed in on this request, if Bagisto has an admin guard.
+     */
+    protected function admin(): mixed
+    {
+        if (! config('auth.guards.admin')) {
+            return null;
+        }
+
+        return auth()->guard('admin')->user();
+    }
+
+    /**
+     * A theme preview link the application signed itself, such as the one the
+     * preview screenshot command opens in a browser that has no session.
+     */
+    protected function hasValidPreviewSignature(): bool
+    {
+        return request()->query->has('signature') && request()->hasValidSignature();
+    }
+
+    /**
+     * Answer once per request: links ask for every URL they generate.
+     */
+    protected function remember(string $question, \Closure $answer): bool
+    {
+        // Asked before the session starts, nobody is signed in yet: answer without
+        // keeping it, so the question asked again once the session is known is right.
+        if (! request()->hasSession()) {
+            return (bool) $answer();
+        }
+
+        $key = "visual.allowed.{$question}";
+        $attributes = request()->attributes;
+
+        if (! $attributes->has($key)) {
+            $attributes->set($key, (bool) $answer());
+        }
+
+        return $attributes->get($key);
     }
 
     /**
@@ -127,17 +245,22 @@ class ThemeEditor
         return request()->query->get('_previewMode', request()->headers->get('x-visual-preview-theme'));
     }
 
+    /**
+     * Preview of another theme with its published data, for someone who may
+     * preview or through a link the application signed.
+     */
     public function inPreviewMode(): bool
     {
-        return request()->query->has('_previewMode') || request()->headers->has('x-visual-preview-theme');
+        return $this->previewModeRequested() && ($this->allowedToPreview() || $this->hasValidPreviewSignature());
     }
 
     /**
-     * Preview of the unpublished editor data, rendered without the editor client.
+     * Preview of the unpublished editor data, rendered without the editor client,
+     * for someone who may preview. Anyone else gets the live store.
      */
     public function inDraftPreviewMode(): bool
     {
-        return request()->query->has('_draftPreview') || request()->headers->has('x-visual-draft-preview-theme');
+        return $this->draftPreviewRequested() && $this->allowedToPreview();
     }
 
     /**

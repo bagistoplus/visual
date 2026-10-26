@@ -10,12 +10,15 @@ return [
         'visual' => 'Bagisto Visual',
         'themes' => 'السمات',
         'editor' => 'محرر السمات',
+        'preview' => 'معاينة المسودات والسمات',
     ],
 
     'themes' => [
         'title' => 'السمات',
         'customize' => 'تخصيص',
         'preview' => 'معاينة',
+        'preview-published' => 'النسخة المنشورة',
+        'preview-draft' => 'المسودة',
         'by' => 'بواسطة',
         'view-documentation' => 'عرض التوثيق',
         'no-themes' => 'لم يتم العثور على سمات',

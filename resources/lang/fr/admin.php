@@ -10,12 +10,15 @@ return [
         'visual' => 'Bagisto Visual',
         'themes' => 'Thèmes',
         'editor' => 'Éditeur de thème',
+        'preview' => 'Prévisualiser les brouillons et les thèmes',
     ],
 
     'themes' => [
         'title' => 'Thèmes',
         'customize' => 'Personnaliser',
         'preview' => 'Aperçu',
+        'preview-published' => 'Version publiée',
+        'preview-draft' => 'Brouillon',
         'by' => 'par',
         'view-documentation' => 'Voir la documentation',
         'no-themes' => 'Aucun thème disponible',
