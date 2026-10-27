@@ -4,7 +4,7 @@
     "name": "sectionBlockIds"
   },
   "resources/assets/editor/index.ts": {
-    "file": "assets/index-C1iuY059.js",
+    "file": "assets/index-P0AQNxFv.js",
     "name": "index",
     "src": "resources/assets/editor/index.ts",
     "isEntry": true,
@@ -12,11 +12,11 @@
       "_sectionBlockIds-CIAxXZrM.js"
     ],
     "css": [
-      "assets/index-IuRAV-yf.css"
+      "assets/index-B35Nyviw.css"
     ]
   },
   "resources/assets/editor/injected.ts": {
-    "file": "assets/injected-F4ztUpFC.js",
+    "file": "assets/injected-DuMWyYgN.js",
     "name": "injected",
     "src": "resources/assets/editor/injected.ts",
     "isEntry": true,
