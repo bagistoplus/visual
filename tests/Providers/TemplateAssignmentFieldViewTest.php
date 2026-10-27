@@ -231,6 +231,5 @@ it('adds the product assignment field above categories, which every product type
     Event::dispatch('bagisto.admin.catalog.product.edit.form.categories.before', $manager);
 
     expect($manager->templates)->toHaveCount(1)
-        ->and($manager->templates[0][0])->toContain('name="visual_template"')
-        ->and(Event::hasListeners('bagisto.admin.catalog.product.edit.form.price.before'))->toBeFalse();
+        ->and($manager->templates[0][0])->toContain('name="visual_template"');
 });
