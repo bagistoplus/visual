@@ -102,7 +102,7 @@ class AdminServiceProvider extends ServiceProvider
             $viewRenderEventManager->addTemplate('visual::admin.layouts.datagrid-action-title');
         });
 
-        Event::listen('bagisto.admin.catalog.product.edit.form.price.before', function ($viewRenderEventManager) {
+        Event::listen('bagisto.admin.catalog.product.edit.form.categories.before', function ($viewRenderEventManager) {
             app(AddTemplateAssignmentField::class)($viewRenderEventManager, 'product');
         });
 

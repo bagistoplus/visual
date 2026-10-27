@@ -8,6 +8,7 @@ use BagistoPlus\Visual\Theme\Theme;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
 use Webkul\Core\Models\Channel;
 use Webkul\Theme\ViewRenderEventManager;
 
@@ -221,3 +222,15 @@ it('adds category and cms page assignment fields when the default theme is visua
     'category',
     'page',
 ]);
+
+it('adds the product assignment field above categories, which every product type shows', function () {
+    bindTemplateAssignmentFieldThemeResolver(productTheme: templateAssignmentFieldVisualTheme());
+
+    $manager = new TemplateAssignmentFieldViewTestManager;
+
+    Event::dispatch('bagisto.admin.catalog.product.edit.form.categories.before', $manager);
+
+    expect($manager->templates)->toHaveCount(1)
+        ->and($manager->templates[0][0])->toContain('name="visual_template"')
+        ->and(Event::hasListeners('bagisto.admin.catalog.product.edit.form.price.before'))->toBeFalse();
+});
