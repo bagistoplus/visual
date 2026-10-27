@@ -25,6 +25,8 @@ use Illuminate\Support\Facades\Facade;
  * @method static array getLivewireContextFilters()
  * @method static void supportLivewire()
  * @method static void registerFpcRegion(string $key, \Closure $resolver)
+ * @method static void resolveStorageScopeUsing(?\Closure $resolver)
+ * @method static string storageScope()
  *
  * @see VisualManager
  */

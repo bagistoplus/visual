@@ -99,7 +99,6 @@ class PersistThemeSettings
 
     protected function clearCache(string $theme, string $channel, string $locale): void
     {
-        $cacheKey = "theme_settings.{$theme}.{$channel}.{$locale}";
-        Cache::forget($cacheKey);
+        Cache::forget(ThemeSettingsCache::key($theme, $channel, $locale));
     }
 }

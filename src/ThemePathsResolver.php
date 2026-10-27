@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual;
 
 use BagistoPlus\Visual\Facades\ThemeEditor;
+use BagistoPlus\Visual\Facades\Visual;
 use Webkul\Core\Models\Channel;
 
 class ThemePathsResolver
@@ -141,10 +142,23 @@ class ThemePathsResolver
      */
     public function getThemeBaseDataPath(string $themeCode, string $mode = 'live'): string
     {
-        return strtr('%data_path/themes/%theme_code/%mode', [
-            '%data_path' => rtrim(config('bagisto_visual.data_path'), '/\\'),
+        return strtr('%themes_path/%theme_code/%mode', [
+            '%themes_path' => $this->getThemesDataPath(),
             '%theme_code' => $themeCode,
             '%mode' => $mode,
         ]);
+    }
+
+    /**
+     * The directory every theme's data is kept under, inside the storage
+     * scope when one is set.
+     */
+    public function getThemesDataPath(): string
+    {
+        $scope = Visual::storageScope();
+
+        return rtrim(config('bagisto_visual.data_path'), '/\\')
+            .($scope === '' ? '' : '/'.$scope)
+            .'/themes';
     }
 }

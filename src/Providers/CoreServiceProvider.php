@@ -38,6 +38,7 @@ use BagistoPlus\Visual\ThemePathsResolver;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use BagistoPlus\Visual\View\Compilers\LivewireBlockCompiler;
 use BagistoPlus\Visual\View\DraftAwareJsonViewParser;
+use BagistoPlus\Visual\VisualManager;
 use BladeUI\Icons\Factory as BladeIconsFactory;
 use BladeUI\Icons\IconsManifest;
 use Craftile\Laravel\Events\JsonViewLoaded;
@@ -445,6 +446,7 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function registerSingletons(): void
     {
+        $this->app->singleton(VisualManager::class);
         $this->app->bind(ThemeDataStore::class, FileThemeDataStore::class);
 
         $this->app->singleton(ThemeSettingsLoader::class, function (Application $app) {

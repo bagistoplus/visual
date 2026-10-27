@@ -11,6 +11,7 @@ use BagistoPlus\Visual\Support\FpcRegion;
 use Closure;
 use Craftile\Laravel\Facades\Craftile;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 use Livewire\Livewire;
 use Webkul\Shop\Http\Middleware\Currency;
 use Webkul\Shop\Http\Middleware\Locale;
@@ -18,6 +19,8 @@ use Webkul\Shop\Http\Middleware\Locale;
 class VisualManager
 {
     protected array $livewireContextFilters = [];
+
+    protected ?Closure $storageScopeResolver = null;
 
     public function __construct(protected ThemeSettingsLoader $themeSettingsLoader) {}
 
@@ -44,6 +47,43 @@ class VisualManager
         return $this->themeSettingsLoader;
     }
 
+    /**
+     * Keep theme data, its cached settings and uploaded media apart per scope,
+     * such as a tenant.
+     *
+     * Visual never decides what a scope is. The resolver is asked every time a
+     * scope is needed, so it follows whatever the host app has switched to.
+     * Returning null or an empty string means no scope.
+     *
+     * @param  (Closure(): (string|int|null))|null  $resolver
+     */
+    public function resolveStorageScopeUsing(?Closure $resolver): void
+    {
+        $this->storageScopeResolver = $resolver;
+    }
+
+    /**
+     * The scope theme data is kept under, or an empty string for none.
+     *
+     * It becomes a directory name and part of cache keys, so it may only hold
+     * letters, numbers, dots, dashes and underscores, and must start with a
+     * letter or number.
+     */
+    public function storageScope(): string
+    {
+        if (! $this->storageScopeResolver) {
+            return '';
+        }
+
+        $scope = (string) (($this->storageScopeResolver)() ?? '');
+
+        if ($scope !== '' && ! preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]*$/', $scope)) {
+            throw new InvalidArgumentException("The storage scope [{$scope}] may only contain letters, numbers, dots, dashes and underscores, and must start with a letter or number.");
+        }
+
+        return $scope;
+    }
+
     public function imagesDisk(): string
     {
         return (string) config('bagisto_visual.images.storage', config('bagisto_visual.images_storage'));
@@ -51,7 +91,7 @@ class VisualManager
 
     public function imagesDirectory(): string
     {
-        return (string) config('bagisto_visual.images.directory', config('bagisto_visual.images_directory'));
+        return $this->scopedDirectory((string) config('bagisto_visual.images.directory', config('bagisto_visual.images_directory')));
     }
 
     public function videosDisk(): string
@@ -61,7 +101,18 @@ class VisualManager
 
     public function videosDirectory(): string
     {
-        return (string) config('bagisto_visual.videos.directory');
+        return $this->scopedDirectory((string) config('bagisto_visual.videos.directory'));
+    }
+
+    protected function scopedDirectory(string $directory): string
+    {
+        $scope = $this->storageScope();
+
+        if ($scope === '') {
+            return $directory;
+        }
+
+        return $scope.'/'.ltrim($directory, '/');
     }
 
     public function videosMaxUploadSize(): int
