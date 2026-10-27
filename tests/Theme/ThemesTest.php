@@ -44,7 +44,7 @@ it('draws a bagisto theme\'s sections through the views their types name', funct
 
     $hints = app('view')->getFinder()->getHints()['shop'] ?? [];
 
-    expect(collect($hints)->contains(fn (string $hint) => str_ends_with($hint, 'resources/views/bagisto')))
+    expect(collect($hints)->contains(fn (string $hint) => str_ends_with(str_replace('\\', '/', $hint), 'resources/views/bagisto')))
         ->toBeTrue();
 });
 
@@ -61,6 +61,6 @@ it('leaves a theme alone when bagisto does not declare its section types', funct
     $themes->set('default');
 
     expect(app('view')->getFinder()->getHints()['shop'] ?? [])->toBe($before)
-        ->and(collect($before)->contains(fn (string $hint) => str_ends_with($hint, 'resources/views/bagisto')))
+        ->and(collect($before)->contains(fn (string $hint) => str_ends_with(str_replace('\\', '/', $hint), 'resources/views/bagisto')))
         ->toBeFalse();
 });
