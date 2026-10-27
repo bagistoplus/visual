@@ -2,11 +2,13 @@
 import type { PropertyField } from '@craftile/types';
 import { Button } from '@craftile/editor/ui';
 import { Dialog } from '@ark-ui/vue/dialog';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { machine, connect } from "@zag-js/file-upload";
 import { normalizeProps, useMachine } from "@zag-js/vue";
 import { useState } from '../state';
 import useI18n from '../composables/i18n';
 import { useHttpClient } from '../composables/http';
+import { useCraftileEditor } from '../composables/useCraftileEditor';
 import type { Image, ImageFocalPoint, ImageSettingValue } from '../types';
 
 // @see https://stackoverflow.com/a/5717133
@@ -30,7 +32,7 @@ interface Props {
 
 type EditableImage = Image & ImageSettingValue;
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 const { t } = useI18n();
 const { state } = useState();
@@ -103,6 +105,26 @@ const currentValue = ref<EditableImage | null>(null);
 const draftAlt = ref('');
 const draftFocalPoint = ref<ImageFocalPoint>(defaultFocalPoint());
 
+// Each image clicked in the dialog is saved right away and adds an undo step.
+// We count those steps so Cancel can undo them.
+let stopListeners: Array<() => void> = [];
+let trackedBlockId: string | null = null;
+let ownSteps = 0;
+let foreignEdit = false;
+
+const FOREIGN_EVENTS = [
+  'block:insert',
+  'block:remove',
+  'block:move',
+  'block:update',
+  'block:toggle',
+  'block:duplicate',
+  'page:replace',
+  'region:replace',
+  'undo',
+  'redo',
+] as const;
+
 const service = useMachine(machine, {
   id: "imagepicker",
   accept: "image/*",
@@ -165,14 +187,91 @@ function onImageSelect(image: Image) {
   };
 }
 
+function sameImage(a: EditableImage | null, b: EditableImage | null) {
+  if (!a || !b) {
+    return a === b;
+  }
+
+  return a.path === b.path
+    && (a.alt ?? '') === (b.alt ?? '')
+    && a.focalPoint.x === b.focalPoint.x
+    && a.focalPoint.y === b.focalPoint.y;
+}
+
+function startTracking() {
+  stopTracking();
+
+  trackedBlockId = editor.ui.state.selectedBlockId;
+  ownSteps = 0;
+  foreignEdit = false;
+  currentValue.value = model.value ? { ...model.value, focalPoint: { ...model.value.focalPoint } } : null;
+
+  stopListeners = [
+    editor.engine.on('block:property:set', ({ blockId, key }) => {
+      if (blockId === trackedBlockId && key === props.field.id) {
+        ownSteps++;
+      } else {
+        foreignEdit = true;
+      }
+    }),
+    ...FOREIGN_EVENTS.map(event => editor.engine.on(event, () => {
+      foreignEdit = true;
+    })),
+  ];
+}
+
+function stopTracking() {
+  stopListeners.forEach(stop => stop());
+  stopListeners = [];
+}
+
+function isTracking() {
+  return stopListeners.length > 0;
+}
+
+function onOpenChange(details: { open: boolean }) {
+  if (details.open) {
+    startTracking();
+
+    return;
+  }
+
+  // Closed by Escape or by the dialog itself, which is a cancel.
+  if (isTracking()) {
+    onCancel();
+  }
+}
+
 function onCancel() {
-  model.value = currentValue.value;
+  stopTracking();
+
+  if (ownSteps > 0 && !foreignEdit) {
+    for (let step = 0; step < ownSteps; step++) {
+      editor.engine.undo();
+    }
+  } else if (!sameImage(model.value, currentValue.value)) {
+    model.value = currentValue.value;
+  }
+
+  ownSteps = 0;
   opened.value = false;
 }
 
 function onConfirm() {
+  stopTracking();
   opened.value = false;
 }
+
+// The same picker is reused when another block with this field is selected, so
+// a dialog left open would start writing to that block. Changing block keeps
+// what was picked, like Select.
+watch(() => editor.ui.state.selectedBlockId, () => {
+  if (opened.value) {
+    onConfirm();
+  }
+});
+
+onBeforeUnmount(stopTracking);
 
 function removeImage() {
   model.value = null;
@@ -253,7 +352,7 @@ onMounted(() => {
       v-model:open="opened"
       :modal="false"
       :close-on-interact-outside="false"
-      @open-change="currentValue = model ? { ...model, focalPoint: { ...model.focalPoint } } : null"
+      @open-change="onOpenChange"
     >
       <div
         v-if="!model"
