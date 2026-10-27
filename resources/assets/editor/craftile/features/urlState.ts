@@ -30,7 +30,11 @@ export function loadTemplateFromUrl(editor: CraftileEditor, state: State, editor
 
     editor.preview.loadUrl(url.href);
   } else {
-    editor.preview.loadUrl(editorConfig.storefrontUrl);
+    const url = new URL(editorConfig.storefrontUrl);
+    url.searchParams.set('channel', state.channel);
+    url.searchParams.set('locale', state.locale);
+
+    editor.preview.loadUrl(url.href);
   }
 }
 

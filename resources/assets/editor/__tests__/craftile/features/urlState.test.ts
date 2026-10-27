@@ -148,7 +148,7 @@ describe('editor url state', () => {
     expect(loaded.searchParams.get('locale')).toBe('fr');
   });
 
-  it('loads the initial storefront preview from the configured storefront url', () => {
+  it('loads the initial storefront preview in the editor channel and locale', () => {
     (window as any).location = new URL(
       'http://localhost:3000/admin/visual/editor/fake-theme?channel=default&locale=fr'
     );
@@ -170,6 +170,6 @@ describe('editor url state', () => {
       } as any
     );
 
-    expect(loadUrl).toHaveBeenCalledWith('http://localhost:3000?_designMode=fake-theme');
+    expect(loadUrl).toHaveBeenCalledWith('http://localhost:3000/?_designMode=fake-theme&channel=default&locale=fr');
   });
 });

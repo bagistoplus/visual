@@ -20,19 +20,25 @@ class RenderPreview
      *
      * @param  string  $url  The URL to render
      * @param  array|null  $blockIds  Optional array of block IDs to render (null = render all)
+     * @param  string|null  $channel  The channel the edit was made in
+     * @param  string|null  $locale  The locale the edit was made in
      */
-    public function execute(string $url, ?array $blockIds = null): string|RedirectResponse
+    public function execute(string $url, ?array $blockIds = null, ?string $channel = null, ?string $locale = null): string|RedirectResponse
     {
         $baseUrl = rtrim(config('app.url'));
         $basePath = parse_url($baseUrl, PHP_URL_PATH);
+
+        $url = $this->withQuery($url, [
+            'channel' => $channel,
+            'locale' => $locale,
+        ]);
 
         // Store block IDs in session with unique key if provided
         if ($blockIds !== null && count($blockIds) > 0) {
             $key = Str::random(16);
             session()->put("visual.render.{$key}", $blockIds);
 
-            $separator = str_contains($url, '?') ? '&' : '?';
-            $url .= $separator.'_visual_render='.$key;
+            $url = $this->withQuery($url, ['_visual_render' => $key]);
         }
         // Handle subdirectory installs by redirecting
         if ($basePath !== null) {
@@ -59,6 +65,25 @@ class RenderPreview
         $response = app()->handle($request);
 
         return $response->getContent();
+    }
+
+    /**
+     * Append query parameters to a url, skipping empty ones. Appended last, so a
+     * parameter the url already carries is overridden.
+     *
+     * @param  array<string, string|null>  $params
+     */
+    protected function withQuery(string $url, array $params): string
+    {
+        $params = array_filter($params);
+
+        if ($params === []) {
+            return $url;
+        }
+
+        $separator = str_contains($url, '?') ? '&' : '?';
+
+        return $url.$separator.http_build_query($params);
     }
 
     /**

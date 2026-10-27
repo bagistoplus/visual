@@ -127,7 +127,7 @@ class ThemeEditorController extends Controller
 
         $allBlockIds = $this->buildRenderSet($data, $loadedBlocks);
 
-        return $this->renderPreview->execute($data->templateUrl, $allBlockIds);
+        return $this->renderPreview->execute($data->templateUrl, $allBlockIds, $data->channel, $data->locale);
     }
 
     public function persistThemeSettings(Request $request)
@@ -152,7 +152,7 @@ class ThemeEditorController extends Controller
             return response('');
         }
 
-        return $this->renderPreview->execute($data->templateUrl);
+        return $this->renderPreview->execute($data->templateUrl, channel: $data->channel, locale: $data->locale);
     }
 
     public function publishTheme(Request $request)
@@ -665,7 +665,7 @@ class ThemeEditorController extends Controller
             $validated['locale'],
         );
 
-        return $this->renderPreview->execute($validated['template']['url']);
+        return $this->renderPreview->execute($validated['template']['url'], channel: $validated['channel'], locale: $validated['locale']);
     }
 
     /**
