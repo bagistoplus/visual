@@ -1,9 +1,11 @@
 <?php
 
 use BagistoPlus\Visual\Blocks\SimpleBlock;
+use BagistoPlus\Visual\Contracts\ThemeDataStore;
 use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
 use BagistoPlus\Visual\Persistence\EditorDataStore;
+use BagistoPlus\Visual\Persistence\FileThemeDataStore;
 use BagistoPlus\Visual\Persistence\SectionStore;
 use BagistoPlus\Visual\Settings\Text;
 use BagistoPlus\Visual\Support\EditorBlockSchemaSerializer;
@@ -100,6 +102,7 @@ function testableInjectThemeEditorScript(
         $editorInheritanceMetadata ?? app(EditorInheritanceMetadata::class),
         app(SectionStore::class),
         app(SectionPageBuilder::class),
+        app(ThemeDataStore::class),
     );
 }
 
@@ -281,7 +284,7 @@ it('includes locale inheritance for the current template in page data', function
         $themeEditor,
         $themeSettingsLoader,
         new EditorInheritanceMetadata(
-            new EditorDataStore(new ThemePathsResolverConcrete, $files),
+            new EditorDataStore(new ThemePathsResolverConcrete, $files, new FileThemeDataStore(new ThemePathsResolverConcrete, $files)),
             app(TemplateDiscovery::class),
         ),
     );
@@ -347,7 +350,7 @@ it('includes cross-channel locale inheritance for the current template in page d
         $themeEditor,
         $themeSettingsLoader,
         new EditorInheritanceMetadata(
-            new EditorDataStore(new ThemePathsResolverConcrete, $files),
+            new EditorDataStore(new ThemePathsResolverConcrete, $files, new FileThemeDataStore(new ThemePathsResolverConcrete, $files)),
             app(TemplateDiscovery::class),
         ),
     );

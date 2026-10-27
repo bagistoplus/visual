@@ -1,6 +1,7 @@
 <?php
 
 use BagistoPlus\Visual\Persistence\EditorDataStore;
+use BagistoPlus\Visual\Persistence\FileThemeDataStore;
 use BagistoPlus\Visual\ThemePathsResolver;
 use Illuminate\Filesystem\Filesystem;
 
@@ -19,7 +20,7 @@ beforeEach(function () {
         }
     };
 
-    $this->store = new EditorDataStore($this->resolver, new Filesystem);
+    $this->store = new EditorDataStore($this->resolver, new Filesystem, new FileThemeDataStore($this->resolver, new Filesystem));
 });
 
 afterEach(function () {

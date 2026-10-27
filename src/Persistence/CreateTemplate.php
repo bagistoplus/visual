@@ -14,7 +14,10 @@ use Illuminate\Support\Str;
 
 class CreateTemplate
 {
-    public function __construct(protected TemplateDiscovery $templates) {}
+    public function __construct(
+        protected TemplateDiscovery $templates,
+        protected EditorDataStore $editorDataStore,
+    ) {}
 
     public function __invoke(
         Theme $theme,
@@ -43,10 +46,12 @@ class CreateTemplate
 
         $data = $this->buildTemplateData($theme, $channel, $locale, $type, $basedOn);
 
-        File::ensureDirectoryExists(dirname($path));
-        File::put($path, json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
-
-        File::put(ThemePathsResolver::getThemeBaseDataPath($theme->code, 'editor/.last-edit'), (string) time());
+        $this->editorDataStore->save(
+            $theme->code,
+            $this->editorDataStore->relativePath($channel, $locale, "templates/{$type}/{$slug}.json"),
+            $data,
+            null,
+        );
 
         return [
             'key' => $key,

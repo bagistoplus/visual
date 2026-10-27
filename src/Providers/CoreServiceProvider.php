@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Providers;
 
 use BagistoPlus\Visual\Commands;
+use BagistoPlus\Visual\Contracts\ThemeDataStore;
 use BagistoPlus\Visual\Data\BlockData;
 use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Facades\ThemeEditor;
@@ -15,6 +16,7 @@ use BagistoPlus\Visual\Middlewares\RepairPreviewQueryString;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
 use BagistoPlus\Visual\Models\VisualTemplateAssignment;
 use BagistoPlus\Visual\Persistence\EditorDataStore;
+use BagistoPlus\Visual\Persistence\FileThemeDataStore;
 use BagistoPlus\Visual\Settings\Support as SettingTransformers;
 use BagistoPlus\Visual\Support\BagistoConfig;
 use BagistoPlus\Visual\Support\BlockRenderFilter;
@@ -443,6 +445,8 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function registerSingletons(): void
     {
+        $this->app->bind(ThemeDataStore::class, FileThemeDataStore::class);
+
         $this->app->singleton(ThemeSettingsLoader::class, function (Application $app) {
             return new ThemeSettingsLoader(
                 $app->get(ThemePathsResolver::class),

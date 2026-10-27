@@ -2,6 +2,7 @@
 
 use BagistoPlus\Visual\Persistence\Data\ThemeSettingsUpdateData;
 use BagistoPlus\Visual\Persistence\EditorDataStore;
+use BagistoPlus\Visual\Persistence\FileThemeDataStore;
 use BagistoPlus\Visual\Persistence\LocalizedProperties;
 use BagistoPlus\Visual\Persistence\PersistThemeSettings;
 use BagistoPlus\Visual\Persistence\ThemeSettingsDiffer;
@@ -42,7 +43,7 @@ beforeEach(function () {
         }
     };
     app()->instance(ThemePathsResolverConcrete::class, $this->resolver);
-    $this->store = new EditorDataStore($this->resolver, $this->files);
+    $this->store = new EditorDataStore($this->resolver, $this->files, new FileThemeDataStore($this->resolver, $this->files));
     $this->persistThemeSettings = new PersistThemeSettings(
         new ThemeSettingsLoader($this->resolver, $this->files, $this->store),
         $this->store,

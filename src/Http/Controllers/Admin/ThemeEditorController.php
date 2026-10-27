@@ -2,7 +2,7 @@
 
 namespace BagistoPlus\Visual\Http\Controllers\Admin;
 
-use BagistoPlus\Visual\Facades\ThemePathsResolver;
+use BagistoPlus\Visual\Contracts\ThemeDataStore;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Http\Controllers\Controller;
 use BagistoPlus\Visual\Persistence\CreateTemplate;
@@ -54,6 +54,7 @@ class ThemeEditorController extends Controller
         protected ChannelThemeResolver $channelThemeResolver,
         protected PersistSectionUpdates $persistSectionUpdates,
         protected SectionStore $sectionStore,
+        protected ThemeDataStore $themeDataStore,
     ) {}
 
     public function index(string $themeCode)
@@ -593,7 +594,7 @@ class ThemeEditorController extends Controller
      */
     protected function hasFileEdits(string $themeCode): bool
     {
-        return file_exists(ThemePathsResolver::getThemeBaseDataPath($themeCode, 'editor/.last-edit'));
+        return $this->themeDataStore->hasUnpublishedEdits($themeCode);
     }
 
     /**

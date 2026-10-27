@@ -1,6 +1,7 @@
 <?php
 
 use BagistoPlus\Visual\Persistence\EditorDataStore;
+use BagistoPlus\Visual\Persistence\FileThemeDataStore;
 use BagistoPlus\Visual\Settings\Description;
 use BagistoPlus\Visual\Settings\Header;
 use BagistoPlus\Visual\Settings\Select;
@@ -89,7 +90,7 @@ it('loads resolved editor parent settings before applying schema defaults', func
     $loader = new ThemeSettingsLoader(
         $resolver,
         $files,
-        new EditorDataStore($resolver, $files),
+        new EditorDataStore($resolver, $files, new FileThemeDataStore($resolver, $files)),
     );
 
     $settings = $loader->loadThemeSettings(theme_settings_loader_theme())->toArray();
@@ -129,7 +130,7 @@ it('resolves translation references only for localized theme settings', function
     $resolver->shouldReceive('resolveThemeSettingsPath')->once()->andReturn($path);
 
     $files = new Filesystem;
-    $loader = new ThemeSettingsLoader($resolver, $files, new EditorDataStore($resolver, $files));
+    $loader = new ThemeSettingsLoader($resolver, $files, new EditorDataStore($resolver, $files, new FileThemeDataStore($resolver, $files)));
     $settings = $loader->loadThemeSettings(theme_settings_loader_theme())->toArray();
 
     expect($settings)->toMatchArray([
@@ -164,7 +165,7 @@ it('uses schema defaults when theme settings json is invalid or non array', func
     $resolver->shouldReceive('resolveThemeSettingsPath')->once()->andReturn($path);
 
     $files = new Filesystem;
-    $loader = new ThemeSettingsLoader($resolver, $files, new EditorDataStore($resolver, $files));
+    $loader = new ThemeSettingsLoader($resolver, $files, new EditorDataStore($resolver, $files, new FileThemeDataStore($resolver, $files)));
     $settings = $loader->loadThemeSettings(theme_settings_loader_theme())->toArray();
 
     expect($settings)->toMatchArray([
