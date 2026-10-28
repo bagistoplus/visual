@@ -22,7 +22,7 @@ class BlockDataSynth extends Synth
         return [[
             'token' => Crypt::encrypt([
                 'id' => $target->id,
-                'source' => Path::makeRelative($target->getSourceFile(), base_path()),
+                'source' => $this->portableSource($target->getSourceFile()),
             ]),
         ], []];
     }
@@ -30,10 +30,19 @@ class BlockDataSynth extends Synth
     public function hydrate($value)
     {
         $data = Crypt::decrypt($value['token']);
-        BlockDatastore::loadFile(base_path($data['source']));
+        BlockDatastore::loadFile(str_contains($data['source'], '://') ? $data['source'] : base_path($data['source']));
 
         $blockData = BlockDatastore::getBlock($data['id']);
 
         return $blockData;
+    }
+
+    /**
+     * A file is kept relative to the base path, which differs between servers.
+     * A stream path, such as visual://, names the same data everywhere.
+     */
+    protected function portableSource(string $source): string
+    {
+        return str_contains($source, '://') ? $source : Path::makeRelative($source, base_path());
     }
 }

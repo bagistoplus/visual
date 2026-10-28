@@ -106,7 +106,7 @@ it('resolves template keys to editor storage paths', function (string $key, stri
 
 it('creates empty editor templates with only an empty main region', function () {
     $dataPath = sys_get_temp_dir().'/visual-create-template-'.uniqid();
-    config()->set('bagisto_visual.data_path', $dataPath);
+    config()->set('bagisto_visual.storages.file.path', $dataPath);
 
     $theme = Theme::make([
         'code' => 'fake-theme',
@@ -141,7 +141,7 @@ it('creates empty editor templates with only an empty main region', function () 
 
 it('copies non-shared content from a default data template', function () {
     $dataPath = sys_get_temp_dir().'/visual-create-template-'.uniqid();
-    config()->set('bagisto_visual.data_path', $dataPath);
+    config()->set('bagisto_visual.storages.file.path', $dataPath);
 
     $theme = Theme::make([
         'code' => 'fake-theme',
@@ -182,7 +182,7 @@ YAML);
 
 it('copies non-shared content from a default visual php template', function () {
     $dataPath = sys_get_temp_dir().'/visual-create-template-'.uniqid();
-    config()->set('bagisto_visual.data_path', $dataPath);
+    config()->set('bagisto_visual.storages.file.path', $dataPath);
 
     $theme = Theme::make([
         'code' => 'fake-theme',
@@ -225,7 +225,7 @@ PHP);
 
 it('filters shared regions after normalizing base templates', function () {
     $dataPath = sys_get_temp_dir().'/visual-create-template-'.uniqid();
-    config()->set('bagisto_visual.data_path', $dataPath);
+    config()->set('bagisto_visual.storages.file.path', $dataPath);
 
     $theme = Theme::make([
         'code' => 'fake-theme',
@@ -267,7 +267,7 @@ it('filters shared regions after normalizing base templates', function () {
 
 it('rejects missing default data templates as duplication bases', function () {
     $dataPath = sys_get_temp_dir().'/visual-create-template-'.uniqid();
-    config()->set('bagisto_visual.data_path', $dataPath);
+    config()->set('bagisto_visual.storages.file.path', $dataPath);
 
     $theme = Theme::make([
         'code' => 'fake-theme',
@@ -304,7 +304,7 @@ it('rejects invalid template names with a translated message', function () {
 
 it('rejects duplicate template names with a translated message', function () {
     $dataPath = sys_get_temp_dir().'/visual-create-template-'.uniqid();
-    config()->set('bagisto_visual.data_path', $dataPath);
+    config()->set('bagisto_visual.storages.file.path', $dataPath);
 
     $theme = Theme::make([
         'code' => 'fake-theme',
@@ -333,7 +333,7 @@ it('rejects duplicate template names with a translated message', function () {
 
 it('duplicates only non-shared regions and their blocks from an existing template', function () {
     $dataPath = sys_get_temp_dir().'/visual-create-template-'.uniqid();
-    config()->set('bagisto_visual.data_path', $dataPath);
+    config()->set('bagisto_visual.storages.file.path', $dataPath);
 
     $theme = Theme::make([
         'code' => 'fake-theme',
@@ -403,7 +403,7 @@ it('excludes custom template variants when template assignments are disabled', f
     File::put($directory.'/resources/views/templates/product/gift-box.json', '{}');
 
     $dataPath = sys_get_temp_dir().'/visual-template-discovery-storage-'.uniqid();
-    config()->set('bagisto_visual.data_path', $dataPath);
+    config()->set('bagisto_visual.storages.file.path', $dataPath);
     $storagePath = "{$dataPath}/themes/fake-theme/live/default/en/templates/product/sale.json";
     File::ensureDirectoryExists(dirname($storagePath));
     File::put($storagePath, '{}');

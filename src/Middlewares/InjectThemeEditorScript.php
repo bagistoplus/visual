@@ -2,7 +2,7 @@
 
 namespace BagistoPlus\Visual\Middlewares;
 
-use BagistoPlus\Visual\Facades\ThemePathsResolver;
+use BagistoPlus\Visual\Contracts\ThemeDataStore;
 use BagistoPlus\Visual\Persistence\SectionStore;
 use BagistoPlus\Visual\Support\EditorBlockSchemaSerializer;
 use BagistoPlus\Visual\Support\EditorInheritanceMetadata;
@@ -38,6 +38,7 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
         protected EditorInheritanceMetadata $editorInheritanceMetadata,
         protected SectionStore $sectionStore,
         protected SectionPageBuilder $sectionPageBuilder,
+        protected ThemeDataStore $themeDataStore,
     ) {}
 
     public function handle(Request $request, Closure $next): Response
@@ -229,7 +230,7 @@ class InjectThemeEditorScript extends PreviewScriptMiddleware
      */
     protected function hasSettingsEdits(string $themeCode): bool
     {
-        return file_exists(ThemePathsResolver::getThemeBaseDataPath($themeCode, 'editor/.last-edit'));
+        return $this->themeDataStore->hasUnpublishedEdits($themeCode);
     }
 
     protected function getCurrentTheme()

@@ -3,13 +3,37 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | Data Path
+    | Storage
     |--------------------------------------------------------------------------
     |
-    | The directory where theme data files are stored.
+    | Where theme data is kept, as one of the storages below. "file" keeps it
+    | in files. "database" keeps it in the visual_theme_* tables, for hosts
+    | whose instances share no filesystem.
     |
     */
-    'data_path' => storage_path('bagisto-visual'),
+    'storage' => env('BAGISTO_VISUAL_STORAGE', 'file'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Storages
+    |--------------------------------------------------------------------------
+    |
+    | Settings for each storage. The file storage keeps theme data under its
+    | path. The database storage uses the given connection and cache store,
+    | or the app's defaults when they are null. Every instance must share
+    | that cache store, such as Redis, so a publish reaches all of them.
+    |
+    */
+    'storages' => [
+        'file' => [
+            'path' => storage_path('bagisto-visual'),
+        ],
+
+        'database' => [
+            'connection' => env('BAGISTO_VISUAL_DB_CONNECTION'),
+            'cache' => env('BAGISTO_VISUAL_CACHE_STORE'),
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------

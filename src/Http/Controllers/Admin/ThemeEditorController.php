@@ -2,12 +2,11 @@
 
 namespace BagistoPlus\Visual\Http\Controllers\Admin;
 
-use BagistoPlus\Visual\Facades\ThemePathsResolver;
+use BagistoPlus\Visual\Contracts\ThemeDataStore;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Http\Controllers\Controller;
 use BagistoPlus\Visual\Persistence\CreateTemplate;
 use BagistoPlus\Visual\Persistence\Data\EditorUpdateData;
-use BagistoPlus\Visual\Persistence\Data\FullPageEditorData;
 use BagistoPlus\Visual\Persistence\Data\ThemeSettingsUpdateData;
 use BagistoPlus\Visual\Persistence\DiscardTheme;
 use BagistoPlus\Visual\Persistence\PersistEditorUpdates;
@@ -54,6 +53,7 @@ class ThemeEditorController extends Controller
         protected ChannelThemeResolver $channelThemeResolver,
         protected PersistSectionUpdates $persistSectionUpdates,
         protected SectionStore $sectionStore,
+        protected ThemeDataStore $themeDataStore,
     ) {}
 
     public function index(string $themeCode)
@@ -159,10 +159,7 @@ class ThemeEditorController extends Controller
     {
         $validated = $request->validate([
             'theme' => ['required', 'string'],
-            'channel' => ['required_with:page', 'nullable', 'string', Rule::in($this->getChannelCodes())],
-            'locale' => ['required_with:page', 'nullable', 'string', Rule::in($this->getLocaleCodes($request->input('channel')))],
-            'template' => ['required_with:page', 'nullable', 'string'],
-            'page' => ['nullable', 'array'],
+            'channel' => ['nullable', 'string', Rule::in($this->getChannelCodes())],
         ]);
 
         if ($this->resolveTheme($validated['theme'])->editorMode()->isBagisto()) {
@@ -179,11 +176,6 @@ class ThemeEditorController extends Controller
                 'success' => true,
                 'message' => 'Theme published successfully',
             ]);
-        }
-
-        // If page data is provided, persist it first before publishing
-        if (isset($validated['page'])) {
-            $this->persistEditorUpdates->handleFullPage(FullPageEditorData::fromValidated($validated));
         }
 
         $this->publishTheme->handle($validated['theme']);
@@ -593,7 +585,7 @@ class ThemeEditorController extends Controller
      */
     protected function hasFileEdits(string $themeCode): bool
     {
-        return file_exists(ThemePathsResolver::getThemeBaseDataPath($themeCode, 'editor/.last-edit'));
+        return $this->themeDataStore->hasUnpublishedEdits($themeCode);
     }
 
     /**

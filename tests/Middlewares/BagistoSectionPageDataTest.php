@@ -1,5 +1,6 @@
 <?php
 
+use BagistoPlus\Visual\Contracts\ThemeDataStore;
 use BagistoPlus\Visual\Data\SectionRecord;
 use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
 use BagistoPlus\Visual\Persistence\SectionStore;
@@ -60,6 +61,7 @@ function middlewareReading(SectionStore $store): PageDataReadingMiddleware
         app(EditorInheritanceMetadata::class),
         $store,
         app(SectionPageBuilder::class),
+        app(ThemeDataStore::class),
     );
 }
 
@@ -118,6 +120,7 @@ it('leaves a visual theme to report the blocks it rendered', function () {
         app(EditorInheritanceMetadata::class),
         storeHolding([new SectionRecord(7, 'image_carousel', 'Hero', true, 1, [])]),
         app(SectionPageBuilder::class),
+        app(ThemeDataStore::class),
     );
 
     expect($middleware->pageData())->toBe(['blocks' => [], 'regions' => []]);
@@ -142,6 +145,7 @@ function middlewareCounting(SectionStore $store): DraftCountReadingMiddleware
         app(EditorInheritanceMetadata::class),
         $store,
         app(SectionPageBuilder::class),
+        app(ThemeDataStore::class),
     );
 }
 

@@ -94,44 +94,15 @@ describe('editor api translation ref canonicalization', () => {
     expect(body.updates.blocks.hero.properties.title).toBe('t:block.title');
   });
 
-  it('canonicalizes resolved translation refs before publishing a full page', async () => {
+  it('publishes with only the theme and channel', async () => {
     setupEditorState();
-    recordResolvedTranslationRefs(
-      {
-        hero: {
-          id: 'hero',
-          type: 'hero',
-          properties: { title: 't:block.title' },
-          children: [],
-        },
-      },
-      {
-        hero: {
-          id: 'hero',
-          type: 'hero',
-          properties: { title: 'Resolved title' },
-          children: [],
-        },
-      },
-      getHeroSchema
-    );
     const fetchMock = vi
       .spyOn(globalThis, 'fetch')
       .mockResolvedValue(new Response(JSON.stringify({ success: true }), { status: 200 }));
 
-    await publishTheme({
-      blocks: {
-        hero: {
-          id: 'hero',
-          type: 'hero',
-          properties: { title: 'Resolved title' },
-          children: [],
-        },
-      },
-      regions: [{ name: 'main', blocks: ['hero'] }],
-    }).execute();
+    await publishTheme().execute();
 
     const body = JSON.parse(fetchMock.mock.calls[0][1]!.body as string);
-    expect(body.page.blocks.hero.properties.title).toBe('t:block.title');
+    expect(Object.keys(body).sort()).toEqual(['channel', 'theme']);
   });
 });

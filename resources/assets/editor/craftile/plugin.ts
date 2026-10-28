@@ -5,6 +5,7 @@ import { useState } from '../state';
 import { configureUI } from './config/ui';
 import { isBagistoTheme } from './features/bagistoPreviewRefresh';
 import { setupPreviewLoading } from './features/previewLoading';
+import { setupThemeSettingsPersistence } from './features/themeSettingsPersistence';
 import { setupUnsupportedPage } from './features/unsupportedPage';
 import { setupUpdatePersistence } from './features/updatePersistence';
 import { setupUrlState } from './features/urlState';
@@ -23,6 +24,7 @@ export default function (editorConfig: ThemeEditorConfig): CraftileEditorPlugin 
     setupPageDataHandler(editor, state);
     setupUnsupportedPage(editor, state);
     setupUpdatePersistence(editor, state);
+    setupThemeSettingsPersistence(editor, state);
     setupUrlState(editor, state, editorConfig);
   };
 }

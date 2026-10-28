@@ -1,12 +1,13 @@
 <?php
 
 use BagistoPlus\Visual\Persistence\EditorDataStore;
+use BagistoPlus\Visual\Persistence\FileThemeDataStore;
 use BagistoPlus\Visual\ThemePathsResolver;
 use Illuminate\Filesystem\Filesystem;
 
 beforeEach(function () {
     $this->dataPath = sys_get_temp_dir().'/visual-editor-store-'.uniqid();
-    config()->set('bagisto_visual.data_path', $this->dataPath);
+    config()->set('bagisto_visual.storages.file.path', $this->dataPath);
 
     $this->resolver = new class extends ThemePathsResolver
     {
@@ -19,7 +20,7 @@ beforeEach(function () {
         }
     };
 
-    $this->store = new EditorDataStore($this->resolver, new Filesystem);
+    $this->store = new EditorDataStore($this->resolver, new Filesystem, new FileThemeDataStore(new Filesystem));
 });
 
 afterEach(function () {
@@ -207,7 +208,7 @@ it('finds the first existing nearest fallback parent and skips the current path'
 
 function file_put_contents_for_store(string $theme, string $relativePath, array $data): void
 {
-    $path = config('bagisto_visual.data_path')."/themes/{$theme}/editor/{$relativePath}";
+    $path = config('bagisto_visual.storages.file.path')."/themes/{$theme}/editor/{$relativePath}";
     (new Filesystem)->ensureDirectoryExists(dirname($path));
     file_put_contents($path, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 }

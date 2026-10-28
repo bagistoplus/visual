@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import type { Block, Page, UpdatesEvent } from '@craftile/types';
+import type { Block, UpdatesEvent } from '@craftile/types';
 import {
-  canonicalizePage,
+  canonicalizeBlocks,
   canonicalizeUpdates,
   clearResolvedTranslationRefs,
   isTranslationReference,
@@ -146,7 +146,7 @@ describe('resolved translation refs', () => {
     });
   });
 
-  it('canonicalizes full page payloads', () => {
+  it('canonicalizes unchanged responsive values back to their raw references', () => {
     recordResolvedTranslationRefs(
       {
         hero: block('hero', { title: { _default: 'desktop', desktop: 't:block.desktop', mobile: 't:block.mobile' } }),
@@ -157,14 +157,11 @@ describe('resolved translation refs', () => {
       schema([{ id: 'title', localized: true, responsive: true }])
     );
 
-    const page: Page = {
-      blocks: {
-        hero: block('hero', { title: { _default: 'desktop', desktop: 'Desktop title', mobile: 'Mobile title' } }),
-      },
-      regions: [{ name: 'main', blocks: ['hero'] }],
+    const blocks = {
+      hero: block('hero', { title: { _default: 'desktop', desktop: 'Desktop title', mobile: 'Mobile title' } }),
     };
 
-    expect(canonicalizePage(page).blocks.hero.properties.title).toEqual({
+    expect(canonicalizeBlocks(blocks).hero.properties.title).toEqual({
       _default: 'desktop',
       desktop: 't:block.desktop',
       mobile: 't:block.mobile',
@@ -182,14 +179,11 @@ describe('resolved translation refs', () => {
       schema([{ id: 'title', localized: true, responsive: true }])
     );
 
-    const page: Page = {
-      blocks: {
-        hero: block('hero', { title: { _default: 'desktop', desktop: 'Custom desktop', mobile: 'Mobile title' } }),
-      },
-      regions: [{ name: 'main', blocks: ['hero'] }],
+    const blocks = {
+      hero: block('hero', { title: { _default: 'desktop', desktop: 'Custom desktop', mobile: 'Mobile title' } }),
     };
 
-    expect(canonicalizePage(page).blocks.hero.properties.title).toEqual({
+    expect(canonicalizeBlocks(blocks).hero.properties.title).toEqual({
       _default: 'desktop',
       desktop: 'Custom desktop',
       mobile: 't:block.mobile',
@@ -221,14 +215,11 @@ describe('resolved translation refs', () => {
       responsiveSchema
     );
 
-    const page: Page = {
-      blocks: {
-        hero: block('hero', { title: editedTitle }),
-      },
-      regions: [{ name: 'main', blocks: ['hero'] }],
+    const blocks = {
+      hero: block('hero', { title: editedTitle }),
     };
 
-    expect(canonicalizePage(page).blocks.hero.properties.title).toEqual({
+    expect(canonicalizeBlocks(blocks).hero.properties.title).toEqual({
       _default: 'desktop',
       desktop: 'Custom desktop',
       mobile: 't:block.mobile',
@@ -248,14 +239,11 @@ describe('resolved translation refs', () => {
 
     clearResolvedTranslationRefs();
 
-    const page: Page = {
-      blocks: {
-        hero: block('hero', { title: 'Resolved title' }),
-      },
-      regions: [{ name: 'main', blocks: ['hero'] }],
+    const blocks = {
+      hero: block('hero', { title: 'Resolved title' }),
     };
 
-    expect(canonicalizePage(page).blocks.hero.properties.title).toBe('Resolved title');
+    expect(canonicalizeBlocks(blocks).hero.properties.title).toBe('Resolved title');
   });
 
   it('ignores non-localized schema properties even when values look like translation refs', () => {
@@ -269,13 +257,10 @@ describe('resolved translation refs', () => {
       schema([{ id: 'handle', localized: false }])
     );
 
-    const page: Page = {
-      blocks: {
-        hero: block('hero', { handle: 'Resolved handle' }),
-      },
-      regions: [{ name: 'main', blocks: ['hero'] }],
+    const blocks = {
+      hero: block('hero', { handle: 'Resolved handle' }),
     };
 
-    expect(canonicalizePage(page).blocks.hero.properties.handle).toBe('Resolved handle');
+    expect(canonicalizeBlocks(blocks).hero.properties.handle).toBe('Resolved handle');
   });
 });

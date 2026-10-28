@@ -1,5 +1,6 @@
 <?php
 
+use BagistoPlus\Visual\Contracts\ThemeDataStore;
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use BagistoPlus\Visual\Persistence\DiscardTheme;
 use BagistoPlus\Visual\Persistence\ThemeSettingsCache;
@@ -7,7 +8,7 @@ use Illuminate\Filesystem\Filesystem;
 
 function discardTheme(): DiscardTheme
 {
-    return new DiscardTheme(new Filesystem, new ThemeSettingsCache);
+    return new DiscardTheme(app(ThemeDataStore::class), new ThemeSettingsCache);
 }
 
 function themeDataPath(string $mode): string

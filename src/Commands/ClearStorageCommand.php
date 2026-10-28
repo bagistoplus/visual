@@ -2,6 +2,8 @@
 
 namespace BagistoPlus\Visual\Commands;
 
+use BagistoPlus\Visual\Contracts\ThemeDataStore;
+use BagistoPlus\Visual\Persistence\FileThemeDataStore;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
@@ -12,14 +14,14 @@ use function Laravel\Prompts\warning;
 
 class ClearStorageCommand extends Command
 {
-    protected $signature = 'visual:clear-storage
+    protected $signature = 'visual:storage:clear
                             {--force : Clear the storage path without confirmation}';
 
     protected $description = 'Clear the Bagisto Visual storage path';
 
     public function handle(): int
     {
-        $path = (string) config('bagisto_visual.data_path');
+        $path = FileThemeDataStore::dataPath();
 
         if (! $this->option('force') && ! confirm(
             label: 'Clear Bagisto Visual editor data? All unpublished and persisted work done in the Visual editor will be lost.',
@@ -31,8 +33,12 @@ class ClearStorageCommand extends Command
             return self::FAILURE;
         }
 
-        if (File::isDirectory($path)) {
-            File::cleanDirectory($path);
+        if (config('bagisto_visual.storage') === 'database') {
+            app(ThemeDataStore::class)->clear();
+
+            info('Bagisto Visual theme data cleared from the database.');
+        } elseif (File::isDirectory($path)) {
+            app(ThemeDataStore::class)->clear();
 
             info("Bagisto Visual storage path cleared: {$path}");
         } else {

@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Support;
 
 use BagistoPlus\Visual\Facades\ThemeEditor;
+use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use BagistoPlus\Visual\Persistence\EditorDataStore;
 
 /**
@@ -64,7 +65,7 @@ class TemplateNormalizer
 
     protected function themeFromEditorPath(string $path): ?string
     {
-        $base = rtrim(str_replace('\\', '/', config('bagisto_visual.data_path')), '/').'/themes/';
+        $base = rtrim(str_replace('\\', '/', ThemePathsResolver::getThemesDataPath()), '/').'/';
         $path = str_replace('\\', '/', $path);
 
         if (! str_starts_with($path, $base)) {

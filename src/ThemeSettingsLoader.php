@@ -4,6 +4,7 @@ namespace BagistoPlus\Visual;
 
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Persistence\EditorDataStore;
+use BagistoPlus\Visual\Persistence\ThemeSettingsCache;
 use BagistoPlus\Visual\Theme\Theme;
 use Craftile\Laravel\PropertyBag;
 use Illuminate\Filesystem\Filesystem;
@@ -58,7 +59,7 @@ class ThemeSettingsLoader
 
         $channel = core()->getRequestedChannelCode();
         $locale = core()->getRequestedLocaleCode();
-        $cacheKey = "theme_settings.{$theme->code}.{$channel}.{$locale}";
+        $cacheKey = ThemeSettingsCache::key($theme->code, $channel, $locale);
 
         return Cache::remember($cacheKey, $cacheTtl, function () use ($theme) {
             return $this->loadThemeSettingsFromFile($theme);

@@ -2,6 +2,8 @@
 
 use BagistoPlus\Visual\Http\Controllers\Admin\ThemeEditorController;
 use BagistoPlus\Visual\Persistence\DiscardTheme;
+use BagistoPlus\Visual\Persistence\PersistEditorUpdates;
+use BagistoPlus\Visual\Persistence\PublishTheme;
 use BagistoPlus\Visual\Persistence\SectionStore;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use Craftile\Laravel\PropertyBag;
@@ -274,3 +276,44 @@ it('refuses to copy into a section stored under another theme', function () {
         ['sectionStore' => libraryStore('other', [], ['path' => 'x', 'url' => 'x'])],
     );
 })->throws(NotFoundHttpException::class);
+
+it('publishes a visual theme and ignores the page an older editor sends along', function () {
+    $persist = Mockery::mock(PersistEditorUpdates::class);
+
+    $publish = new class extends PublishTheme
+    {
+        public array $published = [];
+
+        public function __construct() {}
+
+        public function handle(string $themeCode): void
+        {
+            $this->published[] = $themeCode;
+        }
+    };
+
+    $controller = new class($persist, $publish) extends ThemeEditorController
+    {
+        public function __construct(PersistEditorUpdates $persistEditorUpdates, PublishTheme $publishTheme)
+        {
+            $this->persistEditorUpdates = $persistEditorUpdates;
+            $this->publishTheme = $publishTheme;
+        }
+
+        protected function getChannels()
+        {
+            return collect([['code' => 'default', 'locales' => collect([['code' => 'en'], ['code' => 'fr']])]]);
+        }
+    };
+
+    $response = $controller->publishTheme(Request::create('/', 'POST', [
+        'theme' => 'visual-demo',
+        'channel' => 'default',
+        'locale' => 'fr',
+        'template' => 'index',
+        'page' => ['blocks' => [], 'regions' => []],
+    ]));
+
+    expect($publish->published)->toBe(['visual-demo'])
+        ->and($response->getData(true)['success'])->toBeTrue();
+});

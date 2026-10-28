@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Providers;
 
 use BagistoPlus\Visual\Commands;
+use BagistoPlus\Visual\Contracts\ThemeDataStore;
 use BagistoPlus\Visual\Data\BlockData;
 use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Facades\ThemeEditor;
@@ -14,7 +15,10 @@ use BagistoPlus\Visual\Middlewares\RegisterVisualSchemas;
 use BagistoPlus\Visual\Middlewares\RepairPreviewQueryString;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
 use BagistoPlus\Visual\Models\VisualTemplateAssignment;
+use BagistoPlus\Visual\Persistence\DatabaseThemeDataStore;
 use BagistoPlus\Visual\Persistence\EditorDataStore;
+use BagistoPlus\Visual\Persistence\FileThemeDataStore;
+use BagistoPlus\Visual\Persistence\VisualStreamWrapper;
 use BagistoPlus\Visual\Settings\Support as SettingTransformers;
 use BagistoPlus\Visual\Support\BagistoConfig;
 use BagistoPlus\Visual\Support\BlockRenderFilter;
@@ -36,6 +40,8 @@ use BagistoPlus\Visual\ThemePathsResolver;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use BagistoPlus\Visual\View\Compilers\LivewireBlockCompiler;
 use BagistoPlus\Visual\View\DraftAwareJsonViewParser;
+use BagistoPlus\Visual\View\VisualThemeViewFinder;
+use BagistoPlus\Visual\VisualManager;
 use BladeUI\Icons\Factory as BladeIconsFactory;
 use BladeUI\Icons\IconsManifest;
 use Craftile\Laravel\Events\JsonViewLoaded;
@@ -52,6 +58,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\DynamicComponent;
+use Illuminate\View\FileViewFinder;
 use League\Flysystem\Filesystem;
 use Livewire\Component;
 use ReflectionProperty;
@@ -65,6 +72,7 @@ use Webkul\Core\Models\Channel;
 use Webkul\Product\Models\Product;
 use Webkul\Product\Type\Booking;
 use Webkul\Shop\Http\Middleware\Theme;
+use Webkul\Theme\ThemeViewFinder;
 
 class CoreServiceProvider extends ServiceProvider
 {
@@ -74,6 +82,9 @@ class CoreServiceProvider extends ServiceProvider
         Commands\MakeBlockCommand::class,
         Commands\GeneratePreviewCommand::class,
         Commands\ClearStorageCommand::class,
+        Commands\ImportStorageCommand::class,
+        Commands\ExportStorageCommand::class,
+        Commands\WarmStorageCommand::class,
         Commands\GenerateImageVariantsCommand::class,
         Commands\CacheImagesCommand::class,
     ];
@@ -83,6 +94,7 @@ class CoreServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->bootDatabaseStorage();
         $this->bootCraftile();
         $this->bootShopRoutes();
         $this->bootViewsAndTranslations();
@@ -123,6 +135,30 @@ class CoreServiceProvider extends ServiceProvider
      * Boot Methods
      * ---------------------------------------------------------
      */
+
+    /**
+     * Theme data kept in the database is read from visual:// paths, which
+     * need a stream wrapper to answer them and a view finder that keeps them
+     * whole.
+     */
+    protected function bootDatabaseStorage(): void
+    {
+        if (config('bagisto_visual.storage') !== 'database') {
+            return;
+        }
+
+        VisualStreamWrapper::register($this->app->make(DatabaseThemeDataStore::class));
+
+        $this->app->extend('view.finder', function (FileViewFinder $finder) {
+            return $finder instanceof ThemeViewFinder && ! $finder instanceof VisualThemeViewFinder
+                ? VisualThemeViewFinder::from($finder)
+                : $finder;
+        });
+
+        if ($this->app->resolved('view')) {
+            $this->app->make('view')->setFinder($this->app->make('view.finder'));
+        }
+    }
 
     protected function bootCraftile(): void
     {
@@ -221,7 +257,9 @@ class CoreServiceProvider extends ServiceProvider
     protected function bootMiddlewares(): void
     {
         // Global rather than on the shop group: payment gateway return routes only use "web"
-        $this->app->make(Kernel::class)->prependMiddleware(RepairPreviewQueryString::class);
+        /** @var \Illuminate\Foundation\Http\Kernel $kernel */
+        $kernel = $this->app->make(Kernel::class);
+        $kernel->prependMiddleware(RepairPreviewQueryString::class);
 
         $this->app->bind(Theme::class, UseShopThemeFromRequest::class);
 
@@ -443,6 +481,14 @@ class CoreServiceProvider extends ServiceProvider
 
     protected function registerSingletons(): void
     {
+        $this->app->singleton(VisualManager::class);
+        $this->app->singleton(DatabaseThemeDataStore::class);
+        $this->app->bind(ThemeDataStore::class, function (Application $app) {
+            return config('bagisto_visual.storage') === 'database'
+                ? $app->make(DatabaseThemeDataStore::class)
+                : $app->make(FileThemeDataStore::class);
+        });
+
         $this->app->singleton(ThemeSettingsLoader::class, function (Application $app) {
             return new ThemeSettingsLoader(
                 $app->get(ThemePathsResolver::class),

@@ -1,54 +1,13 @@
 <script setup lang="ts">
 import { Accordion } from '@ark-ui/vue';
 import { PropertyField } from '@craftile/editor/ui';
-import { debounce } from 'perfect-debounce';
 import useI18n from '../composables/i18n';
 import { useState } from '../state';
-import { persistThemeSettings as persistThemeSettingsApi } from '../api';
-import { CRAFTILE_EDITOR } from '../craftile/plugin';
-import { livePreviewUrl } from '../utils/previewUrl';
+import { queueThemeSetting } from '../craftile/features/themeSettingsPersistence';
 import DescriptionField from './DescriptionField.vue';
 
 const { t } = useI18n();
 const { state, theme } = useState();
-const editor = inject<any>(CRAFTILE_EDITOR);
-
-// Accumulator for pending setting changes
-const pendingUpdates = ref<Record<string, any>>({});
-
-const persistThemeSettings = debounce(async () => {
-  if (!editor || Object.keys(pendingUpdates.value).length === 0) return;
-
-  // Capture current updates and clear accumulator
-  const updates = { ...pendingUpdates.value };
-  pendingUpdates.value = {};
-
-  const request = persistThemeSettingsApi(
-    updates,
-    livePreviewUrl(editor.preview.getFrame(), state.pageData?.url || '')
-  );
-
-  request.onSuccess((html) => {
-    if (html) {
-      editor.preview.sendMessage('page.refresh', {
-        html,
-      });
-    } else {
-      // Full page reload if no HTML returned
-      editor.preview.reload();
-    }
-  });
-
-  request.onError((error) => {
-    console.error('Failed to persist theme settings:', error);
-    editor.ui.toast({
-      type: 'error',
-      title: 'Failed to save theme settings',
-    });
-  });
-
-  await request.execute();
-}, 500);
 
 const updateSetting = (id: string, value: any) => {
   if (!theme.value) return;
@@ -57,11 +16,7 @@ const updateSetting = (id: string, value: any) => {
   theme.value.settings[id] = value;
   state.haveEdits = true;
 
-  // Accumulate the change in pending updates
-  pendingUpdates.value[id] = value;
-
-  // Trigger debounced save (will batch all changes in 500ms window)
-  persistThemeSettings();
+  queueThemeSetting(id, value);
 };
 </script>
 

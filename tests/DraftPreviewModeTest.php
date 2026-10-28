@@ -1,5 +1,6 @@
 <?php
 
+use BagistoPlus\Visual\Contracts\ThemeDataStore;
 use BagistoPlus\Visual\Facades\ThemeEditor as ThemeEditorFacade;
 use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
 use BagistoPlus\Visual\Persistence\SectionStore;
@@ -74,6 +75,7 @@ it('leaves craftile preview off so no editor script or attribute is emitted', fu
         app(EditorInheritanceMetadata::class),
         app(SectionStore::class),
         app(SectionPageBuilder::class),
+        app(ThemeDataStore::class),
     );
 
     $handled = $middleware->handle(request(), fn () => $response);

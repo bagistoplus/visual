@@ -6,10 +6,14 @@ If you want Visual changes to move from local development to staging and product
 
 ## What Visual Stores
 
-Visual data is controlled by `data_path`:
+Visual data is controlled by the path of the `file` storage:
 
 ```php
-'data_path' => storage_path('bagisto-visual'),
+'storages' => [
+    'file' => [
+        'path' => storage_path('bagisto-visual'),
+    ],
+],
 ```
 
 This directory contains the theme state that the editor writes, including editor and live template/settings data. It is separate from uploaded media.
@@ -42,7 +46,12 @@ php artisan vendor:publish --tag=visual-config
 Then update `config/bagisto_visual.php`:
 
 ```php
-'data_path' => base_path('visual/data'),
+'storages' => [
+    'file' => [
+        'path' => base_path('visual/data'),
+    ],
+    // ...
+],
 
 'images' => [
     'storage' => 'visual',
@@ -118,7 +127,12 @@ For production teams, keep Visual data in git and store uploads on shared persis
 Keep the Visual data path in the repository:
 
 ```php
-'data_path' => base_path('visual/data'),
+'storages' => [
+    'file' => [
+        'path' => base_path('visual/data'),
+    ],
+    // ...
+],
 ```
 
 Configure an S3-compatible disk in `config/filesystems.php`:

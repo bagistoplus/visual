@@ -4,16 +4,16 @@ use BagistoPlus\Visual\ThemePathsResolver;
 use Illuminate\Support\Facades\File;
 
 beforeEach(function () {
-    config()->set('bagisto_visual.data_path', sys_get_temp_dir().'/visual-theme-paths-'.uniqid());
+    config()->set('bagisto_visual.storages.file.path', sys_get_temp_dir().'/visual-theme-paths-'.uniqid());
 });
 
 afterEach(function () {
-    File::deleteDirectory(config('bagisto_visual.data_path'));
+    File::deleteDirectory(config('bagisto_visual.storages.file.path'));
 });
 
 it('builds exact theme data paths without touching the database', function () {
     $resolver = new ThemePathsResolver;
-    $base = config('bagisto_visual.data_path').'/themes/visual-debut/editor';
+    $base = config('bagisto_visual.storages.file.path').'/themes/visual-debut/editor';
 
     expect($resolver->getThemeBaseDataPath('visual-debut', 'editor'))->toBe($base)
         ->and($resolver->buildThemePath('visual-debut', 'editor', 'default', 'en'))->toBe("{$base}/default/en")
@@ -22,7 +22,7 @@ it('builds exact theme data paths without touching the database', function () {
 });
 
 it('returns the first existing theme settings file from resolved fallback paths', function () {
-    $base = config('bagisto_visual.data_path').'/themes/visual-debut/live';
+    $base = config('bagisto_visual.storages.file.path').'/themes/visual-debut/live';
     $resolver = new class($base) extends ThemePathsResolver
     {
         public function __construct(protected string $base) {}
@@ -52,7 +52,7 @@ it('returns null when no theme settings fallback file exists', function () {
         public function resolveFallbackPaths(string $themeCode, string $mode, string $channel, string $locale): array
         {
             return [
-                config('bagisto_visual.data_path').'/themes/visual-debut/live/default/en',
+                config('bagisto_visual.storages.file.path').'/themes/visual-debut/live/default/en',
             ];
         }
     };

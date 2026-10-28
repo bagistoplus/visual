@@ -1,6 +1,7 @@
 <?php
 
 use BagistoPlus\Visual\Persistence\EditorDataStore;
+use BagistoPlus\Visual\Persistence\FileThemeDataStore;
 use BagistoPlus\Visual\Settings\Description;
 use BagistoPlus\Visual\Settings\Header;
 use BagistoPlus\Visual\Settings\Select;
@@ -58,7 +59,7 @@ beforeEach(function () {
 
 it('loads resolved editor parent settings before applying schema defaults', function () {
     $dataPath = sys_get_temp_dir().'/visual-theme-settings-loader-'.uniqid();
-    config()->set('bagisto_visual.data_path', $dataPath);
+    config()->set('bagisto_visual.storages.file.path', $dataPath);
 
     $files = new Filesystem;
     $files->ensureDirectoryExists("{$dataPath}/themes/test-theme/editor/default/en");
@@ -89,7 +90,7 @@ it('loads resolved editor parent settings before applying schema defaults', func
     $loader = new ThemeSettingsLoader(
         $resolver,
         $files,
-        new EditorDataStore($resolver, $files),
+        new EditorDataStore($resolver, $files, new FileThemeDataStore($files)),
     );
 
     $settings = $loader->loadThemeSettings(theme_settings_loader_theme())->toArray();
@@ -129,7 +130,7 @@ it('resolves translation references only for localized theme settings', function
     $resolver->shouldReceive('resolveThemeSettingsPath')->once()->andReturn($path);
 
     $files = new Filesystem;
-    $loader = new ThemeSettingsLoader($resolver, $files, new EditorDataStore($resolver, $files));
+    $loader = new ThemeSettingsLoader($resolver, $files, new EditorDataStore($resolver, $files, new FileThemeDataStore($files)));
     $settings = $loader->loadThemeSettings(theme_settings_loader_theme())->toArray();
 
     expect($settings)->toMatchArray([
@@ -164,7 +165,7 @@ it('uses schema defaults when theme settings json is invalid or non array', func
     $resolver->shouldReceive('resolveThemeSettingsPath')->once()->andReturn($path);
 
     $files = new Filesystem;
-    $loader = new ThemeSettingsLoader($resolver, $files, new EditorDataStore($resolver, $files));
+    $loader = new ThemeSettingsLoader($resolver, $files, new EditorDataStore($resolver, $files, new FileThemeDataStore($files)));
     $settings = $loader->loadThemeSettings(theme_settings_loader_theme())->toArray();
 
     expect($settings)->toMatchArray([

@@ -1,4 +1,4 @@
-import type { Block, BlockSchema, Page, PropertyField, UpdatesEvent } from '@craftile/types';
+import type { Block, BlockSchema, PropertyField, UpdatesEvent } from '@craftile/types';
 
 type ResolvedTranslationRef = {
   raw: any;
@@ -65,17 +65,6 @@ export function canonicalizeUpdates(updates: UpdatesEvent): UpdatesEvent {
     ...updates,
     blocks: canonicalizeBlocks(updates.blocks),
   };
-}
-
-export function canonicalizePage<T extends Page | null | undefined>(page: T): T {
-  if (!page) {
-    return page;
-  }
-
-  return {
-    ...page,
-    blocks: canonicalizeBlocks(page.blocks),
-  } as T;
 }
 
 export function canonicalizeBlocks(blocks: Record<string, Block>): Record<string, Block> {

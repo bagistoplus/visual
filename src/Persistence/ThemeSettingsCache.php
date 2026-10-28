@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Persistence;
 
+use BagistoPlus\Visual\Facades\Visual;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -13,9 +14,21 @@ use Illuminate\Support\Facades\Cache;
  */
 class ThemeSettingsCache
 {
+    /**
+     * The key a theme's settings are cached under for a channel and locale,
+     * inside the storage scope when one is set.
+     */
+    public static function key(string $themeCode, string $channel, string $locale): string
+    {
+        $scope = Visual::storageScope();
+        $key = "theme_settings.{$themeCode}.{$channel}.{$locale}";
+
+        return $scope === '' ? $key : "{$scope}:{$key}";
+    }
+
     public function forget(string $themeCode, string $channel, string $locale): void
     {
-        Cache::forget("theme_settings.{$themeCode}.{$channel}.{$locale}");
+        Cache::forget(static::key($themeCode, $channel, $locale));
     }
 
     /**

@@ -6,7 +6,6 @@ use BagistoPlus\Visual\Events\ThemeActivated;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use BagistoPlus\Visual\Persistence\Data\EditorUpdateData;
-use BagistoPlus\Visual\Persistence\Data\FullPageEditorData;
 use BagistoPlus\Visual\Support\TemplateDiscovery;
 use BagistoPlus\Visual\Theme\Theme;
 use Craftile\Laravel\Data\UpdateRequest;
@@ -59,46 +58,6 @@ class PersistEditorUpdates
             return [
                 'loadedBlocks' => $allBlocks,
             ];
-        });
-    }
-
-    public function handleFullPage(FullPageEditorData $data): void
-    {
-        $this->withinStorefrontContext($data->theme, $data->channel, $data->locale, function () use ($data) {
-            foreach ($data->sharedRegions() as $region) {
-                $regionBlocks = $this->collectRegionBlocks($data->blocks, $region['blocks'] ?? []);
-
-                $this->persistRegionData(
-                    region: $region,
-                    data: [
-                        'blocks' => $regionBlocks,
-                        'regions' => [$region],
-                    ],
-                    theme: $data->theme,
-                    channel: $data->channel,
-                    locale: $data->locale,
-                    sources: []
-                );
-            }
-
-            $nonSharedRegions = $data->nonSharedRegions();
-
-            if ($nonSharedRegions->isNotEmpty()) {
-                $rootBlockIds = $nonSharedRegions->flatMap(fn ($region) => $region['blocks'] ?? [])->unique()->toArray();
-                $templateBlocks = $this->collectRegionBlocks($data->blocks, $rootBlockIds);
-
-                $this->persistTemplateData(
-                    data: [
-                        'blocks' => $templateBlocks,
-                        'regions' => $nonSharedRegions->toArray(),
-                    ],
-                    theme: $data->theme,
-                    channel: $data->channel,
-                    locale: $data->locale,
-                    template: $data->template,
-                    sources: []
-                );
-            }
         });
     }
 

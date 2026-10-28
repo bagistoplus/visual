@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Persistence;
 
+use BagistoPlus\Visual\Contracts\ThemeDataStore;
 use BagistoPlus\Visual\ThemePathsResolver;
 use Illuminate\Filesystem\Filesystem;
 
@@ -10,6 +11,7 @@ final class EditorDataStore
     public function __construct(
         protected ThemePathsResolver $themePathsResolver,
         protected Filesystem $files,
+        protected ThemeDataStore $dataStore,
     ) {}
 
     public function relativePath(string $channel, string $locale, string $logicalPath): string
@@ -171,22 +173,13 @@ final class EditorDataStore
         }
 
         $data = $parent ? ['parent' => $parent] + $diff : $diff;
-        $path = $this->path($theme, $relativePath);
 
-        $this->files->ensureDirectoryExists(dirname($path));
-        $this->files->put($path, json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
-        $this->touchLastEdit($theme);
+        $this->dataStore->put($theme, $relativePath, json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
     public function delete(string $theme, string $relativePath): void
     {
-        $path = $this->path($theme, $relativePath);
-
-        if ($this->files->exists($path)) {
-            $this->files->delete($path);
-        }
-
-        $this->touchLastEdit($theme);
+        $this->dataStore->delete($theme, $relativePath);
     }
 
     public function path(string $theme, string $relativePath): string
@@ -228,14 +221,6 @@ final class EditorDataStore
         $parent = (string) ($raw['parent'] ?? '');
 
         return $this->parentExists($theme, $parent) ? $parent : null;
-    }
-
-    protected function touchLastEdit(string $theme): void
-    {
-        $path = $this->themePathsResolver->getThemeBaseDataPath($theme, 'editor/.last-edit');
-
-        $this->files->ensureDirectoryExists(dirname($path));
-        $this->files->put($path, (string) time());
     }
 
     protected function safeParent(string $parent): bool

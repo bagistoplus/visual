@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static array resolveFallbackPaths(string $themeCode, string $mode, string $channel, string $locale)
  * @method static string buildThemePath(string $themeCode, string $mode, string $channel, string $locale)
  * @method static string getThemeBaseDataPath(string $themeCode, string $mode = 'live')
+ * @method static string getThemesDataPath()
  *
  * @see \BagistoPlus\Visual\ThemePathsResolver
  */

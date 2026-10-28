@@ -1,7 +1,6 @@
 <?php
 
 use BagistoPlus\Visual\Persistence\Data\EditorUpdateData;
-use BagistoPlus\Visual\Persistence\Data\FullPageEditorData;
 use BagistoPlus\Visual\Persistence\Data\ThemeSettingsUpdateData;
 use Craftile\Laravel\Data\UpdateRequest;
 
@@ -43,28 +42,6 @@ it('creates editor update data from validated payloads', function () {
         ->and($data->nonSharedRegions()->pluck('id')->all())->toBe(['main'])
         ->and($data->changedBlockIds())->toBe(['hero', 'banner'])
         ->and($data->addedBlockIds())->toBe(['hero']);
-});
-
-it('creates full page editor data from validated payloads', function () {
-    $data = FullPageEditorData::fromValidated([
-        'theme' => 'test-theme',
-        'channel' => 'default',
-        'locale' => 'ar',
-        'template' => 'index',
-        'page' => [
-            'blocks' => ['hero' => ['id' => 'hero']],
-            'regions' => [
-                ['id' => 'header', 'shared' => true, 'blocks' => []],
-                ['id' => 'main', 'shared' => false, 'blocks' => ['hero']],
-            ],
-        ],
-    ]);
-
-    expect($data->theme)->toBe('test-theme')
-        ->and($data->template)->toBe('index')
-        ->and($data->blocks)->toHaveKey('hero')
-        ->and($data->sharedRegions()->pluck('id')->all())->toBe(['header'])
-        ->and($data->nonSharedRegions()->pluck('id')->all())->toBe(['main']);
 });
 
 it('creates theme settings update data without template sources', function () {
