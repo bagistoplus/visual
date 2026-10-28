@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Persistence;
 
 use BagistoPlus\Visual\Contracts\ThemeDataStore;
+use BagistoPlus\Visual\Data\ThemeSnapshot;
 use BagistoPlus\Visual\Facades\Visual;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Database\ConnectionInterface;
@@ -143,51 +144,53 @@ class DatabaseThemeDataStore implements ThemeDataStore
     public function discard(string $theme): void
     {
         $scope = Visual::storageScope();
-        $now = now();
 
-        [$state, $published] = $this->connection()->transaction(function () use ($scope, $theme, $now) {
-            $state = $this->recordEdit($scope, $theme, ['edited_at' => null]);
+        $this->replaceEditor($scope, $theme, function () use ($scope, $theme) {
+            $liveVersionId = $this->states($scope, $theme)->value('live_version_id');
 
-            $this->documents($scope, $theme)->delete();
-
-            $published = $state->live_version_id
-                ? (array) json_decode((string) $this->connection()->table('visual_theme_versions')->where('id', $state->live_version_id)->value('documents'), true)
+            return $liveVersionId
+                ? (array) json_decode((string) $this->connection()->table('visual_theme_versions')->where('id', $liveVersionId)->value('documents'), true)
                 : [];
-
-            foreach (array_chunk($published, 50, true) as $chunk) {
-                $this->connection()->table('visual_theme_documents')->insert(collect($chunk)->map(fn (string $contents, string $path) => [
-                    'scope' => $scope,
-                    'theme' => $theme,
-                    'path' => $path,
-                    'content' => $contents,
-                    'hash' => md5($contents),
-                    'size' => strlen($contents),
-                    'stamp' => $now->getTimestamp(),
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ])->values()->all());
-            }
-
-            return [$state, $published];
-        });
-
-        $files = collect($published)
-            ->map(fn (string $contents) => ['size' => strlen($contents), 'stamp' => $now->getTimestamp(), 'hash' => md5($contents)])
-            ->all();
-
-        $this->editorWritten(
-            $scope,
-            $theme,
-            (int) $state->editor_version,
-            fn () => $files,
-            collect($published)->mapWithKeys(fn (string $contents) => [md5($contents) => $contents])->all(),
-            replacesEverything: true,
-        );
+        }, edited: false);
     }
 
     public function hasUnpublishedEdits(string $theme): bool
     {
         return $this->states(Visual::storageScope(), $theme)->whereNotNull('edited_at')->exists();
+    }
+
+    public function themes(): array
+    {
+        return $this->connection()->table('visual_theme_states')
+            ->where('scope', Visual::storageScope())
+            ->orderBy('theme')
+            ->pluck('theme')
+            ->all();
+    }
+
+    public function snapshot(string $theme): ThemeSnapshot
+    {
+        $scope = Visual::storageScope();
+        $state = $this->states($scope, $theme)->first(['live_version_id', 'edited_at']);
+
+        $live = $state?->live_version_id
+            ? (array) json_decode((string) $this->connection()->table('visual_theme_versions')->where('id', $state->live_version_id)->value('documents'), true)
+            : null;
+
+        return new ThemeSnapshot(
+            editor: $this->documents($scope, $theme)->orderBy('path')->pluck('content', 'path')->all(),
+            live: $live === null ? null : collect($live)->sortKeys()->all(),
+            edited: $state?->edited_at !== null,
+        );
+    }
+
+    public function restore(string $theme, ThemeSnapshot $snapshot): void
+    {
+        if ($snapshot->live !== null) {
+            $this->publish($theme, $snapshot->live);
+        }
+
+        $this->replaceEditor(Visual::storageScope(), $theme, fn () => $snapshot->editor, $snapshot->edited);
     }
 
     public function themesPath(string $scope): string
@@ -457,6 +460,54 @@ class DatabaseThemeDataStore implements ThemeDataStore
         $files = $this->cache()->get($this->indexKey($scope, $theme, 'editor', $version));
 
         return $files === null ? null : ['version' => $version, 'files' => $files];
+    }
+
+    /**
+     * Replace every editor document of a theme, counted as one edit, and carry
+     * the new set into the cache.
+     *
+     * @param  callable(): array<string, string>  $documents  Read inside the transaction, contents keyed by relative path.
+     */
+    protected function replaceEditor(string $scope, string $theme, callable $documents, bool $edited): void
+    {
+        $now = now();
+
+        [$state, $written] = $this->connection()->transaction(function () use ($scope, $theme, $documents, $edited, $now) {
+            $state = $this->recordEdit($scope, $theme, ['edited_at' => $edited ? $now : null]);
+
+            $this->documents($scope, $theme)->delete();
+
+            $written = $documents();
+
+            foreach (array_chunk($written, 50, true) as $chunk) {
+                $this->connection()->table('visual_theme_documents')->insert(collect($chunk)->map(fn (string $contents, string $path) => [
+                    'scope' => $scope,
+                    'theme' => $theme,
+                    'path' => $path,
+                    'content' => $contents,
+                    'hash' => md5($contents),
+                    'size' => strlen($contents),
+                    'stamp' => $now->getTimestamp(),
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ])->values()->all());
+            }
+
+            return [$state, $written];
+        });
+
+        $files = collect($written)
+            ->map(fn (string $contents) => ['size' => strlen($contents), 'stamp' => $now->getTimestamp(), 'hash' => md5($contents)])
+            ->all();
+
+        $this->editorWritten(
+            $scope,
+            $theme,
+            (int) $state->editor_version,
+            fn () => $files,
+            collect($written)->mapWithKeys(fn (string $contents) => [md5($contents) => $contents])->all(),
+            replacesEverything: true,
+        );
     }
 
     /**

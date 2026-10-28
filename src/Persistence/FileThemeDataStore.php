@@ -3,7 +3,8 @@
 namespace BagistoPlus\Visual\Persistence;
 
 use BagistoPlus\Visual\Contracts\ThemeDataStore;
-use BagistoPlus\Visual\ThemePathsResolver;
+use BagistoPlus\Visual\Data\ThemeSnapshot;
+use BagistoPlus\Visual\Facades\Visual;
 use Illuminate\Filesystem\Filesystem;
 
 /**
@@ -15,10 +16,7 @@ use Illuminate\Filesystem\Filesystem;
  */
 class FileThemeDataStore implements ThemeDataStore
 {
-    public function __construct(
-        protected ThemePathsResolver $themePathsResolver,
-        protected Filesystem $files,
-    ) {}
+    public function __construct(protected Filesystem $files) {}
 
     public function put(string $theme, string $relativePath, string $contents): void
     {
@@ -50,8 +48,8 @@ class FileThemeDataStore implements ThemeDataStore
      */
     public function publish(string $theme, array $documents): void
     {
-        $newVersionPath = $this->themePathsResolver->getThemeBaseDataPath($theme, 'versions/V'.time());
-        $livePath = $this->themePathsResolver->getThemeBaseDataPath($theme, 'live');
+        $newVersionPath = $this->themePath($theme, 'versions/V'.now()->getTimestamp());
+        $livePath = $this->themePath($theme, 'live');
 
         // An editor holding nothing to copy still publishes, as a version that
         // overrides nothing.
@@ -87,8 +85,8 @@ class FileThemeDataStore implements ThemeDataStore
      */
     public function discard(string $theme): void
     {
-        $editorPath = $this->themePathsResolver->getThemeBaseDataPath($theme, 'editor');
-        $livePath = $this->themePathsResolver->getThemeBaseDataPath($theme, 'live');
+        $editorPath = $this->themePath($theme, 'editor');
+        $livePath = $this->themePath($theme, 'live');
 
         if ($this->files->exists($editorPath)) {
             $this->files->deleteDirectory($editorPath);
@@ -102,6 +100,56 @@ class FileThemeDataStore implements ThemeDataStore
     public function hasUnpublishedEdits(string $theme): bool
     {
         return $this->files->exists($this->lastEditPath($theme));
+    }
+
+    public function themes(): array
+    {
+        $path = $this->themesPath(Visual::storageScope());
+
+        if (! $this->files->isDirectory($path)) {
+            return [];
+        }
+
+        return collect($this->files->directories($path))
+            ->map(fn (string $directory) => basename($directory))
+            ->sort()
+            ->values()
+            ->all();
+    }
+
+    public function snapshot(string $theme): ThemeSnapshot
+    {
+        $livePath = $this->themePath($theme, 'live');
+
+        return new ThemeSnapshot(
+            editor: $this->documentsIn($this->themePath($theme, 'editor')),
+            live: $this->files->isDirectory($livePath) ? $this->documentsIn($livePath) : null,
+            edited: $this->hasUnpublishedEdits($theme),
+        );
+    }
+
+    public function restore(string $theme, ThemeSnapshot $snapshot): void
+    {
+        if ($snapshot->live !== null) {
+            $this->publish($theme, $snapshot->live);
+        }
+
+        $editorPath = $this->themePath($theme, 'editor');
+
+        if ($this->files->exists($editorPath)) {
+            $this->files->deleteDirectory($editorPath);
+        }
+
+        foreach ($snapshot->editor as $relativePath => $contents) {
+            $path = $this->editorPath($theme, $relativePath);
+
+            $this->files->ensureDirectoryExists(dirname($path));
+            $this->files->put($path, $contents);
+        }
+
+        if ($snapshot->edited) {
+            $this->markEdited($theme);
+        }
     }
 
     public static function dataPath(): string
@@ -130,13 +178,13 @@ class FileThemeDataStore implements ThemeDataStore
         $path = $this->lastEditPath($theme);
 
         $this->files->ensureDirectoryExists(dirname($path));
-        $this->files->put($path, (string) time());
+        $this->files->put($path, (string) now()->getTimestamp());
     }
 
     protected function pruneVersions(string $theme): void
     {
         $keep = max(0, (int) config('bagisto_visual.versions_to_keep', 5));
-        $versionsPath = $this->themePathsResolver->getThemeBaseDataPath($theme, 'versions');
+        $versionsPath = $this->themePath($theme, 'versions');
 
         $versions = collect($this->files->directories($versionsPath))
             ->filter(fn (string $path) => preg_match('/^V\d+$/', basename($path)) === 1)
@@ -148,13 +196,38 @@ class FileThemeDataStore implements ThemeDataStore
         }
     }
 
+    /**
+     * @return array<string, string>
+     */
+    protected function documentsIn(string $path): array
+    {
+        if (! $this->files->isDirectory($path)) {
+            return [];
+        }
+
+        return collect($this->files->allFiles($path))
+            ->mapWithKeys(fn ($file) => [str_replace('\\', '/', $file->getRelativePathname()) => $this->files->get($file->getPathname())])
+            ->sortKeys()
+            ->all();
+    }
+
+    /**
+     * Built from this store's own root rather than the one the app reads from,
+     * which belongs to the other store while the app uses the database and this
+     * store is being copied to or from.
+     */
+    protected function themePath(string $theme, string $mode): string
+    {
+        return $this->themesPath(Visual::storageScope())."/{$theme}/{$mode}";
+    }
+
     protected function editorPath(string $theme, string $relativePath): string
     {
-        return $this->themePathsResolver->getThemeBaseDataPath($theme, 'editor').'/'.ltrim($relativePath, '/');
+        return $this->themePath($theme, 'editor').'/'.ltrim($relativePath, '/');
     }
 
     protected function lastEditPath(string $theme): string
     {
-        return $this->themePathsResolver->getThemeBaseDataPath($theme, 'editor/.last-edit');
+        return $this->themePath($theme, 'editor/.last-edit');
     }
 }

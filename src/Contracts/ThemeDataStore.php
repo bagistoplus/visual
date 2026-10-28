@@ -2,6 +2,8 @@
 
 namespace BagistoPlus\Visual\Contracts;
 
+use BagistoPlus\Visual\Data\ThemeSnapshot;
+
 /**
  * Where the editor's writes to theme data go, and where it is read from.
  *
@@ -39,6 +41,27 @@ interface ThemeDataStore
     public function discard(string $theme): void;
 
     public function hasUnpublishedEdits(string $theme): bool;
+
+    /**
+     * The codes of the themes this store holds data for.
+     *
+     * @return array<int, string>
+     */
+    public function themes(): array;
+
+    /**
+     * Everything this store holds for a theme.
+     */
+    public function snapshot(string $theme): ThemeSnapshot;
+
+    /**
+     * Make a snapshot what this store holds for a theme.
+     *
+     * Its live documents are published as a new version, so the versions
+     * already held stay. The editor documents are replaced as a whole. A
+     * snapshot of a theme that was never published leaves what is live alone.
+     */
+    public function restore(string $theme, ThemeSnapshot $snapshot): void;
 
     /**
      * The directory every theme's data is read from, for a storage scope.

@@ -20,7 +20,7 @@ beforeEach(function () {
         }
     };
 
-    $this->store = new EditorDataStore($this->resolver, new Filesystem, new FileThemeDataStore($this->resolver, new Filesystem));
+    $this->store = new EditorDataStore($this->resolver, new Filesystem, new FileThemeDataStore(new Filesystem));
 });
 
 afterEach(function () {

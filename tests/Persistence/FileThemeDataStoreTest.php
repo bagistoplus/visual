@@ -1,7 +1,6 @@
 <?php
 
 use BagistoPlus\Visual\Persistence\FileThemeDataStore;
-use BagistoPlus\Visual\ThemePathsResolver;
 use Illuminate\Filesystem\Filesystem;
 
 beforeEach(function () {
@@ -9,7 +8,7 @@ beforeEach(function () {
     config()->set('bagisto_visual.storages.file.path', $this->dataPath);
 
     $this->themePath = $this->dataPath.'/themes/demo';
-    $this->store = new FileThemeDataStore(new ThemePathsResolver, new Filesystem);
+    $this->store = new FileThemeDataStore(new Filesystem);
 });
 
 afterEach(function () {

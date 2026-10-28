@@ -77,11 +77,40 @@ class VisualManager
 
         $scope = (string) (($this->storageScopeResolver)() ?? '');
 
+        $this->ensureValidStorageScope($scope);
+
+        return $scope;
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function ensureValidStorageScope(string $scope): void
+    {
         if ($scope !== '' && ! preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]*$/', $scope)) {
             throw new InvalidArgumentException("The storage scope [{$scope}] may only contain letters, numbers, dots, dashes and underscores, and must start with a letter or number.");
         }
+    }
 
-        return $scope;
+    /**
+     * Run a callback under a given scope, then put back the resolver the host
+     * app set, as a command copying one tenant's data needs.
+     *
+     * @template T
+     *
+     * @param  callable(): T  $callback
+     * @return T
+     */
+    public function withStorageScope(string $scope, callable $callback): mixed
+    {
+        $previous = $this->storageScopeResolver;
+        $this->storageScopeResolver = fn () => $scope;
+
+        try {
+            return $callback();
+        } finally {
+            $this->storageScopeResolver = $previous;
+        }
     }
 
     public function imagesDisk(): string

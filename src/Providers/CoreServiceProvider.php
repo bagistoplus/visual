@@ -82,6 +82,8 @@ class CoreServiceProvider extends ServiceProvider
         Commands\MakeBlockCommand::class,
         Commands\GeneratePreviewCommand::class,
         Commands\ClearStorageCommand::class,
+        Commands\ImportStorageCommand::class,
+        Commands\ExportStorageCommand::class,
         Commands\GenerateImageVariantsCommand::class,
         Commands\CacheImagesCommand::class,
     ];

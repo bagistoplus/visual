@@ -14,7 +14,7 @@ use function Laravel\Prompts\warning;
 
 class ClearStorageCommand extends Command
 {
-    protected $signature = 'visual:clear-storage
+    protected $signature = 'visual:storage:clear
                             {--force : Clear the storage path without confirmation}';
 
     protected $description = 'Clear the Bagisto Visual storage path';

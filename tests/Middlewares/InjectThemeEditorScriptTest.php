@@ -284,7 +284,7 @@ it('includes locale inheritance for the current template in page data', function
         $themeEditor,
         $themeSettingsLoader,
         new EditorInheritanceMetadata(
-            new EditorDataStore(new ThemePathsResolverConcrete, $files, new FileThemeDataStore(new ThemePathsResolverConcrete, $files)),
+            new EditorDataStore(new ThemePathsResolverConcrete, $files, new FileThemeDataStore($files)),
             app(TemplateDiscovery::class),
         ),
     );
@@ -350,7 +350,7 @@ it('includes cross-channel locale inheritance for the current template in page d
         $themeEditor,
         $themeSettingsLoader,
         new EditorInheritanceMetadata(
-            new EditorDataStore(new ThemePathsResolverConcrete, $files, new FileThemeDataStore(new ThemePathsResolverConcrete, $files)),
+            new EditorDataStore(new ThemePathsResolverConcrete, $files, new FileThemeDataStore($files)),
             app(TemplateDiscovery::class),
         ),
     );

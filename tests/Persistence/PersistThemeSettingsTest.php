@@ -43,7 +43,7 @@ beforeEach(function () {
         }
     };
     app()->instance(ThemePathsResolverConcrete::class, $this->resolver);
-    $this->store = new EditorDataStore($this->resolver, $this->files, new FileThemeDataStore($this->resolver, $this->files));
+    $this->store = new EditorDataStore($this->resolver, $this->files, new FileThemeDataStore($this->files));
     $this->persistThemeSettings = new PersistThemeSettings(
         new ThemeSettingsLoader($this->resolver, $this->files, $this->store),
         $this->store,
