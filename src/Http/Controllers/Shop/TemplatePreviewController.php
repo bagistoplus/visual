@@ -4,9 +4,7 @@ namespace BagistoPlus\Visual\Http\Controllers\Shop;
 
 use BagistoPlus\Visual\Http\Controllers\Controller;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
 use Webkul\Product\Models\Product;
-use Webkul\Product\Models\ProductImage;
 use Webkul\Sales\Models\Order;
 use Webkul\Sales\Models\OrderItem;
 
@@ -30,13 +28,10 @@ class TemplatePreviewController extends Controller
         $items = [];
 
         foreach (range(1, rand(1, 3)) as $i) {
-            // Create a fake product (not persisted)
+            // Create a fake product (not persisted), shown with the store's product placeholder
             $product = Product::factory()->make();
-            $image = new ProductImage([
-                'path' => $this->getFakeProductImage(),
-            ]);
 
-            $product->setRelation('images', collect([$image]));
+            $product->setRelation('images', collect());
 
             $qty = rand(1, 5);
             $price = $product->price ?? rand(10, 200);
@@ -94,21 +89,5 @@ class TemplatePreviewController extends Controller
     public function error()
     {
         return view()->make('shop::errors.index', ['errorCode' => 404]);
-    }
-
-    protected function getFakeProductImage()
-    {
-        $path = 'product-fake.svg';
-
-        // Ensure the file exists only once
-        if (! Storage::disk('public')->exists($path)) {
-            // Download and store the image once
-            Storage::disk('public')->put(
-                $path,
-                file_get_contents('https://placehold.co/100x100?text=Fake+Product')
-            );
-        }
-
-        return $path;
     }
 }
