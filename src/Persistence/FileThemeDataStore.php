@@ -7,7 +7,7 @@ use BagistoPlus\Visual\ThemePathsResolver;
 use Illuminate\Filesystem\Filesystem;
 
 /**
- * Theme data kept in files under `data_path`, which is also where it is read.
+ * Theme data kept in files under the file storage path, which is also where it is read.
  *
  * Each theme holds an `editor` tree, a `live` tree and `versions/V{time}`
  * snapshots. The editor tree carries a `.last-edit` marker while it holds
@@ -104,16 +104,21 @@ class FileThemeDataStore implements ThemeDataStore
         return $this->files->exists($this->lastEditPath($theme));
     }
 
+    public static function dataPath(): string
+    {
+        return (string) config('bagisto_visual.storages.file.path');
+    }
+
     public function themesPath(string $scope): string
     {
-        return rtrim(config('bagisto_visual.data_path'), '/\\')
+        return rtrim(self::dataPath(), '/\\')
             .($scope === '' ? '' : '/'.$scope)
             .'/themes';
     }
 
     public function clear(): void
     {
-        $path = (string) config('bagisto_visual.data_path');
+        $path = self::dataPath();
 
         if ($this->files->isDirectory($path)) {
             $this->files->cleanDirectory($path);

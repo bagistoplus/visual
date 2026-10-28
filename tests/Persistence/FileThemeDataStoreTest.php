@@ -6,7 +6,7 @@ use Illuminate\Filesystem\Filesystem;
 
 beforeEach(function () {
     $this->dataPath = sys_get_temp_dir().'/visual-file-store-'.uniqid();
-    config()->set('bagisto_visual.data_path', $this->dataPath);
+    config()->set('bagisto_visual.storages.file.path', $this->dataPath);
 
     $this->themePath = $this->dataPath.'/themes/demo';
     $this->store = new FileThemeDataStore(new ThemePathsResolver, new Filesystem);
@@ -48,4 +48,9 @@ it('discards the editor documents in favour of what is published', function () {
     expect(file_get_contents($this->themePath.'/editor/default/en/theme.json'))->toBe('{"a":1}')
         ->and(file_exists($this->themePath.'/editor/default/fr/theme.json'))->toBeFalse()
         ->and($this->store->hasUnpublishedEdits('demo'))->toBeFalse();
+});
+
+it('keeps theme data under the file storage path', function () {
+    expect($this->store->themesPath(''))->toBe($this->dataPath.'/themes')
+        ->and($this->store->themesPath('acme'))->toBe($this->dataPath.'/acme/themes');
 });

@@ -262,7 +262,7 @@ it('includes locale inheritance for the current template in page data', function
     bindPreviewCurrentTheme();
 
     $dataPath = sys_get_temp_dir().'/visual-injected-inheritance-'.uniqid();
-    config()->set('bagisto_visual.data_path', $dataPath);
+    config()->set('bagisto_visual.storages.file.path', $dataPath);
 
     $files = new Filesystem;
     $files->ensureDirectoryExists("{$dataPath}/themes/test-theme/editor/default/en/templates");
@@ -328,7 +328,7 @@ it('includes cross-channel locale inheritance for the current template in page d
     ]);
 
     $dataPath = sys_get_temp_dir().'/visual-injected-cross-channel-inheritance-'.uniqid();
-    config()->set('bagisto_visual.data_path', $dataPath);
+    config()->set('bagisto_visual.storages.file.path', $dataPath);
 
     $files = new Filesystem;
     $files->ensureDirectoryExists("{$dataPath}/themes/test-theme/editor/default/ar/templates");

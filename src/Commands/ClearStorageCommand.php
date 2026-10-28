@@ -3,6 +3,7 @@
 namespace BagistoPlus\Visual\Commands;
 
 use BagistoPlus\Visual\Contracts\ThemeDataStore;
+use BagistoPlus\Visual\Persistence\FileThemeDataStore;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
@@ -20,7 +21,7 @@ class ClearStorageCommand extends Command
 
     public function handle(): int
     {
-        $path = (string) config('bagisto_visual.data_path');
+        $path = FileThemeDataStore::dataPath();
 
         if (! $this->option('force') && ! confirm(
             label: 'Clear Bagisto Visual editor data? All unpublished and persisted work done in the Visual editor will be lost.',

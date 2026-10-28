@@ -59,7 +59,7 @@ beforeEach(function () {
 
 it('loads resolved editor parent settings before applying schema defaults', function () {
     $dataPath = sys_get_temp_dir().'/visual-theme-settings-loader-'.uniqid();
-    config()->set('bagisto_visual.data_path', $dataPath);
+    config()->set('bagisto_visual.storages.file.path', $dataPath);
 
     $files = new Filesystem;
     $files->ensureDirectoryExists("{$dataPath}/themes/test-theme/editor/default/en");

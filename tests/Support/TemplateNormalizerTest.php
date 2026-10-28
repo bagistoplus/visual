@@ -16,7 +16,7 @@ it('resolves editor parent data from the parsed editor file path', function (str
     request()->query->set($parameter, 'visual-debut');
 
     $dataPath = sys_get_temp_dir().'/visual-template-normalizer-'.uniqid();
-    config()->set('bagisto_visual.data_path', $dataPath);
+    config()->set('bagisto_visual.storages.file.path', $dataPath);
 
     app()->instance(ThemePathsResolver::class, new ThemePathsResolver);
 
@@ -69,7 +69,7 @@ it('resolves editor parent data from the parsed editor file path', function (str
 
 it('leaves the parent pointer untouched outside editor data modes', function () {
     $dataPath = sys_get_temp_dir().'/visual-template-normalizer-'.uniqid();
-    config()->set('bagisto_visual.data_path', $dataPath);
+    config()->set('bagisto_visual.storages.file.path', $dataPath);
 
     app()->instance(ThemePathsResolver::class, new ThemePathsResolver);
 

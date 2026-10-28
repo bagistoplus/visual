@@ -4,6 +4,8 @@ namespace BagistoPlus\Visual\Persistence;
 
 use BagistoPlus\Visual\Contracts\ThemeDataStore;
 use BagistoPlus\Visual\Facades\Visual;
+use Illuminate\Contracts\Cache\Repository;
+use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -48,8 +50,8 @@ class DatabaseThemeDataStore implements ThemeDataStore
         $now = now();
         $entry = ['size' => strlen($contents), 'stamp' => $now->getTimestamp(), 'hash' => md5($contents)];
 
-        $state = DB::transaction(function () use ($scope, $theme, $relativePath, $contents, $entry, $now) {
-            DB::table('visual_theme_documents')->upsert(
+        $state = $this->connection()->transaction(function () use ($scope, $theme, $relativePath, $contents, $entry, $now) {
+            $this->connection()->table('visual_theme_documents')->upsert(
                 [[
                     'scope' => $scope,
                     'theme' => $theme,
@@ -76,7 +78,7 @@ class DatabaseThemeDataStore implements ThemeDataStore
     {
         $scope = Visual::storageScope();
 
-        $state = DB::transaction(function () use ($scope, $theme, $relativePath) {
+        $state = $this->connection()->transaction(function () use ($scope, $theme, $relativePath) {
             $this->documents($scope, $theme)->where('path', $relativePath)->delete();
 
             return $this->recordEdit($scope, $theme, ['edited_at' => now()]);
@@ -102,10 +104,10 @@ class DatabaseThemeDataStore implements ThemeDataStore
     {
         $scope = Visual::storageScope();
 
-        [$versionId, $stamp] = DB::transaction(function () use ($scope, $theme, $documents) {
+        [$versionId, $stamp] = $this->connection()->transaction(function () use ($scope, $theme, $documents) {
             $this->lockState($scope, $theme);
 
-            $previousStamp = (int) DB::table('visual_theme_states as state')
+            $previousStamp = (int) $this->connection()->table('visual_theme_states as state')
                 ->leftJoin('visual_theme_versions as version', 'version.id', '=', 'state.live_version_id')
                 ->where('state.scope', $scope)
                 ->where('state.theme', $theme)
@@ -113,7 +115,7 @@ class DatabaseThemeDataStore implements ThemeDataStore
 
             $stamp = max(now()->getTimestamp(), $previousStamp + 1);
 
-            $versionId = DB::table('visual_theme_versions')->insertGetId([
+            $versionId = $this->connection()->table('visual_theme_versions')->insertGetId([
                 'scope' => $scope,
                 'theme' => $theme,
                 'documents' => json_encode($documents, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
@@ -135,7 +137,7 @@ class DatabaseThemeDataStore implements ThemeDataStore
         $files = $this->rememberVersion($scope, $theme, $versionId, $documents, $stamp);
         $this->indexes[$this->cacheKey($scope, $theme, 'live')] = ['version' => $versionId, 'files' => $files];
 
-        Cache::put($this->cacheKey($scope, $theme, 'live'), $versionId, self::POINTER_TTL);
+        $this->cache()->put($this->cacheKey($scope, $theme, 'live'), $versionId, self::POINTER_TTL);
     }
 
     public function discard(string $theme): void
@@ -143,17 +145,17 @@ class DatabaseThemeDataStore implements ThemeDataStore
         $scope = Visual::storageScope();
         $now = now();
 
-        [$state, $published] = DB::transaction(function () use ($scope, $theme, $now) {
+        [$state, $published] = $this->connection()->transaction(function () use ($scope, $theme, $now) {
             $state = $this->recordEdit($scope, $theme, ['edited_at' => null]);
 
             $this->documents($scope, $theme)->delete();
 
             $published = $state->live_version_id
-                ? (array) json_decode((string) DB::table('visual_theme_versions')->where('id', $state->live_version_id)->value('documents'), true)
+                ? (array) json_decode((string) $this->connection()->table('visual_theme_versions')->where('id', $state->live_version_id)->value('documents'), true)
                 : [];
 
             foreach (array_chunk($published, 50, true) as $chunk) {
-                DB::table('visual_theme_documents')->insert(collect($chunk)->map(fn (string $contents, string $path) => [
+                $this->connection()->table('visual_theme_documents')->insert(collect($chunk)->map(fn (string $contents, string $path) => [
                     'scope' => $scope,
                     'theme' => $theme,
                     'path' => $path,
@@ -195,9 +197,9 @@ class DatabaseThemeDataStore implements ThemeDataStore
 
     public function clear(): void
     {
-        DB::table('visual_theme_documents')->delete();
-        DB::table('visual_theme_versions')->delete();
-        DB::table('visual_theme_states')->delete();
+        $this->connection()->table('visual_theme_documents')->delete();
+        $this->connection()->table('visual_theme_versions')->delete();
+        $this->connection()->table('visual_theme_states')->delete();
 
         $this->flush();
     }
@@ -228,7 +230,7 @@ class DatabaseThemeDataStore implements ThemeDataStore
             return $this->contents[$hash];
         }
 
-        $contents = $prefetched ? null : Cache::get($this->contentKey($hash));
+        $contents = $prefetched ? null : $this->cache()->get($this->contentKey($hash));
 
         if ($contents === null) {
             $contents = $mode === 'live'
@@ -239,7 +241,7 @@ class DatabaseThemeDataStore implements ThemeDataStore
                 return null;
             }
 
-            Cache::put($this->contentKey(md5($contents)), $contents, self::ENTRY_TTL);
+            $this->cache()->put($this->contentKey(md5($contents)), $contents, self::ENTRY_TTL);
         }
 
         return $this->contents[md5($contents)] = $contents;
@@ -268,7 +270,7 @@ class DatabaseThemeDataStore implements ThemeDataStore
             return false;
         }
 
-        $found = Cache::many(array_values($keys));
+        $found = $this->cache()->many(array_values($keys));
 
         foreach ($keys as $hash => $key) {
             if (($found[$key] ?? null) !== null) {
@@ -325,7 +327,7 @@ class DatabaseThemeDataStore implements ThemeDataStore
     {
         $version = $this->pointer($scope, $theme, 'editor', fn () => (int) $this->states($scope, $theme)->value('editor_version'));
 
-        $files = Cache::remember($this->indexKey($scope, $theme, 'editor', $version), self::ENTRY_TTL, fn () => $this->documents($scope, $theme)
+        $files = $this->cache()->remember($this->indexKey($scope, $theme, 'editor', $version), self::ENTRY_TTL, fn () => $this->documents($scope, $theme)
             ->get(['path', 'hash', 'size', 'stamp'])
             ->mapWithKeys(fn (object $document) => [$document->path => [
                 'size' => (int) $document->size,
@@ -348,7 +350,7 @@ class DatabaseThemeDataStore implements ThemeDataStore
             return ['version' => 0, 'files' => []];
         }
 
-        $files = Cache::get($this->indexKey($scope, $theme, 'live', $versionId))
+        $files = $this->cache()->get($this->indexKey($scope, $theme, 'live', $versionId))
             ?? $this->loadVersion($scope, $theme, $versionId)['files'];
 
         return ['version' => $versionId, 'files' => $files];
@@ -361,7 +363,7 @@ class DatabaseThemeDataStore implements ThemeDataStore
      */
     protected function loadVersion(string $scope, string $theme, int $versionId): array
     {
-        $version = DB::table('visual_theme_versions')->where('id', $versionId)->first(['documents', 'stamp']);
+        $version = $this->connection()->table('visual_theme_versions')->where('id', $versionId)->first(['documents', 'stamp']);
         $documents = $version ? (array) json_decode($version->documents, true) : [];
 
         return [
@@ -387,7 +389,7 @@ class DatabaseThemeDataStore implements ThemeDataStore
             $this->rememberContents($hash, $contents);
         }
 
-        Cache::put($this->indexKey($scope, $theme, 'live', $versionId), $files, self::ENTRY_TTL);
+        $this->cache()->put($this->indexKey($scope, $theme, 'live', $versionId), $files, self::ENTRY_TTL);
 
         return $files;
     }
@@ -415,12 +417,12 @@ class DatabaseThemeDataStore implements ThemeDataStore
         if ($replacesEverything || ($previous && $previous['version'] === $version - 1)) {
             $files = $change($previous['files'] ?? []);
             $this->indexes[$key] = ['version' => $version, 'files' => $files];
-            Cache::put($this->indexKey($scope, $theme, 'editor', $version), $files, self::ENTRY_TTL);
+            $this->cache()->put($this->indexKey($scope, $theme, 'editor', $version), $files, self::ENTRY_TTL);
         } else {
             unset($this->indexes[$key]);
         }
 
-        Cache::put($key, $version, self::POINTER_TTL);
+        $this->cache()->put($key, $version, self::POINTER_TTL);
     }
 
     /**
@@ -436,7 +438,7 @@ class DatabaseThemeDataStore implements ThemeDataStore
             return;
         }
 
-        Cache::put($this->contentKey($hash), $contents, self::ENTRY_TTL);
+        $this->cache()->put($this->contentKey($hash), $contents, self::ENTRY_TTL);
         $this->contents[$hash] = $contents;
     }
 
@@ -452,7 +454,7 @@ class DatabaseThemeDataStore implements ThemeDataStore
             return ['version' => 0, 'files' => []];
         }
 
-        $files = Cache::get($this->indexKey($scope, $theme, 'editor', $version));
+        $files = $this->cache()->get($this->indexKey($scope, $theme, 'editor', $version));
 
         return $files === null ? null : ['version' => $version, 'files' => $files];
     }
@@ -466,14 +468,14 @@ class DatabaseThemeDataStore implements ThemeDataStore
     protected function pointer(string $scope, string $theme, string $mode, callable $fromDatabase): int
     {
         $key = $this->cacheKey($scope, $theme, $mode);
-        $value = Cache::get($key);
+        $value = $this->cache()->get($key);
 
         if ($value !== null) {
             return (int) $value;
         }
 
         $value = $fromDatabase();
-        Cache::add($key, $value, self::POINTER_TTL);
+        $this->cache()->add($key, $value, self::POINTER_TTL);
 
         return $value;
     }
@@ -489,10 +491,10 @@ class DatabaseThemeDataStore implements ThemeDataStore
     {
         $now = now();
 
-        DB::table('visual_theme_states')->upsert(
+        $this->connection()->table('visual_theme_states')->upsert(
             [['scope' => $scope, 'theme' => $theme, 'editor_version' => 1, 'created_at' => $now, 'updated_at' => $now] + $changes],
             ['scope', 'theme'],
-            ['editor_version' => DB::raw('editor_version + 1'), 'updated_at' => $now] + $changes,
+            ['editor_version' => $this->connection()->raw('editor_version + 1'), 'updated_at' => $now] + $changes,
         );
 
         return $this->states($scope, $theme)->first(['editor_version', 'live_version_id']);
@@ -506,7 +508,7 @@ class DatabaseThemeDataStore implements ThemeDataStore
     {
         $now = now();
 
-        DB::table('visual_theme_states')->upsert(
+        $this->connection()->table('visual_theme_states')->upsert(
             [['scope' => $scope, 'theme' => $theme, 'created_at' => $now, 'updated_at' => $now]],
             ['scope', 'theme'],
             ['updated_at' => $now],
@@ -524,7 +526,7 @@ class DatabaseThemeDataStore implements ThemeDataStore
             ->pluck('id');
 
         if ($stale->isNotEmpty()) {
-            DB::table('visual_theme_versions')->whereIn('id', $stale)->delete();
+            $this->connection()->table('visual_theme_versions')->whereIn('id', $stale)->delete();
         }
     }
 
@@ -556,18 +558,32 @@ class DatabaseThemeDataStore implements ThemeDataStore
         return $scope === '' ? '_' : $scope;
     }
 
+    /**
+     * Resolved on each call rather than kept, since the singleton outlives
+     * a config change, as tests and tenant hosts make.
+     */
+    protected function connection(): ConnectionInterface
+    {
+        return DB::connection(config('bagisto_visual.storages.database.connection'));
+    }
+
+    protected function cache(): Repository
+    {
+        return Cache::store(config('bagisto_visual.storages.database.cache'));
+    }
+
     protected function documents(string $scope, string $theme): Builder
     {
-        return DB::table('visual_theme_documents')->where('scope', $scope)->where('theme', $theme);
+        return $this->connection()->table('visual_theme_documents')->where('scope', $scope)->where('theme', $theme);
     }
 
     protected function versions(string $scope, string $theme): Builder
     {
-        return DB::table('visual_theme_versions')->where('scope', $scope)->where('theme', $theme);
+        return $this->connection()->table('visual_theme_versions')->where('scope', $scope)->where('theme', $theme);
     }
 
     protected function states(string $scope, string $theme): Builder
     {
-        return DB::table('visual_theme_states')->where('scope', $scope)->where('theme', $theme);
+        return $this->connection()->table('visual_theme_states')->where('scope', $scope)->where('theme', $theme);
     }
 }

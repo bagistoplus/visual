@@ -10,7 +10,7 @@ use Illuminate\Filesystem\Filesystem;
 
 beforeEach(function () {
     $this->dataPath = sys_get_temp_dir().'/visual-storage-scope-'.uniqid();
-    config()->set('bagisto_visual.data_path', $this->dataPath);
+    config()->set('bagisto_visual.storages.file.path', $this->dataPath);
     config()->set('bagisto_visual.images.directory', 'bagisto-visual/images');
     config()->set('bagisto_visual.videos.directory', 'bagisto-visual/videos');
 });

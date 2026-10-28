@@ -98,23 +98,23 @@ beforeEach(function () {
     }
 
     Storage::fake('themes-data');
-    config()->set('bagisto_visual.data_path', Storage::disk('themes-data')->path(''));
+    config()->set('bagisto_visual.storages.file.path', Storage::disk('themes-data')->path(''));
 
     ThemePathsResolver::shouldReceive('getThemeBaseDataPath')
         ->byDefault()
-        ->andReturnUsing(fn (string $theme, string $mode = 'live') => rtrim(config('bagisto_visual.data_path'), '/\\')."/themes/{$theme}/{$mode}");
+        ->andReturnUsing(fn (string $theme, string $mode = 'live') => rtrim(config('bagisto_visual.storages.file.path'), '/\\')."/themes/{$theme}/{$mode}");
 
     ThemePathsResolver::shouldReceive('resolvePath')
         ->byDefault()
         ->andReturnUsing(fn (string $themeCode, string $channel, string $locale, string $mode, string $path = '') => implode('/', array_filter([
-            rtrim(config('bagisto_visual.data_path'), '/\\')."/themes/{$themeCode}/{$mode}/{$channel}/{$locale}",
+            rtrim(config('bagisto_visual.storages.file.path'), '/\\')."/themes/{$themeCode}/{$mode}/{$channel}/{$locale}",
             ltrim($path, '/'),
         ])));
 
     ThemePathsResolver::shouldReceive('resolveFallbackPaths')
         ->byDefault()
         ->andReturnUsing(fn (string $themeCode, string $mode, string $channel, string $locale) => [
-            rtrim(config('bagisto_visual.data_path'), '/\\')."/themes/{$themeCode}/{$mode}/{$channel}/{$locale}",
+            rtrim(config('bagisto_visual.storages.file.path'), '/\\')."/themes/{$themeCode}/{$mode}/{$channel}/{$locale}",
         ]);
 
     Craftile::detectPreviewUsing(fn () => ThemeEditor::inDesignMode());
@@ -826,7 +826,7 @@ describe('handle', function () {
 
     test('saves new locale template as parent diff when editor fallback exists', function () {
         $dataPath = sys_get_temp_dir().'/visual-parent-persist-'.uniqid();
-        config()->set('bagisto_visual.data_path', $dataPath);
+        config()->set('bagisto_visual.storages.file.path', $dataPath);
 
         app()->instance(ThemePathsResolverConcrete::class, new class extends ThemePathsResolverConcrete
         {
@@ -913,7 +913,7 @@ describe('handle', function () {
 
     test('forces localized values for all inherited blocks when saving a child locale partial update', function () {
         $dataPath = sys_get_temp_dir().'/visual-localized-barrier-persist-'.uniqid();
-        config()->set('bagisto_visual.data_path', $dataPath);
+        config()->set('bagisto_visual.storages.file.path', $dataPath);
 
         app()->instance(ThemePathsResolverConcrete::class, new class extends ThemePathsResolverConcrete
         {
@@ -1022,7 +1022,7 @@ describe('handle', function () {
 
     test('full page saves new locale template as parent diff when editor fallback exists', function () {
         $dataPath = sys_get_temp_dir().'/visual-full-page-parent-persist-'.uniqid();
-        config()->set('bagisto_visual.data_path', $dataPath);
+        config()->set('bagisto_visual.storages.file.path', $dataPath);
 
         app()->instance(ThemePathsResolverConcrete::class, new class extends ThemePathsResolverConcrete
         {
@@ -1084,7 +1084,7 @@ describe('handle', function () {
 
     test('registers discovered schemas before localized values are forced into locale diffs', function () {
         $dataPath = sys_get_temp_dir().'/visual-schema-registration-persist-'.uniqid();
-        config()->set('bagisto_visual.data_path', $dataPath);
+        config()->set('bagisto_visual.storages.file.path', $dataPath);
 
         app()->instance(ThemePathsResolverConcrete::class, new class extends ThemePathsResolverConcrete
         {
@@ -1376,7 +1376,7 @@ describe('handle', function () {
 describe('stored block pruning', function () {
     test('drops schema defaults and default metadata from the saved root template', function () {
         $dataPath = sys_get_temp_dir().'/visual-pruned-persist-'.uniqid();
-        config()->set('bagisto_visual.data_path', $dataPath);
+        config()->set('bagisto_visual.storages.file.path', $dataPath);
 
         app(BlockSchemaRegistry::class)->register(BlockSchema::fromClass(PersistEditorUpdatesDefaultsBlock::class));
 
@@ -1451,7 +1451,7 @@ describe('stored block pruning', function () {
 
     test('keeps a child locale value that resets an overridden parent value to the default', function () {
         $dataPath = sys_get_temp_dir().'/visual-pruned-child-persist-'.uniqid();
-        config()->set('bagisto_visual.data_path', $dataPath);
+        config()->set('bagisto_visual.storages.file.path', $dataPath);
 
         app()->instance(ThemePathsResolverConcrete::class, new class extends ThemePathsResolverConcrete
         {

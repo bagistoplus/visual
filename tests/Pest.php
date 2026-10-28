@@ -4,6 +4,7 @@ use BagistoPlus\Visual\Data\BagistoSectionType;
 use BagistoPlus\Visual\Support\SectionSystem;
 use BagistoPlus\Visual\Tests\TestCase;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Konekt\Concord\Contracts\Concord;
 use Konekt\Concord\Contracts\Convention;
 use Webkul\Core\Contracts\Channel as ChannelContract;
@@ -19,7 +20,12 @@ uses(TestCase::class)->in(__DIR__);
 if (! function_exists('migrateThemeDataTables')) {
     function migrateThemeDataTables(): void
     {
-        (include __DIR__.'/../database/migrations/2026_10_28_000001_create_visual_theme_data_tables.php')->up();
+        $migration = include __DIR__.'/../database/migrations/2026_10_28_000001_create_visual_theme_data_tables.php';
+        $default = DB::getDefaultConnection();
+
+        DB::setDefaultConnection($migration->getConnection() ?? $default);
+        $migration->up();
+        DB::setDefaultConnection($default);
     }
 }
 

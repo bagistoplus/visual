@@ -259,3 +259,21 @@ it('reads the documents of a folder in one cache call', function () {
         ->and($other->contents('', 'demo', 'editor', 'default/fr/theme.json'))->toBe('{"d":1}')
         ->and($reads)->toBe(1);
 });
+
+it('keeps its rows and cache entries on the configured connection and cache store', function () {
+    config()->set('database.connections.visual', ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '']);
+    config()->set('cache.stores.visual', ['driver' => 'array']);
+    config()->set('bagisto_visual.storages.database', ['connection' => 'visual', 'cache' => 'visual']);
+    migrateThemeDataTables();
+
+    $this->store->put('demo', 'default/en/theme.json', '{"a":1}');
+    $this->store->publish('demo', ['default/en/theme.json' => '{"a":1}']);
+
+    expect(DB::connection('visual')->table('visual_theme_documents')->count())->toBe(1)
+        ->and(DB::connection('visual')->table('visual_theme_versions')->count())->toBe(1)
+        ->and(DB::table('visual_theme_documents')->count())->toBe(0)
+        ->and(DB::table('visual_theme_versions')->count())->toBe(0)
+        ->and(Cache::store('visual')->get('visual:theme-data:_:demo:live'))->not->toBeNull()
+        ->and(Cache::get('visual:theme-data:_:demo:live'))->toBeNull()
+        ->and((new DatabaseThemeDataStore)->contents('', 'demo', 'live', 'default/en/theme.json'))->toBe('{"a":1}');
+});

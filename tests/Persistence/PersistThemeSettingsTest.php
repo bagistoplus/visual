@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Cache;
 
 beforeEach(function () {
     $this->dataPath = sys_get_temp_dir().'/visual-theme-settings-persist-'.uniqid();
-    config()->set('bagisto_visual.data_path', $this->dataPath);
+    config()->set('bagisto_visual.storages.file.path', $this->dataPath);
     config()->set('themes.shop.test-theme', [
         'code' => 'test-theme',
         'name' => 'Test Theme',
@@ -151,7 +151,7 @@ it('keeps an existing stored settings parent before nearest fallback', function 
 
 function theme_settings_path(string $theme, string $relativePath): string
 {
-    return rtrim(config('bagisto_visual.data_path'), '/\\')."/themes/{$theme}/editor/{$relativePath}";
+    return rtrim(config('bagisto_visual.storages.file.path'), '/\\')."/themes/{$theme}/editor/{$relativePath}";
 }
 
 function put_theme_settings_file(string $theme, string $relativePath, array $data): string

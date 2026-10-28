@@ -5,7 +5,7 @@ use Illuminate\Filesystem\Filesystem;
 
 beforeEach(function () {
     $this->dataPath = sys_get_temp_dir().'/visual-publish-theme-'.uniqid();
-    config()->set('bagisto_visual.data_path', $this->dataPath);
+    config()->set('bagisto_visual.storages.file.path', $this->dataPath);
 
     $this->files = new Filesystem;
     $this->themePath = $this->dataPath.'/themes/demo';
