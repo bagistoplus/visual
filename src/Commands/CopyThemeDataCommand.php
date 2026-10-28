@@ -15,7 +15,7 @@ use function Laravel\Prompts\warning;
 
 /**
  * Copy theme data from one store to another, whichever store the app is set
- * to use, within one storage scope.
+ * to use, in every storage scope the source holds unless one is given.
  *
  * Each theme's editor documents replace the target's, and its live documents
  * are published there as a new version, so the target keeps its history.
@@ -28,41 +28,51 @@ abstract class CopyThemeDataCommand extends Command
 
     public function handle(VisualManager $visual, ThemeSettingsCache $settingsCache): int
     {
-        $scope = (string) $this->option('scope');
+        $scope = $this->option('scope');
 
-        try {
-            $visual->ensureValidStorageScope($scope);
-        } catch (InvalidArgumentException $e) {
-            error($e->getMessage());
+        if ($scope !== null) {
+            try {
+                $visual->ensureValidStorageScope($scope);
+            } catch (InvalidArgumentException $e) {
+                error($e->getMessage());
 
-            return self::FAILURE;
+                return self::FAILURE;
+            }
         }
 
-        return $visual->withStorageScope($scope, fn () => $this->copy($settingsCache));
-    }
-
-    protected function copy(ThemeSettingsCache $settingsCache): int
-    {
         $source = $this->source();
         $target = $this->target();
-        $held = $source->themes();
         $theme = $this->option('theme');
+        $copies = [];
+        $existing = [];
 
-        if ($theme !== null && ! in_array($theme, $held, true)) {
-            error("There is no data for theme [{$theme}] to copy.");
+        foreach ($scope !== null ? [$scope] : $source->scopes() as $current) {
+            $visual->withStorageScope($current, function () use ($source, $target, $theme, $current, &$copies, &$existing) {
+                $held = $source->themes();
+                $themes = $theme !== null ? array_values(array_intersect([$theme], $held)) : $held;
+                $taken = $target->themes();
 
-            return self::FAILURE;
+                foreach ($themes as $code) {
+                    $copies[] = ['scope' => $current, 'theme' => $code];
+
+                    if (in_array($code, $taken, true)) {
+                        $existing[] = $this->label($current, $code);
+                    }
+                }
+            });
         }
 
-        $themes = $theme !== null ? [$theme] : $held;
+        if ($copies === []) {
+            if ($theme !== null) {
+                error("There is no data for theme [{$theme}] to copy.");
 
-        if ($themes === []) {
+                return self::FAILURE;
+            }
+
             info('There is no theme data to copy.');
 
             return self::SUCCESS;
         }
-
-        $existing = array_values(array_intersect($themes, $target->themes()));
 
         if ($existing !== [] && ! $this->option('force')) {
             error('The target already holds data for: '.implode(', ', $existing).'. Use --force to replace it.');
@@ -70,21 +80,24 @@ abstract class CopyThemeDataCommand extends Command
             return self::FAILURE;
         }
 
-        foreach ($themes as $code) {
-            $snapshot = $source->snapshot($code);
-            $target->restore($code, $snapshot);
-            $settingsCache->forgetAll($code);
+        foreach ($copies as $copy) {
+            $visual->withStorageScope($copy['scope'], function () use ($source, $target, $settingsCache, $copy, $existing) {
+                $label = $this->label($copy['scope'], $copy['theme']);
+                $snapshot = $source->snapshot($copy['theme']);
+                $target->restore($copy['theme'], $snapshot);
+                $settingsCache->forgetAll($copy['theme']);
 
-            info(sprintf(
-                'Copied %s: %d editor documents, %s.',
-                $code,
-                count($snapshot->editor),
-                $snapshot->live === null ? 'never published' : count($snapshot->live).' live documents',
-            ));
+                info(sprintf(
+                    'Copied %s: %d editor documents, %s.',
+                    $label,
+                    count($snapshot->editor),
+                    $snapshot->live === null ? 'never published' : count($snapshot->live).' live documents',
+                ));
 
-            if ($snapshot->live === null && in_array($code, $existing, true)) {
-                warning("{$code} was never published, so what the target serves for it was left as it was.");
-            }
+                if ($snapshot->live === null && in_array($label, $existing, true)) {
+                    warning("{$label} was never published, so what the target serves for it was left as it was.");
+                }
+            });
         }
 
         if (class_exists(ResponseCache::class)) {
@@ -92,5 +105,10 @@ abstract class CopyThemeDataCommand extends Command
         }
 
         return self::SUCCESS;
+    }
+
+    protected function label(string $scope, string $theme): string
+    {
+        return ($scope === '' ? 'no scope' : $scope).' / '.$theme;
     }
 }

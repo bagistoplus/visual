@@ -159,6 +159,16 @@ class DatabaseThemeDataStore implements ThemeDataStore
         return $this->states(Visual::storageScope(), $theme)->whereNotNull('edited_at')->exists();
     }
 
+    public function scopes(): array
+    {
+        return $this->connection()->table('visual_theme_states')
+            ->distinct()
+            ->orderBy('scope')
+            ->pluck('scope')
+            ->map(fn ($scope) => (string) $scope)
+            ->all();
+    }
+
     public function themes(): array
     {
         return $this->connection()->table('visual_theme_states')

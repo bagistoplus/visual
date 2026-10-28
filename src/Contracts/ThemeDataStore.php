@@ -43,6 +43,14 @@ interface ThemeDataStore
     public function hasUnpublishedEdits(string $theme): bool;
 
     /**
+     * The storage scopes this store holds data for, an empty string standing
+     * for no scope.
+     *
+     * @return array<int, string>
+     */
+    public function scopes(): array;
+
+    /**
      * The codes of the themes this store holds data for.
      *
      * @return array<int, string>

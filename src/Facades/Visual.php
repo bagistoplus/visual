@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static void resolveStorageScopeUsing(?\Closure $resolver)
  * @method static string storageScope()
  * @method static void ensureValidStorageScope(string $scope)
+ * @method static bool isValidStorageScope(string $scope)
  * @method static mixed withStorageScope(string $scope, callable $callback)
  *
  * @see VisualManager

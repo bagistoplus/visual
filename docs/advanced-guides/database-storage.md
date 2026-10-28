@@ -95,7 +95,7 @@ php artisan visual:storage:import --scope=acme --force
 | Option | Effect |
 |---|---|
 | `--theme=` | Copy only this theme. By default, every theme the source holds is copied. |
-| `--scope=` | Copy the data of this [storage scope](./storage-scopes.md). By default, the data with no scope is copied. |
+| `--scope=` | Copy only the data of this [storage scope](./storage-scopes.md). By default, every scope the source holds is copied. |
 | `--force` | Replace theme data the target already holds. Without it, the command stops before writing anything if any theme it would copy is already there. |
 
 For each theme, the command copies the editor documents, the live documents and whether the editor holds unpublished changes. The editor documents replace the target's. The live documents are published in the target as a new version, so the versions it already held are kept and you can still go back. A theme that was never published only has its editor documents copied, and what the target serves for it stays as it was.

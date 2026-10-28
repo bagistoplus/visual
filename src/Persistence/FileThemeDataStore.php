@@ -102,6 +102,29 @@ class FileThemeDataStore implements ThemeDataStore
         return $this->files->exists($this->lastEditPath($theme));
     }
 
+    public function scopes(): array
+    {
+        $path = rtrim(self::dataPath(), '/\\');
+
+        if (! $this->files->isDirectory($path)) {
+            return [];
+        }
+
+        $scopes = collect($this->files->directories($path))
+            ->map(fn (string $directory) => basename($directory))
+            ->filter(fn (string $name) => $name !== 'themes'
+                && Visual::isValidStorageScope($name)
+                && $this->files->isDirectory("{$path}/{$name}/themes"))
+            ->sort()
+            ->values();
+
+        if ($this->files->isDirectory("{$path}/themes")) {
+            $scopes->prepend('');
+        }
+
+        return $scopes->all();
+    }
+
     public function themes(): array
     {
         $path = $this->themesPath(Visual::storageScope());

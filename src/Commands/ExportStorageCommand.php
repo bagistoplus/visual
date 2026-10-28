@@ -9,7 +9,7 @@ use BagistoPlus\Visual\Persistence\FileThemeDataStore;
 class ExportStorageCommand extends CopyThemeDataCommand
 {
     protected $signature = 'visual:storage:export
-                            {--scope= : The storage scope to copy, none when omitted}
+                            {--scope= : Copy only this storage scope, every scope when omitted}
                             {--theme= : Copy only this theme}
                             {--force : Replace theme data the files already hold}';
 

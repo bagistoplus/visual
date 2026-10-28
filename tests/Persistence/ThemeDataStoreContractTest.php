@@ -75,6 +75,16 @@ it('discards the editor documents in favour of the published ones', function (Th
         ->and($store->hasUnpublishedEdits('demo'))->toBeFalse();
 })->with('stores');
 
+it('lists the scopes it holds data for, no scope first', function (ThemeDataStore $store) {
+    expect($store->scopes())->toBe([]);
+
+    Visual::withStorageScope('globex', fn () => $store->put('demo', 'default/en/theme.json', '{}'));
+    $store->put('demo', 'default/en/theme.json', '{}');
+    Visual::withStorageScope('acme', fn () => $store->put('demo', 'default/en/theme.json', '{}'));
+
+    expect($store->scopes())->toBe(['', 'acme', 'globex']);
+})->with('stores');
+
 it('lists the themes of the current scope only', function (ThemeDataStore $store) {
     $store->put('demo', 'default/en/theme.json', '{}');
     $store->put('another', 'default/en/theme.json', '{}');

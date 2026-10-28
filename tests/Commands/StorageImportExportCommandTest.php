@@ -82,7 +82,19 @@ it('fails for a theme the source holds nothing for', function () {
     expect($this->database->themes())->toBe([]);
 });
 
-it('copies within the scope asked for and gives the host its resolver back', function () {
+it('copies every scope the source holds by default', function () {
+    seedThemeFiles($this->files, 'demo');
+    Visual::withStorageScope('acme', fn () => seedThemeFiles($this->files, 'tenant-theme'));
+
+    $this->artisan('visual:storage:import')->assertExitCode(0);
+
+    expect($this->database->scopes())->toBe(['', 'acme'])
+        ->and($this->database->themes())->toBe(['demo'])
+        ->and(Visual::withStorageScope('acme', fn () => $this->database->snapshot('tenant-theme')))
+        ->toEqual(Visual::withStorageScope('acme', fn () => $this->files->snapshot('tenant-theme')));
+});
+
+it('copies only the scope asked for and gives the host its resolver back', function () {
     Visual::withStorageScope('acme', fn () => seedThemeFiles($this->files, 'demo'));
     seedThemeFiles($this->files, 'unscoped');
     Visual::resolveStorageScopeUsing(fn () => 'globex');
@@ -90,8 +102,35 @@ it('copies within the scope asked for and gives the host its resolver back', fun
     $this->artisan('visual:storage:import', ['--scope' => 'acme'])->assertExitCode(0);
 
     expect(Visual::storageScope())->toBe('globex')
-        ->and(Visual::withStorageScope('acme', fn () => $this->database->themes()))->toBe(['demo'])
-        ->and(Visual::withStorageScope('', fn () => $this->database->themes()))->toBe([]);
+        ->and($this->database->scopes())->toBe(['acme'])
+        ->and(Visual::withStorageScope('acme', fn () => $this->database->themes()))->toBe(['demo']);
+});
+
+it('copies the theme asked for in every scope that holds it', function () {
+    seedThemeFiles($this->files, 'demo');
+    seedThemeFiles($this->files, 'other');
+    Visual::withStorageScope('acme', fn () => seedThemeFiles($this->files, 'demo'));
+    Visual::withStorageScope('globex', fn () => seedThemeFiles($this->files, 'other'));
+
+    $this->artisan('visual:storage:import', ['--theme' => 'demo'])->assertExitCode(0);
+
+    expect($this->database->scopes())->toBe(['', 'acme'])
+        ->and($this->database->themes())->toBe(['demo'])
+        ->and(Visual::withStorageScope('acme', fn () => $this->database->themes()))->toBe(['demo']);
+});
+
+it('names the taken themes of every scope and writes nothing without --force', function () {
+    seedThemeFiles($this->files, 'demo');
+    Visual::withStorageScope('acme', fn () => seedThemeFiles($this->files, 'demo'));
+    Visual::withStorageScope('acme', fn () => seedThemeFiles($this->files, 'free'));
+    $this->database->put('demo', 'default/en/theme.json', '{"title":"Kept"}');
+    Visual::withStorageScope('acme', fn () => $this->database->put('demo', 'default/en/theme.json', '{"title":"Kept"}'));
+
+    $this->artisan('visual:storage:import')
+        ->expectsOutputToContain('no scope / demo, acme / demo')
+        ->assertExitCode(1);
+
+    expect(Visual::withStorageScope('acme', fn () => $this->database->themes()))->toBe(['demo']);
 });
 
 it('rejects a scope that cannot be one', function () {

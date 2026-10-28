@@ -87,9 +87,14 @@ class VisualManager
      */
     public function ensureValidStorageScope(string $scope): void
     {
-        if ($scope !== '' && ! preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]*$/', $scope)) {
+        if ($scope !== '' && ! $this->isValidStorageScope($scope)) {
             throw new InvalidArgumentException("The storage scope [{$scope}] may only contain letters, numbers, dots, dashes and underscores, and must start with a letter or number.");
         }
+    }
+
+    public function isValidStorageScope(string $scope): bool
+    {
+        return preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]*$/', $scope) === 1;
     }
 
     /**
