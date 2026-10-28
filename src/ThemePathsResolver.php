@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual;
 
+use BagistoPlus\Visual\Contracts\ThemeDataStore;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\Visual;
 use Webkul\Core\Models\Channel;
@@ -68,9 +69,11 @@ class ThemePathsResolver
 
         $paths = $this->resolveFallbackPaths($themeCode, $mode, $requestedChannel->code, $requestedLocale);
 
-        // Bagisto prepend base path to the provided paths
-        // so we strip it
-        return array_map(fn ($p) => substr($p, strlen(base_path()) + 1), $paths);
+        // Bagisto prepends the base path to the paths it is given, so it is
+        // stripped. Paths outside it, such as visual:// streams, stay whole.
+        $basePath = base_path().'/';
+
+        return array_map(fn ($p) => str_starts_with($p, $basePath) ? substr($p, strlen($basePath)) : $p, $paths);
     }
 
     /**
@@ -155,10 +158,6 @@ class ThemePathsResolver
      */
     public function getThemesDataPath(): string
     {
-        $scope = Visual::storageScope();
-
-        return rtrim(config('bagisto_visual.data_path'), '/\\')
-            .($scope === '' ? '' : '/'.$scope)
-            .'/themes';
+        return app(ThemeDataStore::class)->themesPath(Visual::storageScope());
     }
 }

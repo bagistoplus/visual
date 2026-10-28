@@ -13,6 +13,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Storage
+    |--------------------------------------------------------------------------
+    |
+    | Where theme data is kept. "file" keeps it under the data path above.
+    | "database" keeps it in the visual_theme_* tables, for hosts whose
+    | instances share no filesystem; it needs a cache store every instance
+    | shares, such as Redis.
+    |
+    */
+    'storage' => env('BAGISTO_VISUAL_STORAGE', 'file'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Versions To Keep
     |--------------------------------------------------------------------------
     |

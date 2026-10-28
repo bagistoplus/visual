@@ -2,6 +2,7 @@
 
 namespace BagistoPlus\Visual\Commands;
 
+use BagistoPlus\Visual\Contracts\ThemeDataStore;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
@@ -31,8 +32,12 @@ class ClearStorageCommand extends Command
             return self::FAILURE;
         }
 
-        if (File::isDirectory($path)) {
-            File::cleanDirectory($path);
+        if (config('bagisto_visual.storage') === 'database') {
+            app(ThemeDataStore::class)->clear();
+
+            info('Bagisto Visual theme data cleared from the database.');
+        } elseif (File::isDirectory($path)) {
+            app(ThemeDataStore::class)->clear();
 
             info("Bagisto Visual storage path cleared: {$path}");
         } else {

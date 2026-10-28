@@ -104,6 +104,22 @@ class FileThemeDataStore implements ThemeDataStore
         return $this->files->exists($this->lastEditPath($theme));
     }
 
+    public function themesPath(string $scope): string
+    {
+        return rtrim(config('bagisto_visual.data_path'), '/\\')
+            .($scope === '' ? '' : '/'.$scope)
+            .'/themes';
+    }
+
+    public function clear(): void
+    {
+        $path = (string) config('bagisto_visual.data_path');
+
+        if ($this->files->isDirectory($path)) {
+            $this->files->cleanDirectory($path);
+        }
+    }
+
     protected function markEdited(string $theme): void
     {
         $path = $this->lastEditPath($theme);

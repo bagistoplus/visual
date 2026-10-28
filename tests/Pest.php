@@ -16,6 +16,13 @@ use Webkul\Theme\Facades\Themes as ThemesFacade;
 
 uses(TestCase::class)->in(__DIR__);
 
+if (! function_exists('migrateThemeDataTables')) {
+    function migrateThemeDataTables(): void
+    {
+        (include __DIR__.'/../database/migrations/2026_10_28_000001_create_visual_theme_data_tables.php')->up();
+    }
+}
+
 if (! function_exists('fakeSectionSystem')) {
     function fakeSectionSystem(bool $available): void
     {
