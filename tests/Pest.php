@@ -29,6 +29,22 @@ if (! function_exists('migrateThemeDataTables')) {
     }
 }
 
+if (! function_exists('countThemeDataQueries')) {
+    function countThemeDataQueries(callable $callback): int
+    {
+        $count = 0;
+        DB::listen(function ($query) use (&$count) {
+            if (str_contains($query->sql, 'visual_theme_')) {
+                $count++;
+            }
+        });
+
+        $callback();
+
+        return $count;
+    }
+}
+
 if (! function_exists('fakeSectionSystem')) {
     function fakeSectionSystem(bool $available): void
     {

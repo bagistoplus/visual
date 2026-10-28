@@ -193,6 +193,48 @@ class DatabaseThemeDataStore implements ThemeDataStore
         $this->replaceEditor(Visual::storageScope(), $theme, fn () => $snapshot->editor, $snapshot->edited);
     }
 
+    /**
+     * The themes that have something published, in every scope unless one is
+     * given.
+     *
+     * @return array<int, array{scope: string, theme: string}>
+     */
+    public function publishedThemes(?string $scope = null, ?string $theme = null): array
+    {
+        return $this->connection()->table('visual_theme_states')
+            ->whereNotNull('live_version_id')
+            ->when($scope !== null, fn (Builder $query) => $query->where('scope', $scope))
+            ->when($theme !== null, fn (Builder $query) => $query->where('theme', $theme))
+            ->orderBy('scope')
+            ->orderBy('theme')
+            ->get(['scope', 'theme'])
+            ->map(fn (object $state) => ['scope' => (string) $state->scope, 'theme' => (string) $state->theme])
+            ->all();
+    }
+
+    /**
+     * Put what a theme serves in the cache, so the storefront does not have to
+     * read it from the database. The number of documents it serves.
+     *
+     * Its version and contents never change, so they are written again, which
+     * also renews how long they are kept. The live pointer is only added: a
+     * publish made while this runs has already put a newer one.
+     */
+    public function warm(string $scope, string $theme): int
+    {
+        $versionId = (int) $this->states($scope, $theme)->value('live_version_id');
+
+        if ($versionId === 0) {
+            return 0;
+        }
+
+        $this->flush();
+        $files = $this->loadVersion($scope, $theme, $versionId)['files'];
+        $this->cache()->add($this->cacheKey($scope, $theme, 'live'), $versionId, self::POINTER_TTL);
+
+        return count($files);
+    }
+
     public function themesPath(string $scope): string
     {
         return self::SCHEME.'://'.$this->scopeSegment($scope).'/themes';

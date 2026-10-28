@@ -172,20 +172,6 @@ it('clears every scope', function () {
         ->and(DB::table('visual_theme_states')->count())->toBe(0);
 });
 
-function countThemeDataQueries(callable $callback): int
-{
-    $count = 0;
-    DB::listen(function ($query) use (&$count) {
-        if (str_contains($query->sql, 'visual_theme_')) {
-            $count++;
-        }
-    });
-
-    $callback();
-
-    return $count;
-}
-
 it('lets another instance read a write without going to the database', function () {
     $this->store->index('', 'demo', 'editor');
     $this->store->put('demo', 'default/en/theme.json', '{"a":1}');

@@ -84,6 +84,7 @@ class CoreServiceProvider extends ServiceProvider
         Commands\ClearStorageCommand::class,
         Commands\ImportStorageCommand::class,
         Commands\ExportStorageCommand::class,
+        Commands\WarmStorageCommand::class,
         Commands\GenerateImageVariantsCommand::class,
         Commands\CacheImagesCommand::class,
     ];

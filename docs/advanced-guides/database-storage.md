@@ -69,6 +69,19 @@ Most reads are served from the shared cache. A storefront request on a warm cach
 
 `versions_to_keep` applies as in file storage, except that the live version is always kept.
 
+## Deploying
+
+Add `visual:storage:warm` to your deploy script, after the migrations:
+
+```bash
+php artisan migrate --force
+php artisan visual:storage:warm
+```
+
+It fills the cache with what every theme serves, in every storage scope, so the first visitors after a deploy are served from the cache instead of the database. It helps most when your deploy or cache provider starts with an empty cache, and it is safe to run at any time, even while merchants publish. Use `--scope=` or `--theme=` to warm only part of it.
+
+With file storage, the command does nothing, so the same deploy script works for both.
+
 ## Import and Export
 
 `visual:storage:import` copies theme data from files into the database, and `visual:storage:export` copies it from the database back into files. Both work whichever storage the app is set to use.
