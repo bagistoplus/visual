@@ -163,28 +163,46 @@ export function patchResolvedBlocksFromHtml(editor: CraftileEditor, html: string
   editor.engine.patchBlocks(resolvedBlocks);
 }
 
+let flushActive: (() => Promise<boolean>) | null = null;
+
+/**
+ * Save every edit that is waiting for its debounce or was not saved, and wait
+ * for a save already on its way. Whether everything was saved.
+ */
+export function flushPendingUpdates(): Promise<boolean> {
+  return flushActive ? flushActive() : Promise.resolve(true);
+}
+
 export function setupUpdatePersistence(editor: CraftileEditor, state: State) {
   let pendingUpdates: UpdatesEvent[] = [];
   let failedUpdates: UpdatesEvent[] = [];
-  let isPersisting = false;
+  let inFlight: Promise<boolean> | null = null;
 
   const bagistoRefresh = isBagistoTheme(state) ? createBagistoPreviewRefresh(editor, state) : null;
 
-  const debouncedPersist = debounce(async () => {
-    if (pendingUpdates.length === 0 || isPersisting) {
-      return;
+  function persistNow(): Promise<boolean> {
+    if (inFlight) {
+      return inFlight;
     }
 
-    const updatesToProcess = [...pendingUpdates];
-
-    if (failedUpdates.length > 0) {
-      updatesToProcess.unshift(...failedUpdates);
-      failedUpdates = [];
+    if (pendingUpdates.length === 0 && failedUpdates.length === 0) {
+      return Promise.resolve(true);
     }
 
+    inFlight = send().finally(() => {
+      inFlight = null;
+    });
+
+    return inFlight;
+  }
+
+  async function send(): Promise<boolean> {
+    const updatesToProcess = [...failedUpdates, ...pendingUpdates];
+
+    failedUpdates = [];
     pendingUpdates = [];
-    isPersisting = true;
 
+    let saved = false;
     const mergedUpdates = mergeUpdates(updatesToProcess);
 
     const request = persistUpdates(
@@ -193,6 +211,8 @@ export function setupUpdatePersistence(editor: CraftileEditor, state: State) {
     );
 
     request.onSuccess((htmlResponse) => {
+      saved = true;
+
       if (pendingUpdates.length > 0) {
         // Persistence succeeded, but its rendered response is stale. Replay the batch so the
         // next response contains fresh effects for every block touched by either batch.
@@ -240,15 +260,27 @@ export function setupUpdatePersistence(editor: CraftileEditor, state: State) {
     });
 
     request.onFinish(() => {
-      isPersisting = false;
-
       if (pendingUpdates.length > 0) {
         debouncedPersist();
       }
     });
 
     await request.execute();
-  }, 300);
+
+    return saved;
+  }
+
+  const debouncedPersist = debounce(persistNow, 300);
+
+  flushActive = async () => {
+    while (inFlight || pendingUpdates.length > 0 || failedUpdates.length > 0) {
+      if (!(await persistNow())) {
+        return false;
+      }
+    }
+
+    return true;
+  };
 
   function handleUpdates(updates: UpdatesEvent) {
     if (!hasChanges(updates)) {

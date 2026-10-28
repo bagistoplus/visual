@@ -5,7 +5,6 @@ use BagistoPlus\Visual\Data\BlockSchema;
 use BagistoPlus\Visual\Facades\ThemeEditor;
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use BagistoPlus\Visual\Persistence\Data\EditorUpdateData;
-use BagistoPlus\Visual\Persistence\Data\FullPageEditorData;
 use BagistoPlus\Visual\Persistence\EditorDataStore;
 use BagistoPlus\Visual\Persistence\PersistEditorUpdates;
 use BagistoPlus\Visual\Persistence\StoredBlockPruner;
@@ -85,11 +84,6 @@ function editorUpdateData(array $data): EditorUpdateData
     $data['template']['url'] ??= 'https://example.test';
 
     return EditorUpdateData::fromValidated($data);
-}
-
-function fullPageEditorData(array $data): FullPageEditorData
-{
-    return FullPageEditorData::fromValidated($data);
 }
 
 beforeEach(function () {
@@ -184,382 +178,6 @@ describe('collectRegionBlocks', function () {
 
         expect($result)->toHaveKeys(['block-1', 'block-2', 'block-3', 'block-4'])
             ->and($result)->not->toHaveKey('block-5');
-    });
-});
-
-describe('handleFullPage', function () {
-    test('does not restore blocks omitted from the complete page state', function () {
-        $basePath = 'themes/test-theme/editor/default/en';
-        $templatePath = $basePath.'/templates/index.json';
-        $regionPath = $basePath.'/regions/header.json';
-
-        Storage::disk('themes-data')->put($templatePath, json_encode([
-            'blocks' => [
-                'kept-main' => ['id' => 'kept-main', 'type' => 'text'],
-                'removed-main' => ['id' => 'removed-main', 'type' => 'group', 'children' => ['removed-main-child']],
-                'removed-main-child' => ['id' => 'removed-main-child', 'type' => 'text', 'parentId' => 'removed-main'],
-            ],
-            'regions' => [['name' => 'main', 'shared' => false, 'blocks' => ['kept-main', 'removed-main']]],
-        ]));
-        Storage::disk('themes-data')->put($regionPath, json_encode([
-            'blocks' => [
-                'kept-header' => ['id' => 'kept-header', 'type' => 'text'],
-                'removed-header' => ['id' => 'removed-header', 'type' => 'text'],
-            ],
-            'regions' => [['name' => 'header', 'shared' => true, 'blocks' => ['kept-header', 'removed-header']]],
-        ]));
-
-        $this->persistEditorUpdates->handleFullPage(fullPageEditorData([
-            'theme' => 'test-theme',
-            'channel' => 'default',
-            'locale' => 'en',
-            'template' => 'index',
-            'page' => [
-                'blocks' => [
-                    'kept-main' => ['id' => 'kept-main', 'type' => 'text'],
-                    'kept-header' => ['id' => 'kept-header', 'type' => 'text'],
-                ],
-                'regions' => [
-                    ['name' => 'header', 'shared' => true, 'blocks' => ['kept-header']],
-                    ['name' => 'main', 'shared' => false, 'blocks' => ['kept-main']],
-                ],
-            ],
-        ]));
-
-        $template = json_decode(Storage::disk('themes-data')->get($templatePath), true);
-        $region = json_decode(Storage::disk('themes-data')->get($regionPath), true);
-
-        expect($template['blocks'])
-            ->toHaveKey('kept-main')
-            ->not->toHaveKeys(['removed-main', 'removed-main-child'])
-            ->and($region['blocks'])
-            ->toHaveKey('kept-header')
-            ->not->toHaveKey('removed-header');
-    });
-
-    test('keeps stored static blocks the page no longer reaches', function () {
-        $basePath = 'themes/test-theme/editor/default/en';
-        $templatePath = $basePath.'/templates/index.json';
-        $regionPath = $basePath.'/regions/header.json';
-
-        Storage::disk('themes-data')->put($templatePath, json_encode([
-            'blocks' => [
-                'section' => ['id' => 'section', 'type' => 'group', 'children' => ['zone', 'card']],
-                'zone' => ['id' => 'zone', 'type' => 'group', 'static' => true, 'parentId' => 'section', 'children' => ['zone-child']],
-                'zone-child' => ['id' => 'zone-child', 'type' => 'text', 'parentId' => 'zone'],
-                'card' => ['id' => 'card', 'type' => 'text', 'static' => true, 'repeated' => true, 'parentId' => 'section'],
-                'removed-main' => ['id' => 'removed-main', 'type' => 'text'],
-            ],
-            'regions' => [['name' => 'main', 'shared' => false, 'blocks' => ['section', 'removed-main']]],
-        ]));
-        Storage::disk('themes-data')->put($regionPath, json_encode([
-            'blocks' => [
-                'header' => ['id' => 'header', 'type' => 'group', 'children' => ['header-zone']],
-                'header-zone' => ['id' => 'header-zone', 'type' => 'text', 'static' => true, 'parentId' => 'header'],
-            ],
-            'regions' => [['name' => 'header', 'shared' => true, 'blocks' => ['header']]],
-        ]));
-
-        $this->persistEditorUpdates->handleFullPage(fullPageEditorData([
-            'theme' => 'test-theme',
-            'channel' => 'default',
-            'locale' => 'en',
-            'template' => 'index',
-            'page' => [
-                'blocks' => [
-                    'section' => ['id' => 'section', 'type' => 'group', 'children' => ['card']],
-                    'card' => ['id' => 'card', 'type' => 'text', 'static' => true, 'repeated' => true, 'parentId' => 'section'],
-                    'header' => ['id' => 'header', 'type' => 'group', 'children' => []],
-                ],
-                'regions' => [
-                    ['name' => 'header', 'shared' => true, 'blocks' => ['header']],
-                    ['name' => 'main', 'shared' => false, 'blocks' => ['section']],
-                ],
-            ],
-        ]));
-
-        $template = json_decode(Storage::disk('themes-data')->get($templatePath), true);
-        $region = json_decode(Storage::disk('themes-data')->get($regionPath), true);
-
-        expect($template['blocks'])
-            ->toHaveKeys(['section', 'card', 'zone', 'zone-child'])
-            ->not->toHaveKey('removed-main')
-            ->and($template['blocks']['section']['children'])->toBe(['card'])
-            ->and($template['blocks']['zone']['children'])->toBe(['zone-child'])
-            ->and($region['blocks'])->toHaveKeys(['header', 'header-zone'])
-            ->and($region['blocks']['header']['children'])->toBe([]);
-    });
-
-    test('saves shared regions separately', function () {
-
-        $basePath = 'themes/test-theme/editor/default/en';
-
-        ThemePathsResolver::shouldReceive('resolvePath')
-            ->with('test-theme', 'default', 'en', 'editor', 'regions/header.json')
-            ->andReturn(Storage::path($basePath.'/regions/header.json'));
-
-        ThemePathsResolver::shouldReceive('resolvePath')
-            ->with('test-theme', 'default', 'en', 'editor', 'templates/index.json')
-            ->andReturn(Storage::path($basePath.'/templates/index.json'));
-
-        $data = [
-            'theme' => 'test-theme',
-            'channel' => 'default',
-            'locale' => 'en',
-            'template' => 'index',
-            'page' => [
-                'blocks' => [
-                    'block-1' => ['id' => 'block-1', 'type' => 'text', 'content' => 'Header'],
-                    'block-2' => ['id' => 'block-2', 'type' => 'text', 'content' => 'Main'],
-                ],
-                'regions' => [
-                    ['name' => 'header', 'shared' => true, 'blocks' => ['block-1']],
-                    ['name' => 'main', 'shared' => false, 'blocks' => ['block-2']],
-                ],
-            ],
-        ];
-
-        $this->persistEditorUpdates->handleFullPage(fullPageEditorData($data));
-
-        expect(Storage::disk('themes-data')->exists($basePath.'/regions/header.json'))->toBeTrue()
-            ->and(Storage::disk('themes-data')->exists($basePath.'/templates/index.json'))->toBeTrue();
-
-        $headerData = json_decode(Storage::disk('themes-data')->get($basePath.'/regions/header.json'), true);
-        $templateData = json_decode(Storage::disk('themes-data')->get($basePath.'/templates/index.json'), true);
-
-        expect($headerData['blocks'])->toHaveKey('block-1')
-            ->and($headerData['blocks'])->not->toHaveKey('block-2')
-            ->and($templateData['blocks'])->toHaveKey('block-2')
-            ->and($templateData['blocks'])->not->toHaveKey('block-1');
-    });
-
-    test('saves shared regions by id when present', function () {
-
-        $basePath = 'themes/test-theme/editor/default/en';
-
-        ThemePathsResolver::shouldReceive('resolvePath')
-            ->with('test-theme', 'default', 'en', 'editor', 'regions/site-header.json')
-            ->andReturn(Storage::path($basePath.'/regions/site-header.json'));
-
-        $data = [
-            'theme' => 'test-theme',
-            'channel' => 'default',
-            'locale' => 'en',
-            'template' => 'index',
-            'page' => [
-                'blocks' => [
-                    'block-1' => ['id' => 'block-1', 'type' => 'text', 'content' => 'Header'],
-                ],
-                'regions' => [
-                    ['id' => 'site-header', 'name' => 'Header', 'shared' => true, 'blocks' => ['block-1']],
-                ],
-            ],
-        ];
-
-        $this->persistEditorUpdates->handleFullPage(fullPageEditorData($data));
-
-        expect(Storage::disk('themes-data')->exists($basePath.'/regions/site-header.json'))->toBeTrue();
-
-        $headerData = json_decode(Storage::disk('themes-data')->get($basePath.'/regions/site-header.json'), true);
-
-        expect($headerData['regions'][0]['id'])->toBe('site-header')
-            ->and($headerData['regions'][0]['name'])->toBe('Header');
-    });
-
-    test('collects nested blocks in shared regions', function () {
-
-        $basePath = 'themes/test-theme/editor/default/en';
-
-        ThemePathsResolver::shouldReceive('resolvePath')
-            ->with('test-theme', 'default', 'en', 'editor', 'regions/header.json')
-            ->andReturn(Storage::path($basePath.'/regions/header.json'));
-
-        $data = [
-            'theme' => 'test-theme',
-            'channel' => 'default',
-            'locale' => 'en',
-            'template' => 'index',
-            'page' => [
-                'blocks' => [
-                    'block-1' => ['id' => 'block-1', 'type' => 'container', 'children' => ['block-2']],
-                    'block-2' => ['id' => 'block-2', 'type' => 'text', 'content' => 'Nested'],
-                    'block-3' => ['id' => 'block-3', 'type' => 'image'],
-                ],
-                'regions' => [
-                    ['name' => 'header', 'shared' => true, 'blocks' => ['block-1']],
-                ],
-            ],
-        ];
-
-        $this->persistEditorUpdates->handleFullPage(fullPageEditorData($data));
-
-        $headerData = json_decode(Storage::disk('themes-data')->get($basePath.'/regions/header.json'), true);
-
-        expect($headerData['blocks'])->toHaveKeys(['block-1', 'block-2'])
-            ->and($headerData['blocks'])->not->toHaveKey('block-3');
-    });
-
-    test('handles only shared regions', function () {
-
-        $basePath = 'themes/test-theme/editor/default/en';
-
-        ThemePathsResolver::shouldReceive('resolvePath')
-            ->with('test-theme', 'default', 'en', 'editor', 'regions/header.json')
-            ->andReturn(Storage::path($basePath.'/regions/header.json'));
-
-        $data = [
-            'theme' => 'test-theme',
-            'channel' => 'default',
-            'locale' => 'en',
-            'template' => 'index',
-            'page' => [
-                'blocks' => [
-                    'block-1' => ['id' => 'block-1', 'type' => 'text'],
-                ],
-                'regions' => [
-                    ['name' => 'header', 'shared' => true, 'blocks' => ['block-1']],
-                ],
-            ],
-        ];
-
-        $this->persistEditorUpdates->handleFullPage(fullPageEditorData($data));
-
-        expect(Storage::disk('themes-data')->exists($basePath.'/regions/header.json'))->toBeTrue()
-            ->and(Storage::disk('themes-data')->exists($basePath.'/templates/index.json'))->toBeFalse();
-    });
-
-    test('handles only non-shared regions', function () {
-
-        $basePath = 'themes/test-theme/editor/default/en';
-
-        ThemePathsResolver::shouldReceive('resolvePath')
-            ->with('test-theme', 'default', 'en', 'editor', 'templates/index.json')
-            ->andReturn(Storage::path($basePath.'/templates/index.json'));
-
-        $data = [
-            'theme' => 'test-theme',
-            'channel' => 'default',
-            'locale' => 'en',
-            'template' => 'index',
-            'page' => [
-                'blocks' => [
-                    'block-1' => ['id' => 'block-1', 'type' => 'text'],
-                ],
-                'regions' => [
-                    ['name' => 'main', 'shared' => false, 'blocks' => ['block-1']],
-                ],
-            ],
-        ];
-
-        $this->persistEditorUpdates->handleFullPage(fullPageEditorData($data));
-
-        expect(Storage::disk('themes-data')->exists($basePath.'/templates/index.json'))->toBeTrue();
-
-        $templateData = json_decode(Storage::disk('themes-data')->get($basePath.'/templates/index.json'), true);
-
-        expect($templateData['blocks'])->toHaveKey('block-1')
-            ->and($templateData['regions'])->toHaveCount(1)
-            ->and($templateData['regions'][0]['name'])->toBe('main');
-    });
-
-    test('keeps id and name when saving non-shared regions', function () {
-
-        $basePath = 'themes/test-theme/editor/default/en';
-
-        ThemePathsResolver::shouldReceive('resolvePath')
-            ->with('test-theme', 'default', 'en', 'editor', 'templates/index.json')
-            ->andReturn(Storage::path($basePath.'/templates/index.json'));
-
-        $data = [
-            'theme' => 'test-theme',
-            'channel' => 'default',
-            'locale' => 'en',
-            'template' => 'index',
-            'page' => [
-                'blocks' => [
-                    'block-1' => ['id' => 'block-1', 'type' => 'text'],
-                ],
-                'regions' => [
-                    ['id' => 'main-content', 'name' => 'Main content', 'shared' => false, 'blocks' => ['block-1']],
-                ],
-            ],
-        ];
-
-        $this->persistEditorUpdates->handleFullPage(fullPageEditorData($data));
-
-        $templateData = json_decode(Storage::disk('themes-data')->get($basePath.'/templates/index.json'), true);
-
-        expect($templateData['regions'][0]['id'])->toBe('main-content')
-            ->and($templateData['regions'][0]['name'])->toBe('Main content');
-    });
-
-    test('saves custom assignable templates in type-first directories', function () {
-
-        $basePath = 'themes/test-theme/editor/default/en';
-
-        ThemePathsResolver::shouldReceive('resolvePath')
-            ->with('test-theme', 'default', 'en', 'editor', 'templates/product/gift-box.json')
-            ->andReturn(Storage::path($basePath.'/templates/product/gift-box.json'));
-
-        $data = [
-            'theme' => 'test-theme',
-            'channel' => 'default',
-            'locale' => 'en',
-            'template' => 'product.gift-box',
-            'page' => [
-                'blocks' => [
-                    'block-1' => ['id' => 'block-1', 'type' => 'text'],
-                ],
-                'regions' => [
-                    ['name' => 'main', 'shared' => false, 'blocks' => ['block-1']],
-                ],
-            ],
-        ];
-
-        $this->persistEditorUpdates->handleFullPage(fullPageEditorData($data));
-
-        expect(Storage::disk('themes-data')->exists($basePath.'/templates/product/gift-box.json'))->toBeTrue();
-    });
-
-    test('handles multiple shared regions', function () {
-
-        $basePath = 'themes/test-theme/editor/default/en';
-
-        ThemePathsResolver::shouldReceive('resolvePath')
-            ->with('test-theme', 'default', 'en', 'editor', 'regions/header.json')
-            ->andReturn(Storage::path($basePath.'/regions/header.json'));
-
-        ThemePathsResolver::shouldReceive('resolvePath')
-            ->with('test-theme', 'default', 'en', 'editor', 'regions/footer.json')
-            ->andReturn(Storage::path($basePath.'/regions/footer.json'));
-
-        $data = [
-            'theme' => 'test-theme',
-            'channel' => 'default',
-            'locale' => 'en',
-            'template' => 'index',
-            'page' => [
-                'blocks' => [
-                    'block-1' => ['id' => 'block-1', 'type' => 'text'],
-                    'block-2' => ['id' => 'block-2', 'type' => 'text'],
-                ],
-                'regions' => [
-                    ['name' => 'header', 'shared' => true, 'blocks' => ['block-1']],
-                    ['name' => 'footer', 'shared' => true, 'blocks' => ['block-2']],
-                ],
-            ],
-        ];
-
-        $this->persistEditorUpdates->handleFullPage(fullPageEditorData($data));
-
-        expect(Storage::disk('themes-data')->exists($basePath.'/regions/header.json'))->toBeTrue()
-            ->and(Storage::disk('themes-data')->exists($basePath.'/regions/footer.json'))->toBeTrue();
-
-        $headerData = json_decode(Storage::disk('themes-data')->get($basePath.'/regions/header.json'), true);
-        $footerData = json_decode(Storage::disk('themes-data')->get($basePath.'/regions/footer.json'), true);
-
-        expect($headerData['blocks'])->toHaveKey('block-1')
-            ->and($footerData['blocks'])->toHaveKey('block-2');
     });
 });
 
@@ -671,6 +289,157 @@ describe('handle', function () {
         $saved = json_decode(Storage::disk('themes-data')->get($regionPath), true);
 
         expect($saved)->toBe($current);
+    });
+
+    test('saves shared and non-shared regions in separate files and keeps stored static blocks the update no longer reaches', function () {
+        $basePath = 'themes/test-theme/editor/default/en';
+        $templatePath = $basePath.'/templates/index.json';
+        $regionPath = $basePath.'/regions/header.json';
+
+        Storage::disk('themes-data')->put($templatePath, json_encode([
+            'blocks' => [
+                'section' => ['id' => 'section', 'type' => 'group', 'children' => ['zone', 'card']],
+                'zone' => ['id' => 'zone', 'type' => 'group', 'static' => true, 'parentId' => 'section', 'children' => ['zone-child']],
+                'zone-child' => ['id' => 'zone-child', 'type' => 'text', 'parentId' => 'zone'],
+                'card' => ['id' => 'card', 'type' => 'text', 'static' => true, 'repeated' => true, 'parentId' => 'section'],
+                'removed-main' => ['id' => 'removed-main', 'type' => 'text'],
+            ],
+            'regions' => [['name' => 'main', 'shared' => false, 'blocks' => ['section', 'removed-main']]],
+        ]));
+        Storage::disk('themes-data')->put($regionPath, json_encode([
+            'blocks' => [
+                'header' => ['id' => 'header', 'type' => 'group', 'children' => ['header-zone']],
+                'header-zone' => ['id' => 'header-zone', 'type' => 'text', 'static' => true, 'parentId' => 'header'],
+            ],
+            'regions' => [['name' => 'header', 'shared' => true, 'blocks' => ['header']]],
+        ]));
+
+        $currentRegion = [
+            'blocks' => [
+                'header' => ['id' => 'header', 'type' => 'group', 'children' => []],
+            ],
+            'regions' => [['name' => 'header', 'shared' => true, 'blocks' => ['header']]],
+        ];
+        $currentTemplate = [
+            'blocks' => [
+                'section' => ['id' => 'section', 'type' => 'group', 'children' => ['card']],
+                'card' => ['id' => 'card', 'type' => 'text', 'static' => true, 'repeated' => true, 'parentId' => 'section'],
+            ],
+            'regions' => [['name' => 'main', 'shared' => false, 'blocks' => ['section']]],
+        ];
+
+        $handleUpdates = Mockery::mock(HandleUpdates::class);
+        $handleUpdates->shouldReceive('execute')
+            ->twice()
+            ->andReturnUsing(fn (?string $path, UpdateRequest $updateRequest, array $regionKeys) => [
+                'updated' => true,
+                'data' => $regionKeys === ['header'] ? $currentRegion : $currentTemplate,
+            ]);
+
+        persistEditorUpdatesWith($handleUpdates)->handle(editorUpdateData([
+            'theme' => 'test-theme',
+            'channel' => 'default',
+            'locale' => 'en',
+            'template' => [
+                'name' => 'index',
+                'sources' => encrypt([]),
+            ],
+            'updates' => [
+                'blocks' => [],
+                'regions' => [...$currentRegion['regions'], ...$currentTemplate['regions']],
+                'changes' => [
+                    'added' => [],
+                    'updated' => [],
+                    'removed' => ['removed-main'],
+                ],
+            ],
+        ]));
+
+        $template = json_decode(Storage::disk('themes-data')->get($templatePath), true);
+        $region = json_decode(Storage::disk('themes-data')->get($regionPath), true);
+
+        expect($template['blocks'])
+            ->toHaveKeys(['section', 'card', 'zone', 'zone-child'])
+            ->not->toHaveKeys(['removed-main', 'header'])
+            ->and($template['blocks']['section']['children'])->toBe(['card'])
+            ->and($template['blocks']['zone']['children'])->toBe(['zone-child'])
+            ->and($region['blocks'])->toHaveKeys(['header', 'header-zone'])
+            ->and($region['blocks'])->not->toHaveKey('section')
+            ->and($region['blocks']['header']['children'])->toBe([]);
+    });
+
+    test('saves a shared region in a file named after its id', function () {
+        $current = [
+            'blocks' => [
+                'block-1' => ['id' => 'block-1', 'type' => 'text'],
+            ],
+            'regions' => [['id' => 'site-header', 'name' => 'Header', 'shared' => true, 'blocks' => ['block-1']]],
+        ];
+
+        $handleUpdates = Mockery::mock(HandleUpdates::class);
+        $handleUpdates->shouldReceive('execute')
+            ->once()
+            ->with('/theme/views/regions/site-header.blade.php', Mockery::type(UpdateRequest::class), ['site-header'])
+            ->andReturn(['updated' => true, 'data' => $current]);
+
+        persistEditorUpdatesWith($handleUpdates)->handle(editorUpdateData([
+            'theme' => 'test-theme',
+            'channel' => 'default',
+            'locale' => 'en',
+            'template' => [
+                'name' => 'index',
+                'sources' => encrypt(['/theme/views/regions/site-header.blade.php']),
+            ],
+            'updates' => [
+                'blocks' => [],
+                'regions' => $current['regions'],
+                'changes' => [
+                    'added' => ['block-1'],
+                    'updated' => [],
+                    'removed' => [],
+                ],
+            ],
+        ]));
+
+        $saved = json_decode(Storage::disk('themes-data')->get('themes/test-theme/editor/default/en/regions/site-header.json'), true);
+
+        expect($saved)->toBe($current);
+    });
+
+    test('saves custom assignable templates in type-first directories', function () {
+        $current = [
+            'blocks' => [
+                'block-1' => ['id' => 'block-1', 'type' => 'text'],
+            ],
+            'regions' => [['name' => 'main', 'shared' => false, 'blocks' => ['block-1']]],
+        ];
+
+        $handleUpdates = Mockery::mock(HandleUpdates::class);
+        $handleUpdates->shouldReceive('execute')
+            ->once()
+            ->with('/theme/views/templates/product/gift-box.blade.php', Mockery::type(UpdateRequest::class), ['main'])
+            ->andReturn(['updated' => true, 'data' => $current]);
+
+        persistEditorUpdatesWith($handleUpdates)->handle(editorUpdateData([
+            'theme' => 'test-theme',
+            'channel' => 'default',
+            'locale' => 'en',
+            'template' => [
+                'name' => 'product.gift-box',
+                'sources' => encrypt(['/theme/views/templates/product/gift-box.blade.php']),
+            ],
+            'updates' => [
+                'blocks' => [],
+                'regions' => $current['regions'],
+                'changes' => [
+                    'added' => ['block-1'],
+                    'updated' => [],
+                    'removed' => [],
+                ],
+            ],
+        ]));
+
+        expect(Storage::disk('themes-data')->exists('themes/test-theme/editor/default/en/templates/product/gift-box.json'))->toBeTrue();
     });
 
     test('uses preview context when parsing shared region source data', function () {
@@ -1015,68 +784,6 @@ describe('handle', function () {
                 ],
             ],
             'regions' => [['id' => 'main-content', 'name' => 'Main', 'shared' => false, 'blocks' => ['banner', 'hero']]],
-        ]);
-
-        $files->deleteDirectory($dataPath);
-    });
-
-    test('full page saves new locale template as parent diff when editor fallback exists', function () {
-        $dataPath = sys_get_temp_dir().'/visual-full-page-parent-persist-'.uniqid();
-        config()->set('bagisto_visual.storages.file.path', $dataPath);
-
-        app()->instance(ThemePathsResolverConcrete::class, new class extends ThemePathsResolverConcrete
-        {
-            public function resolveFallbackPaths(string $themeCode, string $mode, string $channel, string $locale): array
-            {
-                return [
-                    $this->buildThemePath($themeCode, $mode, $channel, $locale),
-                    $this->buildThemePath($themeCode, $mode, 'default', 'en'),
-                ];
-            }
-        });
-
-        $files = new Filesystem;
-        $baseTemplate = "{$dataPath}/themes/test-theme/editor/default/en/templates/index.json";
-        $files->ensureDirectoryExists(dirname($baseTemplate));
-        $files->put($baseTemplate, json_encode([
-            'blocks' => [
-                'hero' => [
-                    'id' => 'hero',
-                    'type' => 'theme::hero',
-                    'properties' => ['title' => 'Base', 'subtitle' => 'Same'],
-                ],
-            ],
-            'regions' => [['id' => 'main-content', 'name' => 'Main', 'shared' => false, 'blocks' => ['hero']]],
-        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-
-        persistEditorUpdatesWith(Mockery::mock(HandleUpdates::class))->handleFullPage(fullPageEditorData([
-            'theme' => 'test-theme',
-            'channel' => 'default',
-            'locale' => 'ar',
-            'template' => 'index',
-            'page' => [
-                'blocks' => [
-                    'hero' => [
-                        'id' => 'hero',
-                        'type' => 'theme::hero',
-                        'properties' => ['title' => 'Arabic', 'subtitle' => 'Same'],
-                    ],
-                ],
-                'regions' => [
-                    ['id' => 'main-content', 'name' => 'Main', 'shared' => false, 'blocks' => ['hero']],
-                ],
-            ],
-        ]));
-
-        $saved = json_decode($files->get("{$dataPath}/themes/test-theme/editor/default/ar/templates/index.json"), true);
-
-        expect($saved)->toBe([
-            'parent' => 'default/en/templates/index.json',
-            'blocks' => [
-                'hero' => [
-                    'properties' => ['title' => 'Arabic'],
-                ],
-            ],
         ]);
 
         $files->deleteDirectory($dataPath);

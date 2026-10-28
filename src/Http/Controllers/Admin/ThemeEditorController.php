@@ -7,7 +7,6 @@ use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Http\Controllers\Controller;
 use BagistoPlus\Visual\Persistence\CreateTemplate;
 use BagistoPlus\Visual\Persistence\Data\EditorUpdateData;
-use BagistoPlus\Visual\Persistence\Data\FullPageEditorData;
 use BagistoPlus\Visual\Persistence\Data\ThemeSettingsUpdateData;
 use BagistoPlus\Visual\Persistence\DiscardTheme;
 use BagistoPlus\Visual\Persistence\PersistEditorUpdates;
@@ -160,10 +159,7 @@ class ThemeEditorController extends Controller
     {
         $validated = $request->validate([
             'theme' => ['required', 'string'],
-            'channel' => ['required_with:page', 'nullable', 'string', Rule::in($this->getChannelCodes())],
-            'locale' => ['required_with:page', 'nullable', 'string', Rule::in($this->getLocaleCodes($request->input('channel')))],
-            'template' => ['required_with:page', 'nullable', 'string'],
-            'page' => ['nullable', 'array'],
+            'channel' => ['nullable', 'string', Rule::in($this->getChannelCodes())],
         ]);
 
         if ($this->resolveTheme($validated['theme'])->editorMode()->isBagisto()) {
@@ -180,11 +176,6 @@ class ThemeEditorController extends Controller
                 'success' => true,
                 'message' => 'Theme published successfully',
             ]);
-        }
-
-        // If page data is provided, persist it first before publishing
-        if (isset($validated['page'])) {
-            $this->persistEditorUpdates->handleFullPage(FullPageEditorData::fromValidated($validated));
         }
 
         $this->publishTheme->handle($validated['theme']);

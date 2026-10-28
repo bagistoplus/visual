@@ -18,9 +18,10 @@ import {
   extractPageDataFromHtml,
   patchResolvedBlocksFromHtml,
   setupUpdatePersistence,
+  flushPendingUpdates,
 } from '../../../craftile/features/updatePersistence';
 import {
-  canonicalizePage,
+  canonicalizeBlocks,
   clearResolvedTranslationRefs,
 } from '../../../utils/resolvedTranslationRefs';
 
@@ -865,7 +866,7 @@ describe('updatePersistence utilities', () => {
         },
       });
       expect(
-        canonicalizePage({ blocks: patchBlocks.mock.calls[0][0], regions: [] }).blocks.hero.properties.title
+        canonicalizeBlocks(patchBlocks.mock.calls[0][0]).hero.properties.title
       ).toBe('t:block.title');
 
       clearResolvedTranslationRefs();
@@ -884,5 +885,78 @@ describe('updatePersistence utilities', () => {
       expect(editor.engine.getPage).not.toHaveBeenCalled();
       expect(editor.engine.patchBlocks).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('flushPendingUpdates', () => {
+  const block = { id: 'hero', type: 'hero', properties: { text: 'Initial' }, children: [] };
+  const edit = (text: string) =>
+    createUpdatesEvent({ updated: ['hero'] }, { hero: { ...block, properties: { text } } });
+
+  it('saves an edit still waiting for its debounce at once', async () => {
+    vi.useFakeTimers();
+    const request = createControlledRequest();
+    persistUpdatesMock.mockReturnValueOnce(request);
+    const harness = createPersistenceHarness({ hero: block });
+
+    harness.emitUpdates(edit('Draft'));
+    const flushed = flushPendingUpdates();
+
+    expect(persistUpdatesMock).toHaveBeenCalledTimes(1);
+    request.succeed(pageResponse({ hero: { ...block, properties: { text: 'Draft' } } }));
+
+    await expect(flushed).resolves.toBe(true);
+  });
+
+  it('waits for a save already on its way', async () => {
+    vi.useFakeTimers();
+    const request = createControlledRequest();
+    persistUpdatesMock.mockReturnValueOnce(request);
+    const harness = createPersistenceHarness({ hero: block });
+
+    harness.emitUpdates(edit('Draft'));
+    await vi.advanceTimersByTimeAsync(300);
+
+    let settled = false;
+    const flushed = flushPendingUpdates().then((saved) => {
+      settled = true;
+
+      return saved;
+    });
+    await Promise.resolve();
+
+    expect(settled).toBe(false);
+    request.succeed(pageResponse({ hero: { ...block, properties: { text: 'Draft' } } }));
+
+    await expect(flushed).resolves.toBe(true);
+    expect(persistUpdatesMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports a failed save, and retries it on the next flush', async () => {
+    vi.useFakeTimers();
+    const failing = createControlledRequest();
+    const retry = createControlledRequest();
+    persistUpdatesMock.mockReturnValueOnce(failing).mockReturnValueOnce(retry);
+    const harness = createPersistenceHarness({ hero: block });
+
+    harness.emitUpdates(edit('Draft'));
+    const flushed = flushPendingUpdates();
+    failing.fail(new Error('Server error'));
+
+    await expect(flushed).resolves.toBe(false);
+
+    const retried = flushPendingUpdates();
+    expect(persistUpdatesMock).toHaveBeenCalledTimes(2);
+    expect(persistUpdatesMock.mock.calls[1][0].blocks.hero.properties.text).toBe('Draft');
+    retry.succeed(pageResponse({ hero: { ...block, properties: { text: 'Draft' } } }));
+
+    await expect(retried).resolves.toBe(true);
+  });
+
+  it('has nothing to do when every edit is saved', async () => {
+    createPersistenceHarness({ hero: block });
+
+    await expect(flushPendingUpdates()).resolves.toBe(true);
+    expect(persistUpdatesMock).not.toHaveBeenCalled();
   });
 });

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { setupPageDataHandler, syncEditorContextFromPageData } from '../../../craftile/handlers/pageData';
 import type { State } from '../../../state';
-import { canonicalizePage, recordResolvedTranslationRefs } from '../../../utils/resolvedTranslationRefs';
+import { canonicalizeBlocks, recordResolvedTranslationRefs } from '../../../utils/resolvedTranslationRefs';
 
 vi.mock('nprogress', () => ({
   default: {
@@ -219,19 +219,16 @@ describe('preview page data context sync', () => {
       },
     });
 
-    const canonical = canonicalizePage({
-      blocks: {
-        hero: {
-          id: 'hero',
-          type: 'hero',
-          properties: { title: 'Resolved title' },
-          children: [],
-        },
+    const canonical = canonicalizeBlocks({
+      hero: {
+        id: 'hero',
+        type: 'hero',
+        properties: { title: 'Resolved title' },
+        children: [],
       },
-      regions: [{ name: 'main', blocks: ['hero'] }],
     });
 
-    expect(canonical.blocks.hero.properties.title).toBe('Resolved title');
+    expect(canonical.hero.properties.title).toBe('Resolved title');
   });
 
   it('seeds resolved translation refs from full page data translation references', () => {
@@ -290,19 +287,16 @@ describe('preview page data context sync', () => {
       },
     });
 
-    const canonical = canonicalizePage({
-      blocks: {
-        hero: {
-          id: 'hero',
-          type: 'hero',
-          properties: { title: 'Resolved title', color: '#ffffff' },
-          children: [],
-        },
+    const canonical = canonicalizeBlocks({
+      hero: {
+        id: 'hero',
+        type: 'hero',
+        properties: { title: 'Resolved title', color: '#ffffff' },
+        children: [],
       },
-      regions: [{ name: 'main', blocks: ['hero'] }],
     });
 
-    expect(canonical.blocks.hero.properties).toEqual({
+    expect(canonical.hero.properties).toEqual({
       title: 't:block.title',
       color: '#ffffff',
     });
