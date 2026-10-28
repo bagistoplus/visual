@@ -166,8 +166,10 @@ it('keeps visual paths whole behind a windows base path', function () {
     $bagisto = new ThemeViewFinder(app('files'), [], ['json']);
     $bagisto->addNamespace('shop', ['C:\\app\\visual://_/themes/demo/live/default/en', dirname(__DIR__).'/views']);
 
-    expect(VisualThemeViewFinder::from($bagisto)->getHints()['shop'])
-        ->toBe(['visual://_/themes/demo/live/default/en', dirname(__DIR__).'/views']);
+    $hints = VisualThemeViewFinder::from($bagisto)->getHints()['shop'];
+
+    expect($hints[0])->toBe('visual://_/themes/demo/live/default/en')
+        ->and($hints[1])->toBe($bagisto->getHints()['shop'][1]);
 });
 
 it('gives the view factory the visual finder even when the factory was made first', function () {
