@@ -1,13 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { publishTheme, flushPendingUpdates, toast } = vi.hoisted(() => ({
+const { publishTheme, flushPendingUpdates, flushThemeSettings, toast } = vi.hoisted(() => ({
   publishTheme: vi.fn(),
   flushPendingUpdates: vi.fn(),
+  flushThemeSettings: vi.fn(),
   toast: vi.fn(),
 }));
 
 vi.mock('../../api', () => ({ publishTheme }));
 vi.mock('../../craftile/features/updatePersistence', () => ({ flushPendingUpdates }));
+vi.mock('../../craftile/features/themeSettingsPersistence', () => ({ flushThemeSettings }));
 vi.mock('../../state', () => ({ useState: () => ({ state: { haveEdits: true, draftCount: null } }) }));
 
 function request() {
@@ -33,12 +35,19 @@ describe('usePublish', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     publishTheme.mockImplementation(request);
+    flushPendingUpdates.mockResolvedValue(true);
+    flushThemeSettings.mockResolvedValue(true);
   });
 
-  it('saves pending edits before publishing', async () => {
+  it('saves pending edits and theme settings before publishing', async () => {
     const order: string[] = [];
     flushPendingUpdates.mockImplementation(async () => {
-      order.push('flush');
+      order.push('flush edits');
+
+      return true;
+    });
+    flushThemeSettings.mockImplementation(async () => {
+      order.push('flush theme settings');
 
       return true;
     });
@@ -50,12 +59,20 @@ describe('usePublish', () => {
 
     await publish();
 
-    expect(order).toEqual(['flush', 'publish']);
+    expect(order).toEqual(['flush edits', 'flush theme settings', 'publish']);
     expect(publishTheme).toHaveBeenCalledWith();
   });
 
   it('does not publish when an edit could not be saved', async () => {
     flushPendingUpdates.mockResolvedValue(false);
+
+    await publish();
+
+    expect(publishTheme).not.toHaveBeenCalled();
+  });
+
+  it('does not publish when a theme setting could not be saved', async () => {
+    flushThemeSettings.mockResolvedValue(false);
 
     await publish();
 

@@ -1,4 +1,5 @@
 import { publishTheme } from '../api';
+import { flushThemeSettings } from '../craftile/features/themeSettingsPersistence';
 import { flushPendingUpdates } from '../craftile/features/updatePersistence';
 import { useState } from '../state';
 
@@ -17,7 +18,7 @@ export function usePublish() {
 
     // Publish what is saved, so edits still on their way are saved first. A
     // failed save has already said so, and publishing would leave it out.
-    if (!(await flushPendingUpdates())) {
+    if (!(await flushPendingUpdates()) || !(await flushThemeSettings())) {
       isPublishing.value = false;
 
       return;

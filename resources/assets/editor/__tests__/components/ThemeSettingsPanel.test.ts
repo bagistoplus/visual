@@ -4,17 +4,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ThemeSettingsPanel from '../../components/ThemeSettingsPanel.vue';
 import { createState } from '../../state';
 
-vi.mock('../../api', () => ({
-  persistThemeSettings: vi.fn(() => ({
-    onSuccess: vi.fn(),
-    onError: vi.fn(),
-    execute: vi.fn(),
-  })),
+const { queueThemeSetting } = vi.hoisted(() => ({
+  queueThemeSetting: vi.fn(),
 }));
 
-vi.mock('../../craftile/plugin', () => ({
-  CRAFTILE_EDITOR: Symbol('CRAFTILE_EDITOR'),
-}));
+vi.mock('../../craftile/features/themeSettingsPersistence', () => ({ queueThemeSetting }));
 
 const PropertyFieldStub = defineComponent({
   props: ['field', 'modelValue'],
@@ -32,7 +26,7 @@ describe('ThemeSettingsPanel', () => {
     vi.clearAllMocks();
   });
 
-  it('marks the editor as having unpublished edits when a theme setting changes', async () => {
+  it('marks the editor as having unpublished edits and queues the save when a theme setting changes', async () => {
     const state = createState({
       theme: {
         code: 'test-theme',
@@ -76,5 +70,6 @@ describe('ThemeSettingsPanel', () => {
 
     expect(state.theme?.settings.heading).toBe('updated value');
     expect(state.haveEdits).toBe(true);
+    expect(queueThemeSetting).toHaveBeenCalledWith('heading', 'updated value');
   });
 });
