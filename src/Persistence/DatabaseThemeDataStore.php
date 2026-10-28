@@ -667,12 +667,12 @@ class DatabaseThemeDataStore implements ThemeDataStore
      */
     protected function connection(): ConnectionInterface
     {
-        return DB::connection(config('bagisto_visual.storages.database.connection'));
+        return DB::connection(config('bagisto_visual.storages.database.connection') ?: null);
     }
 
     protected function cache(): Repository
     {
-        return Cache::store(config('bagisto_visual.storages.database.cache'));
+        return Cache::store(config('bagisto_visual.storages.database.cache') ?: null);
     }
 
     protected function documents(string $scope, string $theme): Builder

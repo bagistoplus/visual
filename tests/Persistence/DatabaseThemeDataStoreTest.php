@@ -263,3 +263,13 @@ it('keeps its rows and cache entries on the configured connection and cache stor
         ->and(Cache::get('visual:theme-data:_:demo:live'))->toBeNull()
         ->and((new DatabaseThemeDataStore)->contents('', 'demo', 'live', 'default/en/theme.json'))->toBe('{"a":1}');
 });
+
+it('uses the default connection and cache store when they are set to an empty value', function () {
+    config()->set('bagisto_visual.storages.database', ['connection' => '', 'cache' => '']);
+
+    $this->store->publish('demo', ['default/en/theme.json' => '{"a":1}']);
+
+    expect(DB::table('visual_theme_versions')->count())->toBe(1)
+        ->and(Cache::get('visual:theme-data:_:demo:live'))->not->toBeNull()
+        ->and((new DatabaseThemeDataStore)->contents('', 'demo', 'live', 'default/en/theme.json'))->toBe('{"a":1}');
+});
