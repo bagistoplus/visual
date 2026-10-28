@@ -40,8 +40,8 @@ class VisualThemeViewFinder extends ThemeViewFinder
 
     protected function withoutBasePath(string $path): string
     {
-        $position = strpos($path, '/'.DatabaseThemeDataStore::SCHEME.'://');
+        $position = strpos($path, DatabaseThemeDataStore::SCHEME.'://');
 
-        return $position === false ? $path : substr($path, $position + 1);
+        return $position === false ? $path : substr($path, $position);
     }
 }

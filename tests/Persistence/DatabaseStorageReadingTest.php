@@ -159,7 +159,15 @@ it('keeps visual paths whole in the bagisto view finder', function () {
 
     expect($finder->find('shop::templates.index'))->toBe('visual://_/themes/demo/live/default/en/templates/index.json')
         ->and($finder->getHints()['errors'])->toContain('visual://_/themes/demo/live/default/en/errors')
-        ->and(collect($finder->getHints()['errors'])->filter(fn ($path) => str_contains($path, base_path().'/visual://'))->all())->toBe([]);
+        ->and(collect($finder->getHints()['errors'])->filter(fn ($path) => str_contains($path, 'visual://') && ! str_starts_with($path, 'visual://'))->all())->toBe([]);
+});
+
+it('keeps visual paths whole behind a windows base path', function () {
+    $bagisto = new ThemeViewFinder(app('files'), [], ['json']);
+    $bagisto->addNamespace('shop', ['C:\\app\\visual://_/themes/demo/live/default/en', dirname(__DIR__).'/views']);
+
+    expect(VisualThemeViewFinder::from($bagisto)->getHints()['shop'])
+        ->toBe(['visual://_/themes/demo/live/default/en', dirname(__DIR__).'/views']);
 });
 
 it('gives the view factory the visual finder even when the factory was made first', function () {
