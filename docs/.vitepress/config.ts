@@ -158,8 +158,18 @@ export default defineConfig({
             { text: 'Database Storage', link: '/advanced-guides/database-storage' },
             { text: 'Storage Scopes', link: '/advanced-guides/storage-scopes' },
             { text: 'Versioning Visual Changes', link: '/advanced-guides/versioning-visual-changes' },
-            { text: 'Extending Functionality', link: '/advanced-guides/extending' },
             { text: 'Debugging and Troubleshooting', link: '/advanced-guides/debugging' },
+          ],
+        },
+        {
+          text: 'Extending',
+          items: [
+            { text: 'Overview', link: '/extending/overview' },
+            { text: 'Loading Editor Assets', link: '/extending/loading-assets' },
+            { text: 'Editor API and Events', link: '/extending/editor-api' },
+            { text: 'Editor UI', link: '/extending/editor-ui' },
+            { text: 'Modals', link: '/extending/modals' },
+            { text: 'Custom Setting Types', link: '/extending/custom-setting-types' },
           ],
         },
         // {
