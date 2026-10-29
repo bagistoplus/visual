@@ -4,6 +4,7 @@ namespace BagistoPlus\Visual\Settings\Support;
 
 use BagistoPlus\Visual\Contracts\SettingTransformerInterface;
 use BagistoPlus\Visual\Facades\Visual;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
 
 class VideoTransformer implements SettingTransformerInterface
@@ -49,7 +50,10 @@ class VideoTransformer implements SettingTransformerInterface
     private function native(string $pathOrUrl, ?string $host = null): VideoValue
     {
         $isUrl = filter_var($pathOrUrl, FILTER_VALIDATE_URL);
-        $url = $isUrl ? $pathOrUrl : Storage::disk(Visual::videosDisk())->url($pathOrUrl);
+
+        /** @var FilesystemAdapter $disk */
+        $disk = Storage::disk(Visual::videosDisk());
+        $url = $isUrl ? $pathOrUrl : $disk->url($pathOrUrl);
 
         return new VideoValue(
             media_type: 'video',

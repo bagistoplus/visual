@@ -325,7 +325,7 @@ class DatabaseThemeDataStore implements ThemeDataStore
             return false;
         }
 
-        $found = $this->cache()->many(array_values($keys));
+        $found = $this->cache()->getMultiple(array_values($keys));
 
         foreach ($keys as $hash => $key) {
             if (($found[$key] ?? null) !== null) {

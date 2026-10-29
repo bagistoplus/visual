@@ -5,6 +5,7 @@ namespace BagistoPlus\Visual\Settings\Support;
 use BagistoPlus\Visual\Contracts\SettingTransformerInterface;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Support\Images\ImageVariants;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
 
 class ImageTransformer implements SettingTransformerInterface
@@ -43,6 +44,8 @@ class ImageTransformer implements SettingTransformerInterface
         if (ctype_xdigit($encodedName) && strlen($encodedName) % 2 == 0) {
             $originalName = hex2bin($encodedName);
             $disk = Visual::imagesDisk();
+
+            /** @var FilesystemAdapter $storage */
             $storage = Storage::disk($disk);
             $description = $describe ? app(ImageVariants::class)->describe($disk, $path) : null;
 

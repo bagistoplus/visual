@@ -27,6 +27,7 @@ use BagistoPlus\Visual\ThemeSettingsLoader;
 use BladeUI\Icons\Factory;
 use BladeUI\Icons\IconsManifest;
 use Craftile\Laravel\Data\UpdateRequest;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
@@ -62,11 +63,17 @@ class ThemeEditorController extends Controller
             abort(404, "Theme {$themeCode} cannot be edited");
         }
 
+        /** @var FilesystemAdapter $imagesDisk */
+        $imagesDisk = Storage::disk(Visual::imagesDisk());
+
+        /** @var FilesystemAdapter $videosDisk */
+        $videosDisk = Storage::disk(Visual::videosDisk());
+
         return view()->make('visual::admin.editor.index', [
             'config' => [
                 'baseUrl' => parse_url(route('visual.admin.editor', ['theme' => $themeCode]), PHP_URL_PATH),
-                'imagesBaseUrl' => Storage::disk(Visual::imagesDisk())->url(''),
-                'videosBaseUrl' => Storage::disk(Visual::videosDisk())->url(''),
+                'imagesBaseUrl' => $imagesDisk->url(''),
+                'videosBaseUrl' => $videosDisk->url(''),
                 'storefrontUrl' => url('/').'?'.http_build_query(['_designMode' => $themeCode]),
                 'channels' => $this->getChannels(),
                 'defaultChannel' => core()->getDefaultChannelCode(),
@@ -352,10 +359,13 @@ class ThemeEditorController extends Controller
             // A failed resize leaves the original in place; the image renders without copies.
             rescue(fn () => app(ImageVariants::class)->generate(Visual::imagesDisk(), $path));
 
+            /** @var FilesystemAdapter $disk */
+            $disk = Storage::disk(Visual::imagesDisk());
+
             return [
                 'path' => $path,
                 'name' => $originalName,
-                'url' => Storage::disk(Visual::imagesDisk())->url($path),
+                'url' => $disk->url($path),
             ];
         });
     }
@@ -409,10 +419,13 @@ class ThemeEditorController extends Controller
                 Visual::videosDisk(),
             );
 
+            /** @var FilesystemAdapter $disk */
+            $disk = Storage::disk(Visual::videosDisk());
+
             return [
                 'path' => $path,
                 'name' => $originalName,
-                'url' => Storage::disk(Visual::videosDisk())->url($path),
+                'url' => $disk->url($path),
                 'mime_type' => $mimeType,
             ];
         });

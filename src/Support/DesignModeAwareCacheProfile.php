@@ -58,6 +58,7 @@ class DesignModeAwareCacheProfile implements CacheProfile
      */
     public function cacheRequestUntil(Request $request): DateTime
     {
+        /** @disregard P1013 removed in responsecache 8, only called by 7 */
         return $this->profile->cacheRequestUntil($request);
     }
 }
