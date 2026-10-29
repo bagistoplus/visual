@@ -17,6 +17,9 @@ on:
       - 'package.json'
       - 'package-lock.json'
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
