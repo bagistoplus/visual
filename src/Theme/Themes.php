@@ -66,15 +66,13 @@ class Themes extends BagistoThemes
             app('view')->prependNamespace('shop', $this->activeTheme->basePath.'/resources/views');
 
             ThemeActivated::dispatch($theme);
-
-            return $theme;
-        }
-
-        // A theme whose sections Bagisto stores draws its home page through the
-        // view each section type names, rather than a hardcoded list of types.
-        if ($this->activeTheme->editorMode()->isBagisto()) {
+        } elseif ($this->activeTheme->editorMode()->isBagisto()) {
+            // A theme whose sections Bagisto stores draws its home page through the
+            // view each section type names, rather than a hardcoded list of types.
             app('view')->prependNamespace('shop', __DIR__.'/../../resources/views/bagisto');
         }
+
+        app(ThemeRenderingSetup::class)->prepare($this->activeTheme);
 
         return $theme;
     }

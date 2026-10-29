@@ -11,7 +11,6 @@ use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Http\Replacers\FpcRegionReplacer;
 use BagistoPlus\Visual\Middlewares\InjectThemeEditorScript;
 use BagistoPlus\Visual\Middlewares\PreviewDraftedSections;
-use BagistoPlus\Visual\Middlewares\RegisterVisualSchemas;
 use BagistoPlus\Visual\Middlewares\RepairPreviewQueryString;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
 use BagistoPlus\Visual\Models\VisualTemplateAssignment;
@@ -268,7 +267,6 @@ class CoreServiceProvider extends ServiceProvider
                 ->removeMiddlewareFromGroup('shop', Theme::class)
                 ->pushMiddlewareToGroup('shop', UseShopThemeFromRequest::class)
                 ->pushMiddlewareToGroup('shop', PreviewDraftedSections::class)
-                ->pushMiddlewareToGroup('shop', RegisterVisualSchemas::class)
                 ->pushMiddlewareToGroup('shop', InjectThemeEditorScript::class);
         });
     }

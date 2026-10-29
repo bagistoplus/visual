@@ -5,7 +5,6 @@ namespace BagistoPlus\Visual;
 use BagistoPlus\Visual\Contracts\SettingTransformerInterface;
 use BagistoPlus\Visual\LivewireFeatures\BlockDataSynth;
 use BagistoPlus\Visual\LivewireFeatures\SupportsBlockData;
-use BagistoPlus\Visual\Middlewares\RegisterVisualSchemas;
 use BagistoPlus\Visual\Middlewares\UseShopThemeFromRequest;
 use BagistoPlus\Visual\Support\FpcRegion;
 use Closure;
@@ -258,7 +257,6 @@ class VisualManager
             Locale::class,
             Currency::class,
             UseShopThemeFromRequest::class,
-            RegisterVisualSchemas::class,
         ]);
 
         Livewire::propertySynthesizer(BlockDataSynth::class);

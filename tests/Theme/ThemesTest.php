@@ -3,6 +3,7 @@
 use BagistoPlus\Visual\Facades\ThemePathsResolver;
 use BagistoPlus\Visual\Theme\Theme;
 use BagistoPlus\Visual\Theme\Themes;
+use Craftile\Laravel\Facades\Craftile;
 use Illuminate\Support\Facades\View;
 
 it('should extends \\Webkul\\Theme\\Themes', function () {
@@ -63,4 +64,23 @@ it('leaves a theme alone when bagisto does not declare its section types', funct
     expect(app('view')->getFinder()->getHints()['shop'] ?? [])->toBe($before)
         ->and(collect($before)->contains(fn (string $hint) => str_ends_with(str_replace('\\', '/', $hint), 'resources/views/bagisto')))
         ->toBeFalse();
+});
+
+it('leaves a visual theme renderable wherever it is activated', function () {
+    config()->set('app.admin_url', 'admin');
+    config()->set('themes.shop.fake-visual', [
+        'name' => 'Fake Visual',
+        'visual_theme' => true,
+        'base_path' => sys_get_temp_dir(),
+    ]);
+
+    ThemePathsResolver::shouldReceive('resolveThemeViewsPaths')->andReturn([]);
+    Craftile::spy();
+
+    $themes = new Themes;
+    $themes->loadThemes();
+    $themes->set('fake-visual');
+
+    Craftile::shouldHaveReceived('registerDiscoveredSchemas')->once();
+    expect(view()->shared('theme'))->toBe($themes->current());
 });
