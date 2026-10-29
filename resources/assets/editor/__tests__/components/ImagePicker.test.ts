@@ -202,4 +202,21 @@ describe('ImagePicker', () => {
 
     expect(editor.engine.listening()).toBe(0);
   });
+
+  it('tells a disk path from a url quickly, whatever the path looks like', () => {
+    // A domain pattern that could match one string in many ways took seconds on this.
+    const path = '0'.repeat(27) + '!';
+    const started = performance.now();
+
+    const { wrapper } = mountPicker(fakeEditor(), { path, alt: '', focalPoint: { x: 50, y: 50 } });
+
+    expect(performance.now() - started).toBeLessThan(1000);
+    expect(wrapper.find('img').attributes('src')).toBe(`/storage/${path}`);
+  });
+
+  it('keeps a url as it is', () => {
+    const { wrapper } = mountPicker(fakeEditor(), { path: 'https://cdn.example.com/a.webp', alt: '', focalPoint: { x: 50, y: 50 } });
+
+    expect(wrapper.find('img').attributes('src')).toBe('https://cdn.example.com/a.webp');
+  });
 });
