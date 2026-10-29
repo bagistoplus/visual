@@ -4,7 +4,7 @@
     "name": "sectionBlockIds"
   },
   "resources/assets/editor/index.ts": {
-    "file": "assets/index-DESdVwAi.js",
+    "file": "assets/index-CcrPXv2x.js",
     "name": "index",
     "src": "resources/assets/editor/index.ts",
     "isEntry": true,
@@ -12,7 +12,7 @@
       "_sectionBlockIds-CIAxXZrM.js"
     ],
     "css": [
-      "assets/index-B35Nyviw.css"
+      "assets/index-BFKwhiA1.css"
     ]
   },
   "resources/assets/editor/injected.ts": {
