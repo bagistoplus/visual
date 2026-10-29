@@ -2,6 +2,34 @@
 
 All notable changes to `Bagisto Visual` will be documented in this file.
 
+# [2.0.0-alpha.37](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.36...v2.0.0-alpha.37) (2026-10-29)
+
+
+### Bug Fixes
+
+* **admin:** show the product template field on every product type ([a6e9d1b](https://github.com/bagistoplus/visual/commit/a6e9d1b70890f5320bf1fe559d7bfe9bae698875))
+* **editor:** carry the Livewire component onto morphed elements so $wire keeps working in the preview ([5c85ba2](https://github.com/bagistoplus/visual/commit/5c85ba26b787dab14b2fda34f7a7e2b8d25c1034))
+* **editor:** render the preview in the edited locale and channel instead of the session's ([e179ffe](https://github.com/bagistoplus/visual/commit/e179ffebc935b4572f87055726569543d579ce41))
+* **editor:** require a Visual permission for draft and theme previews ([1a464fb](https://github.com/bagistoplus/visual/commit/1a464fb55b33ee84a132f228d73f38e9a5fc2b41))
+* **editor:** show a bagisto theme's own sections and drafts in previews ([caa53dc](https://github.com/bagistoplus/visual/commit/caa53dc6f2c3fa75dbaaea5d55c261a6a04b237a))
+* **editor:** undo the image picker's own picks on cancel instead of adding an undo step ([2c01f3c](https://github.com/bagistoplus/visual/commit/2c01f3c81d1ff1329b1586afa5c8a49f118b0df1))
+* ignore design and preview requests for a theme that is not registered ([c3a0f04](https://github.com/bagistoplus/visual/commit/c3a0f049af866fec4b77f3051a21fc6690a5bce0))
+* keep visual paths whole in the bagisto view finder on windows ([9850196](https://github.com/bagistoplus/visual/commit/98501963f5df77b3c2e3bc1397c0b7d0d4c5b85f))
+* prepare a visual theme for rendering whenever it is activated, not only on shop routes ([dc5216c](https://github.com/bagistoplus/visual/commit/dc5216c709845a925d7358ce2fdca6690ffd6446))
+* save pending edits instead of the page on screen before publishing, so unedited locales keep following their parent ([61c32b2](https://github.com/bagistoplus/visual/commit/61c32b2423e7a69c7faf1495bbbd2fcb19263407))
+* save pending theme settings before publishing ([e8281ea](https://github.com/bagistoplus/visual/commit/e8281ea753dc95838695350efad3ae8daff3208f))
+* show the store product placeholder in the checkout success preview instead of an image the image cache cannot serve ([02eca83](https://github.com/bagistoplus/visual/commit/02eca8314f272245a5d655e7d17490bab4a85c8c))
+* use the default connection and cache store when the database storage settings are empty ([802a672](https://github.com/bagistoplus/visual/commit/802a6721a6326e5dc1c7c196b40ab773c8858b4a))
+
+
+### Features
+
+* add a database storage driver that serves theme data through a visual:// stream wrapper ([5eb81a0](https://github.com/bagistoplus/visual/commit/5eb81a0ad3d9a9e52d8d3022078c4cb7ed9d6368))
+* add a host supplied storage scope for theme data, settings cache and media ([502b555](https://github.com/bagistoplus/visual/commit/502b55560967a874bc046e482909315d02591a4b))
+* add a visual:storage:warm command that fills the cache with published theme data ([c7411bd](https://github.com/bagistoplus/visual/commit/c7411bd7a9ca8bab9427edcaf8420f29373ddd23))
+* copy every storage scope by default in visual:storage:import and visual:storage:export ([12fbfa4](https://github.com/bagistoplus/visual/commit/12fbfa495dac594ace8bebda00260483e5cd05e0))
+* let merchants duplicate a visual theme and customize the copy ([a05f93b](https://github.com/bagistoplus/visual/commit/a05f93b10a909f7cc8746661931e389661e1d48f))
+
 # [2.0.0-alpha.36](https://github.com/bagistoplus/visual/compare/v2.0.0-alpha.35...v2.0.0-alpha.36) (2026-10-25)
 
 
