@@ -155,9 +155,9 @@ export default defineConfig({
         {
           text: 'Advanced Guides',
           items: [
-            { text: 'Versioning Visual Changes', link: '/advanced-guides/versioning-visual-changes' },
             { text: 'Database Storage', link: '/advanced-guides/database-storage' },
             { text: 'Storage Scopes', link: '/advanced-guides/storage-scopes' },
+            { text: 'Versioning Visual Changes', link: '/advanced-guides/versioning-visual-changes' },
             { text: 'Extending Functionality', link: '/advanced-guides/extending' },
             { text: 'Debugging and Troubleshooting', link: '/advanced-guides/debugging' },
           ],

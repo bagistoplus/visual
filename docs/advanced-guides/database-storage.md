@@ -55,7 +55,7 @@ Older versions configured the file storage with a top level `data_path` key. It 
 
 3. Set `BAGISTO_VISUAL_STORAGE=database` and deploy.
 
-Uploaded images and videos are not theme data. They live on the filesystem disks set under `images` and `videos`, so put those on shared storage too, for example an S3 disk. See [Versioning Visual Changes](./versioning-visual-changes.md#recommended-production-workflow) for an example.
+Uploaded images and videos are not theme data. They live on the filesystem disks set under `images` and `videos`, so put those on shared storage too, for example an S3 disk. See [Versioning Visual Changes](./versioning-visual-changes.md#versioned-data-with-shared-uploads) for an example.
 
 ## How It Works
 

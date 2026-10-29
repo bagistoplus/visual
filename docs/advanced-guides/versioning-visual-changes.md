@@ -1,14 +1,24 @@
 # Versioning Visual Changes
 
-Bagisto Visual stores editor changes on disk. By default, those files live in `storage/bagisto-visual`, which is usually ignored by git and local to one environment.
+By default, Bagisto Visual stores editor changes in files, using the `file` storage. Those files live in `storage/bagisto-visual`, which is usually ignored by git and local to one environment.
 
 If you want Visual changes to move from local development to staging and production through your deployment pipeline, move the Visual data path into a repo-tracked directory. Uploaded media can either be committed with the project or stored on shared persistent storage.
+
+## Choosing an Approach
+
+Versioning Visual data in git fits when every layout change is made outside production, locally or on staging, and production only receives changes through deploys. In that setup, treat the production editor as read only.
+
+If merchants or your team edit in the production editor, or production runs on more than one instance (Laravel Cloud, autoscaled servers), we recommend [Database Storage](./database-storage.md) for production instead. Theme data then lives in your database, every instance sees the same edits, and deploys never touch it. You can still [seed it once from versioned files](#seeding-database-storage-from-versioned-files).
+
+Whichever storage you choose, keep uploaded images and videos on shared persistent storage in production, as described in [Versioned Data with Shared Uploads](#versioned-data-with-shared-uploads).
 
 ## What Visual Stores
 
 Visual data is controlled by the path of the `file` storage:
 
 ```php
+'storage' => env('BAGISTO_VISUAL_STORAGE', 'file'),
+
 'storages' => [
     'file' => [
         'path' => storage_path('bagisto-visual'),
@@ -17,6 +27,8 @@ Visual data is controlled by the path of the `file` storage:
 ```
 
 This directory contains the theme state that the editor writes, including editor and live template/settings data. It is separate from uploaded media.
+
+The workflows in this guide require the `file` storage. If `BAGISTO_VISUAL_STORAGE` is set to `database`, theme data lives in the database and the file path is ignored, so committing it changes nothing.
 
 Uploads are controlled by Laravel filesystem disks:
 
@@ -120,9 +132,13 @@ git commit -m "chore: version visual data and uploads"
 
 This makes editor data and uploaded media deploy with the application. The tradeoff is repository growth, especially when videos are uploaded.
 
-## Recommended Production Workflow
+::: warning Edits made in production
+Edits saved in the production editor are written to `visual/data` on that server only. The next deploy overwrites them or conflicts with them, and on multi instance hosts they only reach the instance that handled the request. If production needs to be edited in place, use [Database Storage](./database-storage.md).
+:::
 
-For production teams, keep Visual data in git and store uploads on shared persistent storage. This avoids large media files in the repository and makes uploads available across all servers.
+## Versioned Data with Shared Uploads
+
+For production teams using git versioning, keep Visual data in git and store uploads on shared persistent storage. This avoids large media files in the repository and makes uploads available across all servers.
 
 Keep the Visual data path in the repository:
 
@@ -179,6 +195,23 @@ git commit -m "chore: version visual data"
 
 Your deployment now carries layout, template, and setting changes through git, while uploaded images and videos remain on persistent shared storage.
 
+::: warning Edits made in production
+The same rule applies here: edits saved in the production editor do not survive the next deploy and are not shared between instances. If production needs to be edited in place, use [Database Storage](./database-storage.md).
+:::
+
+## Seeding Database Storage from Versioned Files
+
+If you developed a theme with versioned files and want production on database storage, import the committed data once. `visual:storage:import` reads from `storages.file.path`, so with the path set to `base_path('visual/data')` it copies the files your deploy shipped:
+
+```bash
+php artisan migrate --force
+php artisan visual:storage:import
+```
+
+Then set `BAGISTO_VISUAL_STORAGE=database`. From that point on, production is edited in place and `visual/data` no longer affects it. See [Database Storage](./database-storage.md#switching-to-the-database) for the full setup.
+
+Treat this as a one time migration, not a deploy step. Without `--force`, the command stops if the database already holds the theme. With `--force`, it replaces the editor documents and publishes the files as a new live version, which discards edits made in production since the last import. Previously published versions stay in the database up to `versions_to_keep`, but unpublished editor changes are lost.
+
 ## Migrating Existing Data
 
 Back up your project and storage before migrating existing Visual data or uploads.
@@ -189,6 +222,14 @@ Copy existing Visual data into the repo-tracked path:
 mkdir -p visual/data
 cp -R storage/bagisto-visual/. visual/data/
 ```
+
+If the project currently uses database storage, export the theme data into the repo-tracked path instead. Set `storages.file.path` to `base_path('visual/data')` first, since the command writes there, then run:
+
+```bash
+php artisan visual:storage:export
+```
+
+Then set `BAGISTO_VISUAL_STORAGE=file`. See [Import and Export](./database-storage.md#import-and-export) for the available options.
 
 For the fully versioned workflow, copy existing uploads into the `visual` disk root:
 
@@ -204,5 +245,7 @@ For the S3-compatible workflow, upload existing files to the bucket paths that m
 images/*
 videos/*
 ```
+
+If your app uses [storage scopes](./storage-scopes.md), uploads are stored under the scope name, for example `storage/app/public/acme/bagisto-visual/images` by default and `acme/images/*` with the directories above. Copy each scope's uploads to the matching scoped path. Visual data needs no extra step, because the data path already contains one directory per scope.
 
 After migration, open the Visual editor in each environment and confirm that templates, settings, images, and videos resolve correctly.
