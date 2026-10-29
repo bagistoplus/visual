@@ -101,6 +101,9 @@ class TestCase extends Orchestra
             $config->set('cache.default', 'array');
             $config->set('auth.guards.admin', ['driver' => 'session', 'provider' => 'users']);
             $config->set('blade-icons.components.disabled', true);
+
+            // Bagisto ships this theme, and only a registered theme can be asked for in design or preview mode.
+            $config->set('themes.shop.default', ['name' => 'Default']);
         });
     }
 }

@@ -80,3 +80,17 @@ it('is the editor request whoever made it, so what boots before a session can te
         ->and(editorAsking('/admin/visual/editor/default')->requested())->toBeTrue()
         ->and(editorAsking('/')->requested())->toBeFalse();
 });
+
+it('ignores a theme that is not registered, whatever mode asks for it', function (string $url) {
+    $editor = editorAsking($url);
+
+    expect($editor->designModeRequested())->toBeFalse()
+        ->and($editor->previewModeRequested())->toBeFalse()
+        ->and($editor->draftPreviewRequested())->toBeFalse()
+        ->and($editor->usesEditorData())->toBeFalse();
+})->with([
+    'design mode' => ['/?_designMode=does-not-exist'],
+    'theme preview' => ['/?_previewMode=does-not-exist'],
+    'draft preview' => ['/?_draftPreview=does-not-exist'],
+    'a key inside a theme config' => ['/?_previewMode=default.name'],
+]);

@@ -13,6 +13,7 @@ beforeEach(function () {
 });
 
 it('resolves editor parent data from the parsed editor file path', function (string $parameter) {
+    config()->set('themes.shop.visual-debut', ['name' => 'Visual Debut', 'visual_theme' => true]);
     request()->query->set($parameter, 'visual-debut');
 
     $dataPath = sys_get_temp_dir().'/visual-template-normalizer-'.uniqid();

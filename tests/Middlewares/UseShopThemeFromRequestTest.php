@@ -54,3 +54,11 @@ it('leaves the channel its theme for a visitor', function () {
 
     expect(channelThemeAfter('/?_previewMode=default'))->toBe('visual-debut');
 });
+
+it('leaves the channel its theme when the previewed theme is not registered', function (string $url) {
+    expect(channelThemeAfter($url))->toBe('visual-debut');
+})->with([
+    'design mode' => ['/?_designMode=does-not-exist'],
+    'theme preview' => ['/?_previewMode=does-not-exist'],
+    'draft preview' => ['/?_draftPreview=does-not-exist'],
+]);

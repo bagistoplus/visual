@@ -98,7 +98,7 @@ class ThemeEditor
      */
     public function designModeRequested(): bool
     {
-        return request()->query->has('_designMode') || request()->headers->has('x-visual-editor-theme');
+        return $this->requestsRegisteredTheme('_designMode', 'x-visual-editor-theme');
     }
 
     /**
@@ -106,7 +106,7 @@ class ThemeEditor
      */
     public function draftPreviewRequested(): bool
     {
-        return request()->query->has('_draftPreview') || request()->headers->has('x-visual-draft-preview-theme');
+        return $this->requestsRegisteredTheme('_draftPreview', 'x-visual-draft-preview-theme');
     }
 
     /**
@@ -114,7 +114,14 @@ class ThemeEditor
      */
     public function previewModeRequested(): bool
     {
-        return request()->query->has('_previewMode') || request()->headers->has('x-visual-preview-theme');
+        return $this->requestsRegisteredTheme('_previewMode', 'x-visual-preview-theme');
+    }
+
+    protected function requestsRegisteredTheme(string $query, string $header): bool
+    {
+        $code = request()->query->get($query, request()->headers->get($header));
+
+        return is_string($code) && array_key_exists($code, config('themes.shop', []));
     }
 
     /**
