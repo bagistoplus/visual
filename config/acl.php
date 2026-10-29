@@ -14,6 +14,24 @@ return [
         'sort' => 1,
     ],
     [
+        'key' => 'bagisto_visual.themes.duplicate',
+        'name' => 'visual::admin.acl.duplicate',
+        'route' => 'visual.admin.themes.duplicate',
+        'sort' => 1,
+    ],
+    [
+        'key' => 'bagisto_visual.themes.edit',
+        'name' => 'visual::admin.acl.edit',
+        'route' => 'visual.admin.themes.update',
+        'sort' => 2,
+    ],
+    [
+        'key' => 'bagisto_visual.themes.delete',
+        'name' => 'visual::admin.acl.delete',
+        'route' => 'visual.admin.themes.delete',
+        'sort' => 3,
+    ],
+    [
         'key' => 'bagisto_visual.editor',
         'name' => 'visual::admin.acl.editor',
         'route' => [

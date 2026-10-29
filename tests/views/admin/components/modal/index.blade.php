@@ -1,0 +1,4 @@
+{{ $toggle ?? '' }}
+{{ $header ?? '' }}
+{{ $content ?? '' }}
+{{ $footer ?? '' }}

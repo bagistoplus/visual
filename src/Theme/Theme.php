@@ -59,14 +59,21 @@ class Theme extends BagistoTheme
             return null;
         }
 
-        return self::make(['code' => $themeCode] + $attributes);
+        $theme = self::make(['code' => $themeCode] + $attributes);
+        $parentCode = $attributes['parent'] ?? null;
+
+        if (filled($parentCode) && $parentCode !== $themeCode && $parent = self::forCode($parentCode)) {
+            $theme->setParent($parent);
+        }
+
+        return $theme;
     }
 
     public static function make(array $attributes): self
     {
         return new self(
             code: $attributes['code'],
-            name: $attributes['name'],
+            name: $attributes['name'] ?? $attributes['code'],
             basePath: $attributes['base_path'] ?? $attributes['code'],
             assetsPath: $attributes['assets_path'] ?? $attributes['code'],
             viewsPath: $attributes['views_path'] ?? $attributes['code'],

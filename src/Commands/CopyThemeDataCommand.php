@@ -4,6 +4,7 @@ namespace BagistoPlus\Visual\Commands;
 
 use BagistoPlus\Visual\Contracts\ThemeDataStore;
 use BagistoPlus\Visual\Persistence\ThemeSettingsCache;
+use BagistoPlus\Visual\Theme\ThemeCopies;
 use BagistoPlus\Visual\VisualManager;
 use Illuminate\Console\Command;
 use InvalidArgumentException;
@@ -86,6 +87,7 @@ abstract class CopyThemeDataCommand extends Command
                 $snapshot = $source->snapshot($copy['theme']);
                 $target->restore($copy['theme'], $snapshot);
                 $settingsCache->forgetAll($copy['theme']);
+                app(ThemeCopies::class)->forget();
 
                 info(sprintf(
                     'Copied %s: %d editor documents, %s.',

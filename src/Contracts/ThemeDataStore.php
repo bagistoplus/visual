@@ -72,6 +72,24 @@ interface ThemeDataStore
     public function restore(string $theme, ThemeSnapshot $snapshot): void;
 
     /**
+     * What a theme's data says about the theme itself, or null when it says
+     * nothing.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function meta(string $theme): ?array;
+
+    /**
+     * @param  array<string, mixed>|null  $meta
+     */
+    public function putMeta(string $theme, ?array $meta): void;
+
+    /**
+     * Remove everything this store holds for a theme.
+     */
+    public function deleteTheme(string $theme): void;
+
+    /**
      * The directory every theme's data is read from, for a storage scope.
      */
     public function themesPath(string $scope): string;

@@ -12,7 +12,8 @@ use Illuminate\Filesystem\Filesystem;
  *
  * Each theme holds an `editor` tree, a `live` tree and `versions/V{time}`
  * snapshots. The editor tree carries a `.last-edit` marker while it holds
- * changes the live tree does not.
+ * changes the live tree does not. What the data says about the theme itself
+ * is kept beside them in `meta.json`.
  */
 class FileThemeDataStore implements ThemeDataStore
 {
@@ -148,6 +149,7 @@ class FileThemeDataStore implements ThemeDataStore
             editor: $this->documentsIn($this->themePath($theme, 'editor')),
             live: $this->files->isDirectory($livePath) ? $this->documentsIn($livePath) : null,
             edited: $this->hasUnpublishedEdits($theme),
+            meta: $this->meta($theme),
         );
     }
 
@@ -172,6 +174,46 @@ class FileThemeDataStore implements ThemeDataStore
 
         if ($snapshot->edited) {
             $this->markEdited($theme);
+        }
+
+        $this->putMeta($theme, $snapshot->meta);
+    }
+
+    public function meta(string $theme): ?array
+    {
+        $path = $this->themePath($theme, 'meta.json');
+
+        if (! $this->files->exists($path)) {
+            return null;
+        }
+
+        $meta = json_decode($this->files->get($path), true);
+
+        return is_array($meta) ? $meta : null;
+    }
+
+    public function putMeta(string $theme, ?array $meta): void
+    {
+        $path = $this->themePath($theme, 'meta.json');
+
+        if ($meta === null) {
+            if ($this->files->exists($path)) {
+                $this->files->delete($path);
+            }
+
+            return;
+        }
+
+        $this->files->ensureDirectoryExists(dirname($path));
+        $this->files->put($path, json_encode($meta, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
+
+    public function deleteTheme(string $theme): void
+    {
+        $path = $this->themesPath(Visual::storageScope()).'/'.$theme;
+
+        if ($this->files->isDirectory($path)) {
+            $this->files->deleteDirectory($path);
         }
     }
 

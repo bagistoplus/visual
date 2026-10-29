@@ -35,6 +35,7 @@ use BagistoPlus\Visual\Support\TemplateNormalizer;
 use BagistoPlus\Visual\Support\UrlGenerator;
 use BagistoPlus\Visual\Support\VisualDiscoveryFilter;
 use BagistoPlus\Visual\TemplateRegistrar;
+use BagistoPlus\Visual\Theme\ThemeCopies;
 use BagistoPlus\Visual\ThemePathsResolver;
 use BagistoPlus\Visual\ThemeSettingsLoader;
 use BagistoPlus\Visual\View\Compilers\LivewireBlockCompiler;
@@ -50,7 +51,9 @@ use Craftile\Laravel\View\JsonViewParser;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\QueryException;
 use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Foundation\Application as FoundationApplication;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
@@ -112,9 +115,29 @@ class CoreServiceProvider extends ServiceProvider
             }
         });
 
+        $this->app->booted(fn (FoundationApplication $app) => $this->bootThemeCopies($app));
+
         if ($this->app->runningInConsole()) {
             $this->bootCommands();
             $this->bootPublishAssets();
+        }
+    }
+
+    /**
+     * Copies are registered once every provider has booted, so the host's
+     * storage scope resolver is there to say whose copies they are. They are
+     * kept out of a cached config, which would hold one scope's copies for all.
+     */
+    protected function bootThemeCopies(FoundationApplication $app): void
+    {
+        if ($app->runningConsoleCommand('config:cache')) {
+            return;
+        }
+
+        try {
+            $app->make(ThemeCopies::class)->register();
+        } catch (QueryException) {
+            // The database storage tables are not migrated yet.
         }
     }
 

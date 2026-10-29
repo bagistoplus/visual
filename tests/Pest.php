@@ -20,12 +20,15 @@ uses(TestCase::class)->in(__DIR__);
 if (! function_exists('migrateThemeDataTables')) {
     function migrateThemeDataTables(): void
     {
-        $migration = include __DIR__.'/../database/migrations/2026_10_28_000001_create_visual_theme_data_tables.php';
         $default = DB::getDefaultConnection();
 
-        DB::setDefaultConnection($migration->getConnection() ?? $default);
-        $migration->up();
-        DB::setDefaultConnection($default);
+        foreach (['2026_10_28_000001_create_visual_theme_data_tables', '2026_10_29_000001_add_meta_to_visual_theme_states'] as $name) {
+            $migration = include __DIR__."/../database/migrations/{$name}.php";
+
+            DB::setDefaultConnection($migration->getConnection() ?? $default);
+            $migration->up();
+            DB::setDefaultConnection($default);
+        }
     }
 }
 

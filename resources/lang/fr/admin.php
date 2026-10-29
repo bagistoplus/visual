@@ -11,6 +11,9 @@ return [
         'themes' => 'Thèmes',
         'editor' => 'Éditeur de thème',
         'preview' => 'Prévisualiser les brouillons et les thèmes',
+        'duplicate' => 'Dupliquer les thèmes',
+        'edit' => 'Modifier les copies de thèmes',
+        'delete' => 'Supprimer les copies de thèmes',
     ],
 
     'themes' => [
@@ -22,6 +25,23 @@ return [
         'by' => 'par',
         'view-documentation' => 'Voir la documentation',
         'no-themes' => 'Aucun thème disponible',
+        'more-actions' => 'Plus d\'actions',
+        'duplicate' => 'Dupliquer',
+        'duplicate-title' => 'Dupliquer :name',
+        'copy-default-name' => ':name (copie)',
+        'copy-name' => 'Nom',
+        'copy-description' => 'Description',
+        'edit' => 'Modifier',
+        'edit-title' => 'Modifier la copie du thème',
+        'save' => 'Enregistrer',
+        'delete' => 'Supprimer',
+        'delete-confirm' => 'Supprimer cette copie du thème et toutes ses personnalisations ? Cette action est irréversible.',
+        'based-on' => 'Basé sur :name',
+        'copy-unavailable' => 'Le thème sur lequel repose cette copie n\'est pas installé.',
+        'copy-created' => 'Thème dupliqué.',
+        'copy-updated' => 'Copie du thème mise à jour.',
+        'copy-deleted' => 'Copie du thème supprimée.',
+        'copy-in-use' => 'Cette copie du thème est active sur : :channels. Activez un autre thème sur ces canaux avant de la supprimer.',
     ],
 
     'cms' => [

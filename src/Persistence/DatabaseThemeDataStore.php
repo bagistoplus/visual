@@ -181,7 +181,7 @@ class DatabaseThemeDataStore implements ThemeDataStore
     public function snapshot(string $theme): ThemeSnapshot
     {
         $scope = Visual::storageScope();
-        $state = $this->states($scope, $theme)->first(['live_version_id', 'edited_at']);
+        $state = $this->states($scope, $theme)->first(['live_version_id', 'edited_at', 'meta']);
 
         $live = $state?->live_version_id
             ? (array) json_decode((string) $this->connection()->table('visual_theme_versions')->where('id', $state->live_version_id)->value('documents'), true)
@@ -191,6 +191,7 @@ class DatabaseThemeDataStore implements ThemeDataStore
             editor: $this->documents($scope, $theme)->orderBy('path')->pluck('content', 'path')->all(),
             live: $live === null ? null : collect($live)->sortKeys()->all(),
             edited: $state?->edited_at !== null,
+            meta: $this->decodeMeta($state?->meta),
         );
     }
 
@@ -201,6 +202,48 @@ class DatabaseThemeDataStore implements ThemeDataStore
         }
 
         $this->replaceEditor(Visual::storageScope(), $theme, fn () => $snapshot->editor, $snapshot->edited);
+
+        $this->putMeta($theme, $snapshot->meta);
+    }
+
+    public function meta(string $theme): ?array
+    {
+        return $this->decodeMeta($this->states(Visual::storageScope(), $theme)->value('meta'));
+    }
+
+    public function putMeta(string $theme, ?array $meta): void
+    {
+        $scope = Visual::storageScope();
+        $now = now();
+        $encoded = $meta === null ? null : json_encode($meta, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        $this->connection()->table('visual_theme_states')->upsert(
+            [['scope' => $scope, 'theme' => $theme, 'meta' => $encoded, 'created_at' => $now, 'updated_at' => $now]],
+            ['scope', 'theme'],
+            ['meta', 'updated_at'],
+        );
+    }
+
+    /**
+     * The cached pointers are forgotten along with the rows, so a theme made
+     * again under the same code does not serve what this one published.
+     */
+    public function deleteTheme(string $theme): void
+    {
+        $scope = Visual::storageScope();
+
+        $this->connection()->transaction(function () use ($scope, $theme) {
+            $this->documents($scope, $theme)->delete();
+            $this->versions($scope, $theme)->delete();
+            $this->states($scope, $theme)->delete();
+        });
+
+        foreach (['editor', 'live'] as $mode) {
+            $key = $this->cacheKey($scope, $theme, $mode);
+
+            $this->cache()->forget($key);
+            unset($this->indexes[$key]);
+        }
     }
 
     /**
@@ -631,6 +674,20 @@ class DatabaseThemeDataStore implements ThemeDataStore
         if ($stale->isNotEmpty()) {
             $this->connection()->table('visual_theme_versions')->whereIn('id', $stale)->delete();
         }
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    protected function decodeMeta(mixed $meta): ?array
+    {
+        if (! is_string($meta) || $meta === '') {
+            return null;
+        }
+
+        $decoded = json_decode($meta, true);
+
+        return is_array($decoded) ? $decoded : null;
     }
 
     protected function cacheKey(string $scope, string $theme, string $mode): string

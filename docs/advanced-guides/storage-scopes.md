@@ -29,8 +29,11 @@ A scope becomes a directory name and part of cache keys. It may only contain let
 | Theme data, database storage | rows with an empty `scope` | rows with `scope = 'acme'`   |
 | Cached theme settings        | `theme_settings.*`         | `acme:theme_settings.*`      |
 | Uploaded images and videos   | `bagisto-visual/images`    | `acme/bagisto-visual/images` |
+| [Theme copies](/theme-editor/duplicating-themes) | unscoped copies            | copies made in `acme`        |
 
-Theme code, theme configuration and Bagisto's own data are not scoped.
+Theme packages, their configuration and Bagisto's own data are not scoped.
+
+Theme copies are registered once every service provider has booted, so your resolver must be able to answer by then: from the host, a header or the query string, for example. A resolver that only knows the tenant after a route middleware has run sees no scope at that point, and the copies of the unscoped data are the ones registered.
 
 ## The Full Page Cache
 

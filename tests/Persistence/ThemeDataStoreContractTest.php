@@ -5,6 +5,7 @@ use BagistoPlus\Visual\Data\ThemeSnapshot;
 use BagistoPlus\Visual\Facades\Visual;
 use BagistoPlus\Visual\Persistence\DatabaseThemeDataStore;
 use BagistoPlus\Visual\Persistence\FileThemeDataStore;
+use BagistoPlus\Visual\Persistence\VisualStreamWrapper;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\DB;
 
@@ -29,7 +30,9 @@ function storeVersionCount(ThemeDataStore $store, string $theme): int
         return DB::table('visual_theme_versions')->where('theme', $theme)->count();
     }
 
-    return count((new Filesystem)->directories(test()->dataPath."/themes/{$theme}/versions"));
+    $path = test()->dataPath."/themes/{$theme}/versions";
+
+    return is_dir($path) ? count((new Filesystem)->directories($path)) : 0;
 }
 
 it('holds an editor document and flags the theme as edited', function (ThemeDataStore $store) {
@@ -123,3 +126,53 @@ it('leaves what is live alone when the snapshot was never published', function (
         edited: false,
     ));
 })->with('stores');
+
+it('holds what a theme data says about the theme', function (ThemeDataStore $store) {
+    expect($store->meta('demo'))->toBeNull();
+
+    $store->putMeta('demo', ['parent' => 'fake-theme', 'name' => 'Demo copy']);
+
+    expect($store->meta('demo'))->toBe(['parent' => 'fake-theme', 'name' => 'Demo copy'])
+        ->and($store->themes())->toBe(['demo']);
+
+    $store->putMeta('demo', null);
+
+    expect($store->meta('demo'))->toBeNull();
+})->with('stores');
+
+it('carries the meta in a snapshot and restores it', function (ThemeDataStore $store) {
+    $store->put('demo', 'default/en/theme.json', '{"a":1}');
+    $store->putMeta('demo', ['parent' => 'fake-theme', 'name' => 'Demo copy']);
+
+    $store->restore('other', $store->snapshot('demo'));
+
+    expect($store->meta('other'))->toBe(['parent' => 'fake-theme', 'name' => 'Demo copy'])
+        ->and($store->snapshot('other')->editor)->toBe(['default/en/theme.json' => '{"a":1}']);
+})->with('stores');
+
+it('deletes everything held for one theme and nothing of another', function (ThemeDataStore $store) {
+    foreach (['demo', 'other'] as $theme) {
+        $store->publish($theme, ['default/en/theme.json' => '{"live":1}']);
+        $store->put($theme, 'default/en/theme.json', '{"draft":1}');
+        $store->putMeta($theme, ['parent' => 'fake-theme', 'name' => $theme]);
+    }
+
+    $store->deleteTheme('demo');
+
+    expect($store->themes())->toBe(['other'])
+        ->and($store->snapshot('demo'))->toEqual(new ThemeSnapshot(editor: [], live: null, edited: false))
+        ->and(storeVersionCount($store, 'demo'))->toBe(0)
+        ->and($store->snapshot('other')->live)->toBe(['default/en/theme.json' => '{"live":1}']);
+})->with('stores');
+
+it('serves nothing published by a deleted theme to a theme made again under its code', function () {
+    $store = app(DatabaseThemeDataStore::class);
+    VisualStreamWrapper::register($store);
+    $store->publish('demo', ['default/en/theme.json' => '{"old":1}']);
+    expect(file_get_contents($store->themesPath('').'/demo/live/default/en/theme.json'))->toBe('{"old":1}');
+
+    $store->deleteTheme('demo');
+    $store->flush();
+
+    expect(@file_get_contents($store->themesPath('').'/demo/live/default/en/theme.json'))->toBeFalse();
+});

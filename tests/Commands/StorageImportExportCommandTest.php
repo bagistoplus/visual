@@ -146,3 +146,12 @@ it('copies the editor of a theme that was never published and leaves what is liv
     expect($this->database->snapshot('demo')->editor)->toBe(['default/en/theme.json' => '{"title":"Draft"}'])
         ->and($this->database->snapshot('demo')->live)->toBe(['default/en/theme.json' => '{"title":"Live"}']);
 });
+
+it('carries what a theme copy data says about it', function () {
+    seedThemeFiles($this->files, 'fake-theme-abc123');
+    $this->files->putMeta('fake-theme-abc123', ['parent' => 'fake-theme', 'name' => 'Staging']);
+
+    $this->artisan('visual:storage:import')->assertExitCode(0);
+
+    expect($this->database->meta('fake-theme-abc123'))->toBe(['parent' => 'fake-theme', 'name' => 'Staging']);
+});

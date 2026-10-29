@@ -204,7 +204,12 @@ describe('the themes page', function () {
                 'version' => null,
                 'description' => null,
                 'documentationUrl' => null,
+                'isVisual' => true,
+                'isCopy' => false,
+                'parentName' => null,
+                'unavailable' => false,
             ]]),
+            'can' => ['duplicate' => false, 'edit' => false, 'delete' => false],
         ])->render();
     }
 

@@ -165,7 +165,7 @@ abstract class ThemeServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register a callback to be run when the theme is activated
+     * Register a callback to be run when the theme, or a copy of it, is activated
      *
      * @return void
      */
@@ -173,19 +173,26 @@ abstract class ThemeServiceProvider extends ServiceProvider
     {
         Event::listen(ServingThemeEditor::class, function () use ($callback) {
             Event::listen(RouteMatched::class, function ($event) use ($callback) {
-                $themeConfig = $this->loadThemeConfig();
+                $code = $event->route->parameter('theme');
 
-                if ($themeConfig && $themeConfig['code'] === $event->route->parameters['theme']) {
-                    $callback(Theme::make($themeConfig));
+                if (is_string($code) && $this->isThemeOrCopy($code)) {
+                    $callback(Theme::forCode($code) ?? Theme::make($this->loadThemeConfig()));
                 }
             });
         });
 
         Event::listen(ThemeActivated::class, function (ThemeActivated $event) use ($callback) {
-            if ($event->theme->code === $this->loadThemeConfig()['code']) {
+            if ($this->isThemeOrCopy($event->theme->code)) {
                 $callback($event->theme);
             }
         });
+    }
+
+    protected function isThemeOrCopy(string $code): bool
+    {
+        $ownCode = $this->loadThemeConfig()['code'];
+
+        return $code === $ownCode || config("themes.shop.{$code}.parent") === $ownCode;
     }
 
     /**

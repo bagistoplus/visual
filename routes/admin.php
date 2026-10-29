@@ -55,4 +55,13 @@ Route::prefix('/visual/editor')->group(function () {
 Route::prefix('/visual/themes')->group(function () {
     Route::get('/', [ThemesController::class, 'index'])
         ->name('visual.admin.themes.index');
+
+    Route::post('{theme}/duplicate', [ThemesController::class, 'duplicate'])
+        ->name('visual.admin.themes.duplicate');
+
+    Route::put('{theme}', [ThemesController::class, 'update'])
+        ->name('visual.admin.themes.update');
+
+    Route::delete('{theme}', [ThemesController::class, 'destroy'])
+        ->name('visual.admin.themes.delete');
 });

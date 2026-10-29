@@ -140,6 +140,7 @@ export default defineConfig({
             { text: 'Custom Templates', link: '/theme-editor/custom-templates' },
             { text: 'Languages & Channels', link: '/theme-editor/languages-channels' },
             { text: 'Preview & Publish', link: '/theme-editor/publishing' },
+            { text: 'Duplicating Themes', link: '/theme-editor/duplicating-themes' },
             { text: 'Recipes', link: '/theme-editor/recipes' },
             { text: 'Troubleshooting', link: '/theme-editor/troubleshooting' },
           ],
